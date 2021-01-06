@@ -1,0 +1,31 @@
+﻿<UserControl x:Class="Byster.View.ShopItem"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Byster.View"
+             mc:Ignorable="d" 
+             Height="200" Width="150">
+    <UserControl.Resources>
+        <SolidColorBrush x:Key="clrBackground" Color="#34373d" />
+        <SolidColorBrush x:Key="clrBlack" Color="#282a2e" />
+        <SolidColorBrush x:Key="clrWhite" Color="#a5abb8" />
+        <SolidColorBrush x:Key="clrWhiteOver" Color="#5c5f66" />
+    </UserControl.Resources>
+    
+    <Grid Background="{StaticResource clrBlack}">
+        <Border Name="_ImageBorder" 
+                BorderBrush="{StaticResource clrWhite}" 
+                BorderThickness="1" 
+                HorizontalAlignment="Left" 
+                VerticalAlignment="Top"
+                Margin="10" 
+                Height="130" Width="130">
+            <Image Name="_Image" HorizontalAlignment="Left" VerticalAlignment="Top" Height="128"  Width="128"/>
+        </Border>
+        <TextBlock Name="_Description" HorizontalAlignment="Left" Margin="10,10,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="16" Width="128" TextAlignment="Center"/>
+        <TextBlock Name="_Class" HorizontalAlignment="Left" Margin="10,31,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="16" Width="64"/>
+        <TextBlock Name="_Spec" HorizontalAlignment="Right" Margin="0,31,10,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="16" Width="64" TextAlignment="Right" RenderTransformOrigin="1.662,-0.25"/>
+        <TextBlock Name="_Price" HorizontalAlignment="Left" Margin="10,52,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Height="16" Width="128" TextAlignment="Center"/>
+    </Grid>
+</UserControl>

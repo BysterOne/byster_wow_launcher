@@ -18,7 +18,7 @@ namespace Byster.Models
         public string Type { get; set; }
         public string ImageUrl { get; set; }
         public string Description { get; set; }
-        public decimal Price { get; set; }
+        public decimal Price { get; set; }  
         public DurationType DurationType { get; set; }
         public int Duration { get; set; }
 

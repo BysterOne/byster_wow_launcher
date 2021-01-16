@@ -1,4 +1,5 @@
 ﻿using Byster.View;
+using RestSharp;
 using System;
 using System.Collections.Generic;
 using System.Configuration;
@@ -14,11 +15,15 @@ namespace Byster
     /// </summary>
     public partial class App : Application
     {
+        public static RestClient Rest = new RestClient("https://api.byster.ru");
+        public static string Login { get; set; }
+        public static string Password { get; set; }
+
         [STAThread]
         public static void Main()
         {
             App app = new App();
-            MainWindow main = new MainWindow();
+            LoginWindow main = new LoginWindow();
             app.Run(main);
         }
     }

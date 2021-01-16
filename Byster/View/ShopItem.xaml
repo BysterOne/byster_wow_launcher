@@ -13,7 +13,7 @@
         <SolidColorBrush x:Key="clrWhiteOver" Color="#5c5f66" />
     </UserControl.Resources>
     
-    <Grid Background="{StaticResource clrBlack}">
+    <Grid Background="{StaticResource clrBlack}" DataContext="{Binding Item}">
         <Border Name="_ImageBorder" 
                 BorderBrush="{StaticResource clrWhite}" 
                 BorderThickness="1" 

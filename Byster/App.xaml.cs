@@ -19,12 +19,16 @@ namespace Byster
         public static string Login { get; set; }
         public static string Password { get; set; }
 
+        public static LoginWindow WindowLogin { get; set; }
+        public static MainWindow WindowMain { get; set; }
+
         [STAThread]
         public static void Main()
         {
             App app = new App();
-            LoginWindow main = new LoginWindow();
-            app.Run(main);
+            WindowLogin = new LoginWindow();
+            WindowMain = new MainWindow();
+            app.Run(WindowLogin);
         }
     }
 }

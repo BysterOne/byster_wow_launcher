@@ -1,5 +1,9 @@
-﻿using System;
+﻿using Byster.Models;
+using Byster.RestModels;
+using RestSharp;
+using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -20,6 +24,8 @@ namespace Byster.View
     /// </summary>
     public partial class MainWindow : Window
     {
+        public Dictionary<Process, WoWProcess> Wows { get; set; } = new Dictionary<Process, WoWProcess>();
+
         public MainWindow()
         {
             InitializeComponent();
@@ -164,6 +170,18 @@ namespace Byster.View
         private void ContentPresenter_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
 
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            var response = App.Rest.Post<UserInfoResponse>(new RestRequest("launcher/info"));
+            if (response.StatusCode == System.Net.HttpStatusCode.OK)
+            {
+                txtLogin.Text = response.Data.username;
+                txtBonuses.Text = response.Data.balance.ToString();
+            }
+
+            
         }
 
     }

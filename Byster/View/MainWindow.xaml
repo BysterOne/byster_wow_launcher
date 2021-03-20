@@ -7,6 +7,7 @@
         mc:Ignorable="d"
         Title="MainWindow" Height="630" 
         Width="960" ResizeMode="NoResize" 
+        Loaded="Window_Loaded"
         WindowStyle="None" 
         AllowsTransparency="True"
         Background="Transparent" 
@@ -133,7 +134,7 @@
             </StackPanel>
         </DataTemplate>
     </Window.Resources>
-    
+
     <Border Margin="15">
         <Border.Effect>
             <DropShadowEffect 
@@ -151,8 +152,8 @@
             </Grid.RowDefinitions>
             <Grid Background="{StaticResource clrBlack}" MouseDown="Grid_MouseDown">
                 <Grid.ColumnDefinitions>
-                    <ColumnDefinition Width="160" />
-                    <ColumnDefinition Width="*" />
+                    <ColumnDefinition Width="115" />
+                    <ColumnDefinition />
                     <ColumnDefinition Width="190" />
                     <ColumnDefinition Width="30" />
                     <ColumnDefinition Width="30" />
@@ -162,19 +163,18 @@
                     <RowDefinition Height="50" />
                 </Grid.RowDefinitions>
 
-                <Path Grid.ColumnSpan="4" Fill="{StaticResource clrWhiteOver}"
+                <Path Grid.ColumnSpan="3" Fill="{StaticResource clrWhiteOver}"
                         Data="M 0 0 L 700 0 L 680 20 L 20 20 L 0 0" 
-                      HorizontalAlignment="Center"/>
+                      HorizontalAlignment="Center" Margin="100,0,70,0" Width="700"/>
 
-                <TextBlock Text="Byster" 
-                           Grid.RowSpan="2"
-                           Foreground="{StaticResource clrWhite}" 
-                           FontSize="48"
-                           VerticalAlignment="Bottom"/>
+                <Image Grid.RowSpan="2" 
+                       RenderOptions.BitmapScalingMode="HighQuality"
+                       Margin="10, 10, 20, 10" 
+                       Source="../Content/logo.png" />
 
                 <Button Click="btnMinimize_Click"
                         Style="{StaticResource styleButtonBase}"
-                        Grid.Column="3" Width="30" Height="30" 
+                        Grid.Column="3" Height="30" 
                         VerticalAlignment="Top">
                     <Path Data="{StaticResource iMinimaize}" 
                           Fill="{StaticResource clrWhiteOver}"
@@ -184,7 +184,7 @@
                 </Button>
                 <Button Click="btnClose_Click"
                         Style="{StaticResource styleButtonBase}"
-                        Grid.Column="4" Width="30" Height="30"
+                        Grid.Column="4" Height="30"
                         VerticalAlignment="Top">
                     <Path Data="{StaticResource iClose}" 
                           Fill="{StaticResource clrWhiteOver}"
@@ -203,7 +203,7 @@
                           Width="30" Height="30" />
                     </Button>
 
-                    <TextBlock HorizontalAlignment="Center" VerticalAlignment="Center">
+                    <TextBlock x:Name="txtLogin" HorizontalAlignment="Center" VerticalAlignment="Center">
                         UserLogin
                     </TextBlock>
                 </StackPanel>
@@ -244,7 +244,7 @@
                             </Style.Triggers>
                         </Style>
                     </ListBox.ItemContainerStyle>
-                    
+
                     <ListBoxItem IsSelected="True">ВЫБОР</ListBoxItem>
                     <ListBoxItem>МАГАЗИН</ListBoxItem>
                     <ListBoxItem>НОВОСТИ</ListBoxItem>

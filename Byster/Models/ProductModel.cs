@@ -9,7 +9,7 @@ using System.Threading.Tasks;
 namespace Byster.Models
 {
     [NotifyPropertyChanged]
-    class ProductModel
+    class Product
     {
         public string Id { get; set; }
         public string Name { get; set; }

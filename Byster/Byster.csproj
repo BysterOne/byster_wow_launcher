@@ -80,10 +80,15 @@
     <Reference Include="PresentationFramework" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Models\RestModels\Common\BaseResponse.cs" />
     <Compile Include="Models\ProductModel.cs" />
-    <Compile Include="Models\RestModels\AuthorizationResponse.cs" />
-    <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
-    <Compile Include="Models\WoWProcess.cs" />
+    <Compile Include="Models\Shop\Product.cs" />
+    <Compile Include="Models\Launcher\Registration.cs" />
+    <Compile Include="Models\Launcher\Authorization.cs" />
+    <Compile Include="Models\Launcher\UserInfo.cs" />
+    <Compile Include="Models\RestModels\Common\BysterAuthenticator.cs" />
+    <Compile Include="Models\Shop\Subscription.cs" />
+    <Compile Include="Models\WoWProcessModel.cs" />
     <Compile Include="Utility.cs" />
     <Compile Include="View\RegistrationPage.xaml.cs">
       <DependentUpon>RegistrationPage.xaml</DependentUpon>
@@ -128,17 +133,6 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Protection\AntiDebug\DebugProtect1.cs" />
-    <Compile Include="Protection\AntiDebug\DebugProtect2.cs" />
-    <Compile Include="Protection\AntiDebug\AntiDebuger.cs" />
-    <Compile Include="Protection\AntiDebug\Scanner.cs" />
-    <Compile Include="Protection\AntiDump\AntiDumper2.cs" />
-    <Compile Include="Protection\AntiDump\AntiDumperOld.cs" />
-    <Compile Include="Protection\AntiDump\AntiDumper1.cs" />
-    <Compile Include="Protection\Protector.cs" />
-    <Compile Include="Protection\Utils\EnumExtentions.cs" />
-    <Compile Include="Protection\Utils\NTSTATUS.cs" />
-    <Compile Include="Protection\Utils\WinStructs.cs" />
     <Compile Include="View\MainWindow.xaml.cs">
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
@@ -177,9 +171,9 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Content\logo.png" />
-    <Content Include="Content\font-awesome.css" />
-    <Content Include="Content\font-awesome.min.css" />
+    <Resource Include="Content\Images\logo.png" />
+    <Content Include="Content\Fonts\font-awesome.css" />
+    <Content Include="Content\Fonts\font-awesome.min.css" />
   </ItemGroup>
   <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

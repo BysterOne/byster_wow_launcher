@@ -29,7 +29,6 @@ namespace Byster.View
         public MainWindow()
         {
             InitializeComponent();
-            Protection.Protector.Initialize();
             var characters = new List<Character>
             {
                 new Character

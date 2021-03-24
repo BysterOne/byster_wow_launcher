@@ -163,7 +163,7 @@ namespace Byster.View
         private void ListBoxItem_Selected(object sender, RoutedEventArgs e)
         {
             if (contentMenu != null)
-                contentMenu.SelectedIndex = headerList.SelectedIndex;
+                contentMenu.SelectedIndex = headerList.Items.IndexOf(sender);
         }
 
         private void ContentPresenter_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -183,5 +183,9 @@ namespace Byster.View
             
         }
 
+        private void ListBoxItem_Selected_1(object sender, RoutedEventArgs e)
+        {
+
+        }
     }
 }

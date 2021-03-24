@@ -170,7 +170,7 @@
                 <Image Grid.RowSpan="2" 
                        RenderOptions.BitmapScalingMode="HighQuality"
                        Margin="10, 10, 20, 10" 
-                       Source="../Content/logo.png" />
+                       Source="../Content/Images/logo.png" />
 
                 <Button Click="btnMinimize_Click"
                         Style="{StaticResource styleButtonBase}"
@@ -245,9 +245,9 @@
                         </Style>
                     </ListBox.ItemContainerStyle>
 
-                    <ListBoxItem IsSelected="True">ВЫБОР</ListBoxItem>
-                    <ListBoxItem>МАГАЗИН</ListBoxItem>
-                    <ListBoxItem>НОВОСТИ</ListBoxItem>
+                    <ListBoxItem IsSelected="True" Selected="ListBoxItem_Selected">РОТАЦИИ</ListBoxItem>
+                    <ListBoxItem Selected="ListBoxItem_Selected">МАГАЗИН</ListBoxItem>
+                    <ListBoxItem Selected="ListBoxItem_Selected">НОВОСТИ</ListBoxItem>
                 </ListBox>
             </Grid>
             <TabControl x:Name="contentMenu" Grid.Row="1">
@@ -271,7 +271,7 @@
                         </Setter>
                     </Style>
                 </TabControl.Resources>
-                <TabItem Header="Выбор" IsSelected="True">
+                <TabItem Header="Выбор" IsSelected="True" x:Name="tabSelect">
                     <Grid x:Name="gridMain" Grid.Row="1">
                         <Grid.RowDefinitions>
                             <RowDefinition Height="*"  />
@@ -500,6 +500,30 @@
                                 </DataGrid.Columns>
                             </DataGrid>
                         </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Магазин" x:Name="tabShop">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="300" />
+                        </Grid.ColumnDefinitions>
+                        <TreeView Background="Transparent" BorderThickness="0">
+                            <TreeView.Resources>
+                                <Style TargetType="TreeViewItem">
+                                    <Setter Property="FontSize" Value="18" />
+                                    <Setter Property="Foreground" Value="{StaticResource clrWhite}" />
+                                </Style>
+                            </TreeView.Resources>
+                            <TreeViewItem Header="Все товары">
+                                <TreeViewItem Header="Акции" />
+                                <TreeViewItem Header="Ротации">
+                                    <TreeViewItem Header="PvE" />
+                                    <TreeViewItem Header="PvP" />
+                                </TreeViewItem>
+                                <TreeViewItem Header="Утилити" />
+                                <TreeViewItem Header="Боты" />
+                            </TreeViewItem>
+                        </TreeView>
                     </Grid>
                 </TabItem>
             </TabControl>

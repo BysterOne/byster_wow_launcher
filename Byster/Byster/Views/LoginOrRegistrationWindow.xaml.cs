@@ -107,7 +107,7 @@ namespace Byster.Views
         private void loginBtn_Click(object sender, RoutedEventArgs e)
         {
             string loginText = loginBox.Text;
-            string passwordText = passwordBox.Text;
+            string passwordText = passwordBox.Password;
             string passwordHash = HashCalc.GetMD5Hash(passwordText);
             if(TryAuth(loginText, passwordHash))
             {

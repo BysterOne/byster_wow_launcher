@@ -1,0 +1,146 @@
+﻿<Window x:Class="Byster.Views.LoginOrRegistrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Byster.Views"
+        mc:Ignorable="d"
+        Title="Login"
+        Height="426"
+        Width="340"
+        ResizeMode="NoResize"
+        
+        Background="#202124"
+        WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Window.Resources>
+        <Style TargetType="TextBox" x:Key="tbStyle">
+            <Style.Setters>
+                <Setter Property="Foreground" Value="#6e6e75"/>
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="FontFamily" Value="Verdana"/>
+                <Setter Property="Background" Value="#323339"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="0, 10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="TextBox">
+                            <Border x:Name="textboxBorder"
+                                    BorderBrush="{TemplateBinding Background}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}"
+                                    CornerRadius="2"
+                                    Padding="{TemplateBinding Padding}">
+                                <ContentControl Content="{TemplateBinding Text}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#242529"/>
+                </Trigger>
+                <Trigger Property="IsKeyboardFocused" Value="True">
+                    <Setter Property="Background" Value="#2b2c30"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Button" x:Key="bStyle">
+            <Style.Setters>
+                <Setter Property="Foreground" Value="#f1f7ff"/>
+                <Setter Property="FontSize" Value="20"/>
+                <Setter Property="FontFamily" Value="Verdana"/>
+                <Setter Property="Background" Value="#497f46"/>
+                <Setter Property="Padding" Value="10"/>
+                <Setter Property="Margin" Value="0, 10"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="buttonBorder"
+                                    BorderBrush="{TemplateBinding Background}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Padding="{TemplateBinding Padding}"
+                                    CornerRadius="2"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter Content="{TemplateBinding Content}"
+                                                  HorizontalAlignment="Center"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#3d6b3b"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#437541"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+
+        <Style TargetType="Hyperlink" x:Key="hlStyle">
+            <Style.Setters>
+                <Setter Property="Foreground" Value="#f1f7ff"/>
+            </Style.Setters>
+        </Style>
+        
+        
+        <Style TargetType="Button" x:Key="cbStyle">
+            <Style.Setters>
+                <Setter Property="Background" Value="#202124"/>
+                <Setter Property="BorderThickness" Value="0"/>
+                <Setter Property="Margin" Value="0"/>
+                <Setter Property="Content">
+                    <Setter.Value>
+                        <Image Source="../Resources/Images/close-button-image.png" Stretch="None" Margin="12"/>
+                    </Setter.Value>
+                </Setter>
+                <Setter Property="Template">
+                    <Setter.Value>
+                        <ControlTemplate TargetType="Button">
+                            <Border x:Name="buttonBorder"
+                                    BorderBrush="{TemplateBinding Background}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}">
+                                <ContentPresenter Content="{TemplateBinding Content}"/>
+                            </Border>
+                        </ControlTemplate>
+                    </Setter.Value>
+                </Setter>
+            </Style.Setters>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="#2d2f33"/>
+                </Trigger>
+                <Trigger Property="IsPressed" Value="True">
+                    <Setter Property="Background" Value="#27282b"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
+    </Window.Resources>
+    <Grid>
+        <StackPanel>
+            <Button x:Name="closeButton" HorizontalAlignment="Right" Style="{StaticResource cbStyle}" Click="closeButton_Click"/>
+            <Image Source="../Resources/Images/logo-registration.png" Stretch="None" Margin="0 0 0 5"/>
+            <Grid x:Name="authBlock" Visibility="Visible">
+                <StackPanel Margin="20, 0">
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" />
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="passwordBox"/>
+                    <Button Style="{StaticResource bStyle}" Content="Авторизоваться" x:Name="loginBtn" Click="loginBtn_Click"/>
+                    <TextBlock>
+                <Hyperlink x:Name="navigateToRegister" Style="{StaticResource hlStyle}" Click="navigateToRegister_Click">Зарегистрироваться?</Hyperlink>
+                    </TextBlock>
+                </StackPanel>
+            </Grid>
+            <Grid x:Name="registerBlock" Visibility="Collapsed">
+                
+            </Grid>
+        </StackPanel>
+    </Grid>
+</Window>

@@ -46,6 +46,8 @@ namespace Byster.Views
 
         public bool TryAuth(string login, string passwordHash)
         {
+            MessageBox.Show($"{login}\n{passwordHash}");
+
             if(string.IsNullOrEmpty(login))
             {
                 MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);

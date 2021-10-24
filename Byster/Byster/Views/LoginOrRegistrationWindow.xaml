@@ -17,7 +17,7 @@
             <Style.Setters>
                 <Setter Property="Foreground" Value="#6e6e75"/>
                 <Setter Property="FontSize" Value="20"/>
-                <Setter Property="FontFamily" Value="Verdana"/>
+                <Setter Property="FontFamily" Value="../Resources/Fonts/Roboto-Regular.ttf"/>
                 <Setter Property="Background" Value="#323339"/>
                 <Setter Property="Padding" Value="10"/>
                 <Setter Property="Margin" Value="0, 10"/>
@@ -30,29 +30,46 @@
                                     BorderThickness="{TemplateBinding BorderThickness}"
                                     Background="{TemplateBinding Background}"
                                     CornerRadius="2"
-                                    Padding="{TemplateBinding Padding}">
-                                <ContentControl Content="{TemplateBinding Text}"/>
+                                    Padding="0">
+                                <Grid>
+                                    <TextBlock x:Name="placeholder"
+                                               Background="Transparent"
+                                               Foreground="Transparent"
+                                               Text="{TemplateBinding Tag}"
+                                               Padding="{TemplateBinding Padding}"
+                                               FontSize="{TemplateBinding FontSize}"
+                                               FontFamily="{TemplateBinding FontFamily}"/>
+                                    <ScrollViewer x:Name="PART_ContentHost"
+                                         Background="Transparent"
+                                         BorderBrush="Transparent"
+                                         Padding="{TemplateBinding Padding}"
+                                         FontFamily="{TemplateBinding FontFamily}"
+                                         FontSize="{TemplateBinding FontSize}"
+                                         Foreground="{TemplateBinding Foreground}"/>
+                                </Grid>
                             </Border>
+                            <ControlTemplate.Triggers>
+                                <Trigger Property="IsMouseOver" Value="True">
+                                    <Setter TargetName="textboxBorder" Property="Background" Value="#242529"/>
+                                </Trigger>
+                                <Trigger Property="IsKeyboardFocused" Value="True">
+                                    <Setter TargetName="textboxBorder" Property="Background" Value="#2b2c30"/>
+                                </Trigger>
+                                <Trigger Property="Text" Value="">
+                                    <Setter TargetName="placeholder" Property="Foreground" Value="#6e6e75"/>
+                                </Trigger>
+                            </ControlTemplate.Triggers>
                         </ControlTemplate>
                     </Setter.Value>
                 </Setter>
             </Style.Setters>
-
-            <Style.Triggers>
-                <Trigger Property="IsMouseOver" Value="True">
-                    <Setter Property="Background" Value="#242529"/>
-                </Trigger>
-                <Trigger Property="IsKeyboardFocused" Value="True">
-                    <Setter Property="Background" Value="#2b2c30"/>
-                </Trigger>
-            </Style.Triggers>
         </Style>
 
         <Style TargetType="Button" x:Key="bStyle">
             <Style.Setters>
                 <Setter Property="Foreground" Value="#f1f7ff"/>
                 <Setter Property="FontSize" Value="20"/>
-                <Setter Property="FontFamily" Value="Verdana"/>
+                <Setter Property="FontFamily" Value="../Resources/Fonts/Roboto-Regular.ttf"/>
                 <Setter Property="Background" Value="#497f46"/>
                 <Setter Property="Padding" Value="10"/>
                 <Setter Property="Margin" Value="0, 10"/>
@@ -130,8 +147,8 @@
             <Image Source="../Resources/Images/logo-registration.png" Stretch="None" Margin="0 0 0 5"/>
             <Grid x:Name="authBlock" Visibility="Visible">
                 <StackPanel Margin="20, 0">
-                    <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" />
-                    <TextBox Style="{StaticResource tbStyle}" x:Name="passwordBox"/>
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" Tag="Логин"/>
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="passwordBox" Tag="Пароль"/>
                     <Button Style="{StaticResource bStyle}" Content="Авторизоваться" x:Name="loginBtn" Click="loginBtn_Click"/>
                     <TextBlock>
                 <Hyperlink x:Name="navigateToRegister" Style="{StaticResource hlStyle}" Click="navigateToRegister_Click">Зарегистрироваться?</Hyperlink>
@@ -139,7 +156,13 @@
                 </StackPanel>
             </Grid>
             <Grid x:Name="registerBlock" Visibility="Collapsed">
-                
+                <StackPanel Margin="20, 0">
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин"/>
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="newPassword" Tag="Пароль"/>
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="newPasswordConfirm" Tag="Подтвердите пароль"/>
+                    <ListBox x:Name="registerChoicesCheckList"/>
+                    <Button Style="{StaticResource bStyle}" x:Name="registerBtn" Content="Зарегистрироваться"/>
+                </StackPanel>
             </Grid>
         </StackPanel>
     </Grid>

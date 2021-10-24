@@ -21,5 +21,3 @@ C:\Users\zagul\Projects\Byster\launcher\Byster\Byster\obj\Debug\Byster.csproj.Ge
 C:\Users\zagul\Projects\Byster\launcher\Byster\Byster\obj\Debug\Byster.csproj.CoreCompileInputs.cache
 C:\Users\zagul\Projects\Byster\launcher\Byster\Byster\obj\Debug\Byster.exe
 C:\Users\zagul\Projects\Byster\launcher\Byster\Byster\obj\Debug\Byster.pdb
-C:\Users\zagul\Projects\Byster\launcher\Byster\Byster\obj\Debug\Views\LoginPage.g.cs
-C:\Users\zagul\Projects\Byster\launcher\Byster\Byster\obj\Debug\Views\LoginPage.baml

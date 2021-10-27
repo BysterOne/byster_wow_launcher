@@ -71,10 +71,18 @@
     <Compile Include="Models\RestModels\Auth.cs" />
     <Compile Include="Models\RestModels\BaseResponse.cs" />
     <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
+    <Compile Include="Models\RestModels\Register.cs" />
     <Compile Include="Models\Utilities\HashCalc.cs" />
+    <Compile Include="Views\LoadingWindow.xaml.cs">
+      <DependentUpon>LoadingWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoginOrRegistrationWindow.xaml.cs">
       <DependentUpon>LoginOrRegistrationWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\LoadingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -88,6 +96,10 @@
       <SubType>Code</SubType>
     </Compile>
     <Page Include="Views\LoginOrRegistrationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Styles.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

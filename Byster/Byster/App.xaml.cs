@@ -14,6 +14,6 @@ namespace Byster
     /// </summary>
     public partial class App : Application
     {
-        public static RestClient Rest = new RestClient("http://api.byster.ru");
+        public static RestClient Rest = new RestClient("https://api.byster.ru");
     }
 }

@@ -133,12 +133,14 @@
   <ItemGroup>
     <None Include="App.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
-    <Resource Include="Resources\Images\logo-registration.png" />
+    <Resource Include="Resources\Images\logo.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\close-button-image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\minimize-button-image.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

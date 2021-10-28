@@ -7,13 +7,16 @@
         mc:Ignorable="d"
         Title="LoadingWindow" Height="180" Width="300"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
-        Background="Black" Loaded="Window_Loaded">
-    <Grid Margin="20">
+        Background="{DynamicResource BackgroundWindowColor}" Loaded="Window_Loaded" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Window.Resources>
+        <ResourceDictionary Source="./Styles.xaml"/>
+    </Window.Resources>
+    <Grid Margin="20, 10">
         <Grid.RowDefinitions>
             <RowDefinition  Height="*"/>
-            <RowDefinition Height="0.2*"/>
+            <RowDefinition Height="0.25*"/>
         </Grid.RowDefinitions>
-        <Image Source="../Resources/Images/logo-registration.png" Stretch="None" Grid.Row="0"/>
-        <ProgressBar DockPanel.Dock="Bottom" Margin="0" Grid.Row="1" VerticalAlignment="Stretch" x:Name="statusUpdate" />
+        <Image Source="../Resources/Images/logo.png" Stretch="None" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        <ProgressBar Style="{StaticResource prbStyle}" Margin="0" Grid.Row="1" VerticalAlignment="Stretch" x:Name="statusUpdate"/>
     </Grid>
 </Window>

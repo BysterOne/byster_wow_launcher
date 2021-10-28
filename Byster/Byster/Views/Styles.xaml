@@ -1,15 +1,15 @@
 ﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
-                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml">
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+                    xmlns:sys="clr-namespace:System;assembly=mscorlib">
     
     <!-- Стили UI -->
     <Style TargetType="TextBox" x:Key="tbStyle">
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
-            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
             <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
             <Setter Property="Background" Value="{DynamicResource BackgroundUIColor}"/>
-            <Setter Property="Padding" Value="10"/>
-            <Setter Property="Margin" Value="0, 10"/>
+            <Setter Property="Padding" Value="{DynamicResource PaddingUI}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -57,11 +57,10 @@
     <Style TargetType="PasswordBox" x:Key="pbStyle">
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
-            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
             <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
             <Setter Property="Background" Value="{DynamicResource BackgroundUIColor}"/>
-            <Setter Property="Padding" Value="10"/>
-            <Setter Property="Margin" Value="0, 10"/>
+            <Setter Property="Padding" Value="{DynamicResource PaddingUI}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -106,11 +105,10 @@
     <Style TargetType="Button" x:Key="bStyle">
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource FontButtonColor}"/>
-            <Setter Property="FontSize" Value="20"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontButtonSize}"/>
             <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
             <Setter Property="Background" Value="{DynamicResource BackgroundButtonColor}"/>
-            <Setter Property="Padding" Value="10"/>
-            <Setter Property="Margin" Value="0, 10"/>
+            <Setter Property="Padding" Value="{DynamicResource PaddingUI}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -122,7 +120,8 @@
                                     CornerRadius="{DynamicResource CornerUIRadius}"
                                     Background="{TemplateBinding Background}">
                             <ContentPresenter Content="{TemplateBinding Content}"
-                                                  HorizontalAlignment="Center"/>
+                                                  HorizontalAlignment="Center"
+                                              VerticalAlignment="Center"/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -142,19 +141,16 @@
     <Style TargetType="Hyperlink" x:Key="hlStyle">
         <Style.Setters>
             <Setter Property="Foreground" Value="#f1f7ff"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
         </Style.Setters>
     </Style>
 
     <Style TargetType="Button" x:Key="cbStyle">
         <Style.Setters>
-            <Setter Property="Background" Value="#202124"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundWindowColor}"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Margin" Value="0"/>
-            <Setter Property="Content">
-                <Setter.Value>
-                    <Image Source="../Resources/Images/close-button-image.png" Stretch="None" Margin="12"/>
-                </Setter.Value>
-            </Setter>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="Button">
@@ -162,7 +158,11 @@
                                     BorderBrush="{TemplateBinding Background}"
                                     BorderThickness="{TemplateBinding BorderThickness}"
                                     Background="{TemplateBinding Background}">
-                            <ContentPresenter Content="{TemplateBinding Content}"/>
+                            <ContentPresenter>
+                                <ContentPresenter.Content>
+                                    <Image Source="../Resources/Images/close-button-image.png" Stretch="Uniform" Margin="{TemplateBinding Padding}"/>
+                                </ContentPresenter.Content>
+                            </ContentPresenter>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -178,7 +178,132 @@
         </Style.Triggers>
     </Style>
 
-   <!-- Параметры для генерации стилей UI -->
+    <Style TargetType="Button" x:Key="mbStyle">
+        <Style.Setters>
+            <Setter Property="Background" Value="{DynamicResource BackgroundWindowColor}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Margin" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="Button">
+                        <Border x:Name="buttonBorder"
+                                    BorderBrush="{TemplateBinding Background}"
+                                    BorderThickness="{TemplateBinding BorderThickness}"
+                                    Background="{TemplateBinding Background}">
+                            <ContentPresenter>
+                                <ContentPresenter.Content>
+                                    <Image Source="../Resources/Images/minimize-button-image.png" Stretch="Uniform" Margin="{TemplateBinding Padding}"/>
+                                </ContentPresenter.Content>
+                            </ContentPresenter>
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style.Setters>
+        <Style.Triggers>
+            <Trigger Property="IsMouseOver" Value="True">
+                <Setter Property="Background" Value="#2d2f33"/>
+            </Trigger>
+            <Trigger Property="IsPressed" Value="True">
+                <Setter Property="Background" Value="#27282b"/>
+            </Trigger>
+        </Style.Triggers>
+    </Style>
+
+    <Style TargetType="ProgressBar" x:Key="prbStyle">
+        <Setter Property="Background" Value="{DynamicResource BackgroundUIColor}"/>
+        <Setter Property="Foreground" Value="{DynamicResource FontButtonColor}"/>
+        <Setter Property="Minimum" Value="0"/>
+        <Setter Property="Maximum" Value="100"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ProgressBar">
+                    <Border Background="{TemplateBinding Background}"
+                            BorderThickness="{TemplateBinding BorderThickness}"
+                            CornerRadius="{DynamicResource CornerUIRadius}"
+                            x:Name="PART_Track">
+                        <Grid>
+                            <Border x:Name="PART_Indicator"
+                                BorderThickness="1"
+                                BorderBrush="{TemplateBinding Background}"
+                                Background="{DynamicResource ProgressbarGrad}"
+                                HorizontalAlignment="Left"
+                                Margin="1">
+                            </Border>
+                            <StackPanel Orientation="Horizontal" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                <TextBlock Text="{Binding RelativeSource={RelativeSource Mode=FindAncestor, AncestorType=ProgressBar}, Path=Value}"
+                                       FontFamily="{DynamicResource Roboto}"
+                                       FontSize="{DynamicResource FontUISize}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="{TemplateBinding Foreground}"/>
+                                <TextBlock Text="%"
+                                       FontFamily="{DynamicResource Roboto}"
+                                       FontSize="{DynamicResource FontUISize}"
+                                       HorizontalAlignment="Center"
+                                       VerticalAlignment="Center"
+                                       Foreground="{TemplateBinding Foreground}"/>
+                            </StackPanel>
+                        </Grid>
+                    </Border>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ComboBox" x:Key="combobStyle">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Grid>
+                            <Border>
+                                
+                            </Border>
+                            <ToggleButton Style="{DynamicResource combobToggleButtonStyle}" Grid.Row="1"/>
+                            <Popup>
+
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style.Setters>
+    </Style>
+
+    <Style TargetType="ToggleButton" x:Key="combobToggleButtonStyle">
+        <Style.Setters>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate>
+                        <Border>
+                            
+                        </Border>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style.Setters>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="infotbStyle">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource FontInfoColor}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style.Setters>
+    </Style>
+
+    <Style TargetType="TextBlock" x:Key="titletbStyle">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource FontTitleColor}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+            <Setter Property="Background" Value="Transparent"/>
+        </Style.Setters>
+    </Style>
+
+    <!-- Параметры для генерации стилей UI -->
     <!-- Цвета-->
     <SolidColorBrush x:Key="BackgroundUIColor">#323339</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundUIColorHover">#242529</SolidColorBrush>
@@ -191,11 +316,34 @@
     <SolidColorBrush x:Key="BackgroundButtonColorClicked">#437541</SolidColorBrush>
 
     <SolidColorBrush x:Key="FontButtonColor">#f1f7ff</SolidColorBrush>
+
+    <SolidColorBrush x:Key="BackgroundMainWindowColor">#34373e</SolidColorBrush>
+    <SolidColorBrush x:Key="BorderMainWindowColor">#676b74</SolidColorBrush>
+    <SolidColorBrush x:Key="BackgroundControlColor">#2d2e33</SolidColorBrush>
+
+    <SolidColorBrush x:Key="BackgroundWindowColor">#202124</SolidColorBrush>
+    <SolidColorBrush x:Key="FontInfoColor">#9fa4b2</SolidColorBrush>
+    <SolidColorBrush x:Key="FontTitleColor">#ffffff</SolidColorBrush>
+
+    <LinearGradientBrush x:Key="ProgressbarGrad" StartPoint="0, 0" EndPoint="1, 0">
+        <LinearGradientBrush.GradientStops>
+            <GradientStop Color="#788e47" Offset="0.0"/>
+            <GradientStop Color="#497f46" Offset="1.0"/>
+        </LinearGradientBrush.GradientStops>
+    </LinearGradientBrush>
+
+    
+
     <!-- Шрифты -->
     <FontFamily x:Key="Roboto">../Resources/Fonts/Roboto-Regular.ttf</FontFamily>
 
     <!-- Закругления -->
-    <CornerRadius x:Key="CornerUIRadius">1</CornerRadius>
+    <CornerRadius x:Key="CornerUIRadius">1.5</CornerRadius>
     
+    <!-- Размеры шрифтов -->
+    <sys:Double x:Key="FontUISize">15.0</sys:Double>
+    <sys:Double x:Key="FontButtonSize">15.0</sys:Double>
 
+    <!---->
+    <Thickness x:Key="PaddingUI">10</Thickness>
 </ResourceDictionary>

@@ -24,5 +24,21 @@ namespace Byster
         {
             InitializeComponent();
         }
+
+        private void minimizeBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void closeBtn_Click(object sender, RoutedEventArgs e)
+        {
+
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
     }
 }

@@ -4,40 +4,44 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Login"
         Height="426"
         Width="340"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Background="#202124"
+        Background="{DynamicResource BackgroundWindowColor}"
         WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" Loaded="Window_Loaded">
     <Window.Resources>
         <ResourceDictionary Source="./Styles.xaml"/> <!--Стили-->
     </Window.Resources>
     <Grid>
+        <Grid.Resources>
+            <Thickness x:Key="marginUI">0, 7</Thickness>
+        </Grid.Resources>
         <StackPanel>
-            <Button x:Name="closeButton" HorizontalAlignment="Right" Style="{StaticResource cbStyle}" Click="closeButton_Click"/>
-            <Image Source="../Resources/Images/logo-registration.png" Stretch="None" Margin="0 0 0 5"/>
+            <Button x:Name="closeButton" HorizontalAlignment="Right" Style="{StaticResource cbStyle}" Padding="12" Height="45" Width="45" Click="closeButton_Click"/>
+            <Image Source="../Resources/Images/logo.png" Stretch="None" Margin="0 0 0 5"/>
             <Grid x:Name="authBlock" Visibility="Visible">
                 <StackPanel Margin="20, 0">
-                    <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" Tag="Логин"/>
-                    <PasswordBox Style="{StaticResource pbStyle}" x:Name="passwordBox" Tag="Пароль" PasswordChanged="passwordBox_PasswordChanged"/>
-                    <Button Style="{StaticResource bStyle}" Content="Авторизоваться" x:Name="loginBtn" Click="loginBtn_Click" IsDefault="True"/>
-                    <TextBlock>
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
+                    <PasswordBox Style="{StaticResource pbStyle}" x:Name="passwordBox" Tag="Пароль" PasswordChanged="passwordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
+                    <Button Style="{StaticResource bStyle}" Content="Авторизоваться" x:Name="loginBtn" Click="loginBtn_Click" Margin="{StaticResource marginUI}" IsDefault="True"/>
+                    <TextBlock Margin="{StaticResource marginUI}">
                 <Hyperlink x:Name="navigateToRegister" Style="{StaticResource hlStyle}" Click="navigateToRegister_Click">Зарегистрироваться?</Hyperlink>
                     </TextBlock>
                 </StackPanel>
             </Grid>
             <Grid x:Name="registerBlock" Visibility="Collapsed">
                 <StackPanel Margin="20, 0">
-                    <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин"/>
-                    <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged"/>
-                    <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" />
-                    <TextBox Style="{StaticResource tbStyle}" x:Name="referalBox" Tag="Реферал код"/>
-                    <ComboBox x:Name="registerChoicesComboBox"/>
-                    <Button Style="{StaticResource bStyle}" x:Name="registerBtn" Content="Зарегистрироваться" Click="registerBtn_Click"/>
-                    <TextBlock>
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
+                    <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
+                    <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
+                    <TextBox Style="{StaticResource tbStyle}" x:Name="referalBox" Tag="Реферал код" Margin="{StaticResource marginUI}"/>
+                    <ComboBox x:Name="registerChoicesComboBox" Margin="{StaticResource marginUI}"/>
+                    <Button Style="{StaticResource bStyle}" x:Name="registerBtn" Content="Зарегистрироваться" Click="registerBtn_Click" Margin="{StaticResource marginUI}"/>
+                    <TextBlock Margin="{StaticResource marginUI}">
                         <Hyperlink x:Name="navigateToAuth" Style="{StaticResource hlStyle}" Click="navigateToAuth_Click">Авторизоваться?</Hyperlink>
                     </TextBlock>
                 </StackPanel>

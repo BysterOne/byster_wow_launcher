@@ -26,15 +26,13 @@ namespace Byster.Views
     {
         public LoadingWindow()
         {
-            InitializeComponent();
-            
+            InitializeComponent();       
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-
             statusUpdate.Minimum = 0;
-            statusUpdate.Maximum = 5;
+            statusUpdate.Maximum = 100;
             statusUpdate.Value = 0;
             if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
             if (File.Exists("update.bat")) File.Delete("update.bat");
@@ -97,7 +95,7 @@ namespace Byster.Views
 
         private void incrementStatus()
         {
-            statusUpdate.Value += 1;
+            statusUpdate.Value += 20;
         }
         private void closeApp()
         {
@@ -109,6 +107,12 @@ namespace Byster.Views
                 }));
                 App.Current.Shutdown();
             }
+        }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
         }
     }
 }

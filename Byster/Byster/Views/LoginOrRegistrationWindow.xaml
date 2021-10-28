@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Login"
-        Height="426"
+        Height="370"
         Width="340"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
@@ -38,7 +38,19 @@
                     <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
                     <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
                     <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
-                    <TextBox Style="{StaticResource tbStyle}" x:Name="referalBox" Tag="Реферал код" Margin="{StaticResource marginUI}"/>
+                    <TextBox x:Name="referalBox" Tag="Реферал код" Margin="{StaticResource marginUI}">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource tbStyle}">
+                                <Style.Triggers>
+                                    <DataTrigger Binding="{Binding ElementName=registerChoicesComboBox, Path=SelectedItem.need_referral_code}" Value="false">
+                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Setter Property="Text" Value=""/>
+                                        <Setter Property="Background" Value="{DynamicResource BackgroundUIColorHover}"/>
+                                    </DataTrigger>
+                                </Style.Triggers>
+                            </Style>
+                        </TextBox.Style>
+                    </TextBox>
                     <ComboBox x:Name="registerChoicesComboBox" Margin="{StaticResource marginUI}"/>
                     <Button Style="{StaticResource bStyle}" x:Name="registerBtn" Content="Зарегистрироваться" Click="registerBtn_Click" Margin="{StaticResource marginUI}"/>
                     <TextBlock Margin="{StaticResource marginUI}">

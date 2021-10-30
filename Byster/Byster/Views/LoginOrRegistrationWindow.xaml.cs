@@ -26,9 +26,7 @@ namespace Byster.Views
     {
         public LoginOrRegistrationWindow()
         {
-            var loadingWindow = new LoadingWindow();
-            loadingWindow.Show();
-            while (loadingWindow.IsActive) { }
+            InitializeComponent();
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -43,6 +41,7 @@ namespace Byster.Views
                 {
                     StartMainWindow();
                     Close();
+                    return;
                 }
                 else
                 {
@@ -50,7 +49,6 @@ namespace Byster.Views
                     Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "");
                 }
             }
-            InitializeComponent();
             var response = App.Rest.Post<List<RegisterChoice>>(new RestRequest("launcher/register_choices"));
             if (response.StatusCode == HttpStatusCode.OK)
             {

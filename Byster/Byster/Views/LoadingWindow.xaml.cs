@@ -16,6 +16,7 @@ using System.Net;
 using System.IO;
 using RestSharp;
 using System.Diagnostics;
+using System.Threading;
 
 namespace Byster.Views
 {
@@ -23,14 +24,10 @@ namespace Byster.Views
     /// Логика взаимодействия для LoadingWindow.xaml
     /// </summary>
     public partial class LoadingWindow : Window
-    {
+    { 
         public LoadingWindow()
         {
-            InitializeComponent();       
-        }
-
-        private void Window_Loaded(object sender, RoutedEventArgs e)
-        {
+            InitializeComponent();
             statusUpdate.Minimum = 0;
             statusUpdate.Maximum = 100;
             statusUpdate.Value = 0;
@@ -56,41 +53,21 @@ namespace Byster.Views
 
             if (onlineVersion != version)
             {
-                var downloadResponse = App.Rest.Get(new RestRequest().AddQueryParameter("version", onlineVersion));
-                if (downloadResponse.StatusCode != HttpStatusCode.OK)
-                {
-                    MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                    closeApp();
-                    return;
-                }
-                File.WriteAllBytes("BysterUpdate.exe", downloadResponse.RawBytes);
-                incrementStatus();
-
-
-                File.WriteAllLines("update.bat", new List<string>(){
-                    "taskkill /IM \"Byster.exe\" /F",
-                    "timeout /t 2 /NOBREAK",
-                    "del /f Byster.exe",
-                    "rename BysterUpdate.exe Byster.exe",
-                    "Byster.exe",
-                });
-                incrementStatus();
-
-                Process process = new Process();
-                process.StartInfo.FileName = "update.bat";
-                process.StartInfo.CreateNoWindow = true;
-                process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
-                process.Start();
-                closeApp();
-                return;
+                Thread thread = new Thread(() => { updateApp(onlineVersion); });
+                thread.Start();
             }
             else
             {
                 incrementStatus();
                 incrementStatus();
-                Close();
+                startApp();
                 return;
             }
+        }
+
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            
         }
 
         private void incrementStatus()
@@ -108,11 +85,54 @@ namespace Byster.Views
                 App.Current.Shutdown();
             }
         }
+        private void startApp()
+        {
+            App.Current.MainWindow = new LoginOrRegistrationWindow();
+            App.Current.MainWindow.Show();
+            Close();
+            return;
+        }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
             this.DragMove();
+        }
+
+        private void updateApp(string versionToUpdate)
+        {
+            RestClient client = new RestClient("https://api.byster.ru/");
+            RestRequest downloadRequest = (RestRequest)new RestRequest("launcher/download").AddQueryParameter("version", versionToUpdate);
+            var response = client.Get(downloadRequest);
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                closeApp();
+                return;
+            }
+            File.WriteAllBytes("BysterUpdate.exe", response.RawBytes);
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                incrementStatus();
+            }));
+            File.WriteAllLines("update.bat", new List<string>(){
+                    "taskkill /IM \"Byster.exe\" /F",
+                    "timeout /t 2 /NOBREAK",
+                    "del /f Byster.exe",
+                    "rename BysterUpdate.exe Byster.exe",
+                    "Byster.exe",
+                });
+            this.Dispatcher.Invoke(new Action(() =>
+            {
+                incrementStatus();
+            }));
+            Process process = new Process();
+            process.StartInfo.FileName = "update.bat";
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            process.Start();
+            closeApp();
+            return;
         }
     }
 }

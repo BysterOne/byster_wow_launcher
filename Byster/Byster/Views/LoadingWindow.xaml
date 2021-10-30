@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Byster.Views"
         mc:Ignorable="d"
         Title="LoadingWindow" Height="180" Width="300"
-        WindowStyle="None" WindowStartupLocation="CenterScreen"
+        WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         Background="{DynamicResource BackgroundWindowColor}" Loaded="Window_Loaded" MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.Resources>
         <ResourceDictionary Source="./Styles.xaml"/>

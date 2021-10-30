@@ -36,7 +36,13 @@
         
         <Border Grid.Column="1" Grid.Row="1" x:Name="mainPanel" BorderThickness="1" BorderBrush="{DynamicResource BorderMainWindowColor}" Background="{DynamicResource BackgroundMainWindowColor}" >
             <Grid>
-
+                <ListBox x:Name="rotationsView" Style="{DynamicResource rotationsViewStyle}">
+                    <ListBox.Resources>
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
+                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
+                    </ListBox.Resources>
+                </ListBox>
             </Grid>
         </Border>
 

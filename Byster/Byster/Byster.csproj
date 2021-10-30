@@ -145,5 +145,20 @@
   <ItemGroup>
     <Resource Include="Resources\Images\minimize-button-image.png" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Resources\Images\Modes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\ClassesWOW\DeathKnight.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Droid.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Hunter.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Paladin.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Priest.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Robber.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Shaman.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Warlock.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Warrior.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Wizard.png" />
+  </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

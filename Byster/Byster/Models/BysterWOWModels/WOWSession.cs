@@ -6,7 +6,12 @@ using System.Threading.Tasks;
 
 namespace Byster.Models.BysterWOWModels
 {
-    class WOWSession
+    public class WOWSession
     {
+        public string UserName { get; private set; }
+        public string ServerName { get; private set; }
+        public WOWClass SessionClass { get; private set; }
+
+        public WOWSession() { }
     }
 }

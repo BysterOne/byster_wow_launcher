@@ -146,7 +146,7 @@
         </Style.Setters>
     </Style>
 
-    <Style TargetType="Button" x:Key="cbStyle">
+    <Style TargetType="Button" x:Key="uibStyle">
         <Style.Setters>
             <Setter Property="Background" Value="{DynamicResource BackgroundWindowColor}"/>
             <Setter Property="BorderThickness" Value="0"/>
@@ -158,11 +158,7 @@
                                             BorderBrush="{TemplateBinding Background}"
                                             BorderThickness="{TemplateBinding BorderThickness}"
                                             Background="{TemplateBinding Background}">
-                            <ContentPresenter>
-                                <ContentPresenter.Content>
-                                    <Image Source="../Resources/Images/close-button-image.png" Stretch="Uniform" Margin="{TemplateBinding Padding}"/>
-                                </ContentPresenter.Content>
-                            </ContentPresenter>
+                            <ContentPresenter/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -190,11 +186,7 @@
                                             BorderBrush="{TemplateBinding Background}"
                                             BorderThickness="{TemplateBinding BorderThickness}"
                                             Background="{TemplateBinding Background}">
-                            <ContentPresenter>
-                                <ContentPresenter.Content>
-                                    <Image Source="../Resources/Images/minimize-button-image.png" Stretch="Uniform" Margin="{TemplateBinding Padding}"/>
-                                </ContentPresenter.Content>
-                            </ContentPresenter>
+                            <ContentPresenter/>
                         </Border>
                     </ControlTemplate>
                 </Setter.Value>
@@ -303,7 +295,7 @@
         </Style.Setters>
     </Style>
 
-    <Style TargetType="ItemsControl" x:Key="rotationsViewStyle">
+    <Style TargetType="ListBox" x:Key="rotationsViewStyle">
         <Style.Setters>
             <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
@@ -331,12 +323,6 @@
                                             Margin="10">
                                             <ContentPresenter/>
                                         </Border>
-                                        <ControlTemplate.Triggers>
-                                            <Trigger Property="IsSelected" Value="True">
-                                                <Setter TargetName="borderControl" Property="BorderThickness" Value="1"/>
-                                                <Setter TargetName="borderControl" Property="BorderBrush" Value="White"/>
-                                            </Trigger>
-                                        </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
@@ -349,7 +335,7 @@
                     <DataTemplate>
                         <Border x:Name="borderItem"
                                 Background="{DynamicResource BackgroundControlColor}"
-                                Width="400"
+                                Width="420"
                                 Height="100">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -357,37 +343,121 @@
                                     <ColumnDefinition/>
                                 </Grid.ColumnDefinitions>
                                 <Image Grid.Column="0"
-                                                        Source="{Binding Path=ImageOfRotation}"
-                                                        Height="80"
-                                                        VerticalAlignment="Stretch"/>
-                                <Grid Grid.Column="1" Margin="15">
+                                       Source="{Binding Path=SpecOfRotation.ImageUri}"
+                                       VerticalAlignment="Stretch"
+                                       Stretch="Uniform"/>
+                                <Grid Grid.Column="1" Margin="10">
                                     <TextBlock Text="Активна до:"
                                                             VerticalAlignment="Bottom"
-                                                            HorizontalAlignment="Left"/>
+                                                            HorizontalAlignment="Left"
+                                               Style="{DynamicResource rotationViewOrangeTbStyle}"/>
                                     <TextBlock Text="{Binding Path=Name}"
                                                             HorizontalAlignment="Left"
-                                                            VerticalAlignment="Top"/>
+                                                            VerticalAlignment="Top"
+                                               Style="{DynamicResource rotationViewOrangeTbStyle}"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                                        <TextBlock Text=""/>
-                                        <Image Source="{Binding Path=RotationClass.ImageUri}" VerticalAlignment="Top" Height="50"/>
-                                        <Image Source="{Binding Path=RotationClass.ImageUri}" VerticalAlignment="Top" Height="50"/>
+                                        <TextBlock Style="{DynamicResource infotbStyle}" Text="{Binding Path=Type}" VerticalAlignment="Center"/>
+                                        <Image Source="{Binding Path=RotationClass.ImageUri}" VerticalAlignment="Top" Height="30" Margin="5, 0"/>
+                                        <Image Source="{Binding Path=RotationClass.ImageUri}" VerticalAlignment="Top" Height="30"/>
                                     </StackPanel>
+                                    <TextBlock Style="{DynamicResource infotbStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="{Binding Path=ExpiringTime}"/>
                                 </Grid>
                             </Grid>
                         </Border>
-                        <DataTemplate.Triggers>
-                        </DataTemplate.Triggers>
                     </DataTemplate>
                 </Setter.Value>
             </Setter>
         </Style.Setters>
         <Style.Triggers>
-            
+
         </Style.Triggers>
     </Style>
 
+    <Style TargetType="ListBox" x:Key="sessionsViewStyle">
+        <Style.Setters>
+            <Setter Property="BorderBrush" Value="Transparent"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="ItemsPanel">
+                <Setter.Value>
+                    <ItemsPanelTemplate>
+                        <StackPanel Orientation="Vertical"
+                                Background="Transparent"
+                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
+                                ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+                    </ItemsPanelTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle">
+                <Setter.Value>
+                    <Style TargetType="ListBoxItem">
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBoxItem">
+                                    <ContentPresenter Height="40"
+                                                      Width="40"
+                                                      Margin="0, 5"
+                                                      x:Name="contentPresenter">
+                                        <VisualStateManager.VisualStateGroups>
+                                            <VisualStateGroup x:Name="SelectionStates">
+                                                <VisualState x:Name="Selected">
+                                                    <VisualState.Storyboard>
+                                                        <Storyboard TargetName="contentPresenter">
+                                                            <DoubleAnimationUsingKeyFrames  Storyboard.TargetProperty="Width"
+                                                                                            Duration="0:0:0.25">
+                                                                <LinearDoubleKeyFrame KeyTime="0:0:0.25"
+                                                                                        Value="60"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                            <DoubleAnimationUsingKeyFrames  Storyboard.TargetProperty="Height" 
+                                                                                            Duration="0:0:0.25">
+                                                                <LinearDoubleKeyFrame KeyTime="0:0:0.25"
+                                                                                        Value="60"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState.Storyboard>
+                                                </VisualState>
+                                                <VisualState x:Name="Unselected">
+                                                    <VisualState.Storyboard>
+                                                        <Storyboard TargetName="contentPresenter">
+                                                            <DoubleAnimationUsingKeyFrames  Storyboard.TargetProperty="Width"
+                                                                                            Duration="0:0:0.25">
+                                                                <LinearDoubleKeyFrame KeyTime="0:0:0.25"
+                                                                                        Value="40"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                            <DoubleAnimationUsingKeyFrames  Storyboard.TargetProperty="Height" 
+                                                                                            Duration="0:0:0.25">
+                                                                <LinearDoubleKeyFrame KeyTime="0:0:0.25"
+                                                                                        Value="40"/>
+                                                            </DoubleAnimationUsingKeyFrames>
+                                                        </Storyboard>
+                                                    </VisualState.Storyboard>
+                                                </VisualState>
+                                            </VisualStateGroup>
+                                        </VisualStateManager.VisualStateGroups>
+                                    </ContentPresenter>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemTemplate">
+                <Setter.Value>
+                    <DataTemplate>
+                        <Grid>
+                            <Image Source="{Binding Path=SessionClass.ImageUri}"/>
+                        </Grid>
+                    </DataTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style.Setters>
+    </Style>
 
-
+    <Style TargetType="TextBlock" x:Key="rotationViewOrangeTbStyle">
+        <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+        <Setter Property="Foreground" Value="{DynamicResource FontOrangeColor}"/>
+    </Style>
 
     <!-- Параметры для генерации стилей UI -->
     <!-- Цвета-->
@@ -402,7 +472,7 @@
     <SolidColorBrush x:Key="BackgroundButtonColorClicked">#437541</SolidColorBrush>
 
     <SolidColorBrush x:Key="FontButtonColor">#f1f7ff</SolidColorBrush>
-    
+
     <SolidColorBrush x:Key="BackgroundMainWindowColor">#34373e</SolidColorBrush>
     <SolidColorBrush x:Key="BorderMainWindowColor">#676b74</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundControlColor">#2d2e33</SolidColorBrush>
@@ -410,6 +480,7 @@
     <SolidColorBrush x:Key="BackgroundWindowColor">#202124</SolidColorBrush>
     <SolidColorBrush x:Key="FontInfoColor">#9fa4b2</SolidColorBrush>
     <SolidColorBrush x:Key="FontTitleColor">#ffffff</SolidColorBrush>
+    <SolidColorBrush x:Key="FontOrangeColor">#fbb94b</SolidColorBrush>
 
     <LinearGradientBrush x:Key="ProgressbarGrad" StartPoint="0, 0" EndPoint="1, 0">
         <LinearGradientBrush.GradientStops>
@@ -417,6 +488,7 @@
             <GradientStop Color="#497f46" Offset="1.0"/>
         </LinearGradientBrush.GradientStops>
     </LinearGradientBrush>
+
 
     <!-- Шрифты -->
     <FontFamily x:Key="Roboto">../Resources/Fonts/Roboto-Regular.ttf</FontFamily>

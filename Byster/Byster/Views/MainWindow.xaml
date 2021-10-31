@@ -22,27 +22,55 @@
             <RowDefinition Height="90"/>
         </Grid.RowDefinitions>
         <Grid Grid.Row="0" Grid.Column="0" Grid.ColumnSpan="2" x:Name="topPanel">
-            <Image Margin="10, 10, 0, 10" Source="../Resources/Images/logo.png" Stretch="Uniform" VerticalAlignment="Stretch" Grid.ColumnSpan="2" HorizontalAlignment="Left"/>
+            <Image Source="/Resources/Images/topDecorationFigure.png" VerticalAlignment="Top" HorizontalAlignment="Center" Width="800" />
+            <Button Grid.ColumnSpan="2" HorizontalAlignment="Left" VerticalAlignment="Stretch" x:Name="titleBtn" Click="titleBtn_Click">
+                <Button.Style>
+                    <Style TargetType="Button">
+                        <Style.Setters>
+                            <Setter Property="Background" Value="Transparent"/>
+                            <Setter Property="BorderBrush" Value="Transparent"/>
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="Button">
+                                        <ContentPresenter/>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                            <Setter Property="Content">
+                                <Setter.Value>
+                                    <Image Margin="10, 10, 0, 10" Source="../Resources/Images/logo.png" Stretch="Uniform" VerticalAlignment="Stretch"  HorizontalAlignment="Left"/>
+                                </Setter.Value>
+                            </Setter>
+                        </Style.Setters>
+                    </Style>
+                </Button.Style>
+            </Button>
             <StackPanel Grid.Row="0" Grid.Column="1" HorizontalAlignment="Right" VerticalAlignment="Top" Orientation="Horizontal">
-                <Button Style="{DynamicResource mbStyle}" Height="30" Padding="4" Width="30" x:Name="minimizeBtn" Click="minimizeBtn_Click"/>
-                <Button Style="{DynamicResource cbStyle}" Height="30" Padding="4" Width="30" x:Name="closeBtn" Click="closeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Right"/>
+                <Button Style="{DynamicResource uibStyle}" Height="30" Width="30" x:Name="minimizeBtn" Click="minimizeBtn_Click">
+                    <Image Source="../Resources/Images/minimize-button-image.png" Stretch="Uniform" Margin="4"/>
+                </Button>
+                <Button Style="{DynamicResource uibStyle}" Height="30" Width="30" x:Name="closeBtn" Click="closeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Right">
+                    <Image Source="../Resources/Images/close-button-image.png" Stretch="Uniform" Margin="4"/>
+                </Button>
+            </StackPanel>
+            <StackPanel Grid.Column="1" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="8" Orientation="Horizontal">
+                <TextBlock Margin="4" Style="{DynamicResource rotationViewOrangeTbStyle}" x:Name="userNameTextBlock"/>
+                <Button Style="{DynamicResource uibStyle}" Height="30" Width="30" x:Name="settingsBtn" Click="settingsBtn_Click">
+                    <Image Source="/Resources/Images/settings-image.png" Margin="4"/>
+                </Button>
             </StackPanel>
         </Grid>
         
         <!-- Главная -->
         <Grid Grid.Row="1" Grid.Column="0" x:Name="sidePanel">
-
+            <ListBox x:Name="sessionsView" SelectionChanged="sessionsView_SelectionChanged" Style="{DynamicResource sessionsViewStyle}">
+                
+            </ListBox>
         </Grid>
         
         <Border Grid.Column="1" Grid.Row="1" x:Name="mainPanel" BorderThickness="1" BorderBrush="{DynamicResource BorderMainWindowColor}" Background="{DynamicResource BackgroundMainWindowColor}" >
             <Grid>
-                <ListBox x:Name="rotationsView" Style="{DynamicResource rotationsViewStyle}">
-                    <ListBox.Resources>
-                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightBrushKey}" Color="Transparent" />
-                        <SolidColorBrush x:Key="{x:Static SystemColors.HighlightTextBrushKey}" Color="Black" />
-                        <SolidColorBrush x:Key="{x:Static SystemColors.ControlBrushKey}" Color="Transparent" />
-                    </ListBox.Resources>
-                </ListBox>
+                <ListBox x:Name="rotationsView" Style="{DynamicResource rotationsViewStyle}"/>
             </Grid>
         </Border>
 
@@ -52,22 +80,22 @@
                 <ColumnDefinition Width="350"/>
             </Grid.ColumnDefinitions>
             <StackPanel Grid.Row="0" Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center">
-                <TextBlock Style="{DynamicResource infotbStyle}" Text="NickName" Margin="10, 0" />
+                <TextBlock Style="{DynamicResource infotbStyle}" Text="{Binding ElementName=sessionsView, Path=SelectedItem.UserName, TargetNullValue=NickName}" Margin="10, 0" />
                 <Path Fill="{DynamicResource FontInfoColor}" Data="M 0 4 L 4 0 L 8 4 z" VerticalAlignment="Center" HorizontalAlignment="Center">
                     <Path.RenderTransform>
                         <RotateTransform Angle="90"/>
                     </Path.RenderTransform>
                 </Path>
-                <TextBlock Style="{DynamicResource infotbStyle}" Text="Server" Margin="10, 0"></TextBlock>
+                <TextBlock Style="{DynamicResource infotbStyle}" Text="{Binding ElementName=sessionsView, Path=SelectedItem.ServerName, TargetNullValue=Server}" Margin="10, 0"></TextBlock>
             </StackPanel>
             <Grid Grid.Column="1" Margin="15" x:Name="BottomControls" HorizontalAlignment="Right" Width="300">
-                <Grid x:Name="startControls" Visibility="Collapsed">
+                <Grid x:Name="startControls" Visibility="Visible">
                     <Button Style="{DynamicResource bStyle}" Content="Запустить"/>
                 </Grid>
                 <Grid x:Name="shopControls" Visibility="Collapsed">
                     <Button Style="{DynamicResource bStyle}" Content="Магазин"/>
                 </Grid>
-                <Grid x:Name="processControls">
+                <Grid x:Name="processControls" Visibility="Collapsed">
                     <Grid.RowDefinitions>
                         <RowDefinition/>
                         <RowDefinition/>

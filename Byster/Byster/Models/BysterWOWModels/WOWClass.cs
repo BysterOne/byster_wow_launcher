@@ -10,20 +10,8 @@ namespace Byster.Models.BysterWOWModels
     {
         public string ImageUri { get; private set; }
         public string NameOfClass { get; private set; }
-        public enum WOWClasses
-        {
-            Default = 0,
-            Warrior = 1,
-            Droid = 2,
-            Priest = 3,
-            Wizard = 4,
-            Hunter = 5,
-            Paladin = 6,
-            Robber = 7,
-            DeathKnight = 8,
-            Warlock = 9,
-            Shaman = 10,
-        }
+        public WOWClasses EnumWOWClass { get; private set; }
+        
 
         public WOWClass() { }
 
@@ -31,7 +19,7 @@ namespace Byster.Models.BysterWOWModels
         {
             List<string> names = new List<string>()
             {
-                "Не определено",
+                "ANY",
                 "Воин",
                 "Друид",
                 "Жрец",
@@ -45,7 +33,7 @@ namespace Byster.Models.BysterWOWModels
             };
             List<string> uris = new List<string>()
             {
-                "None.png",
+                "Wow.png",
                 "Warrior.png",
                 "Droid.png",
                 "Priest.png",
@@ -58,8 +46,50 @@ namespace Byster.Models.BysterWOWModels
                 "Shaman.png",
             };
             string rootUri = "/Resources/Images/ClassesWOW/";
+
+            EnumWOWClass = WOWClassID;
             NameOfClass = names[(int)WOWClassID];
             ImageUri = rootUri + uris[(int)WOWClassID];
         }
+        public static WOWClasses GetClassByName(string className)
+        {
+            List<string> names = new List<string>()
+            {
+                "ANY",
+                "WARRIOR",
+                "DRUID",
+                "PRIEST",
+                "MAGE",
+                "HUNTER",
+                "PALADIN",
+                "ROGUE",
+                "DEATHKNIGHT",
+                "WARLOCK",
+                "SHAMAN"
+            };
+
+            if(string.IsNullOrEmpty(className))
+            {
+                return WOWClasses.ANY;
+            }
+            else
+            {
+                return (WOWClasses)names.IndexOf(className);
+            }
+        }
+    }
+    public enum WOWClasses
+    {
+        ANY = 0,
+        Warrior = 1,
+        Druid = 2,
+        Priest = 3,
+        Wizard = 4,
+        Hunter = 5,
+        Paladin = 6,
+        Robber = 7,
+        DeathKnight = 8,
+        Warlock = 9,
+        Shaman = 10,
     }
 }

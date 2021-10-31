@@ -39,7 +39,7 @@ namespace Byster.Views
                 string passwordHash = password;
                 if (TryAuth(login, passwordHash))
                 {
-                    StartMainWindow();
+                    StartMainWindow(login);
                     Close();
                     return;
                 }
@@ -139,11 +139,11 @@ namespace Byster.Views
             return true;
         }
 
-        public void StartMainWindow()
+        public void StartMainWindow(string login)
         {
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
-                App.Current.MainWindow = new MainWindow();
+                App.Current.MainWindow = new MainWindow(login);
                 App.Current.MainWindow.Show();
             }));
         }
@@ -185,7 +185,7 @@ namespace Byster.Views
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", loginText);
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", passwordHash);
-                StartMainWindow();
+                StartMainWindow(loginText);
                 Close();
             }
         }
@@ -209,7 +209,7 @@ namespace Byster.Views
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", newLoginText);
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", newPasswordHash);
-                StartMainWindow();
+                StartMainWindow(newLoginText);
                 Close();
             }
         }

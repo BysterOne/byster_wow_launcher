@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Byster.Models.RestModels
 {
-    class BaseResponse
+    public class BaseResponse
     {
         public string error { get; set; }
         public BaseResponse() { }

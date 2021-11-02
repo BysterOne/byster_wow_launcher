@@ -13,6 +13,7 @@ namespace Byster.Models.BysterWOWModels
         public string ExpiringTime { get; set; }
         public WOWClass RotationClass { get; set; }
         public string Name { get; set; }
+        public string ImageUri { get; set; }
         public RotationRole RoleOfRotation { get; set; }
         public RotationSpecialization SpecOfRotation { get; set; }
         public string Type { get; set; }
@@ -24,10 +25,15 @@ namespace Byster.Models.BysterWOWModels
             Id = 1;
             ExpiringTime = DateTime.Parse(response.expired_date).ToString("dd.MM.yyyy HH:mm");
             RotationClass = new WOWClass(WOWClass.GetClassByName(response.rotation.klass));
-            RoleOfRotation = new RotationRole();
+            RoleOfRotation = new RotationRole(RotationRole.GetRoleByName(response.rotation.role_type));
             SpecOfRotation = new RotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));
             Type = response.rotation.type;
             Name = response.rotation.name;
+
+            ImageUri = 
+                SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
+                response.rotation.media.Count > 0 ?                                         response.rotation.media[0].url :
+                                                                                            "/Resources/Images/image-placeholder.jpg";
         }
 
     }
@@ -37,6 +43,7 @@ namespace Byster.Models.BysterWOWModels
         
         public string Name { get; set; }
         public string ImageUri { get; set; }
+        public RotationRoles EnumRotationRole { get; set; }
 
         public RotationRole() { }
 
@@ -46,8 +53,8 @@ namespace Byster.Models.BysterWOWModels
             {
                 "ANY",
                 "DPS",
-                "Tank",
-                "Heal",
+                "TANK",
+                "HEAL",
             };
             if(string.IsNullOrEmpty(name))
             {
@@ -55,8 +62,23 @@ namespace Byster.Models.BysterWOWModels
             }
             else
             {
-                return (RotationRoles)names.IndexOf(name);
+                return (RotationRoles)names.IndexOf(name.ToUpper());
             }
+        }
+
+        public RotationRole(RotationRoles role)
+        {
+            List<string> names = new List<string>()
+            {
+                "ANY",
+                "DPS",
+                "Tank",
+                "Heal",
+            };
+            string rootUri = "/Resources/Images/Types/";
+            Name = names[(int)role];
+            ImageUri = rootUri + Name + ".png";
+            EnumRotationRole = role;
         }
     }
     public enum RotationRoles
@@ -65,13 +87,15 @@ namespace Byster.Models.BysterWOWModels
         DPS = 1,
         Tank = 2,
         Heal = 3,
+        NULL = 4,
     }
 
     public class RotationSpecialization
     {
-        
+
         public string Name { get; set; }
         public string ImageUri { get; set; }
+        public RotationSpecializations EnumRotationSpecialization { get; set; }
 
         public static RotationSpecializations GetSpecByName(string name)
         {
@@ -108,10 +132,11 @@ namespace Byster.Models.BysterWOWModels
                 "FERAL",
                 "MOONKIN",
                 "RESTORDRUID",
+                null,
             };
             if(string.IsNullOrEmpty(name))
             {
-                return RotationSpecializations.ANY;
+                return RotationSpecializations.NULL;
             }
             else
             {
@@ -156,12 +181,16 @@ namespace Byster.Models.BysterWOWModels
                 "FERAL",
                 "MOONKIN",
                 "RESTORDRUID",
+                null,
             };
             string rootUri = "/Resources/Images/Specializations/";
 
             Name = names[(int)spec];
-            ImageUri = rootUri + Name + ".png";
-            
+            if(Name != null)
+            {
+                ImageUri = rootUri + Name + ".png";
+
+            }
         }
     }
     public enum RotationSpecializations
@@ -207,5 +236,7 @@ namespace Byster.Models.BysterWOWModels
         FERAL = 28,
         MOONKIN = 29,
         RESTORDRUID = 30,
+        //NULL SPEC
+        NULL = 31,
     }
 }

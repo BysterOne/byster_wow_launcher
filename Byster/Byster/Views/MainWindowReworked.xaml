@@ -1,0 +1,137 @@
+﻿<Window x:Class="Byster.Views.MainWindowReworked"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Byster.Views"
+        mc:Ignorable="d"
+        Title="MainWindowReworked" Height="585" Width="975"
+        WindowStyle="None" WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+    <Window.Resources>
+        <ResourceDictionary Source="/Views/Styles.xaml"/>
+    </Window.Resources>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="85"/>
+            <RowDefinition/>
+        </Grid.RowDefinitions>
+        <Grid x:Name="topPanel" Grid.Row="0">
+            <Button x:Name="titleButton" Style="{DynamicResource imageButtonStyle}" HorizontalAlignment="Left" Margin="5"
+                    Click="titleButton_Click">
+                <Image Source="/Resources/Images/logo.png"/>
+            </Button>
+            
+            <Image Source="/Resources/Images/top-decoration-figure.png" Width="720" VerticalAlignment="Top"/>
+            
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
+                <Button Style="{DynamicResource uibStyle}" x:Name="minimizeBtn" Height="30" Click="minimizeBtn_Click">
+                    <Image Source="/Resources/Images/minimize-button-image.png" Stretch="Uniform" Margin="5"/>
+                </Button>
+                <Button Style="{DynamicResource uibStyle}" x:Name="closeBtn" Height="30" Click="closeBtn_Click">
+                    <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Margin="5"/>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
+                <TextBlock Style="{DynamicResource orangeTextBlockStyle}" VerticalAlignment="Center" Margin="10, 0" x:Name="usernameHolder" Text="{Binding Path=UserName}"/>
+                <Button Style="{DynamicResource uibStyle}" x:Name="settingsBtn">
+                    <Image Source="/Resources/Images/settings-image.png" Stretch="Uniform" Height="25" Margin="5"/>
+                </Button>
+            </StackPanel>
+
+            <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="160, 0, 0, 5">
+                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="ГЛАВНАЯ" GroupName="pageSelector" x:Name="rotPageSelect" IsChecked="True"/>
+                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="МАГАЗИН" GroupName="pageSelector" x:Name="shopPageSelect"/>
+            </StackPanel>
+        </Grid>
+        
+        
+        <!-- Главная -->
+        <Grid x:Name="mainRotPanel" Grid.Row="1" Visibility="{Binding Path=PageVisibilities[0]}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="80"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="90"/>
+            </Grid.RowDefinitions>
+            <Grid x:Name="sideRotPanel" Grid.Column="0">
+                <ListBox Style="{DynamicResource sessionsViewStyle}" x:Name="sessionsViewBox"
+                         ItemsSource="{Binding Mode=TwoWay, Path=SessionsCollection}"
+                         SelectedItem="{Binding Mode=TwoWay, Path=selectedSession}"
+                         SelectionChanged="sessionsViewBox_SelectionChanged"/>
+            </Grid>
+            <Grid x:Name="contentRotPanel" Grid.Column="1">
+                <Border BorderThickness="1"
+                        BorderBrush="{DynamicResource BorderMainWindowColor}"
+                        Background="{DynamicResource BackgroundMainWindowColor}">
+                    <Grid>
+                        <ListBox Style="{DynamicResource rotationsViewStyle}" x:Name="rotationsViewBox"
+                             ItemsSource="{Binding Mode=TwoWay, Path=RotationViewCollection}"/>
+                        <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="У Вас нет активных ротаций, перейдите в Магазин" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="noRotationNotificationTextBlock" Visibility="{Binding Path=ControlVisibilities[2]}"/>
+                    </Grid>
+                </Border>
+            </Grid>
+            <Grid x:Name="bottomRotPanel" Grid.Row="2" Grid.ColumnSpan="2"
+                  Background="{DynamicResource BackgroundControlColor}">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition/>
+                    <ColumnDefinition Width="350"/>
+                </Grid.ColumnDefinitions>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0">
+                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=selectedSession.UserName, TargetNullValue=Nickname}" Margin="10, 0"/>
+                    <Path Data="M 0 0 L 0 4 L 2 2 Z" Fill="{DynamicResource FontInfoColor}" Stretch="Fill" Width="10" Height="10"/>
+                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=selectedSession.ServerName, TargetNullValue=Server}" Margin="10, 0"/>
+                </StackPanel>
+                <Grid Margin="10" Grid.Column="1">
+                    <Grid x:Name="startControls" Visibility="{Binding Path=ControlVisibilities[0]}">
+                        <Button Style="{DynamicResource bStyle}" Content="Запустить" x:Name="startBtn"/>
+                    </Grid>
+                    <Grid x:Name="processControls" Visibility="{Binding Path=ControlVisibilities[1]}">
+                        <Grid>
+                            <Grid.RowDefinitions>
+                                <RowDefinition/>
+                                <RowDefinition/>
+                            </Grid.RowDefinitions>
+                            <TextBlock Style="{DynamicResource titleTextBlockStyle}" Text="Дождитесь завершения загрузки..." VerticalAlignment="Bottom" Margin="5, 0, 0, 5" Grid.Row="0"/>
+                            <ProgressBar Style="{DynamicResource prbStyle}" Value="60" x:Name="processProgressbar" Grid.Row="1"/>
+                        </Grid>
+                    </Grid>
+                    <Grid x:Name="shopControls" Visibility="{Binding Path=ControlVisibilities[2]}">
+                        <Button Style="{DynamicResource bStyle}" Content="Магазин" x:Name="shopBtn"/>
+                    </Grid>
+                </Grid>
+            </Grid>
+        </Grid>
+        
+        
+        <!-- Магазин -->
+        <Grid x:Name="mainShopPanel" Grid.Row="1" Visibility="{Binding Path=PageVisibilities[1]}">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="110"/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition/>
+                <RowDefinition Height="90"/>
+            </Grid.RowDefinitions>
+            <Grid x:Name="sideShopPanel" Grid.Column="0">
+
+            </Grid>
+            <Grid x:Name="contentShopPanel" Grid.Column="1">
+                <Border BorderThickness="1"
+                        BorderBrush="{DynamicResource BorderMainWindowColor}"
+                        Background="{DynamicResource BackgroundMainWindowColor}">
+
+                </Border>
+            </Grid>
+            <Grid x:Name="bottomShopPanel" Grid.Row="2" Grid.ColumnSpan="2"
+                  Background="{DynamicResource BackgroundControlColor}">
+
+            </Grid>
+        </Grid>
+
+    </Grid>
+</Window>

@@ -143,7 +143,7 @@ namespace Byster.Views
         {
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
-                App.Current.MainWindow = new MainWindow(login);
+                App.Current.MainWindow = new MainWindowReworked(login);
                 App.Current.MainWindow.Show();
             }));
         }

@@ -80,6 +80,7 @@
     <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
     <Compile Include="Models\RestModels\Register.cs" />
     <Compile Include="Models\RestModels\RestRotation.cs" />
+    <Compile Include="Models\RestModels\RestParts.cs" />
     <Compile Include="Models\Utilities\HashCalc.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />
     <Compile Include="Views\LoadingWindow.xaml.cs">
@@ -88,23 +89,22 @@
     <Compile Include="Views\LoginOrRegistrationWindow.xaml.cs">
       <DependentUpon>LoginOrRegistrationWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MainWindowReworked.xaml.cs">
+      <DependentUpon>MainWindowReworked.xaml</DependentUpon>
+    </Compile>
     <Page Include="Views\LoadingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Views\MainWindow.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
     </Page>
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Views\MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
     <Page Include="Views\LoginOrRegistrationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainWindowReworked.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -151,9 +151,7 @@
   <ItemGroup>
     <Resource Include="Resources\Images\minimize-button-image.png" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Resources\Images\Modes\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Resource Include="Resources\Images\ClassesWOW\DeathKnight.png" />
     <Resource Include="Resources\Images\ClassesWOW\Droid.png" />
@@ -170,13 +168,19 @@
     <Resource Include="Resources\Images\ClassesWOW\Wow.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\Types\ANY.png" />
+    <Resource Include="Resources\Images\Types\DPS.png" />
+    <Resource Include="Resources\Images\Types\Heal.png" />
+    <Resource Include="Resources\Images\Types\Tank.png" />
+    <Resource Include="Resources\Images\Specializations\DEMONOLOGY.png" />
     <Resource Include="Resources\Images\settings-image.png" />
-    <Resource Include="Resources\Images\topDecorationFigure.png" />
+    <Resource Include="Resources\Images\top-decoration-figure.png" />
     <Resource Include="Resources\Images\Specializations\ANY.png" />
     <Resource Include="Resources\Images\Specializations\ARMS.png" />
     <Resource Include="Resources\Images\Specializations\FURY.png" />
     <Resource Include="Resources\Images\Specializations\PROTOWAR.png" />
     <Resource Include="Resources\Images\Specializations\UNHOLY.png" />
+    <Resource Include="Resources\Images\image-placeholder.jpg" />
     <Content Include="Resources\Images\Specializations\FROST.png" />
     <Resource Include="Resources\Images\Specializations\BLOOD.png" />
     <Resource Include="Resources\Images\Specializations\ARCANE.png" />

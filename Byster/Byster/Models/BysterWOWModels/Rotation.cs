@@ -23,7 +23,7 @@ namespace Byster.Models.BysterWOWModels
         public RotationWOW(RotationResponse response)
         {
             Id = 1;
-            ExpiringTime = DateTime.Parse(response.expired_date).ToString("dd.MM.yyyy HH:mm");
+            ExpiringTime = DateTime.Parse(response.expired_date).Year <= 2050 ? DateTime.Parse(response.expired_date).ToString("dd.MM.yyyy HH:mm") : "Навсегда";
             RotationClass = new WOWClass(WOWClass.GetClassByName(response.rotation.klass));
             RoleOfRotation = new RotationRole(RotationRole.GetRoleByName(response.rotation.role_type));
             SpecOfRotation = new RotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));

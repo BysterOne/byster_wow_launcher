@@ -32,6 +32,7 @@ namespace Byster.Views
             InitializeComponent();
             Manager = new MainWindowManager();
             this.DataContext = Manager;
+            Manager.UserName = login;
 
             searcher = new WoWSearcher("World of Warcraft");
             searcher.OnWowFounded += OnWOWFound;

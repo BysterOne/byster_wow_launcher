@@ -269,11 +269,19 @@
 
     <Style TargetType="ListBox" x:Key="rotationsViewStyle">
         <Style.Setters>
-            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Auto"/>
             <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Background" Value="Transparent"/>
-            <Setter Property="IsHitTestVisible" Value="False"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <ScrollViewer Style="{DynamicResource scrollViewerStyle}">
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
@@ -308,7 +316,7 @@
                     <DataTemplate>
                         <Border x:Name="borderItem"
                                 Background="{DynamicResource BackgroundControlColor}"
-                                Width="420"
+                                Width="416"
                                 Height="100">
                             <Grid>
                                 <Grid.ColumnDefinitions>
@@ -351,6 +359,15 @@
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListBox">
+                        <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}">
+                            <ItemsPresenter/>
+                        </ScrollViewer>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
             <Setter Property="ItemsPanel">
                 <Setter.Value>
                     <ItemsPanelTemplate>
@@ -485,6 +502,124 @@
         </Setter>-->
     </Style>
 
+    <Style TargetType="ScrollViewer" x:Key="scrollViewerStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollViewer">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="18"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="Transparent"
+                                BorderBrush="Transparent"
+                                Grid.Column="0">
+                            <ScrollContentPresenter/>
+                        </Border>
+                        <ScrollBar x:Name="PART_VerticalScrollBar"
+                                   Value="{TemplateBinding VerticalOffset}"
+                                   Maximum="{TemplateBinding ScrollableHeight}"
+                                   ViewportSize="40"
+                                   Grid.Column="1"
+                                   Style="{DynamicResource scrollBarStyle}"
+                                   Margin="3">
+                        </ScrollBar>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ScrollBar" x:Key="scrollBarStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid>
+                        <Border Background="Transparent">
+                            <Track x:Name="PART_Track"
+                                   IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb Style="{DynamicResource thumbStyle}"
+                                           Width="7">
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ScrollViewer" x:Key="scrollViewerSmallStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollViewer">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="12"/>
+                        </Grid.ColumnDefinitions>
+                        <Border Background="Transparent"
+                                BorderBrush="Transparent"
+                                Grid.Column="0">
+                            <ScrollContentPresenter/>
+                        </Border>
+                        <ScrollBar x:Name="PART_VerticalScrollBar"
+                                   Value="{TemplateBinding VerticalOffset}"
+                                   Maximum="{TemplateBinding ScrollableHeight}"
+                                   ViewportSize="20"
+                                   Grid.Column="1"
+                                   Style="{DynamicResource scrollBarSmallStyle}"
+                                   Margin="0, 1">
+                        </ScrollBar>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ScrollBar" x:Key="scrollBarSmallStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Grid>
+                        <Border Background="Transparent">
+                            <Track x:Name="PART_Track"
+                                   IsDirectionReversed="True">
+                                <Track.Thumb>
+                                    <Thumb Style="{DynamicResource thumbStyle}"
+                                           Width="5">
+                                    </Thumb>
+                                </Track.Thumb>
+                            </Track>
+                        </Border>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="Thumb" x:Key="thumbStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Thumb">
+                    <Border Background="{DynamicResource ThumbColor}"
+                            CornerRadius="4"
+                            x:Name="borderThumb"/>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter TargetName="borderThumb" Property="Background" Value="{DynamicResource ThumbColorHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsDragging" Value="True">
+                            <Setter TargetName="borderThumb" Property="Background" Value="{DynamicResource ThumbColorClick}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Параметры для генерации стилей UI -->
     <!-- Цвета-->
     <SolidColorBrush x:Key="BackgroundUIColor">#323339</SolidColorBrush>
@@ -507,8 +642,11 @@
     <SolidColorBrush x:Key="BorderMainWindowColor">#676b74</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundControlColor">#2d2e33</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundWindowColor">#202124</SolidColorBrush>
-    
 
+    <SolidColorBrush x:Key="ThumbColor">#9fa4b2</SolidColorBrush>
+    <SolidColorBrush x:Key="ThumbColorHover">#242529</SolidColorBrush>
+    <SolidColorBrush x:Key="ThumbColorClick">#2b2c30</SolidColorBrush>
+    
     <LinearGradientBrush x:Key="ProgressbarGrad" StartPoint="0, 0" EndPoint="1, 0">
         <LinearGradientBrush.GradientStops>
             <GradientStop Color="#788e47" Offset="0.0"/>

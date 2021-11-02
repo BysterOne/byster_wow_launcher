@@ -41,8 +41,10 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="160, 0, 0, 5">
-                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="ГЛАВНАЯ" GroupName="pageSelector" x:Name="rotPageSelect" IsChecked="True"/>
-                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="МАГАЗИН" GroupName="pageSelector" x:Name="shopPageSelect"/>
+                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="ГЛАВНАЯ" GroupName="pageSelector" x:Name="rotPageSelect" IsChecked="True"
+                             Click="rotPageSelect_Clicked"/>
+                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="МАГАЗИН" GroupName="pageSelector" x:Name="shopPageSelect"
+                             Click="shopPageSelect_Clicked"/>
             </StackPanel>
         </Grid>
         
@@ -70,7 +72,7 @@
                     <Grid>
                         <ListBox Style="{DynamicResource rotationsViewStyle}" x:Name="rotationsViewBox"
                              ItemsSource="{Binding Mode=TwoWay, Path=RotationViewCollection}"/>
-                        <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="У Вас нет активных ротаций, перейдите в Магазин" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="noRotationNotificationTextBlock" Visibility="{Binding Path=ControlVisibilities[2]}"/>
+                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="У Вас нет активных ротаций, перейдите в Магазин" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="noRotationNotificationTextBlock" Visibility="{Binding Path=ControlVisibilities[2]}"/>
                     </Grid>
                 </Border>
             </Grid>

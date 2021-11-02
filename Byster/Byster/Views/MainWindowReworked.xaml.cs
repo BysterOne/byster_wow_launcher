@@ -29,8 +29,8 @@ namespace Byster.Views
         MainWindowManager Manager { get; set; }
         public MainWindowReworked(string login)
         {
-            InitializeComponent();
             Manager = new MainWindowManager();
+            InitializeComponent();
             this.DataContext = Manager;
             Manager.UserName = login;
 
@@ -105,6 +105,16 @@ namespace Byster.Views
         {
             Close();
         }
+
+        private void shopPageSelect_Clicked(object sender, RoutedEventArgs e)
+        {
+            Manager.SelectPage(1, true);
+        }
+
+        private void rotPageSelect_Clicked(object sender, RoutedEventArgs e)
+        {
+            Manager.SelectPage(0, true);
+        }
     }
 
 
@@ -119,8 +129,8 @@ namespace Byster.Views
         public bool IsInjecting { get; set; }
         public bool IsNotInjecting { get; set; }
 
-        public List<Visibility> ControlVisibilities { get; private set; }
-        public List<Visibility> PageVisibilities { get; private set; }
+        public ObservableCollection<Visibility> ControlVisibilities { get; private set; }
+        public ObservableCollection<Visibility> PageVisibilities { get; private set; }
 
         public MainWindowManager()
         {
@@ -130,14 +140,14 @@ namespace Byster.Views
 
             FilterClass = WOWClasses.ANY;
 
-            ControlVisibilities = new List<Visibility>()
+            ControlVisibilities = new ObservableCollection<Visibility>()
             {
                 Visibility.Visible,
                 Visibility.Collapsed,
                 Visibility.Collapsed,
             };
 
-            PageVisibilities = new List<Visibility>()
+            PageVisibilities = new ObservableCollection<Visibility>()
             {
                 Visibility.Visible,
                 Visibility.Collapsed,

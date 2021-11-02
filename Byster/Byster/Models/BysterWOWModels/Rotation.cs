@@ -148,6 +148,7 @@ namespace Byster.Models.BysterWOWModels
 
         public RotationSpecialization(RotationSpecializations spec)
         {
+            EnumRotationSpecialization = spec;
             List<string> names = new List<string>
             {
                 "ANY",

@@ -173,6 +173,7 @@
     <Resource Include="Resources\Images\ClassesWOW\Wow.png" />
   </ItemGroup>
   <ItemGroup>
+    <Resource Include="Resources\Images\utility-icon-default.png" />
     <Resource Include="Resources\Images\Types\ANY.png" />
     <Resource Include="Resources\Images\Types\DPS.png" />
     <Resource Include="Resources\Images\Types\Heal.png" />

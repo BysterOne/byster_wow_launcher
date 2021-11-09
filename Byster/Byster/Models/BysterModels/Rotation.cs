@@ -54,7 +54,8 @@ namespace Byster.Models.BysterModels
                 SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
                 Medias.Count > 0 ?                                                          Medias[0].Uri :
                 Type.ToLower() == "bot" ?                                                   "/Resources/Images/bot-icon-default.png" :
-                                                                                            "/Resources/Images/image-placeholder.jpg";
+                Type.ToLower() == "utility" ?                                               "/Resources/Images/utility-icon-default.png" :
+                                                                                            "/Resources/Images/utility-icon-default.jpg";
         }
     }
 

@@ -291,36 +291,102 @@
 
     <Style TargetType="ComboBox" x:Key="combobStyle">
         <Style.Setters>
+            <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+            <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundUIColor}"/>
             <Setter Property="Template">
                 <Setter.Value>
-                    <ControlTemplate>
+                    <ControlTemplate TargetType="ComboBox">
                         <Grid>
-                            <Border>
-
-                            </Border>
-                            <ToggleButton Style="{DynamicResource combobToggleButtonStyle}" Grid.Row="1"/>
-                            <Popup>
-
+                            <ToggleButton Style="{DynamicResource combobToggleButtonStyle}"
+                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press"/>
+                            <ContentPresenter Content="{TemplateBinding SelectedItem}"
+                            ContentTemplate="{TemplateBinding ItemTemplate}"
+                            ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                            Margin="10,10,30,10"
+                            VerticalAlignment="Stretch"
+                            HorizontalAlignment="Left"/>
+                            <Popup x:Name="Popup"
+                                    Placement="Bottom"
+                                    IsOpen="{TemplateBinding IsDropDownOpen}"
+                                    AllowsTransparency="True"
+                                    Focusable="False"
+                                    PopupAnimation="Slide"
+                                   HorizontalAlignment="Stretch">
+                                <Grid>
+                                    <Border CornerRadius="{DynamicResource CornerUIRadius}"
+                                            Background="{DynamicResource BackgroundUIColor}">
+                                        <StackPanel IsItemsHost="True"/>
+                                    </Border>
+                                </Grid>
                             </Popup>
                         </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle" Value="{DynamicResource combobItemStyle}"/>
+        </Style.Setters>
+    </Style>
+
+    <Style TargetType="ToggleButton" x:Key="combobToggleButtonStyle">
+        <Style.Setters>
+            <Setter Property="Background" Value="{DynamicResource BackgroundUIColor}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="{DynamicResource CornerUIRadius}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+                                <Path Data="M 0 0 L 4 4 L 8 0 Z"
+                                      Fill="{DynamicResource FontUIColor}"
+                                      Grid.Column="1"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Center"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundUIColorHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundUIColorClicked}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
                     </ControlTemplate>
                 </Setter.Value>
             </Setter>
         </Style.Setters>
     </Style>
 
-    <Style TargetType="ToggleButton" x:Key="combobToggleButtonStyle">
-        <Style.Setters>
-            <Setter Property="Template">
-                <Setter.Value>
-                    <ControlTemplate>
-                        <Border>
-
-                        </Border>
-                    </ControlTemplate>
-                </Setter.Value>
-            </Setter>
-        </Style.Setters>
+    <Style TargetType="ComboBoxItem" x:Key="combobItemStyle">
+        <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+        <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundUIColor}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border Background="{TemplateBinding Background}"
+                            Padding="10">
+                        <ContentPresenter/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource BackgroundUIColorHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource BackgroundUIColorClicked}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
     </Style>
 
     <Style TargetType="TextBlock" x:Key="infoTextBlockStyle">

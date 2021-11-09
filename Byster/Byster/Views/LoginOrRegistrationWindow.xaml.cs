@@ -163,7 +163,7 @@ namespace Byster.Views
         {
             authBlock.Visibility = Visibility.Collapsed;
             registerBlock.Visibility = Visibility.Visible;
-            this.Height = 520;
+            this.Height = 490;
             loginBtn.IsDefault = false;
             registerBtn.IsDefault = true;
         }
@@ -171,7 +171,7 @@ namespace Byster.Views
         {
             authBlock.Visibility = Visibility.Visible;
             registerBlock.Visibility = Visibility.Collapsed;
-            this.Height = 370;
+            this.Height = 330;
             loginBtn.IsDefault = true;
             registerBtn.IsDefault = false;
         }

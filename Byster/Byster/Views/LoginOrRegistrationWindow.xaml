@@ -7,7 +7,7 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Login"
-        Height="370"
+        Height="330"
         Width="340"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
@@ -53,7 +53,7 @@
                             </Style>
                         </TextBox.Style>
                     </TextBox>
-                    <ComboBox x:Name="registerChoicesComboBox" Margin="{StaticResource marginUI}"/>
+                    <ComboBox x:Name="registerChoicesComboBox" Margin="{StaticResource marginUI}" Style="{StaticResource combobStyle}"/>
                     <Button Style="{StaticResource bStyle}" x:Name="registerBtn" Content="Зарегистрироваться" Click="registerBtn_Click" Margin="{StaticResource marginUI}"/>
                     <TextBlock Margin="{StaticResource marginUI}">
                         <Hyperlink x:Name="navigateToAuth" Style="{StaticResource hlStyle}" Click="navigateToAuth_Click">Авторизоваться?</Hyperlink>

@@ -4,18 +4,18 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Byster.Models.BysterWOWModels
+namespace Byster.Models.BysterModels
 {
-    public class WOWClass
+    public class ClassWOW
     {
         public string ImageUri { get; private set; }
         public string NameOfClass { get; private set; }
         public WOWClasses EnumWOWClass { get; private set; }
         
 
-        public WOWClass() { }
+        public ClassWOW() { }
 
-        public WOWClass(WOWClasses WOWClassID)
+        public ClassWOW(WOWClasses WOWClassID)
         {
             List<string> names = new List<string>()
             {

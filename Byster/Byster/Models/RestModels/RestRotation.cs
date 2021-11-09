@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 
 namespace Byster.Models.RestModels
 {
-    public class RotationResponse : BaseResponse
+    public class RestRotationWOW
     {
         public string expired_date { get; set; }
 
         public RestRotationPart rotation { get; set;}
-        public RotationResponse() { }
+        public RestRotationWOW() { }
     }
 
-    
+    public class RestRotationShop : RestRotationPart
+    {
+
+    }
 }

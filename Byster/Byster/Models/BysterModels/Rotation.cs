@@ -3,39 +3,85 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
 using Byster.Models.RestModels;
+using Byster.Models.BysterModels;
 
-namespace Byster.Models.BysterWOWModels
+namespace Byster.Models.BysterModels
 {
-    public class RotationWOW
+    public class RotationBase
     {
         public int Id { get; set; }
-        public string ExpiringTime { get; set; }
-        public WOWClass RotationClass { get; set; }
+        public ClassWOW RotationClass { get; set; }
         public string Name { get; set; }
         public string ImageUri { get; set; }
         public RotationRole RoleOfRotation { get; set; }
         public RotationSpecialization SpecOfRotation { get; set; }
         public string Type { get; set; }
+        public List<Media> Medias { get; set; }
+    }
 
+    public class RotationWOW : RotationBase, INotifyPropertyChanged
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+
+        public void OnPropertyChanged([CallerMemberName]string property = "")
+        {
+            if (PropertyChanged != null)
+                PropertyChanged(this, new PropertyChangedEventArgs(property));
+        }
+        public string ExpiringTime { get; set; }
         public RotationWOW() { }
 
-        public RotationWOW(RotationResponse response)
+        public RotationWOW(RestRotationWOW response)
         {
-            Id = 1;
+            Id = response.rotation.id;
             ExpiringTime = DateTime.Parse(response.expired_date).Year <= 2050 ? DateTime.Parse(response.expired_date).ToString("dd.MM.yyyy HH:mm") : "Навсегда";
-            RotationClass = new WOWClass(WOWClass.GetClassByName(response.rotation.klass));
+            RotationClass = new ClassWOW(ClassWOW.GetClassByName(response.rotation.klass));
             RoleOfRotation = new RotationRole(RotationRole.GetRoleByName(response.rotation.role_type));
             SpecOfRotation = new RotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));
             Type = response.rotation.type;
             Name = response.rotation.name;
 
+            Medias = new List<Media>();
+            foreach(var restMedia in response.rotation.media)
+            {
+                Medias.Add(new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type)));
+            }
+
             ImageUri = 
                 SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
-                response.rotation.media.Count > 0 ?                                         response.rotation.media[0].url :
+                Medias.Count > 0 ?                                                          Medias[0].Uri :
+                Type.ToLower() == "bot" ?                                                   "/Resources/Images/bot-icon-default.png" :
                                                                                             "/Resources/Images/image-placeholder.jpg";
         }
+    }
 
+    public class ShopRotation : RotationBase
+    {
+        public ShopRotation() { }
+
+        public ShopRotation(RestRotationShop rotation)
+        {
+            Id = rotation.id;
+            RotationClass = new ClassWOW(ClassWOW.GetClassByName(rotation.klass));
+            RoleOfRotation = new RotationRole(RotationRole.GetRoleByName(rotation.role_type));
+            SpecOfRotation = new RotationSpecialization(RotationSpecialization.GetSpecByName(rotation.specialization));
+            Type = rotation.type;
+            Name = rotation.name;
+
+            Medias = new List<Media>();
+            foreach (var restMedia in rotation.media)
+            {
+                Medias.Add(new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type)));
+            }
+
+            ImageUri =
+                SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
+                Medias.Count > 0 ?                                                          Medias[0].Uri :
+                                                                                            "/Resources/Images/image-placeholder.jpg";
+        }
     }
 
     public class RotationRole
@@ -154,6 +200,44 @@ namespace Byster.Models.BysterWOWModels
                 "ANY",
                 "ARMS",
                 "FURY",
+                "PROTO",
+                "RETRIBUTION",
+                "PROTO",
+                "HOLY",
+                "MM",
+                "BM",
+                "SURVIVABILITY",
+                "COMBAT",
+                "MUTILATION",
+                "SUBTLETY",
+                "DISCIPLINE",
+                "HOLY",
+                "SHADOW",
+                "BLOOD",
+                "FROST",
+                "UNHOLY",
+                "ELEMENTAL",
+                "ENHANCEMENT",
+                "RESTOR",
+                "ARCANE",
+                "FIRE",
+                "FROST",
+                "AFFLICTION",
+                "DEMONOLOGY",
+                "DESTRUCTION",
+                "FERAL",
+                "MOONKIN",
+                "RESTOR",
+                null,
+            };
+            string rootUri = "/Resources/Images/Specializations/";
+
+            Name = names[(int)spec];
+            List<string> imageNames = new List<string>()
+            {
+                "ANY",
+                "ARMS",
+                "FURY",
                 "PROTOWAR",
                 "RETRIBUTION",
                 "PROTOPAL",
@@ -184,12 +268,9 @@ namespace Byster.Models.BysterWOWModels
                 "RESTORDRUID",
                 null,
             };
-            string rootUri = "/Resources/Images/Specializations/";
-
-            Name = names[(int)spec];
             if(Name != null)
             {
-                ImageUri = rootUri + Name + ".png";
+                ImageUri = rootUri + imageNames[(int)spec] + ".png";
 
             }
         }

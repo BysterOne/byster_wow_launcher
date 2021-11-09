@@ -72,17 +72,22 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Models\BysterWOWModels\Rotation.cs" />
-    <Compile Include="Models\BysterWOWModels\WOWClass.cs" />
-    <Compile Include="Models\BysterWOWModels\WOWSession.cs" />
+    <Compile Include="Models\BysterModels\Rotation.cs" />
+    <Compile Include="Models\BysterModels\WOWClass.cs" />
+    <Compile Include="Models\BysterModels\WOWSession.cs" />
+    <Compile Include="Models\BysterModels\ShopProductInfo.cs" />
     <Compile Include="Models\RestModels\Auth.cs" />
     <Compile Include="Models\RestModels\BaseResponse.cs" />
     <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
     <Compile Include="Models\RestModels\Register.cs" />
+    <Compile Include="Models\RestModels\RestProduct.cs" />
     <Compile Include="Models\RestModels\RestRotation.cs" />
     <Compile Include="Models\RestModels\RestParts.cs" />
+    <Compile Include="Models\BysterModels\Media.cs" />
+    <Compile Include="Models\BysterModels\ShopProduct.cs" />
     <Compile Include="Models\Utilities\HashCalc.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />
+    <Compile Include="Models\Utilities\EventHandlers.cs" />
     <Compile Include="Views\LoadingWindow.xaml.cs">
       <DependentUpon>LoadingWindow.xaml</DependentUpon>
     </Compile>
@@ -181,6 +186,9 @@
     <Resource Include="Resources\Images\Specializations\PROTOWAR.png" />
     <Resource Include="Resources\Images\Specializations\UNHOLY.png" />
     <Resource Include="Resources\Images\image-placeholder.jpg" />
+    <Resource Include="Resources\Images\minus-button.png" />
+    <Resource Include="Resources\Images\plus-button.png" />
+    <Resource Include="Resources\Images\bot-icon-default.png" />
     <Content Include="Resources\Images\Specializations\FROST.png" />
     <Resource Include="Resources\Images\Specializations\BLOOD.png" />
     <Resource Include="Resources\Images\Specializations\ARCANE.png" />

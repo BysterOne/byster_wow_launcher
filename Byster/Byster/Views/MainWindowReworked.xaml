@@ -9,7 +9,11 @@
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}" MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.Resources>
-        <ResourceDictionary Source="/Views/Styles.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Styles.xaml"/>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
@@ -126,12 +130,12 @@
                 <Border BorderThickness="1"
                         BorderBrush="{DynamicResource BorderMainWindowColor}"
                         Background="{DynamicResource BackgroundMainWindowColor}">
-
+                    <ListBox x:Name="ProductListBox" Style="{DynamicResource shopViewStyle}" ItemsSource="{Binding Path=ProductList}"/>
                 </Border>
             </Grid>
             <Grid x:Name="bottomShopPanel" Grid.Row="2" Grid.ColumnSpan="2"
                   Background="{DynamicResource BackgroundControlColor}">
-
+                
             </Grid>
         </Grid>
 

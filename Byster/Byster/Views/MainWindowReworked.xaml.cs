@@ -12,7 +12,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-using Byster.Models.BysterWOWModels;
+using Byster.Models.BysterModels;
 using Byster.Models.RestModels;
 using Byster.Utilities.WOWModels;
 using RestSharp;
@@ -44,7 +44,7 @@ namespace Byster.Views
         {
             Dispatcher.Invoke(() =>
             {
-                Manager.SessionsCollection.Remove(Manager.SessionsCollection.First((session) => session.wowApp.Process == p.Process));
+                Manager.SessionsCollection.Remove(Manager.SessionsCollection.First((session) => session.WowApp.Process == p.Process));
             });
             return true;
         }
@@ -53,13 +53,11 @@ namespace Byster.Views
         {
             Dispatcher.Invoke(() =>
             {
-                WOWSession changedSession = new WOWSession();
-                changedSession.wowApp = p;
-                changedSession.SessionClass = new WOWClass(WOWSession.ConverterOfClasses(p.Class));
+                SessionWOW changedSession = Manager.SessionsCollection.First((session) => session.WowApp.Process == p.Process);
+                changedSession.WowApp = p;
+                changedSession.SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class));
                 changedSession.UserName = p.Name;
                 changedSession.ServerName = p.Version;
-                Manager.SessionsCollection.Remove(Manager.SessionsCollection.First((session) => session.wowApp.Process == p.Process));
-                Manager.SessionsCollection.Add(changedSession);
             });
             return true;
         }
@@ -68,12 +66,12 @@ namespace Byster.Views
         {
             Dispatcher.Invoke(() =>
             {
-                Manager.SessionsCollection.Add(new WOWSession()
+                Manager.SessionsCollection.Add(new SessionWOW()
                 {
-                    SessionClass = new WOWClass(WOWSession.ConverterOfClasses(p.Class)),
+                    SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class)),
                     UserName = p.Name,
                     ServerName = p.Version,
-                    wowApp = p,
+                    WowApp = p,
                 });
             });
             return true;
@@ -121,10 +119,12 @@ namespace Byster.Views
     public class MainWindowManager
     {
         public string UserName { get; set; }
-        public WOWSession selectedSession { get; set; }
-        public ObservableCollection<WOWSession> SessionsCollection { get; set; }
+        public SessionWOW selectedSession { get; set; }
+        public ObservableCollection<SessionWOW> SessionsCollection { get; set; }
         public ObservableCollection<RotationWOW> AllRotations { get; set; }
         public ObservableCollection<RotationWOW> RotationViewCollection { get; set; }
+
+        public ObservableCollection<ShopProductInfo> ProductList { get; set; }
         public WOWClasses FilterClass { get; set; }
         public bool IsInjecting { get; set; }
         public bool IsNotInjecting { get; set; }
@@ -134,9 +134,11 @@ namespace Byster.Views
 
         public MainWindowManager()
         {
-            SessionsCollection = new ObservableCollection<WOWSession>();
+            SessionsCollection = new ObservableCollection<SessionWOW>();
             AllRotations = new ObservableCollection<RotationWOW>();
             RotationViewCollection = new ObservableCollection<RotationWOW>();
+            ProductList = new ObservableCollection<ShopProductInfo>();
+
 
             FilterClass = WOWClasses.ANY;
 
@@ -155,6 +157,7 @@ namespace Byster.Views
 
             UserName = "Default";
             UpdateRotations();
+            UpdateProductList();
             FilterRotations();
         }
 
@@ -191,14 +194,15 @@ namespace Byster.Views
 
         public void UpdateRotations()
         {
-            var rotationsResponse = App.Rest.Post<List<RotationResponse>>(new RestRequest("shop/my_subscriptions"));
+            AllRotations.Clear();
+            var rotationsResponse = App.Rest.Post<List<RestRotationWOW>>(new RestRequest("shop/my_subscriptions"));
             if(rotationsResponse.StatusCode != HttpStatusCode.OK)
             {
                 MessageBox.Show($"Запрос завершён с кодом: {(int)rotationsResponse.StatusCode}\nСообщение ошибки: {rotationsResponse.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
             }
-            foreach( var rotationResponse in rotationsResponse.Data)
+            foreach( var RestRotationWOW in rotationsResponse.Data)
             {
-                AllRotations.Add(new RotationWOW(rotationResponse));
+                AllRotations.Add(new RotationWOW(RestRotationWOW));
             }
 
         }
@@ -212,6 +216,21 @@ namespace Byster.Views
             else
             {
                 SelectControls(0, true);
+            }
+        }
+
+        public void UpdateProductList()
+        {
+            ProductList.Clear();
+            var productListResponse = App.Rest.Post<List<RestShopProduct>>(new RestRequest("shop/product_list"));
+
+            if(productListResponse.StatusCode != HttpStatusCode.OK)
+            {
+                MessageBox.Show($"Запрос завершён с кодом: {(int)productListResponse.StatusCode}\nСообщение ошибки: {productListResponse.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+            foreach(var productResponse in productListResponse.Data)
+            {
+                ProductList.Add(new ShopProductInfo(new ShopProduct(productResponse)));
             }
         }
     }

@@ -15,8 +15,10 @@ using System.Windows.Shapes;
 using Byster.Models.BysterModels;
 using Byster.Models.RestModels;
 using Byster.Utilities.WOWModels;
+using Byster.Models.Utilities;
 using RestSharp;
 using System.Net;
+using System.Globalization;
 
 namespace Byster.Views
 {
@@ -38,6 +40,36 @@ namespace Byster.Views
             searcher.OnWowFounded += OnWOWFound;
             searcher.OnWowChanged += OnWOWChanged;
             searcher.OnWowClosed += OnWOWClosed;
+
+            Injector.Init();
+            Injector.InjectQueueEnqueued += InjectorQueueProcessAdded;
+            Injector.InjectQueueUpdated += InjectorQueueProcessUpdated;
+            Injector.InjectQueueDequeued += InjectorQueueProcessRemoved;
+        }
+
+        private void InjectorQueueProcessUpdated(uint changedElement, InjectorStatusCode injectorStatusCode)
+        {
+            var changedSession = Manager.SessionsCollection.First(session => session.WowApp.Process.Id == changedElement);
+            changedSession.InjectInfo.IsInjecting = true;
+            changedSession.InjectInfo.IsDefault = false;
+        }
+
+        private void InjectorQueueProcessRemoved(uint changedElement, InjectorStatusCode injectorStatusCode)
+        {
+            var changedSession = Manager.SessionsCollection.First(session => session.WowApp.Process.Id == changedElement);
+            changedSession.InjectInfo.IsEnqueuedToInject = false;
+            changedSession.InjectInfo.IsInjecting = false;
+            changedSession.InjectInfo.IsDefault = true;
+        }
+
+        private void InjectorQueueProcessAdded(uint changedElement, InjectorStatusCode injectorStatusCode)
+        {
+            if(injectorStatusCode == InjectorStatusCode.ADDED_OK)
+            {
+                var changedSession = Manager.SessionsCollection.First(session => session.WowApp.Process.Id == changedElement);
+                changedSession.InjectInfo.IsEnqueuedToInject = true;
+                changedSession.InjectInfo.IsDefault = false;
+            }
         }
 
         private bool OnWOWClosed(WoW p)
@@ -112,6 +144,14 @@ namespace Byster.Views
         private void rotPageSelect_Clicked(object sender, RoutedEventArgs e)
         {
             Manager.SelectPage(0, true);
+        }
+
+        private void startBtn_Click(object sender, RoutedEventArgs e)
+        {
+            if(Manager.selectedSession?.WowApp?.Process?.Id != null)
+            {
+                Injector.AddProcessToInject((UInt32)Manager.selectedSession.WowApp.Process.Id);
+            }
         }
     }
 
@@ -209,9 +249,9 @@ namespace Byster.Views
 
         public void CheckAvailableRotations()
         {
-            if(RotationViewCollection.Count == 0)
+            if (RotationViewCollection.Count == 0)
             {
-                SelectControls(2, !IsInjecting);
+                SelectControls(2, true);
             }
             else
             {
@@ -232,6 +272,31 @@ namespace Byster.Views
             {
                 ProductList.Add(new ShopProductInfo(new ShopProduct(productResponse)));
             }
+        }
+    }
+    public class FromBoolToVisibility : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return ((bool)value) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class FromNullToVisibility : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (value != null) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
         }
     }
 }

@@ -5,6 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using Byster.Utilities.WOWModels;
+using Byster.Models.Utilities;
 using System.Runtime.CompilerServices;
 
 
@@ -12,7 +13,7 @@ namespace Byster.Models.BysterModels
 {
     public class SessionWOW : INotifyPropertyChanged
     {
-        
+
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropertyChanged([CallerMemberName] string property = "")
@@ -78,8 +79,25 @@ namespace Byster.Models.BysterModels
                 OnPropertyChanged("SessionClass");
             }
         }
-        
-        public SessionWOW() { }
+
+        private InjectInfo injectInfo;
+        public InjectInfo InjectInfo
+        {
+            get
+            {
+                return injectInfo;
+            }
+            set
+            {
+                injectInfo = value;
+                OnPropertyChanged("InjectInfo");
+            }
+        }
+
+        public SessionWOW()
+        {
+            InjectInfo = new InjectInfo();
+        }
 
         public static WOWClasses ConverterOfClasses(Classes sessionClass)
         {

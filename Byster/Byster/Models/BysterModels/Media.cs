@@ -19,7 +19,7 @@ namespace Byster.Models.BysterModels
                 "img",
                 "video"
             };
-            return (MediaTypes)names.IndexOf(name);
+            return (MediaTypes)names.IndexOf(name.ToLower());
         }
 
         public Media(string uri, MediaTypes type)

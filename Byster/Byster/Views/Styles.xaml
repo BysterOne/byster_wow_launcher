@@ -314,10 +314,12 @@
                                     AllowsTransparency="True"
                                     Focusable="False"
                                     PopupAnimation="Slide"
-                                   HorizontalAlignment="Stretch">
+                                   HorizontalAlignment="Stretch"
+                                   Width="{TemplateBinding ActualWidth}">
                                 <Grid>
                                     <Border CornerRadius="{DynamicResource CornerUIRadius}"
-                                            Background="{DynamicResource BackgroundUIColor}">
+                                            Background="{DynamicResource BackgroundUIColor}"
+                                            HorizontalAlignment="Stretch">
                                         <StackPanel IsItemsHost="True"/>
                                     </Border>
                                 </Grid>
@@ -373,7 +375,8 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ComboBoxItem">
                     <Border Background="{TemplateBinding Background}"
-                            Padding="10">
+                            Padding="10"
+                            HorizontalAlignment="Stretch">
                         <ContentPresenter/>
                     </Border>
                     <ControlTemplate.Triggers>
@@ -645,10 +648,10 @@
                         <ScrollBar x:Name="PART_VerticalScrollBar"
                                    Value="{TemplateBinding VerticalOffset}"
                                    Maximum="{TemplateBinding ScrollableHeight}"
-                                   ViewportSize="40"
                                    Grid.Column="1"
                                    Style="{DynamicResource scrollBarStyle}"
-                                   Margin="3">
+                                   
+                                   ViewportSize="{TemplateBinding ViewportHeight}">
                         </ScrollBar>
                     </Grid>
                 </ControlTemplate>
@@ -663,10 +666,12 @@
                     <Grid>
                         <Border Background="Transparent">
                             <Track x:Name="PART_Track"
-                                   IsDirectionReversed="True">
+                                   IsDirectionReversed="True"
+                                   VerticalAlignment="Stretch">
                                 <Track.Thumb>
                                     <Thumb Style="{DynamicResource thumbStyle}"
-                                           Width="7">
+                                           Width="7"
+                                           Height="40">
                                     </Thumb>
                                 </Track.Thumb>
                             </Track>
@@ -715,7 +720,8 @@
                                    IsDirectionReversed="True">
                                 <Track.Thumb>
                                     <Thumb Style="{DynamicResource thumbStyle}"
-                                           Width="5">
+                                           Width="5"
+                                           Height="{TemplateBinding ViewportSize}">
                                     </Thumb>
                                 </Track.Thumb>
                             </Track>
@@ -732,6 +738,7 @@
                 <ControlTemplate TargetType="Thumb">
                     <Border Background="{DynamicResource ThumbColor}"
                             CornerRadius="4"
+                            Height="{TemplateBinding Height}"
                             x:Name="borderThumb"/>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
@@ -768,6 +775,7 @@
         <Setter Property="ItemContainerStyle">
             <Setter.Value>
                 <Style TargetType="ListBoxItem">
+                    <Setter Property="Background" Value="{DynamicResource BackgroundProductItemColor}"/>
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
@@ -775,7 +783,7 @@
                                         Width="180"
                                         Height="380"
                                         x:Name="borderItem">
-                                    <Border Background="{DynamicResource BackgroundProductItemColor}"
+                                    <Border Background="{TemplateBinding Background}"
                                                         BorderThickness="1"
                                                         BorderBrush="{DynamicResource BorderProductItemColor}"
                                                         x:Name="elementBorder">
@@ -854,7 +862,7 @@
                                                     </Grid>
                                                 </Grid>
                                             </Grid>
-                                            <Border Background="{DynamicResource BackgroundProductItemColor}"
+                                            <Border Background="{TemplateBinding Background}"
                                                                 BorderThickness="1, 0, 0, 0"
                                                                 BorderBrush="{DynamicResource BorderProductItemColor}"
                                                                 x:Name="expandElementBorder"
@@ -890,27 +898,29 @@
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="SelectionStates">
                                             <VisualState x:Name="Selected">
-                                                <Storyboard Duration="0:0:1">
+                                                <Storyboard Duration="0:0:0.5">
                                                     <DoubleAnimation Storyboard.TargetProperty="Width"
                                                          From="{TemplateBinding ActualWidth}"
                                                          To="588"
-                                                         BeginTime="0:0:0"/>
-                                                    <DoubleAnimation Duration="0:0:1"
-                                                                     Storyboard.TargetProperty="Height"
+                                                         BeginTime="0:0:0"
+                                                                     Duration="0:0:0.5"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                      BeginTime="0:0:0"
+                                                                     Duration="0:0:0.25"
                                                                      To="0"
                                                                      Storyboard.TargetName="singleProductShortInfoGrid"/>
                                                 </Storyboard>
                                             </VisualState>
                                             <VisualState x:Name="Unselected">
-                                                <Storyboard Duration="0:0:1">
+                                                <Storyboard Duration="0:0:0.5">
                                                     <DoubleAnimation Storyboard.TargetProperty="Width"
                                                          From="{TemplateBinding ActualWidth}"
                                                          To="180"
-                                                         BeginTime="0:0:0"/>
-                                                    <DoubleAnimation Duration="0:0:1"
-                                                                     Storyboard.TargetProperty="Height"
+                                                         BeginTime="0:0:0"
+                                                                     Duration="0:0:0.5"/>
+                                                    <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                      BeginTime="0:0:0"
+                                                                     Duration="0:0:0.5"
                                                                      To="30"
                                                                      Storyboard.TargetName="singleProductShortInfoGrid"/>
                                                 </Storyboard>
@@ -941,6 +951,12 @@
                                         <Setter TargetName="CountControls" Property="Visibility" Value="Collapsed"/>
                                         <Setter TargetName="StartControls" Property="Visibility" Value="Visible"/>
                                     </DataTrigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource BackgroundProductItemColorHover}"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseCaptured" Value="True">
+                                        <Setter Property="Background" Value="{DynamicResource BackgroundProductItemColorClicked}"/>
+                                    </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
@@ -971,18 +987,23 @@
                                         <ColumnDefinition Width="*"/>
                                         <ColumnDefinition Width="20"/>
                                     </Grid.ColumnDefinitions>
-                                    <ScrollBar Orientation="Horizontal" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Width="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=Width}" x:Name="PART_HorizontalScrollBar">
+                                    <ScrollBar Orientation="Horizontal" Grid.ColumnSpan="3" VerticalAlignment="Stretch" HorizontalAlignment="Stretch"
+                                               Width="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=Width}"
+                                               Height="{Binding RelativeSource={RelativeSource AncestorType=Grid}, Path=Height}"
+                                               x:Name="PART_HorizontalScrollBar">
                                         <ScrollBar.Template>
                                             <ControlTemplate TargetType="ScrollBar">
                                                 <Grid>
                                                     <Button Style="{DynamicResource uibStyle}" HorizontalAlignment="Left" Width="20"
-                                                Command="ScrollBar.LineUpCommand">
+                                                Command="ScrollBar.PageLeftCommand"
+                                                            VerticalAlignment="Stretch">
                                                         <Path Data="M 0 8 L 8 0 L 8 16 Z" Fill="{DynamicResource FontUIColor}"
                                                               VerticalAlignment="Center"
                                                               HorizontalAlignment="Center"/>
                                                     </Button>
                                                     <Button Style="{DynamicResource uibStyle}" HorizontalAlignment="Right" Width="20"
-                                                            Command="ScrollBar.LineDownCommand">
+                                                            Command="ScrollBar.PageRightCommand"
+                                                            VerticalAlignment="Stretch">
                                                         <Path Data="M 0 0 L 0 16 L 8 8 Z" Fill="{DynamicResource FontUIColor}"
                                                               VerticalAlignment="Center"
                                                               HorizontalAlignment="Center"/>
@@ -992,7 +1013,6 @@
                                         </ScrollBar.Template>
                                     </ScrollBar>
                                     <ScrollContentPresenter Grid.Column="1"/>
-                                    
                                 </Grid>
                             </ControlTemplate>
                         </ScrollViewer.Template>
@@ -1008,7 +1028,7 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
-                                <Image x:Name="mediaImage" Margin="10, 0"/>
+                                <Image x:Name="mediaImage" Margin="5, 0"/>
                                 <ControlTemplate.Triggers>
                                     <DataTrigger Binding="{Binding Path=Type}" Value="1">
                                         <Setter TargetName="mediaImage" Property="Source" Value="{Binding Path=Uri}"/>

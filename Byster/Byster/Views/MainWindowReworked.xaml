@@ -12,6 +12,10 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Views/Styles.xaml"/>
+                <ResourceDictionary>
+                    <local:FromBoolToVisibility x:Key="FromBoolToVisibilityConverter"/>
+                    <local:FromNullToVisibility x:Key="FromNullToVisibilityConverter"/>
+                </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
@@ -91,19 +95,27 @@
                     <Path Data="M 0 0 L 0 4 L 2 2 Z" Fill="{DynamicResource FontInfoColor}" Stretch="Fill" Width="10" Height="10"/>
                     <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=selectedSession.ServerName, TargetNullValue=Server}" Margin="10, 0"/>
                 </StackPanel>
-                <Grid Margin="10" Grid.Column="1">
-                    <Grid x:Name="startControls" Visibility="{Binding Path=ControlVisibilities[0]}">
-                        <Button Style="{DynamicResource bStyle}" Content="Запустить" x:Name="startBtn"/>
-                    </Grid>
-                    <Grid x:Name="processControls" Visibility="{Binding Path=ControlVisibilities[1]}">
-                        <Grid>
-                            <Grid.RowDefinitions>
-                                <RowDefinition/>
-                                <RowDefinition/>
-                            </Grid.RowDefinitions>
-                            <TextBlock Style="{DynamicResource titleTextBlockStyle}" Text="Дождитесь завершения загрузки..." VerticalAlignment="Bottom" Margin="5, 0, 0, 5" Grid.Row="0"/>
-                            <ProgressBar Style="{DynamicResource prbStyle}" Value="60" x:Name="processProgressbar" Grid.Row="1"/>
+                <Grid Margin="10" Grid.Column="1" >
+                    <Grid x:Name="injectControls" Visibility="{Binding Path=ControlVisibilities[0]}">
+                        <Grid x:Name="sessionExistingChecker" Visibility="{Binding Path=selectedSession, Converter={StaticResource FromNullToVisibilityConverter}}">
+                            <Grid x:Name="startControls" Visibility="{Binding Path=selectedSession.InjectInfo.IsDefault, Converter={StaticResource FromBoolToVisibilityConverter}}">
+                                <Button Style="{DynamicResource bStyle}" Content="Запустить" x:Name="startBtn" Click="startBtn_Click"/>
+                            </Grid>
+                            <Grid x:Name="processControls" Visibility="{Binding Path=selectedSession.InjectInfo.IsEnqueuedToInject, Converter={StaticResource FromBoolToVisibilityConverter}}">
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition/>
+                                        <RowDefinition/>
+                                    </Grid.RowDefinitions>
+                                    <TextBlock Style="{DynamicResource titleTextBlockStyle}" Text="Дождитесь завершения загрузки..." VerticalAlignment="Bottom" Margin="5, 0, 0, 5" Grid.Row="0"/>
+                                    <!--<ProgressBar Style="{DynamicResource prbStyle}" Value="60" x:Name="processProgressbar" Grid.Row="1"/> Реализация прогрессбара -->
+                                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center" Margin="5, 0" Grid.Row="1"
+                                       x:Name="injectInfoTextBlock"
+                                       Text="{Binding Path=selectedSession.InjectInfo.StatusText}"/>
+                                </Grid>
+                            </Grid>
                         </Grid>
+                        
                     </Grid>
                     <Grid x:Name="shopControls" Visibility="{Binding Path=ControlVisibilities[2]}">
                         <Button Style="{DynamicResource bStyle}" Content="Магазин" x:Name="shopBtn"/>

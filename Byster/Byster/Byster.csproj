@@ -85,6 +85,7 @@
     <Compile Include="Models\RestModels\RestParts.cs" />
     <Compile Include="Models\BysterModels\Media.cs" />
     <Compile Include="Models\BysterModels\ShopProduct.cs" />
+    <Compile Include="Models\Utilities\Injector.cs" />
     <Compile Include="Models\Utilities\HashCalc.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />
     <Compile Include="Models\Utilities\EventHandlers.cs" />
@@ -136,6 +137,9 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
     <None Include="app.manifest" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">

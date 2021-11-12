@@ -43,7 +43,7 @@ namespace Byster.Utilities.WOWModels
         DRUID = 11
     }
 
-    public class WoWSearcher
+    public class WoWSearcher : IDisposable
     {
         public string Title { get; set; }
         public List<WoW> Wows { get; set; } = new List<WoW>();
@@ -52,6 +52,11 @@ namespace Byster.Utilities.WOWModels
             Title = title;
 
             TimerWatcher = new Timer(new TimerCallback(TimerTick), null, 1000, 1000);
+        }
+
+        public void Dispose()
+        {
+            TimerWatcher.Dispose();
         }
 
         public delegate bool ProcessDelegate(WoW p);

@@ -7,12 +7,20 @@ using System.Threading;
 using System.Runtime.InteropServices;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using RestSharp;
+using System.Net;
+using System.IO;
+using Byster.Models.RestModels;
+using System.Windows;
 
 namespace Byster.Models.Utilities
 {
     public class Injector
     {
-        private const string FullLibPath = "%temp%\\Byster\\Test.dll";
+        private static string FullLibPath = Path.GetTempPath() + "Byster\\Core";
+
+        public static string Branch { get; set; }
+        public static RestClient Rest { get; set; }
 
         [DllImport("kernel32.dll")]
         static extern bool WriteProcessMemory(uint hProcess, uint lpBaseAddress, byte[] lpBuffer, int dwSize, uint lpNumberOfBytesWritten);
@@ -42,16 +50,6 @@ namespace Byster.Models.Utilities
 
         [DllImport("kernel32.dll")]
         static extern bool VirtualFreeEx(UInt32 a, UInt32 b, UInt32 c, UInt32 d);
-
-        static private Queue<UInt32> injectQueue;
-
-        public delegate void InjectQueueChangedDelegate(UInt32 changedElement, InjectorStatusCode injectorStatusCode);
-
-        public static event InjectQueueChangedDelegate InjectQueueEnqueued;
-        public static event InjectQueueChangedDelegate InjectQueueUpdated;
-        public static event InjectQueueChangedDelegate InjectQueueDequeued;
-
-        private static Thread injectionThread;
 
         static byte[] to_ascii(string utf16String)
         {
@@ -128,40 +126,98 @@ namespace Byster.Models.Utilities
             return true;
         }
 
+        static private Queue<InjectInfo> injectQueue;
+
+        public delegate void InjectQueueChangedDelegate(InjectInfo changedElement, InjectorStatusCode injectorStatusCode);
+
+        public static event InjectQueueChangedDelegate InjectQueueUpdated;
+
+        private static Thread injectionThread;
+
+        
+
         public static void Init()
         {
-            injectQueue = new Queue<UInt32>();
-            injectionThread = new Thread(new ThreadStart(TimerTick));
+            injectQueue = new Queue<InjectInfo>();
+            injectionThread = new Thread(new ThreadStart(ThreadMethod));
             injectionThread.Start();
+            Branch = "master";
+            InjectQueueUpdated += baseInjectQueueChangedHandler;
         }
 
-        static public void AddProcessToInject(UInt32 processId)
+        static public void Close()
         {
-            if (processId == 0)
+            injectionThread.Abort();
+        }
+
+        private static void baseInjectQueueChangedHandler(InjectInfo changedElement, InjectorStatusCode injectorStatusCode)
+        {
+            switch(injectorStatusCode)
             {
-                InjectQueueEnqueued.Invoke(processId, InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED);
+                default:
+                case InjectorStatusCode.INJECTED_OK:
+                case InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB:
+                case InjectorStatusCode.ERROR_WHILE_INJECTING:
+                case InjectorStatusCode.ERROR_PROCESS_NOT_FOUND:
+                case InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED:
+                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
+                    break;
+                case InjectorStatusCode.ADDED_OK:
+                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.ENEQUEUED;
+                    break;
+                case InjectorStatusCode.LIBRARY_DOWNLOADING_STARTED:
+                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.DOWNLOADING;
+                    break;
+                case InjectorStatusCode.INJECTION_STARTED:
+                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTING;
+
+                    break;
+            }
+        }
+
+        static public void AddProcessToInject(InjectInfo injectingProcessInfo)
+        {
+            if (injectingProcessInfo.ProcessId == 0)
+            {
+                InjectQueueUpdated.Invoke(injectingProcessInfo, InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED);
                 return;
             }
-            injectQueue.Enqueue(processId);
-            InjectQueueEnqueued?.Invoke(processId, InjectorStatusCode.ADDED_OK);
+            injectQueue.Enqueue(injectingProcessInfo);
+            InjectQueueUpdated?.Invoke(injectingProcessInfo, InjectorStatusCode.ADDED_OK);
         }
 
-        static public void TimerTick()
+        static public void ThreadMethod()
         {
             while (true)
             {
                 if (injectQueue.Count > 0)
                 {
-                    UInt32 injectingProcess = injectQueue.Dequeue();
+                    InjectInfo injectingProcess = injectQueue.Dequeue();
+
+                    InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.LIBRARY_DOWNLOADING_STARTED);
+                    var response = Rest.Post(new RestRequest("launcher/get_lib").AddJsonBody(new RestLibRequest()
+                    {
+                        branch = Branch,
+                    }));
+                    if(response.StatusCode != HttpStatusCode.OK)
+                    {
+                        InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB);
+                        continue;
+                    }
+                    int i = 0;
+                    while (File.Exists(FullLibPath + i + ".dll")) i++;
+                    File.WriteAllBytes(FullLibPath + i + ".dll", response.RawBytes);
+
+                    Thread.Sleep(10000);
                     InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.INJECTION_STARTED);
-                    bool injectionResult = Inject(injectingProcess, FullLibPath);
+                    bool injectionResult = Inject(injectingProcess.ProcessId, FullLibPath + i + ".dll");
                     if (injectionResult)
                     {
-                        InjectQueueDequeued?.Invoke(injectingProcess, InjectorStatusCode.INJECTED_OK);
+                        InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.INJECTED_OK);
                     }
                     else
                     {
-                        InjectQueueDequeued?.Invoke(injectingProcess, InjectorStatusCode.ERROR_WHILE_INJECTING);
+                        InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.ERROR_WHILE_INJECTING);
                     }
                 }
             }
@@ -176,87 +232,52 @@ namespace Byster.Models.Utilities
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-
-        private bool isDefault;
-        private bool isInjecting;
-        private bool isEnqueuedToInject;
-        private bool isError;
-
-        public bool IsInjecting
+        private InjectInfoStatusCode injectInfoStatusCode;
+        public InjectInfoStatusCode InjectInfoStatusCode
         {
-            get
-            {
-                return isInjecting;
-            }
+            get => injectInfoStatusCode;
             set
             {
-                isInjecting = value;
-                OnPropertyChanged("IsInjecting");
-            }
-        }
-        public bool IsEnqueuedToInject
-        {
-            get
-            {
-                return isEnqueuedToInject;
-            }
-            set
-            {
-                isEnqueuedToInject = value;
-                OnPropertyChanged("IsEnqueuedToInject");
-            }
-        }
-        public bool IsError
-        {
-            get { return isError; }
-            set
-            {
-                isError = value;
-                OnPropertyChanged("IsError");
+                injectInfoStatusCode = value;
+                OnPropertyChanged("InjectInfoStatusCode");
             }
         }
 
-        public bool IsDefault
+        private UInt32 processId;
+        public UInt32 ProcessId
         {
-            get
-            {
-                return isDefault;
-            }
+            get { return processId; }
             set
             {
-                isDefault = value;
-                OnPropertyChanged("Default");
+                processId = value;
+                OnPropertyChanged("ProcessId");
             }
         }
 
-        public string StatusText { get; set; }
-        public InjectInfo()
-        {
-            IsDefault = true;
-            IsInjecting = false;
-            IsEnqueuedToInject = false;
-            IsError = false;
-            PropertyChanged += InjectInfoStatusUpdater;
-        }
 
-        private void InjectInfoStatusUpdater(object sender, PropertyChangedEventArgs e)
-        {
-            StatusText = isInjecting ?  "Загрузка библиотеки" :
-                IsEnqueuedToInject ?    "Ожидание очереди для загрузки" :
-                IsError ?               "Ошибка" :
-                                        "---";
-        }
     }
 
     public enum InjectorStatusCode
     {
         INJECTED_OK                 = 0,
         ERROR_WHILE_INJECTING       = 1,
+        ERROR_WHILE_DOWNLOADING_LIB = 2,
         
-        ADDED_OK                    = 2,
-        ERROR_PROCESS_NOT_FOUND     = 3,
-        ERROR_PROCESS_NOT_DECLARED  = 4,
+        ADDED_OK                    = 3,
+        ERROR_PROCESS_NOT_FOUND     = 4,
+        ERROR_PROCESS_NOT_DECLARED  = 5,
 
-        INJECTION_STARTED           = 5,
+        LIBRARY_DOWNLOADING_STARTED = 6,
+        INJECTION_STARTED           = 7,
+    }
+
+    public enum InjectInfoStatusCode
+    {
+        INACTIVE    = 0,
+        ENEQUEUED   = 1,
+        DOWNLOADING = 2,
+        INJECTING   = 3,
+
+        ERROR       = 4,
     }
 }

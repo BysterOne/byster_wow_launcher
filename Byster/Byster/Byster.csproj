@@ -80,6 +80,7 @@
     <Compile Include="Models\RestModels\BaseResponse.cs" />
     <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
     <Compile Include="Models\RestModels\Register.cs" />
+    <Compile Include="Models\RestModels\RestLibRequest.cs" />
     <Compile Include="Models\RestModels\RestProduct.cs" />
     <Compile Include="Models\RestModels\RestRotation.cs" />
     <Compile Include="Models\RestModels\RestParts.cs" />

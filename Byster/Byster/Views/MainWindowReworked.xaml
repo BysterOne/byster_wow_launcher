@@ -13,7 +13,8 @@
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary Source="/Views/Styles.xaml"/>
                 <ResourceDictionary>
-                    <local:FromBoolToVisibility x:Key="FromBoolToVisibilityConverter"/>
+                    <local:FromInjectInfoStatusCodeToVisibility x:Key="FromInjectInfoStatusCodeToVisibilityConverter"/>
+                    <local:FromInjectInfoStatusCodeToStatusText x:Key="FromInjectInfoStatusCodeToStatusTextConverter"/>
                     <local:FromNullToVisibility x:Key="FromNullToVisibilityConverter"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
@@ -98,10 +99,10 @@
                 <Grid Margin="10" Grid.Column="1" >
                     <Grid x:Name="injectControls" Visibility="{Binding Path=ControlVisibilities[0]}">
                         <Grid x:Name="sessionExistingChecker" Visibility="{Binding Path=selectedSession, Converter={StaticResource FromNullToVisibilityConverter}}">
-                            <Grid x:Name="startControls" Visibility="{Binding Path=selectedSession.InjectInfo.IsDefault, Converter={StaticResource FromBoolToVisibilityConverter}}">
+                            <Grid x:Name="startControls" Visibility="{Binding Path=selectedSession.InjectInfo.InjectInfoStatusCode, Converter={StaticResource FromInjectInfoStatusCodeToVisibilityConverter}, ConverterParameter=Default}">
                                 <Button Style="{DynamicResource bStyle}" Content="Запустить" x:Name="startBtn" Click="startBtn_Click"/>
                             </Grid>
-                            <Grid x:Name="processControls" Visibility="{Binding Path=selectedSession.InjectInfo.IsEnqueuedToInject, Converter={StaticResource FromBoolToVisibilityConverter}}">
+                            <Grid x:Name="processControls" Visibility="{Binding Path=selectedSession.InjectInfo.InjectInfoStatusCode, Converter={StaticResource FromInjectInfoStatusCodeToVisibilityConverter}, ConverterParameter=Active}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
@@ -111,7 +112,7 @@
                                     <!--<ProgressBar Style="{DynamicResource prbStyle}" Value="60" x:Name="processProgressbar" Grid.Row="1"/> Реализация прогрессбара -->
                                     <TextBlock Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center" Margin="5, 0" Grid.Row="1"
                                        x:Name="injectInfoTextBlock"
-                                       Text="{Binding Path=selectedSession.InjectInfo.StatusText}"/>
+                                       Text="{Binding Path=selectedSession.InjectInfo.InjectInfoStatusCode, Converter={StaticResource FromInjectInfoStatusCodeToStatusTextConverter}}"/>
                                 </Grid>
                             </Grid>
                         </Grid>

@@ -42,35 +42,12 @@ namespace Byster.Views
             searcher.OnWowClosed += OnWOWClosed;
 
             Injector.Init();
-            Injector.InjectQueueEnqueued += InjectorQueueProcessAdded;
-            Injector.InjectQueueUpdated += InjectorQueueProcessUpdated;
-            Injector.InjectQueueDequeued += InjectorQueueProcessRemoved;
+            Injector.Rest = App.Rest;
+
+            this.Closing += ClosingHandler;
         }
 
-        private void InjectorQueueProcessUpdated(uint changedElement, InjectorStatusCode injectorStatusCode)
-        {
-            var changedSession = Manager.SessionsCollection.First(session => session.WowApp.Process.Id == changedElement);
-            changedSession.InjectInfo.IsInjecting = true;
-            changedSession.InjectInfo.IsDefault = false;
-        }
-
-        private void InjectorQueueProcessRemoved(uint changedElement, InjectorStatusCode injectorStatusCode)
-        {
-            var changedSession = Manager.SessionsCollection.First(session => session.WowApp.Process.Id == changedElement);
-            changedSession.InjectInfo.IsEnqueuedToInject = false;
-            changedSession.InjectInfo.IsInjecting = false;
-            changedSession.InjectInfo.IsDefault = true;
-        }
-
-        private void InjectorQueueProcessAdded(uint changedElement, InjectorStatusCode injectorStatusCode)
-        {
-            if(injectorStatusCode == InjectorStatusCode.ADDED_OK)
-            {
-                var changedSession = Manager.SessionsCollection.First(session => session.WowApp.Process.Id == changedElement);
-                changedSession.InjectInfo.IsEnqueuedToInject = true;
-                changedSession.InjectInfo.IsDefault = false;
-            }
-        }
+        
 
         private bool OnWOWClosed(WoW p)
         {
@@ -104,6 +81,10 @@ namespace Byster.Views
                     UserName = p.Name,
                     ServerName = p.Version,
                     WowApp = p,
+                    InjectInfo = new InjectInfo()
+                    {
+                        ProcessId = (UInt32)p.Process.Id,
+                    }
                 });
             });
             return true;
@@ -150,8 +131,13 @@ namespace Byster.Views
         {
             if(Manager.selectedSession?.WowApp?.Process?.Id != null)
             {
-                Injector.AddProcessToInject((UInt32)Manager.selectedSession.WowApp.Process.Id);
+                Injector.AddProcessToInject(Manager.selectedSession.InjectInfo);
             }
+        }
+        private void ClosingHandler(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            Injector.Close();
+            searcher.Dispose();
         }
     }
 
@@ -274,11 +260,62 @@ namespace Byster.Views
             }
         }
     }
-    public class FromBoolToVisibility : IValueConverter
+    public class FromInjectInfoStatusCodeToVisibility : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        { 
+            if(value != null && parameter != null && value is InjectInfoStatusCode && parameter is string)
+            {
+                InjectInfoStatusCode statusCode = (InjectInfoStatusCode)value;
+                int status = (int)statusCode;
+
+                switch(parameter.ToString())
+                {
+                    case "Default":
+                        return status == 0 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Active":
+                        return status != 0 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Enqueued":
+                        return status == 1 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Downloading":
+                        return status == 2 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Injecting":
+                        return status == 3 ? Visibility.Visible : Visibility.Collapsed;
+                        
+                }
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class FromInjectInfoStatusCodeToStatusText : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            return ((bool)value) ? Visibility.Visible : Visibility.Collapsed;
+            if (value != null && value is InjectInfoStatusCode)
+            {
+                InjectInfoStatusCode statusCode = (InjectInfoStatusCode)value;
+                int status = (int)statusCode;
+
+                switch (statusCode)
+                {
+                    case InjectInfoStatusCode.INACTIVE:
+                        return "Инжект инактивен...";
+                    case InjectInfoStatusCode.ENEQUEUED:
+                        return "Ожидание в очереди для инжекта...";
+                    case InjectInfoStatusCode.DOWNLOADING:
+                        return "Скачивание ядра....";
+                    case InjectInfoStatusCode.INJECTING:
+                        return "Инжект...";
+
+                }
+            }
+            return "---";
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

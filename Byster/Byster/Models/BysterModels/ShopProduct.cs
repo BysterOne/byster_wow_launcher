@@ -5,11 +5,19 @@ using System.Text;
 using System.Threading.Tasks;
 using Byster.Models.RestModels;
 using Byster.Models.BysterModels;
+using Byster.Models.Utilities;
+using System.ComponentModel;
 
 namespace Byster.Models.BysterModels
 {
-    public class ShopProduct
+    public class ShopProduct : INotifyPropertyChanged
     {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string propertyName)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
+        }
+
         public string Name { get; set; }
         public string ImageUri { get; set; }
         public string Description { get; set; }
@@ -43,10 +51,30 @@ namespace Byster.Models.BysterModels
             }
             IsPack = Rotations.Count > 1;
             IsTestable = RestShopProduct.can_test;
-            ImageUri = !string.IsNullOrEmpty(RestShopProduct.image_url) ? RestShopProduct.image_url :
-                Rotations.Count == 1 ? Rotations[0].ImageUri :
-                "/Resources/Images/image-placeholder.jpg";
 
+
+            if (!string.IsNullOrEmpty(RestShopProduct.image_url))
+            {
+                ImageItem item = BackgroundPhotoDownloader.GetImageItemByNetworkPath(RestShopProduct.image_url);
+                if (item != null)
+                {
+                    item.PropertyChanged += ImageUriPropChanged;
+                    ImageUri = item.PathOfCurrentLocalSource;
+                }
+            }
+            else
+            {
+                ImageUri = Rotations.Count == 1 ? Rotations[0].ImageUri :
+                "/Resources/Images/image-placeholder.jpg";
+            }
+
+        }
+
+        private void ImageUriPropChanged(object sender, PropertyChangedEventArgs e)
+        {
+            ImageItem item = (ImageItem)sender;
+            ImageUri = item.PathOfCurrentLocalSource;
+            OnPropertyChanged("ImageUri");
         }
     }
 }

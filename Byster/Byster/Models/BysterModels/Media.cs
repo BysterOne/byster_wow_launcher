@@ -3,12 +3,34 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Byster.Models.Utilities;
+using System.ComponentModel;
 
 namespace Byster.Models.BysterModels
 {
-    public class Media
+    public class Media : INotifyPropertyChanged
     {
-        public string Uri { get; set; }
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string property)
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
+
+        public ImageItem ImageItem { get; set; }
+
+
+
+        private string uri;
+        public string Uri
+        {
+            get => uri;
+            set
+            {
+                uri = value;
+                OnPropertyChanged("Uri");
+            }
+        }
         public MediaTypes Type { get; set; }
 
         public static MediaTypes GetMediaTypeByName(string name)
@@ -24,8 +46,16 @@ namespace Byster.Models.BysterModels
 
         public Media(string uri, MediaTypes type)
         {
-            Uri = uri;
+            ImageItem = BackgroundPhotoDownloader.GetImageItemByNetworkPath(uri);
+            ImageItem.PropertyChanged += ImageItemCahnged;
+            Uri = ImageItem.PathOfCurrentLocalSource;
             Type = type;
+        }
+
+        private void ImageItemCahnged(object sender, PropertyChangedEventArgs e)
+        {
+            ImageItem item = (ImageItem)sender;
+            Uri = item.PathOfCurrentLocalSource;
         }
     }
 

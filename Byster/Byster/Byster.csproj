@@ -48,6 +48,9 @@
     <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.13.1.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.13.1\lib\net45\Microsoft.IdentityModel.Tokens.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="RestSharp, Version=106.12.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
       <HintPath>..\packages\RestSharp.106.12.0\lib\net452\RestSharp.dll</HintPath>
     </Reference>
@@ -86,6 +89,7 @@
     <Compile Include="Models\RestModels\RestParts.cs" />
     <Compile Include="Models\BysterModels\Media.cs" />
     <Compile Include="Models\BysterModels\ShopProduct.cs" />
+    <Compile Include="Models\Utilities\BackgroundPhotoDownloader.cs" />
     <Compile Include="Models\Utilities\Injector.cs" />
     <Compile Include="Models\Utilities\HashCalc.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />

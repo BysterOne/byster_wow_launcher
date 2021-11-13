@@ -31,6 +31,8 @@ namespace Byster.Views
         MainWindowManager Manager { get; set; }
         public MainWindowReworked(string login)
         {
+            BackgroundPhotoDownloader.Init();
+
             Manager = new MainWindowManager();
             InitializeComponent();
             this.DataContext = Manager;
@@ -136,6 +138,7 @@ namespace Byster.Views
         }
         private void ClosingHandler(object sender, System.ComponentModel.CancelEventArgs e)
         {
+            BackgroundPhotoDownloader.Close();
             Injector.Close();
             searcher.Dispose();
         }

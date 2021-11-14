@@ -14,7 +14,6 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Byster.Models.BysterModels;
 using Byster.Models.RestModels;
-using Byster.Utilities.WOWModels;
 using Byster.Models.Utilities;
 using RestSharp;
 using System.Net;
@@ -42,7 +41,6 @@ namespace Byster.Views
             searcher.OnWowFounded += OnWOWFound;
             searcher.OnWowChanged += OnWOWChanged;
             searcher.OnWowClosed += OnWOWClosed;
-
             Injector.Init();
             Injector.Rest = App.Rest;
 
@@ -141,6 +139,20 @@ namespace Byster.Views
             BackgroundPhotoDownloader.Close();
             Injector.Close();
             searcher.Dispose();
+        }
+        public void AddProductButton(object sender, RoutedEventArgs e)
+        {
+            ShopProductInfo shopProductInfo = ((sender as Button).DataContext as ShopProductInfo);
+            shopProductInfo.Add();
+        }
+        public void RemoveProductButton(object sender, RoutedEventArgs e)
+        {
+            ShopProductInfo shopProductInfo = ((sender as Button).DataContext as ShopProductInfo);
+            shopProductInfo.RemoveOne();
+        }
+        public void TestProductButton(object sender, RoutedEventArgs e)
+        {
+
         }
     }
 

@@ -16,6 +16,222 @@
                     <local:FromInjectInfoStatusCodeToVisibility x:Key="FromInjectInfoStatusCodeToVisibilityConverter"/>
                     <local:FromInjectInfoStatusCodeToStatusText x:Key="FromInjectInfoStatusCodeToStatusTextConverter"/>
                     <local:FromNullToVisibility x:Key="FromNullToVisibilityConverter"/>
+                    <Style TargetType="{x:Type ListBox}" x:Key="shopViewStyle">
+                        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+                        <Setter Property="SelectionMode" Value="Single"/>
+                        <Setter Property="Template">
+                            <Setter.Value>
+                                <ControlTemplate TargetType="ListBox">
+                                    <ScrollViewer Style="{DynamicResource scrollViewerStyle}">
+                                        <ItemsPresenter/>
+                                    </ScrollViewer>
+                                </ControlTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="ItemsPanel">
+                            <Setter.Value>
+                                <ItemsPanelTemplate>
+                                    <WrapPanel Background="Transparent"/>
+                                </ItemsPanelTemplate>
+                            </Setter.Value>
+                        </Setter>
+                        <Setter Property="ItemContainerStyle">
+                            <Setter.Value>
+                                <Style TargetType="ListBoxItem">
+                                    <Setter Property="Background" Value="{DynamicResource BackgroundProductItemColor}"/>
+                                    <Setter Property="Template">
+                                        <Setter.Value>
+                                            <ControlTemplate TargetType="ListBoxItem">
+                                                <Border Margin="12"
+                                        Width="180"
+                                        Height="380"
+                                        x:Name="borderItem">
+                                                    <Border Background="{TemplateBinding Background}"
+                                                        BorderThickness="1"
+                                                        BorderBrush="{DynamicResource BorderProductItemColor}"
+                                                        x:Name="elementBorder">
+                                                        <Border.Effect>
+                                                            <DropShadowEffect ShadowDepth="0" Color="{DynamicResource EffectProductItemColor}" BlurRadius="30"/>
+                                                        </Border.Effect>
+                                                        <Grid x:Name="mainElementGrid">
+                                                            <Grid.ColumnDefinitions>
+                                                                <ColumnDefinition Width="180"/>
+                                                                <ColumnDefinition/>
+                                                            </Grid.ColumnDefinitions>
+                                                            <Grid Grid.Column="0">
+                                                                <Grid.RowDefinitions>
+                                                                    <RowDefinition Height="90"/>
+                                                                    <RowDefinition Height="180"/>
+                                                                    <RowDefinition Height="110"/>
+                                                                </Grid.RowDefinitions>
+                                                                <Grid Grid.Row="0" Margin="10">
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                        <RowDefinition/>
+                                                                    </Grid.RowDefinitions>
+                                                                    <Grid Grid.Row="0"
+                                                          x:Name="singleProductShortInfoGrid"
+                                                          Visibility="Collapsed"
+                                                          Height="30">
+                                                                        <Image x:Name="rotationClass" HorizontalAlignment="Left" VerticalAlignment="Center"
+                                                                           Height="30"/>
+                                                                        <TextBlock x:Name="rotationType" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                        <Image x:Name="rotationRole" HorizontalAlignment="Right" VerticalAlignment="Center"
+                                                                           Height="30"/>
+                                                                    </Grid>
+                                                                    <Grid Grid.Row="0"
+                                                          x:Name="multipleProductShortInfoGrid"
+                                                          Visibility="Visible"
+                                                          Height="30">
+                                                                        <StackPanel Orientation="Horizontal"
+                                                                    HorizontalAlignment="Center">
+                                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Product.Rotations.Count}"/>
+                                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text=" ротаций"/>
+                                                                        </StackPanel>
+                                                                    </Grid>
+                                                                    <TextBlock Grid.Row="1" Text="{Binding Path=Product.Name}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource infoTextBlockStyle}" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
+                                                                </Grid>
+                                                                <Image Grid.Row="1" Source="{Binding Path=Product.ImageUri}"/>
+                                                                <Grid Grid.Row="2">
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition/>
+                                                                        <RowDefinition Height="Auto"/>
+                                                                    </Grid.RowDefinitions>
+                                                                    <Grid Grid.Row="0" Margin="10">
+                                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                                            <TextBlock Text="{Binding Path=Product.Duration}" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                            <TextBlock Text=" дней" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                        </StackPanel>
+                                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                                            <TextBlock Text="{Binding Path=Product.Price}" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                            <TextBlock Text=" " Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                            <TextBlock Text="{Binding Path=Product.Currency}" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                        </StackPanel>
+                                                                    </Grid>
+                                                                    <Grid Grid.Row="1" Margin="10">
+                                                                        <Grid HorizontalAlignment="Stretch" x:Name="StartControls" Visibility="Collapsed">
+                                                                            <Button Width="70" Style="{DynamicResource transparentButtonStyle}" x:Name="testBtn" Visibility="Collapsed" Content="Тест" Margin="0, 0, 10, 0" HorizontalAlignment="Left"/>
+                                                                            <Button Width="160" Style="{DynamicResource productButtonStyle}" x:Name="buyBtn" Content="Купить" HorizontalAlignment="Right" Click="AddProductButton"/>
+                                                                        </Grid>
+                                                                        <Grid HorizontalAlignment="Stretch" x:Name="CountControls">
+                                                                            <Button Style="{DynamicResource uibStyle}" HorizontalAlignment="Left" Click="RemoveProductButton">
+                                                                                <Image Source="/Resources/Images/minus-button.png" Stretch="Uniform" Width="20" Margin="5" />
+                                                                            </Button>
+                                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Count}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                                            <Button Style="{DynamicResource uibStyle}" HorizontalAlignment="Right" Click="AddProductButton">
+                                                                                <Image Source="/Resources/Images/plus-button.png" Stretch="Uniform" Width="20" Margin="5"/>
+                                                                            </Button>
+                                                                        </Grid>
+                                                                    </Grid>
+                                                                </Grid>
+                                                            </Grid>
+                                                            <Border Background="{TemplateBinding Background}"
+                                                                BorderThickness="1, 0, 0, 0"
+                                                                BorderBrush="{DynamicResource BorderProductItemColor}"
+                                                                x:Name="expandElementBorder"
+                                                                Grid.Column="1">
+                                                                <Grid Width="388"
+                                                      Margin="10">
+                                                                    <Grid.RowDefinitions>
+                                                                        <RowDefinition Height="40"/>
+                                                                        <RowDefinition/>
+                                                                        <RowDefinition Height="70"/>
+                                                                    </Grid.RowDefinitions>
+                                                                    <StackPanel Orientation="Horizontal">
+                                                                        <TextBlock x:Name="productTypeName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}"
+                                                                   Margin="0"/>
+                                                                        <Image x:Name="productClassImage" Height="40"
+                                                               Margin="13, 0"/>
+                                                                        <TextBlock x:Name="productClassName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" TextAlignment="Center"
+                                                                   Margin="0"/>
+                                                                        <Image x:Name="productRoleImage" Height="40"
+                                                               Margin="13, 0"/>
+                                                                        <TextBlock x:Name="productSpecializationName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" TextAlignment="Right"
+                                                                   Margin="0"/>
+                                                                    </StackPanel>
+                                                                    <ScrollViewer Style="{DynamicResource scrollViewerStyle}"
+                                                                Grid.Row="1" Margin="0, 10">
+                                                                        <TextBlock Style="{DynamicResource infoTextBlockStyle}" TextWrapping="Wrap" Text="{Binding Path=Product.Description}"/>
+                                                                    </ScrollViewer>
+                                                                    <ListBox Style="{DynamicResource mediaViewBox}" ItemsSource="{Binding Path=Product.Medias}" Grid.Row="2"/>
+                                                                </Grid>
+                                                            </Border>
+                                                        </Grid>
+                                                    </Border>
+                                                    <VisualStateManager.VisualStateGroups>
+                                                        <VisualStateGroup x:Name="SelectionStates">
+                                                            <VisualState x:Name="Selected">
+                                                                <Storyboard Duration="0:0:0.5">
+                                                                    <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                         From="{TemplateBinding ActualWidth}"
+                                                         To="588"
+                                                         BeginTime="0:0:0"
+                                                                     Duration="0:0:0.5"/>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                                     BeginTime="0:0:0"
+                                                                     Duration="0:0:0.25"
+                                                                     To="0"
+                                                                     Storyboard.TargetName="singleProductShortInfoGrid"/>
+                                                                </Storyboard>
+                                                            </VisualState>
+                                                            <VisualState x:Name="Unselected">
+                                                                <Storyboard Duration="0:0:0.5">
+                                                                    <DoubleAnimation Storyboard.TargetProperty="Width"
+                                                         From="{TemplateBinding ActualWidth}"
+                                                         To="180"
+                                                         BeginTime="0:0:0"
+                                                                     Duration="0:0:0.5"/>
+                                                                    <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                                     BeginTime="0:0:0"
+                                                                     Duration="0:0:0.5"
+                                                                     To="30"
+                                                                     Storyboard.TargetName="singleProductShortInfoGrid"/>
+                                                                </Storyboard>
+                                                            </VisualState>
+                                                        </VisualStateGroup>
+                                                    </VisualStateManager.VisualStateGroups>
+                                                </Border>
+                                                <ControlTemplate.Triggers>
+                                                    <DataTrigger Binding="{Binding Path=Product.Rotations.Count}" Value="1">
+                                                        <Setter TargetName="rotationClass" Property="Source" Value="{Binding Path=Product.Rotations[0].RotationClass.ImageUri}"/>
+                                                        <Setter TargetName="rotationRole" Property="Source" Value="{Binding Path=Product.Rotations[0].RoleOfRotation.ImageUri}"/>
+                                                        <Setter TargetName="rotationType" Property="Text" Value="{Binding Path=Product.Rotations[0].Type}"/>
+
+                                                        <Setter TargetName="productTypeName" Property="Text" Value="{Binding Path=Product.Rotations[0].Type}"/>
+                                                        <Setter TargetName="productClassImage" Property="Source" Value="{Binding Path=Product.Rotations[0].RotationClass.ImageUri}"/>
+                                                        <Setter TargetName="productClassName" Property="Text" Value="{Binding Path=Product.Rotations[0].RotationClass.NameOfClass}"/>
+                                                        <Setter TargetName="productRoleImage" Property="Source" Value="{Binding Path=Product.Rotations[0].RoleOfRotation.ImageUri}"/>
+                                                        <Setter TargetName="productSpecializationName" Property="Text" Value="{Binding Path=Product.Rotations[0].SpecOfRotation.Name}"/>
+
+                                                        <Setter TargetName="singleProductShortInfoGrid" Property="Visibility" Value="Visible"/>
+                                                        <Setter TargetName="multipleProductShortInfoGrid" Property="Visibility" Value="Collapsed"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Path=Product.IsTestable}" Value="True">
+                                                        <Setter TargetName="testBtn" Property="Visibility" Value="Visible"/>
+                                                        <Setter TargetName="buyBtn" Property="Width" Value="70"/>
+                                                    </DataTrigger>
+                                                    <DataTrigger Binding="{Binding Path=Count}" Value="0">
+                                                        <Setter TargetName="CountControls" Property="Visibility" Value="Collapsed"/>
+                                                        <Setter TargetName="StartControls" Property="Visibility" Value="Visible"/>
+                                                    </DataTrigger>
+                                                    <MultiTrigger>
+                                                        <MultiTrigger.Conditions>
+                                                            <Condition  Property="IsMouseOver" Value="True"/>
+                                                            <Condition Property="IsSelected" Value="False"/>
+                                                        </MultiTrigger.Conditions>
+                                                        <Setter Property="Background" Value="{DynamicResource BackgroundProductItemColorHover}"/>
+                                                    </MultiTrigger>
+                                                    <Trigger Property="IsMouseCaptured" Value="True">
+                                                        <Setter Property="Background" Value="{DynamicResource BackgroundProductItemColorClicked}"/>
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Setter.Value>
+                                    </Setter>
+                                </Style>
+                            </Setter.Value>
+                        </Setter>
+                    </Style>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>

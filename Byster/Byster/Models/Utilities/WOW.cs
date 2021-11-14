@@ -10,7 +10,7 @@ using System.Text;
 using System.Threading;
 using Jupiter;
 
-namespace Byster.Utilities.WOWModels
+namespace Byster.Models.Utilities
 {
     public class WoW
     {

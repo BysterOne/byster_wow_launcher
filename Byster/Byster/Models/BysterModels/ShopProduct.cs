@@ -18,6 +18,7 @@ namespace Byster.Models.BysterModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyName));
         }
 
+        public int Id { get; set; }
         public string Name { get; set; }
         public string ImageUri { get; set; }
         public string Description { get; set; }

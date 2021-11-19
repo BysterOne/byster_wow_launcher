@@ -60,7 +60,7 @@ namespace Byster.Models.BysterModels
             Product = shopProduct;
             Count = 0;
         }
-        public void Add()
+        public void AddOne()
         {
             Count++;
         }

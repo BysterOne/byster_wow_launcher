@@ -1,0 +1,67 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
+using Byster.Models.BysterModels;
+using System.ComponentModel;
+using System.Runtime.CompilerServices;
+
+namespace Byster.Models.Services
+{
+    public class ActiveRotationsService : INotifyPropertyChanged, IService
+    {
+        public RestService RestService { get; set; }
+        public ObservableCollection<ActiveRotation> AllActiveRotations { get; set; }
+        public ObservableCollection<ActiveRotation> FilteredActiveRotations { get; set; }
+
+        private WOWClasses filterClass;
+        public WOWClasses FilterClass
+        {
+            get
+            {
+                return filterClass;
+            }
+            set
+            {
+                filterClass = value;
+                OnPropertyChanged("FilterClass");
+            }
+        }
+
+        public void FilterRotations()
+        {
+            FilteredActiveRotations.Clear();
+            foreach(var rotation in AllActiveRotations)
+            {
+                if (rotation.RotationClass.EnumWOWClass == FilterClass ||
+                    rotation.RotationClass.EnumWOWClass == WOWClasses.ANY ||
+                    FilterClass == WOWClasses.ANY)
+                {
+                    FilteredActiveRotations.Add(rotation);
+                }
+            }
+        }
+
+        public void UpdateData()
+        {
+            AllActiveRotations = RestService.GetActiveRotationCollection();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName]string property = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
+        public ActiveRotationsService(RestService service)
+        {
+            if(service == null)
+            {
+                throw new ArgumentNullException(nameof(service));
+            }
+            RestService = service;
+        }
+    }
+}

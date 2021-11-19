@@ -143,7 +143,7 @@ namespace Byster.Views
         public void AddProductButton(object sender, RoutedEventArgs e)
         {
             ShopProductInfo shopProductInfo = ((sender as Button).DataContext as ShopProductInfo);
-            shopProductInfo.Add();
+            shopProductInfo.AddOne();
         }
         public void RemoveProductButton(object sender, RoutedEventArgs e)
         {
@@ -162,8 +162,8 @@ namespace Byster.Views
         public string UserName { get; set; }
         public SessionWOW selectedSession { get; set; }
         public ObservableCollection<SessionWOW> SessionsCollection { get; set; }
-        public ObservableCollection<RotationWOW> AllRotations { get; set; }
-        public ObservableCollection<RotationWOW> RotationViewCollection { get; set; }
+        public ObservableCollection<ActiveRotation> AllRotations { get; set; }
+        public ObservableCollection<ActiveRotation> RotationViewCollection { get; set; }
 
         public ObservableCollection<ShopProductInfo> ProductList { get; set; }
         public WOWClasses FilterClass { get; set; }
@@ -176,8 +176,8 @@ namespace Byster.Views
         public MainWindowManager()
         {
             SessionsCollection = new ObservableCollection<SessionWOW>();
-            AllRotations = new ObservableCollection<RotationWOW>();
-            RotationViewCollection = new ObservableCollection<RotationWOW>();
+            AllRotations = new ObservableCollection<ActiveRotation>();
+            RotationViewCollection = new ObservableCollection<ActiveRotation>();
             ProductList = new ObservableCollection<ShopProductInfo>();
 
 
@@ -243,7 +243,7 @@ namespace Byster.Views
             }
             foreach( var RestRotationWOW in rotationsResponse.Data)
             {
-                AllRotations.Add(new RotationWOW(RestRotationWOW));
+                AllRotations.Add(new ActiveRotation(RestRotationWOW));
             }
 
         }

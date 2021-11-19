@@ -22,7 +22,7 @@ namespace Byster.Models.BysterModels
         public List<Media> Medias { get; set; }
     }
 
-    public class RotationWOW : RotationBase, INotifyPropertyChanged
+    public class ActiveRotation : RotationBase, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
 
@@ -32,9 +32,9 @@ namespace Byster.Models.BysterModels
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
         }
         public string ExpiringTime { get; set; }
-        public RotationWOW() { }
+        public ActiveRotation() { }
 
-        public RotationWOW(RestRotationWOW response)
+        public ActiveRotation(RestRotationWOW response)
         {
             Id = response.rotation.id;
             ExpiringTime = DateTime.Parse(response.expired_date).Year <= 2050 ? DateTime.Parse(response.expired_date).ToString("dd.MM.yyyy HH:mm") : "Навсегда";

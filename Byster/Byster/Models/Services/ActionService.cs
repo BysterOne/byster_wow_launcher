@@ -7,12 +7,13 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
-
+using System.Windows.Threading;
 
 namespace Byster.Models.Services
 {
     public class ActionService : IService
     {
+        public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
         

@@ -9,17 +9,21 @@ using System.Runtime.CompilerServices;
 using Byster.Models.Utilities;
 using Byster.Models.BysterModels;
 using Byster.Models.ViewModels;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace Byster.Models.Services
 {
     public class SessionService : INotifyPropertyChanged
     {
+        public Dispatcher Dispatcher { get; set; }
         private WoWSearcher searcher;
 
         public ObservableCollection<SessionViewModel> Sessions { get; set; }
 
-        public SessionService()
+        public SessionService(Dispatcher dispatcher)
         {
+            Dispatcher = dispatcher;
             Injector.Init();
             searcher = new WoWSearcher("World of Warcraft");
             searcher.OnWowChanged += searcherWowChanged;
@@ -30,33 +34,42 @@ namespace Byster.Models.Services
 
         private bool searcherWowClosed(WoW p)
         {
-            var sessionToRemove = Sessions.First((session) => session.WowApp.Process.Id == p.Process.Id);
-            if (sessionToRemove == null) return true;
-            Sessions.Remove(sessionToRemove);
+            Dispatcher.Invoke(() =>
+            {
+                var sessionToRemove = Sessions.First((session) => session.WowApp.Process.Id == p.Process.Id);
+                if (sessionToRemove == null) return;
+                Sessions.Remove(sessionToRemove);
+            });
             return true;
         }
 
         private bool searcherWowFound(WoW p)
         {
-            var sessionToAdd = new SessionViewModel()
+            Dispatcher.Invoke(() =>
             {
-                WowApp = p,
-                UserName = p.Name,
-                ServerName = p.RealmServer,
-                SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class)),
-            };
-            Sessions.Add(sessionToAdd);
+                var sessionToAdd = new SessionViewModel()
+                {
+                    WowApp = p,
+                    UserName = p.Name,
+                    ServerName = p.RealmServer,
+                    SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class)),
+                };
+                Sessions.Add(sessionToAdd);
+            });
             return true;
         }
 
         private bool searcherWowChanged(WoW p)
         {
-            var sessionToChange = Sessions.First((session) => session.WowApp.Process.Id == p.Process.Id);
-            if(sessionToChange == null) return true;
-            sessionToChange.WowApp = p;
-            sessionToChange.SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class));
-            sessionToChange.ServerName = p.RealmServer;
-            sessionToChange.UserName = p.Name;
+            Dispatcher.Invoke(() =>
+            {
+                var sessionToChange = Sessions.First((session) => session.WowApp.Process.Id == p.Process.Id);
+                if (sessionToChange == null) return;
+                sessionToChange.WowApp = p;
+                sessionToChange.SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class));
+                sessionToChange.ServerName = p.RealmServer;
+                sessionToChange.UserName = p.Name;
+            });
             return true;
         }
 

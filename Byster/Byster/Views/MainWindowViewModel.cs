@@ -19,6 +19,7 @@ namespace Byster.Views
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
+        
         public ObservableCollection<Visibility> PageVisibilities { get; set; } = new ObservableCollection<Visibility>()
         {
             Visibility.Visible,
@@ -71,7 +72,7 @@ namespace Byster.Views
             {
                 SessionId = sessionId,
             };
-            SessionService = new SessionService();
+            SessionService = new SessionService(App.Current.MainWindow.Dispatcher);
             updateAction();
         }
 
@@ -90,6 +91,7 @@ namespace Byster.Views
             {
                 ControlVisibilities[i] = Visibility.Collapsed;
             }
+            if(index > 0 && index < 3)
             ControlVisibilities[index] = Visibility.Visible;
         }
 
@@ -145,9 +147,15 @@ namespace Byster.Views
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
             if(property == "SelectedSession")
             {
+                ActiveRotations.FilterClass = SelectedSession?.SessionClass?.EnumWOWClass ?? WOWClasses.ANY;
                 if(ActiveRotations.FilteredActiveRotations.Count > 0)
                 {
-                    if(SelectedSession.InjectInfo.InjectInfoStatusCode == InjectInfoStatusCode.INACTIVE)
+                    if (SelectedSession == null)
+                    { 
+                        selectControls(3);
+                        return;
+                    }
+                    if (SelectedSession.InjectInfo.InjectInfoStatusCode == InjectInfoStatusCode.INACTIVE)
                     {
                         selectControls(0);
                     }

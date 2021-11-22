@@ -8,11 +8,12 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Byster.Models.BysterModels;
 using Byster.Models.ViewModels;
-
+using System.Windows.Threading;
 namespace Byster.Models.Services
 {
     public class ShopService : INotifyPropertyChanged, IService
     {
+        public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public int Bonuses { get; set; }
         public RestService RestService { get; set; }

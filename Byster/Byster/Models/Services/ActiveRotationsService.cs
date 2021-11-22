@@ -8,11 +8,14 @@ using Byster.Models.BysterModels;
 using Byster.Models.ViewModels;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
+using System.Windows;
+using System.Windows.Threading;
 
 namespace Byster.Models.Services
 {
     public class ActiveRotationsService : INotifyPropertyChanged, IService
     {
+        public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
         public ObservableCollection<ActiveRotationViewModel> AllActiveRotations { get; set; }
@@ -49,12 +52,14 @@ namespace Byster.Models.Services
         public void UpdateData()
         {
             AllActiveRotations = RestService.GetActiveRotationCollection();
+            FilterRotations();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            FilterRotations();
         }
 
         public ActiveRotationsService(RestService service)

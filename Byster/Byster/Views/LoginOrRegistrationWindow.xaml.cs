@@ -37,9 +37,10 @@ namespace Byster.Views
             if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))
             {
                 string passwordHash = password;
-                if (TryAuth(login, passwordHash))
+                string sessionId;
+                if (TryAuth(login, passwordHash, out sessionId))
                 {
-                    StartMainWindow(login);
+                    StartMainWindow(login, sessionId);
                     Close();
                     return;
                 }
@@ -63,16 +64,18 @@ namespace Byster.Views
             }
         }
 
-        private bool TryAuth(string login, string passwordHash)
+        private bool TryAuth(string login, string passwordHash, out string sessionId)
         {
             if(string.IsNullOrEmpty(login))
             {
                 MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                sessionId = null;
                 return false;
             }
             if(string.IsNullOrEmpty(passwordHash))
             {
                 MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                sessionId = null;
                 return false;
             }
             var response = App.Rest.Post<AuthResponse>(new RestRequest("launcher/login", Method.POST).AddJsonBody(new AuthRequest()
@@ -84,27 +87,32 @@ namespace Byster.Views
             if(response.StatusCode != HttpStatusCode.OK)
             {
                 MessageBox.Show(response.Data.error, "Ошибка Byster", MessageBoxButton.OK, MessageBoxImage.Error);
+                sessionId = null;
                 return false;
             }
             App.Rest.Authenticator = new BysterAuthenticator(response.Data.session);
+            sessionId = response.Data.session;
             return true;
         }
 
-        private bool TryRegister(string login, string passwordHash, string referal, int idOfRegisterChoice)
+        private bool TryRegister(string login, string passwordHash, string referal, int idOfRegisterChoice, out string sessionId)
         {
             if (string.IsNullOrEmpty(login))
             {
                 MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                sessionId = null;
                 return false;
             }
             if (string.IsNullOrEmpty(passwordHash))
             {
                 MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                sessionId = null;
                 return false;
             }
             if(idOfRegisterChoice == 0)
             {
                 MessageBox.Show("Укажите, откуда Вы о нас узнали", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                sessionId = null;
                 return false;
             }
 
@@ -126,24 +134,27 @@ namespace Byster.Views
                 if(!string.IsNullOrEmpty(response.Data.error))
                 {
                     MessageBox.Show(response.Data.error, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    sessionId = null;
                     return false;
                 }
                 else
                 {
                     MessageBox.Show($"Запрос завершён с кодом:{(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    sessionId = null;
                     return false;
                 }
             }
 
             App.Rest.Authenticator = new BysterAuthenticator(response.Data.session);
+            sessionId = response.Data.session;
             return true;
         }
 
-        public void StartMainWindow(string login)
+        public void StartMainWindow(string login, string sessionId)
         {
             App.Current.Dispatcher.Invoke(new Action(() =>
             {
-                App.Current.MainWindow = new MainWindowReworked(login);
+                App.Current.MainWindow = new MainWindowReworked(login, sessionId);
                 App.Current.MainWindow.Show();
             }));
         }
@@ -181,11 +192,12 @@ namespace Byster.Views
             string loginText = loginBox.Text;
             string passwordText = passwordBox.Password;
             string passwordHash = HashCalc.GetMD5Hash(passwordText);
-            if(TryAuth(loginText, passwordHash))
+            string sessionId;
+            if(TryAuth(loginText, passwordHash, out sessionId))
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", loginText);
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", passwordHash);
-                StartMainWindow(loginText);
+                StartMainWindow(loginText, sessionId);
                 Close();
             }
         }
@@ -205,11 +217,12 @@ namespace Byster.Views
             }
 
             string newPasswordHash = HashCalc.GetMD5Hash(newPasswordText);
-            if(TryRegister(newLoginText, newPasswordHash, referal, idOfRegisterChoice))
+            string sessionId;
+            if(TryRegister(newLoginText, newPasswordHash, referal, idOfRegisterChoice, out sessionId))
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", newLoginText);
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", newPasswordHash);
-                StartMainWindow(newLoginText);
+                StartMainWindow(newLoginText, sessionId);
                 Close();
             }
         }

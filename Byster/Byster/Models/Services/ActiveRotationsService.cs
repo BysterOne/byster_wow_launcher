@@ -5,6 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
 using Byster.Models.BysterModels;
+using Byster.Models.ViewModels;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 
@@ -12,9 +13,10 @@ namespace Byster.Models.Services
 {
     public class ActiveRotationsService : INotifyPropertyChanged, IService
     {
+        public string SessionId { get; set; }
         public RestService RestService { get; set; }
-        public ObservableCollection<ActiveRotation> AllActiveRotations { get; set; }
-        public ObservableCollection<ActiveRotation> FilteredActiveRotations { get; set; }
+        public ObservableCollection<ActiveRotationViewModel> AllActiveRotations { get; set; }
+        public ObservableCollection<ActiveRotationViewModel> FilteredActiveRotations { get; set; }
 
         private WOWClasses filterClass;
         public WOWClasses FilterClass
@@ -57,6 +59,8 @@ namespace Byster.Models.Services
 
         public ActiveRotationsService(RestService service)
         {
+            AllActiveRotations = new ObservableCollection<ActiveRotationViewModel>();
+            FilteredActiveRotations = new ObservableCollection<ActiveRotationViewModel>();
             if(service == null)
             {
                 throw new ArgumentNullException(nameof(service));

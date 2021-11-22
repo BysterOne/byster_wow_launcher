@@ -15,14 +15,12 @@ namespace Byster.Models.Utilities
         {
             if (!File.Exists(logPath)) File.Create(logPath).Close();
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(new List<string>()
-            {
-                DateTime.Now.ToString("[dd.MM.yyyy HH:MM:ss.ff] - "),
-                msg,
-                "\t",
-            });
+            stringBuilder.Append(DateTime.Now.ToString("[dd.MM.yyyy HH:MM:ss.ff] - ["));
+            stringBuilder.Append(msg);
+            stringBuilder.Append("]\t");
             foreach(object o in p)
                 stringBuilder.Append(o.ToString());
+            stringBuilder.Append("\n");
             File.AppendAllText(logPath, stringBuilder.ToString());
         }
     }

@@ -16,10 +16,7 @@ namespace Byster.Models.BysterModels
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
 
-
         public ImageItem ImageItem { get; set; }
-
-
 
         private string uri;
         public string Uri

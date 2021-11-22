@@ -232,7 +232,7 @@
                             </Setter.Value>
                         </Setter>
                     </Style>
-                    <Style TargetType="{x:Type ListBox}" x:Key="shopProductRotationsViewStyle">
+                    <!--<Style TargetType="{x:Type ListBox}" x:Key="shopProductRotationsViewStyle">
                         <Style.Setters>
                             <Setter Property="ItemsPanel">
                                 <Setter.Value>
@@ -281,7 +281,7 @@
                                 </Setter.Value>
                             </Setter>
                         </Style.Setters>
-                    </Style>
+                    </Style>-->
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -293,7 +293,7 @@
         </Grid.RowDefinitions>
         <Grid x:Name="topPanel" Grid.Row="0">
             <Button x:Name="titleButton" Style="{DynamicResource imageButtonStyle}" HorizontalAlignment="Left" Margin="5"
-                    Click="titleButton_Click">
+                    Command="{Binding UnselectSessionCommand}">
                 <Image Source="/Resources/Images/logo.png"/>
             </Button>
             
@@ -309,7 +309,7 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
-                <TextBlock Style="{DynamicResource orangeTextBlockStyle}" VerticalAlignment="Center" Margin="10, 0" x:Name="usernameHolder" Text="{Binding Path=UserName}"/>
+                <TextBlock Style="{DynamicResource orangeTextBlockStyle}" VerticalAlignment="Center" Margin="10, 0" x:Name="usernameHolder" Text="{Binding Path=UserInfo.Username}"/>
                 <Button Style="{DynamicResource uibStyle}" x:Name="settingsBtn">
                     <Image Source="/Resources/Images/settings-image.png" Stretch="Uniform" Height="25" Margin="5"/>
                 </Button>
@@ -317,9 +317,11 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="160, 0, 0, 5">
                 <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="ГЛАВНАЯ" GroupName="pageSelector" x:Name="rotPageSelect" IsChecked="True"
-                             Click="rotPageSelect_Clicked"/>
+                             Command="{Binding SelectPageCommand}"
+                             CommandParameter="0"/>
                 <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="МАГАЗИН" GroupName="pageSelector" x:Name="shopPageSelect"
-                             Click="shopPageSelect_Clicked"/>
+                             Command="{Binding SelectPageCommand}"
+                             CommandParameter="1"/>
             </StackPanel>
         </Grid>
         
@@ -336,9 +338,8 @@
             </Grid.RowDefinitions>
             <Grid x:Name="sideRotPanel" Grid.Column="0">
                 <ListBox Style="{DynamicResource sessionsViewStyle}" x:Name="sessionsViewBox"
-                         ItemsSource="{Binding Mode=TwoWay, Path=SessionsCollection}"
-                         SelectedItem="{Binding Mode=TwoWay, Path=selectedSession}"
-                         SelectionChanged="sessionsViewBox_SelectionChanged"/>
+                         ItemsSource="{Binding Mode=TwoWay, Path=SessionService.Sessions, UpdateSourceTrigger=PropertyChanged}"
+                         SelectedItem="{Binding Mode=TwoWay, Path=SelectedSession, UpdateSourceTrigger=PropertyChanged}"/>
             </Grid>
             <Grid x:Name="contentRotPanel" Grid.Column="1">
                 <Border BorderThickness="1"
@@ -346,7 +347,7 @@
                         Background="{DynamicResource BackgroundMainWindowColor}">
                     <Grid>
                         <ListBox Style="{DynamicResource rotationsViewStyle}" x:Name="rotationsViewBox"
-                             ItemsSource="{Binding Mode=TwoWay, Path=RotationViewCollection}"/>
+                             ItemsSource="{Binding Mode=TwoWay, Path=ActiveRotations.FilteredActiveRotations, UpdateSourceTrigger=PropertyChanged}"/>
                             <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="У Вас нет активных ротаций, перейдите в Магазин" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="noRotationNotificationTextBlock" Visibility="{Binding Path=ControlVisibilities[2]}"/>
                     </Grid>
                 </Border>
@@ -358,17 +359,17 @@
                     <ColumnDefinition Width="350"/>
                 </Grid.ColumnDefinitions>
                 <StackPanel Orientation="Horizontal" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="0">
-                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=selectedSession.UserName, TargetNullValue=Nickname}" Margin="10, 0"/>
+                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=SelectedSession.UserName, TargetNullValue=Nickname}" Margin="10, 0"/>
                     <Path Data="M 0 0 L 0 4 L 2 2 Z" Fill="{DynamicResource FontInfoColor}" Stretch="Fill" Width="10" Height="10"/>
-                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=selectedSession.ServerName, TargetNullValue=Server}" Margin="10, 0"/>
+                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=SelectedSession.ServerName, TargetNullValue=Server}" Margin="10, 0"/>
                 </StackPanel>
                 <Grid Margin="10" Grid.Column="1" >
                     <Grid x:Name="injectControls" Visibility="{Binding Path=ControlVisibilities[0]}">
-                        <Grid x:Name="sessionExistingChecker" Visibility="{Binding Path=selectedSession, Converter={StaticResource FromNullToVisibilityConverter}}">
-                            <Grid x:Name="startControls" Visibility="{Binding Path=selectedSession.InjectInfo.InjectInfoStatusCode, Converter={StaticResource FromInjectInfoStatusCodeToVisibilityConverter}, ConverterParameter=Default}">
-                                <Button Style="{DynamicResource bStyle}" Content="Запустить" x:Name="startBtn" Click="startBtn_Click"/>
+                        <Grid x:Name="sessionExistingChecker" Visibility="{Binding Path=SelectedSession, Converter={StaticResource FromNullToVisibilityConverter}}">
+                            <Grid x:Name="startControls" Visibility="{Binding Path=SelectedSession.InjectInfo.InjectInfoStatusCode, Converter={StaticResource FromInjectInfoStatusCodeToVisibilityConverter}, ConverterParameter=Default}">
+                                <Button Style="{DynamicResource bStyle}" Content="Запустить" x:Name="startBtn" Command="{Binding StartCommand}"/>
                             </Grid>
-                            <Grid x:Name="processControls" Visibility="{Binding Path=selectedSession.InjectInfo.InjectInfoStatusCode, Converter={StaticResource FromInjectInfoStatusCodeToVisibilityConverter}, ConverterParameter=Active}">
+                            <Grid x:Name="processControls" Visibility="{Binding Path=SelectedSession.InjectInfo.InjectInfoStatusCode, Converter={StaticResource FromInjectInfoStatusCodeToVisibilityConverter}, ConverterParameter=Active}">
                                 <Grid>
                                     <Grid.RowDefinitions>
                                         <RowDefinition/>
@@ -378,7 +379,7 @@
                                     <!--<ProgressBar Style="{DynamicResource prbStyle}" Value="60" x:Name="processProgressbar" Grid.Row="1"/> Реализация прогрессбара -->
                                     <TextBlock Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center" Margin="5, 0" Grid.Row="1"
                                        x:Name="injectInfoTextBlock"
-                                       Text="{Binding Path=selectedSession.InjectInfo.InjectInfoStatusCode, Converter={StaticResource FromInjectInfoStatusCodeToStatusTextConverter}}"/>
+                                       Text="{Binding Path=SelectedSession.InjectInfo.InjectInfoStatusCode, Converter={StaticResource FromInjectInfoStatusCodeToStatusTextConverter}}"/>
                                 </Grid>
                             </Grid>
                         </Grid>
@@ -393,7 +394,7 @@
         
         
         <!-- Магазин -->
-        <Grid x:Name="mainShopPanel" Grid.Row="1" Visibility="{Binding Path=PageVisibilities[1]}">
+        <!--<Grid x:Name="mainShopPanel" Grid.Row="1" Visibility="{Binding Path=PageVisibilities[1]}">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="110"/>
                 <ColumnDefinition/>
@@ -416,7 +417,7 @@
                   Background="{DynamicResource BackgroundControlColor}">
                 
             </Grid>
-        </Grid>
+        </Grid>-->
 
     </Grid>
 </Window>

@@ -156,6 +156,12 @@ namespace Byster.Models.Utilities
             {
                 default:
                 case InjectorStatusCode.INJECTED_OK:
+                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTED_OK;
+                    Timer timerToDelete = new Timer((obj) =>
+                    {
+                        changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
+                    }, null, 60000, 60000);
+                    break;
                 case InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB:
                 case InjectorStatusCode.ERROR_WHILE_INJECTING:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_FOUND:
@@ -170,7 +176,6 @@ namespace Byster.Models.Utilities
                     break;
                 case InjectorStatusCode.INJECTION_STARTED:
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTING;
-
                     break;
             }
         }
@@ -277,7 +282,8 @@ namespace Byster.Models.Utilities
         ENEQUEUED   = 1,
         DOWNLOADING = 2,
         INJECTING   = 3,
+        INJECTED_OK = 4,
 
-        ERROR       = 4,
+        ERROR       = 5,
     }
 }

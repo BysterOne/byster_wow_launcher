@@ -8,6 +8,8 @@ namespace Byster.Models.Services
 {
     internal interface IService
     {
+        string SessionId { get; set; }
+        RestService RestService { get; set; }
         void UpdateData();
     }
 }

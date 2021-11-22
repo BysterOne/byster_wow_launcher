@@ -90,6 +90,7 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Models\BysterModels\Cart.cs" />
     <Compile Include="Models\BysterModels\Rotation.cs" />
     <Compile Include="Models\BysterModels\WOWClass.cs" />
     <Compile Include="Models\BysterModels\WOWSession.cs" />
@@ -98,15 +99,21 @@
     <Compile Include="Models\RestModels\BaseResponse.cs" />
     <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
     <Compile Include="Models\RestModels\Register.cs" />
+    <Compile Include="Models\RestModels\RestAction.cs" />
+    <Compile Include="Models\RestModels\RestBuy.cs" />
     <Compile Include="Models\RestModels\RestLibRequest.cs" />
     <Compile Include="Models\RestModels\RestProduct.cs" />
     <Compile Include="Models\RestModels\RestRotation.cs" />
     <Compile Include="Models\RestModels\RestParts.cs" />
     <Compile Include="Models\BysterModels\Media.cs" />
     <Compile Include="Models\BysterModels\ShopProduct.cs" />
+    <Compile Include="Models\RestModels\RestTest.cs" />
+    <Compile Include="Models\RestModels\RestUserInfo.cs" />
+    <Compile Include="Models\Services\ActionService.cs" />
     <Compile Include="Models\Services\ActiveRotationsService.cs" />
     <Compile Include="Models\Services\IService.cs" />
     <Compile Include="Models\Services\RestService.cs" />
+    <Compile Include="Models\Services\SessionService.cs" />
     <Compile Include="Models\Services\ShopService.cs" />
     <Compile Include="Models\Services\UserInfoService.cs" />
     <Compile Include="Models\Utilities\BackgroundPhotoDownloader.cs" />
@@ -115,6 +122,9 @@
     <Compile Include="Models\Utilities\Logger.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />
     <Compile Include="Models\Utilities\EventHandlers.cs" />
+    <Compile Include="Models\ViewModels\ProductinfoViewModel.cs" />
+    <Compile Include="Models\ViewModels\RotationViewModel.cs" />
+    <Compile Include="Models\ViewModels\SessionViewModel.cs" />
     <Compile Include="Views\LoadingWindow.xaml.cs">
       <DependentUpon>LoadingWindow.xaml</DependentUpon>
     </Compile>
@@ -124,6 +134,7 @@
     <Compile Include="Views\MainWindowReworked.xaml.cs">
       <DependentUpon>MainWindowReworked.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\MainWindowViewModel.cs" />
     <Page Include="Views\LoadingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

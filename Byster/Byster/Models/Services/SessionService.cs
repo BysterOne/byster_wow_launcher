@@ -25,6 +25,7 @@ namespace Byster.Models.Services
             searcher.OnWowChanged += searcherWowChanged;
             searcher.OnWowFounded += searcherWowFound;
             searcher.OnWowClosed += searcherWowClosed;
+            Sessions = new ObservableCollection<SessionViewModel>();
         }
 
         private bool searcherWowClosed(WoW p)

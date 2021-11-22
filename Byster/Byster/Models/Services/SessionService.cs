@@ -21,7 +21,7 @@ namespace Byster.Models.Services
         public SessionService()
         {
             Injector.Init();
-            searcher = new WoWSearcher("World Of Warcraft");
+            searcher = new WoWSearcher("World of Warcraft");
             searcher.OnWowChanged += searcherWowChanged;
             searcher.OnWowFounded += searcherWowFound;
             searcher.OnWowClosed += searcherWowClosed;

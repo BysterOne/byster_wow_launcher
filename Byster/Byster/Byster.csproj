@@ -91,6 +91,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="Models\BysterModels\Cart.cs" />
+    <Compile Include="Models\BysterModels\PaymentSystem.cs" />
     <Compile Include="Models\BysterModels\Rotation.cs" />
     <Compile Include="Models\BysterModels\WOWClass.cs" />
     <Compile Include="Models\BysterModels\WOWSession.cs" />
@@ -102,6 +103,7 @@
     <Compile Include="Models\RestModels\RestAction.cs" />
     <Compile Include="Models\RestModels\RestBuy.cs" />
     <Compile Include="Models\RestModels\RestLibRequest.cs" />
+    <Compile Include="Models\RestModels\RestPaymentSystem.cs" />
     <Compile Include="Models\RestModels\RestProduct.cs" />
     <Compile Include="Models\RestModels\RestRotation.cs" />
     <Compile Include="Models\RestModels\RestParts.cs" />
@@ -123,8 +125,15 @@
     <Compile Include="Models\Utilities\WOW.cs" />
     <Compile Include="Models\Utilities\EventHandlers.cs" />
     <Compile Include="Models\ViewModels\ProductinfoViewModel.cs" />
+    <Compile Include="Models\ViewModels\RelayCommand.cs" />
     <Compile Include="Models\ViewModels\RotationViewModel.cs" />
     <Compile Include="Models\ViewModels\SessionViewModel.cs" />
+    <Compile Include="Views\DialogWindow.xaml.cs">
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InfoWindow.xaml.cs">
+      <DependentUpon>InfoWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\LoadingWindow.xaml.cs">
       <DependentUpon>LoadingWindow.xaml</DependentUpon>
     </Compile>
@@ -135,6 +144,17 @@
       <DependentUpon>MainWindowReworked.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\MainWindowViewModel.cs" />
+    <Compile Include="Views\PaymentSystemSelectorWindow.xaml.cs">
+      <DependentUpon>PaymentSystemSelectorWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Views\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\InfoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\LoadingWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -148,6 +168,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\MainWindowReworked.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PaymentSystemSelectorWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -255,7 +279,7 @@
     <Resource Include="Resources\Images\Specializations\DESTRUCTION.png" />
     <Resource Include="Resources\Images\Specializations\HOLYPAL.png" />
     <Resource Include="Resources\Images\Specializations\PROTOPAL.png" />
-    <Resource Include="Resources\Images\Specializations\RESTRIBUTION.png" />
+    <Resource Include="Resources\Images\Specializations\RETRIBUTION.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

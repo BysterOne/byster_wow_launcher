@@ -15,8 +15,8 @@ namespace Byster.Models.RestModels
 
     public class RestBuyResponse : BaseResponse
     {
-        public string payment_url;
-        public string status;
+        public string payment_url { get; set; }
+        public string status { get; set; }
     }
 
     public class RestBuyProduct

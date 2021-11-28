@@ -19,7 +19,7 @@ namespace Byster.Models.Utilities
     {
         private static string FullLibPath = Path.GetTempPath() + "Byster\\Core";
 
-        public static string Branch { get; set; }
+        public static string Branch { get; set; } = "master";
         public static RestClient Rest { get; set; }
 
         [DllImport("kernel32.dll")]
@@ -142,6 +142,7 @@ namespace Byster.Models.Utilities
             injectionThread = new Thread(new ThreadStart(ThreadMethod));
             injectionThread.Start();
             Branch = "master";
+            if (!Directory.Exists(FullLibPath)) Directory.CreateDirectory(FullLibPath);
             InjectQueueUpdated += baseInjectQueueChangedHandler;
         }
 
@@ -159,8 +160,8 @@ namespace Byster.Models.Utilities
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTED_OK;
                     Timer timerToDelete = new Timer((obj) =>
                     {
-                        changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
-                    }, null, 60000, 60000);
+                        (obj as InjectInfo).InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
+                    }, changedElement, 60000, 60000);
                     break;
                 case InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB:
                 case InjectorStatusCode.ERROR_WHILE_INJECTING:

@@ -18,6 +18,7 @@ using Byster.Models.Utilities;
 using RestSharp;
 using System.Net;
 using System.Globalization;
+using Byster.Models.Services;
 
 namespace Byster.Views
 {
@@ -29,12 +30,12 @@ namespace Byster.Views
         MainWindowViewModel ViewModel { get; set; }
         public MainWindowReworked(string login, string sessionId)
         {
-            BackgroundPhotoDownloader.Init();
             App.Sessionid = sessionId;
 
             ViewModel = new MainWindowViewModel(App.Rest, App.Sessionid);
             InitializeComponent();
             this.DataContext = ViewModel;
+            ViewModel.ShadowManager = new ShadowManager(modalGrid);
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -56,19 +57,31 @@ namespace Byster.Views
             BackgroundPhotoDownloader.Close();
             Injector.Close();
         }
-        public void AddProductButton(object sender, RoutedEventArgs e)
-        {
-            ShopProductInfo shopProductInfo = ((sender as Button).DataContext as ShopProductInfo);
-            shopProductInfo.AddOne();
-        }
-        public void RemoveProductButton(object sender, RoutedEventArgs e)
-        {
-            ShopProductInfo shopProductInfo = ((sender as Button).DataContext as ShopProductInfo);
-            shopProductInfo.RemoveOne();
-        }
-        public void TestProductButton(object sender, RoutedEventArgs e)
-        {
 
+        private void filterClassListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            foreach (var removingElement in e.RemovedItems)
+            {
+                ViewModel.Shop.FilterOptions.FilterClasses.Remove(removingElement as FilterClass);
+            }
+            foreach (var addingElement in e.AddedItems)
+            {
+                ViewModel.Shop.FilterOptions.FilterClasses.Add(addingElement as FilterClass);
+            }
+            ViewModel.Shop.FilterProducts();
+        }
+
+        private void filterTypeListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            foreach(var removingElement in e.RemovedItems)
+            {
+                ViewModel.Shop.FilterOptions.FilterTypes.Remove(removingElement as string);
+            }
+            foreach(var addingElement in e.AddedItems)
+            {
+                ViewModel.Shop.FilterOptions.FilterTypes.Add(addingElement as string);
+            }
+            ViewModel.Shop.FilterProducts();
         }
     }
 
@@ -83,6 +96,7 @@ namespace Byster.Views
 
                 switch(parameter.ToString())
                 {
+                    default:
                     case "Default":
                         return status == 0 ? Visibility.Visible : Visibility.Collapsed;
                     case "Active":
@@ -93,6 +107,8 @@ namespace Byster.Views
                         return status == 2 ? Visibility.Visible : Visibility.Collapsed;
                     case "Injecting":
                         return status == 3 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Injected":
+                        return status == 4 ? Visibility.Visible : Visibility.Collapsed;
                         
                 }
             }

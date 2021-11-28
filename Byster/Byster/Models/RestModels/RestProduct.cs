@@ -8,6 +8,7 @@ namespace Byster.Models.RestModels
 {
     public class RestShopProduct
     {
+        public int id { get; set; }
         public string name { get; set; }
         public string image_url { get; set; }
         public string description { get; set; }

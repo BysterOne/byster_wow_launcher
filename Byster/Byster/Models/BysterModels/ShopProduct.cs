@@ -35,6 +35,7 @@ namespace Byster.Models.BysterModels
 
         public ShopProduct(RestShopProduct RestShopProduct)
         {
+            Id = RestShopProduct.id;
             Name = RestShopProduct.name;
             Description = RestShopProduct.description;
             Price = RestShopProduct.price;

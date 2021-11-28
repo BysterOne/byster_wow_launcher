@@ -19,7 +19,7 @@ namespace Byster.Views
 {
     public class MainWindowViewModel : INotifyPropertyChanged
     {
-        
+
         public ObservableCollection<Visibility> PageVisibilities { get; set; } = new ObservableCollection<Visibility>()
         {
             Visibility.Visible,
@@ -51,6 +51,18 @@ namespace Byster.Views
                 OnPropertyChanged("SelectedSession");
             }
         }
+        private ShopProductInfoViewModel selectedShopProductInfo;
+        public ShopProductInfoViewModel SelectedProduct
+        {
+            get { return selectedShopProductInfo; }
+            set
+            {
+                selectedShopProductInfo = value;
+                OnPropertyChanged("SelectedProduct");
+            }
+        }
+
+        public ShadowManager ShadowManager { get; set; }
 
         public MainWindowViewModel(RestClient client, string sessionId)
         {
@@ -66,34 +78,63 @@ namespace Byster.Views
             };
             Shop = new ShopService(restService)
             {
+                PreTestElementAction = () =>
+                {
+                    DialogWindow dialogWindow = new DialogWindow("Подтверждение", "Вы собираетесь приобрести тестовую версию продукта, всё верно?");
+                    ShadowManager.Shadow();
+                    bool result = dialogWindow.ShowDialog() ?? false;
+                    ShadowManager.Unshadow();
+                    return result;
+                },
+                TestElementSuccessAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow("Успех", "Тестовая версия продукта успешно получена");
+                    infoWindow.ShowDialog();
+                },
+                TestElementFailAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow("Ошибка", "Произошла ошибка при получении тестовой версии продукта");
+                    infoWindow.ShowDialog();
+                },
+                CloseElementAction = () =>
+                {
+                    SelectedProduct = null;
+                },
+                PreBuyCartAction = () =>
+                {
+                    PaymentSystemSelectorWindow selectorWindow = new PaymentSystemSelectorWindow("Выбор платёжной системы", "Выберите платёжную систему для оплаты", Shop.GetAllPaymentSystemsList());
+                    bool res = selectorWindow.ShowDialog() ?? false;
+                    if(res)
+                    {
+                        return selectorWindow.SystemId;
+                    }
+                    return -1;
+                    
+                },
+                BuyCartSuccessAction = (string str) =>
+                {
+                    InfoWindow infoWindow = new InfoWindow("Ссылка для оплаты", str);
+                    infoWindow.ShowDialog();
+                    Shop.ClearCart();
+                },
+                BuyCartFailAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow("Ошибка", "Произошла ошибка при покупке товара, попробуйте позже...");
+                    infoWindow.ShowDialog();
+                },
                 SessionId = sessionId,
             };
             ActionService = new ActionService(restService, updateAction)
             {
                 SessionId = sessionId,
+                Dispatcher = App.Current.MainWindow.Dispatcher,
             };
-            SessionService = new SessionService(App.Current.MainWindow.Dispatcher);
+            ActionService.Init();
+            SessionService = new SessionService(App.Rest, App.Current.MainWindow.Dispatcher);
             updateAction();
         }
 
-        private void selectPage(int index)
-        {
-            for (int i = 0; i < PageVisibilities.Count; i++)
-            {
-                PageVisibilities[i] = Visibility.Collapsed;
-            }
-            PageVisibilities[index] = Visibility.Visible;
-        }
-
-        private void selectControls(int index)
-        {
-            for (int i = 0; i < ControlVisibilities.Count; i++)
-            {
-                ControlVisibilities[i] = Visibility.Collapsed;
-            }
-            if(index > 0 && index < 3)
-            ControlVisibilities[index] = Visibility.Visible;
-        }
+        
 
         public RelayCommand StartCommand
         {
@@ -127,6 +168,26 @@ namespace Byster.Views
                   });
             }
         }
+
+        private void selectPage(int index)
+        {
+            for (int i = 0; i < PageVisibilities.Count; i++)
+            {
+                PageVisibilities[i] = Visibility.Collapsed;
+            }
+            PageVisibilities[index] = Visibility.Visible;
+        }
+
+        private void selectControls(int index)
+        {
+            for (int i = 0; i < ControlVisibilities.Count; i++)
+            {
+                ControlVisibilities[i] = Visibility.Collapsed;
+            }
+            if (index >= 0 && index < 3)
+                ControlVisibilities[index] = Visibility.Visible;
+        }
+
         private void syncData()
         {
 
@@ -140,29 +201,24 @@ namespace Byster.Views
             syncData();
         }
 
+        
+
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-            if(property == "SelectedSession")
+            if (property == "SelectedSession")
             {
                 ActiveRotations.FilterClass = SelectedSession?.SessionClass?.EnumWOWClass ?? WOWClasses.ANY;
-                if(ActiveRotations.FilteredActiveRotations.Count > 0)
+                if (ActiveRotations.FilteredActiveRotations.Count > 0)
                 {
                     if (SelectedSession == null)
-                    { 
+                    {
                         selectControls(3);
                         return;
                     }
-                    if (SelectedSession.InjectInfo.InjectInfoStatusCode == InjectInfoStatusCode.INACTIVE)
-                    {
-                        selectControls(0);
-                    }
-                    else
-                    {
-                        selectControls(1);
-                    }
+                    selectControls(0);
                 }
                 else
                 {
@@ -172,34 +228,20 @@ namespace Byster.Views
         }
     }
 
-    public class RelayCommand : ICommand
+    public class ShadowManager
     {
-        private Action<object> _execute;
-        private Func<object, bool> _canExecute;
-
-        public void Execute(object parameter)
+        Grid shadowGrid;
+        public ShadowManager(Grid gr)
         {
-            if(_execute != null)
-                _execute(parameter);
+            shadowGrid = gr;
         }
-        public bool CanExecute(object parameter)
+        public void Shadow()
         {
-            if (_canExecute != null)
-                return _canExecute(parameter);
-            else
-                return true;
+            shadowGrid.Visibility = Visibility.Visible;
         }
-
-        public RelayCommand(Action<object> executeDel, Func<object, bool> canExecuteDel = null)
+        public void Unshadow()
         {
-            _execute = executeDel;
-            _canExecute = canExecuteDel;
-        }
-
-        public event EventHandler CanExecuteChanged
-        {
-            add { CommandManager.RequerySuggested += value; }
-            remove { CommandManager.RequerySuggested -= value;}
+            shadowGrid.Visibility = Visibility.Collapsed;
         }
     }
 }

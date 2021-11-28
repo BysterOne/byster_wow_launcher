@@ -8,6 +8,7 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
+using static Byster.Models.Utilities.Logger;
 
 namespace Byster.Models.Services
 {
@@ -16,10 +17,10 @@ namespace Byster.Models.Services
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
-        
+
         public Action UpdateAction;
         public Timer updatingTimer;
-        
+
         public void Init()
         {
             updatingTimer = new Timer(new TimerCallback(TimerTick), null, 5000, 5000);
@@ -28,7 +29,14 @@ namespace Byster.Models.Services
         private void TimerTick(object obj)
         {
             bool isUpdateRequired = RestService.GetActionState(SessionId);
-            if (isUpdateRequired) UpdateAction();
+            if (isUpdateRequired)
+            {
+                Dispatcher?.Invoke(() =>
+                {
+                    UpdateAction();
+                });
+                Log("Получен запрос на обновление данных");
+            }
         }
 
         public void UpdateData() { }

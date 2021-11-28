@@ -61,7 +61,7 @@ namespace Byster.Models.Services
             return res;
         }
         
-        public (bool, string) ExecuteBuyRequest(Cart cart)
+        public (bool, string) ExecuteBuyRequest(Cart cart, int paymentSystemId)
         {
             List<RestBuyProduct> products = new List<RestBuyProduct>();
             foreach (var product in cart.Products)
@@ -75,7 +75,7 @@ namespace Byster.Models.Services
             var response = client.Post<RestBuyResponse>(new RestRequest("shop/buy").AddJsonBody(new RestBuyRequest()
             {
                 bonuses = cart.Bonuses,
-                payment_system_id = 3,
+                payment_system_id = paymentSystemId,
                 items = products,
             }));
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
@@ -86,7 +86,7 @@ namespace Byster.Models.Services
             Log("Выполнен запрос на покупку продукта - ", response.Data.payment_url);
             return (true, response.Data.payment_url);
         }
-
+        //"{\"payment_url\": \"https://api.byster.ru/shop/test_payment_webhook?id=21&username=byster_service&token=6f22f01ee45c45f3bca856a604664d6d\", \"status\": \"init\"}"
         public bool ExecuteTestRequest(int id)
         {
             var response = client.Post<BaseResponse>(new RestRequest("shop/test").AddJsonBody(new RestTestRequest()
@@ -113,15 +113,37 @@ namespace Byster.Models.Services
             return (response.Data.username, response.Data.referral_code, Convert.ToInt32(response.Data.balance));
         }
 
-        public bool GetActionState(string sessionId)
+        public List<PaymentSystem> GetAllPaymentSystemList()
         {
-            var response = client.Get<object>(new RestRequest("launcher/ping"));
+            var response = client.Get<List<RestPaymentSystem>>(new RestRequest("shop/payment_systems"));
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                Log("Ошибка обновления данных - ", (response.Data as BaseResponse).error, " - ", response.ErrorMessage);
+                Log("Ошибка получения списка платёжных систем", response?.Content ?? "{Ошибка преобразования}", " - ", response?.ErrorMessage ?? "{Ошибка преобразования}");
+                return null;
+            }
+            List<PaymentSystem> result = new List<PaymentSystem>();
+            foreach(var item in response.Data)
+            {
+                result.Add(new PaymentSystem()
+                {
+                    Id = item.id,
+                    Name = item.name,
+                    Description = item.description,
+                });
+            }
+            Log("Получены данные платёжных систем");
+            return result;
+        }
+
+        public bool GetActionState(string sessionId)
+        {
+            var response = client.Get<List<RestAction>>(new RestRequest("launcher/ping"));
+            if(response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                Log("Ошибка обновления данных - ", response.Content.ToString(), " - ", response.ErrorMessage);
                 return false;
             }
-            List<RestAction> actions = response.Data as List<RestAction>;
+            List<RestAction> actions = response.Data;
             foreach(var action in actions)
             {
                 if(action.session == sessionId && (action.action_type == 1 || action.action_type == 11))

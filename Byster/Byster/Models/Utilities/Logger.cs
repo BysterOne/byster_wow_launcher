@@ -19,7 +19,7 @@ namespace Byster.Models.Utilities
             stringBuilder.Append(msg);
             stringBuilder.Append("]\t");
             foreach(object o in p)
-                stringBuilder.Append(o.ToString());
+                stringBuilder.Append(o?.ToString() ?? "{Ошибка преобразования}");
             stringBuilder.Append("\n");
             File.AppendAllText(logPath, stringBuilder.ToString());
         }

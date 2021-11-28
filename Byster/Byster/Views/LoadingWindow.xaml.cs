@@ -17,6 +17,7 @@ using System.IO;
 using RestSharp;
 using System.Diagnostics;
 using System.Threading;
+using Byster.Models.Utilities;
 
 namespace Byster.Views
 {
@@ -28,6 +29,7 @@ namespace Byster.Views
         public LoadingWindow()
         {
             InitializeComponent();
+            BackgroundPhotoDownloader.Init();
             statusUpdate.Minimum = 0;
             statusUpdate.Maximum = 100;
             statusUpdate.Value = 0;

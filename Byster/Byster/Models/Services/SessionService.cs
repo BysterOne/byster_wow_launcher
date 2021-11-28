@@ -11,6 +11,7 @@ using Byster.Models.BysterModels;
 using Byster.Models.ViewModels;
 using System.Windows;
 using System.Windows.Threading;
+using RestSharp;
 
 namespace Byster.Models.Services
 {
@@ -21,8 +22,9 @@ namespace Byster.Models.Services
 
         public ObservableCollection<SessionViewModel> Sessions { get; set; }
 
-        public SessionService(Dispatcher dispatcher)
+        public SessionService(RestClient client,Dispatcher dispatcher)
         {
+            Injector.Rest = client;
             Dispatcher = dispatcher;
             Injector.Init();
             searcher = new WoWSearcher("World of Warcraft");

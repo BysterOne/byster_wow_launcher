@@ -16,6 +16,7 @@
                     <local:FromInjectInfoStatusCodeToVisibility x:Key="FromInjectInfoStatusCodeToVisibilityConverter"/>
                     <local:FromInjectInfoStatusCodeToStatusText x:Key="FromInjectInfoStatusCodeToStatusTextConverter"/>
                     <local:FromNullToVisibility x:Key="FromNullToVisibilityConverter"/>
+                    <local:FromSumToBonuses x:Key="FromSumToBonusesConverter"/>
                     <Style TargetType="{x:Type ListBox}" x:Key="shopViewStyle">
                         <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
                         <Setter Property="SelectionMode" Value="Single"/>
@@ -139,7 +140,7 @@
                                                                             <RowDefinition/>
                                                                             <RowDefinition Height="70"/>
                                                                         </Grid.RowDefinitions>
-                                                                        <Button Style="{DynamicResource uibStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" Command="{Binding CloseCommand}">
+                                                                        <Button Style="{DynamicResource uibStyle}" VerticalAlignment="Top" HorizontalAlignment="Right" Command="{Binding CloseCommand}" Panel.ZIndex="1">
                                                                             <Path Fill="{DynamicResource FontInfoColor}" Data="M 0 4 L 8 0 L 8 8 Z" Margin="10"/>
                                                                         </Button>
                                                                         <StackPanel Orientation="Horizontal">
@@ -167,7 +168,9 @@
                                                                         <ListBox x:Name="multipleProductRotationView" ItemsSource="{Binding Path=Product.Rotations}">
                                                                             <ListBox.Template>
                                                                                 <ControlTemplate TargetType="ListBox">
-                                                                                    <ItemsPresenter/>
+                                                                                    <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}">
+                                                                                        <ItemsPresenter/>
+                                                                                    </ScrollViewer>
                                                                                 </ControlTemplate>
                                                                             </ListBox.Template>
                                                                             <ListBox.ItemsPanel>
@@ -177,23 +180,88 @@
                                                                             </ListBox.ItemsPanel>
                                                                             <ListBox.ItemContainerStyle>
                                                                                 <Style TargetType="ListBoxItem">
+                                                                                    <Setter Property="Background" Value="Transparent"/>
                                                                                     <Setter Property="Template">
                                                                                         <Setter.Value>
                                                                                             <ControlTemplate TargetType="ListBoxItem">
-                                                                                                <Border x:Name="itemBorder"
+                                                                                                <Grid>
+                                                                                                    <Border x:Name="itemBorder"
                                                                                                         BorderBrush="{DynamicResource BorderProductItemColor}"
                                                                                                         BorderThickness="0, 1, 0, 0"
-                                                                                                        Background="Transparent">
-                                                                                                    <Grid Height="80">
-                                                                                                        <Grid.RowDefinitions>
-                                                                                                            <RowDefinition Height="80"/>
-                                                                                                            <RowDefinition/>
-                                                                                                        </Grid.RowDefinitions>
-                                                                                                        <Grid>
-                                                                                                            
+                                                                                                        Background="{TemplateBinding Background}">
+                                                                                                        <Grid Height="80" x:Name="itemGrid">
+                                                                                                            <Grid.RowDefinitions>
+                                                                                                                <RowDefinition Height="80"/>
+                                                                                                                <RowDefinition/>
+                                                                                                            </Grid.RowDefinitions>
+                                                                                                            <Grid Grid.Row="0">
+                                                                                                                <Grid.ColumnDefinitions>
+                                                                                                                    <ColumnDefinition Width="80"/>
+                                                                                                                    <ColumnDefinition/>
+                                                                                                                </Grid.ColumnDefinitions>
+                                                                                                                <Image Source="{Binding Path=ImageUri}" Grid.Column="0" Stretch="Uniform" Height="80"/>
+                                                                                                                <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
+                                                                                                                    <TextBlock Text="{Binding Path=Name}" Style="{DynamicResource orangeTextBlockStyle}" HorizontalAlignment="Center" Margin="0, 0, 0, 6"/>
+                                                                                                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
+                                                                                                                        <TextBlock Text="{Binding Path=Type}" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                                                                        <Image Source="{Binding Path=RotationClass.ImageUri}" Stretch="Uniform" Height="30" Margin="8, 0"/>
+                                                                                                                        <TextBlock Text="{Binding Path=RotationClass.NameOfClass}" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                                                                        <Image Source="{Binding Path=RoleOfRotation.ImageUri}" Stretch="Uniform" Height="30" Margin="8, 0"/>
+                                                                                                                        <TextBlock Text="{Binding Path=SpecOfRotation.Name}" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                                                                    </StackPanel>
+                                                                                                                </StackPanel>
+                                                                                                            </Grid>
+                                                                                                            <Grid Grid.Row="1" Height="240" Margin="10">
+                                                                                                                <Grid.RowDefinitions>
+                                                                                                                    <RowDefinition/>
+                                                                                                                    <RowDefinition Height="80"/>
+                                                                                                                </Grid.RowDefinitions>
+                                                                                                                <ScrollViewer Grid.Row="0" Style="{DynamicResource scrollViewerSmallStyle}">
+                                                                                                                    <TextBlock Text="{Binding Path=Description}"
+                                                                                                                               Grid.Row="0"
+                                                                                                                               Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                                                                </ScrollViewer>
+                                                                                                                <Grid Grid.Row="1">
+                                                                                                                    <ListBox ItemsSource="{Binding Medias}" Style="{DynamicResource mediaViewBox}"/>
+                                                                                                                </Grid>
+                                                                                                            </Grid>
                                                                                                         </Grid>
-                                                                                                    </Grid>
-                                                                                                </Border>
+                                                                                                    </Border>
+                                                                                                    <VisualStateManager.VisualStateGroups>
+                                                                                                        <VisualStateGroup x:Name="SelectionStates">
+                                                                                                            <VisualState x:Name="Selected">
+                                                                                                                <Storyboard Duration="0:0:0.5">
+                                                                                                                    <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                                                                                                     To="350"
+                                                                                                                                     BeginTime="0:0:0"
+                                                                                                                                     Duration="0:0:0.5"
+                                                                                                                                     Storyboard.TargetName="itemGrid"/>
+                                                                                                                </Storyboard>
+                                                                                                            </VisualState>
+                                                                                                            <VisualState x:Name="Unselected">
+                                                                                                                <Storyboard Duration="0:0:0.5">
+                                                                                                                    <DoubleAnimation Storyboard.TargetProperty="Height"
+                                                                                                                                    To="80"
+                                                                                                                                    BeginTime="0:0:0"
+                                                                                                                                    Duration="0:0:0.5"
+                                                                                                                                     Storyboard.TargetName="itemGrid"/>
+                                                                                                                </Storyboard>
+                                                                                                            </VisualState>
+                                                                                                        </VisualStateGroup>
+                                                                                                    </VisualStateManager.VisualStateGroups>
+                                                                                                </Grid>
+                                                                                                <ControlTemplate.Triggers>
+                                                                                                    <MultiTrigger>
+                                                                                                        <MultiTrigger.Conditions>
+                                                                                                            <Condition  Property="IsMouseOver" Value="True"/>
+                                                                                                            <Condition Property="IsSelected" Value="False"/>
+                                                                                                        </MultiTrigger.Conditions>
+                                                                                                        <Setter Property="Background" Value="{DynamicResource BackgroundProductItemColorHover}"/>
+                                                                                                    </MultiTrigger>
+                                                                                                    <Trigger Property="IsMouseCaptured" Value="True">
+                                                                                                        <Setter Property="Background" Value="{DynamicResource BackgroundProductItemColorClicked}"/>
+                                                                                                    </Trigger>
+                                                                                                </ControlTemplate.Triggers>
                                                                                             </ControlTemplate>
                                                                                         </Setter.Value>
                                                                                     </Setter>
@@ -254,6 +322,7 @@
                                                         <Setter TargetName="multipleProductShortInfoGrid" Property="Visibility" Value="Collapsed"/>
 
                                                         <Setter TargetName="singleProductExpanderGrid" Property="Visibility" Value="Visible"/>
+                                                        <Setter TargetName="multipleProductExpanderGrid" Property="Visibility" Value="Collapsed"/>
                                                     </DataTrigger>
                                                     <DataTrigger Binding="{Binding Path=Product.IsTestable}" Value="True">
                                                         <Setter TargetName="testBtn" Property="Visibility" Value="Visible"/>
@@ -424,6 +493,8 @@
                     <ColumnDefinition Width="200"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
+                <Slider x:Name="bonusesSlider" Minimum="0" Maximum="{Binding Path=Shop.Sum, Converter={StaticResource FromSumToBonusesConverter}}" Value="{Binding Path=Shop.Bonuses, Mode=TwoWay}"
+                        HorizontalAlignment="Center" VerticalAlignment="Center" Width="200"/>
                 <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
                             FlowDirection="RightToLeft" Margin="0, 10">
@@ -433,12 +504,16 @@
                 <Grid Grid.Column="1">
                     <StackPanel Orientation="Vertical" Margin="0,12">
                         <Grid Margin="0, 5">
-                            <TextBlock Text="Итого:" Margin="0,0,10,0" Style="{DynamicResource infoTextBlockStyle}"/>
+                            <TextBlock Text="Подитог:" Margin="0,0,10,0" Style="{DynamicResource infoTextBlockStyle}"/>
                             <TextBlock Text="{Binding Path=Shop.Sum}" Style="{DynamicResource infoTextBlockStyle}" HorizontalAlignment="Right"/>
                         </Grid>
-                        <Grid>
-                            <TextBlock Text="Опалата бонусами:" Margin="0,0,10,0" Style="{DynamicResource infoTextBlockStyle}"/>
+                        <Grid Margin="0, 0, 0, 5">
+                            <TextBlock Text="Оплата бонусами:" Margin="0,0,10,0" Style="{DynamicResource infoTextBlockStyle}"/>
                             <TextBlock Text="{Binding Path=Shop.Bonuses}" Style="{DynamicResource infoTextBlockStyle}" HorizontalAlignment="Right"/>
+                        </Grid>
+                        <Grid>
+                            <TextBlock Text="Итого:" Margin="0,0,10,0" Style="{DynamicResource titleTextBlockStyle}"/>
+                            <TextBlock Text="{Binding Path=Shop.ResultSum}" Style="{DynamicResource titleTextBlockStyle}" HorizontalAlignment="Right"/>
                         </Grid>
                     </StackPanel>
                 </Grid>
@@ -448,7 +523,7 @@
         
         
         <!-- Модальное окно -->
-        <Grid x:Name="modalGrid" Background="#AA000000" Grid.ColumnSpan="2"
+        <Grid x:Name="settingsGrid" Background="#AA000000" Grid.ColumnSpan="2"
               Grid.RowSpan="3"
               Visibility="Collapsed"
               HorizontalAlignment="Center" VerticalAlignment="Center">

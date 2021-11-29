@@ -134,20 +134,21 @@ namespace Byster.Models.Services
             Log("Получены данные платёжных систем");
             return result;
         }
-
+        string lastActionId = "";
         public bool GetActionState(string sessionId)
         {
             var response = client.Get<List<RestAction>>(new RestRequest("launcher/ping"));
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
             {
-                Log("Ошибка обновления данных - ", response.Content.ToString(), " - ", response.ErrorMessage);
+                Log("Ошибка обновления данных", response.Content.ToString(), " - ", response.ErrorMessage);
                 return false;
             }
             List<RestAction> actions = response.Data;
             foreach(var action in actions)
             {
-                if(action.session == sessionId && (action.action_type == 1 || action.action_type == 11))
+                if(action.action_id != lastActionId && action.session == sessionId && (action.action_type == 1 || action.action_type == 11))
                 {
+                    lastActionId = action.action_id;
                     return true;
                 }
             }

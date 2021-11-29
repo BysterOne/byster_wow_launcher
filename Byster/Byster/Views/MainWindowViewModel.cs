@@ -81,9 +81,7 @@ namespace Byster.Views
                 PreTestElementAction = () =>
                 {
                     DialogWindow dialogWindow = new DialogWindow("Подтверждение", "Вы собираетесь приобрести тестовую версию продукта, всё верно?");
-                    ShadowManager.Shadow();
                     bool result = dialogWindow.ShowDialog() ?? false;
-                    ShadowManager.Unshadow();
                     return result;
                 },
                 TestElementSuccessAction = () =>
@@ -113,7 +111,7 @@ namespace Byster.Views
                 },
                 BuyCartSuccessAction = (string str) =>
                 {
-                    InfoWindow infoWindow = new InfoWindow("Ссылка для оплаты", str);
+                    LinkPresenterWindow infoWindow = new LinkPresenterWindow("", str);
                     infoWindow.ShowDialog();
                     Shop.ClearCart();
                 },

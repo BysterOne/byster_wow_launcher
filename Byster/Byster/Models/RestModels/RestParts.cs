@@ -14,6 +14,7 @@ namespace Byster.Models.RestModels
         public string klass { get; set; }
         public string specialization { get; set; }
         public string role_type { get; set; }
+        public string description { get; set; }
         public List<RestMediaPart> media { get; set; }
         public RestRotationPart() { }
     }

@@ -19,6 +19,7 @@ namespace Byster.Models.BysterModels
         public RotationRole RoleOfRotation { get; set; }
         public RotationSpecialization SpecOfRotation { get; set; }
         public string Type { get; set; }
+        public string Description { get; set; }
         public List<Media> Medias { get; set; }
     }
 
@@ -72,6 +73,7 @@ namespace Byster.Models.BysterModels
             Type = rotation.type;
             Name = rotation.name;
 
+            Description = rotation.description;
             Medias = new List<Media>();
             foreach (var restMedia in rotation.media)
             {

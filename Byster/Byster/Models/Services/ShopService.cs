@@ -26,6 +26,7 @@ namespace Byster.Models.Services
             {
                 bonuses = value;
                 OnPropertyChanged("Bonuses");
+                OnPropertyChanged("ResultSum");
             }
         }
 
@@ -37,6 +38,15 @@ namespace Byster.Models.Services
             {
                 sum = value;
                 OnPropertyChanged("Sum");
+                OnPropertyChanged("ResultSum");
+            }
+        }
+
+        public double ResultSum
+        {
+            get
+            {
+                return Sum - bonuses;
             }
         }
         public RestService RestService { get; set; }
@@ -84,7 +94,7 @@ namespace Byster.Models.Services
             bool status;
             string link;
             (status, link) = RestService.ExecuteBuyRequest(cart, paymentSystemId);
-            if(status)
+            if(status && !string.IsNullOrEmpty(link))
             {
                 BuyCartSuccessAction?.Invoke(link);
             }
@@ -118,6 +128,7 @@ namespace Byster.Models.Services
             {
                 product.RemoveAll();
             }
+            Bonuses = 0;
             CartProductCleared?.Invoke();
         }
 
@@ -144,7 +155,12 @@ namespace Byster.Models.Services
 
         public void UpdateData()
         {
-            AllProducts = RestService.GetAllProductCollection();
+            AllProducts.Clear();
+            var newProducts = RestService.GetAllProductCollection();
+            foreach (var product in newProducts)
+            {
+                AllProducts.Add(product);
+            } 
             FilterProducts();
             setElementsActions();
         }

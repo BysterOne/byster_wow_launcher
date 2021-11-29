@@ -35,7 +35,8 @@ namespace Byster.Views
             ViewModel = new MainWindowViewModel(App.Rest, App.Sessionid);
             InitializeComponent();
             this.DataContext = ViewModel;
-            ViewModel.ShadowManager = new ShadowManager(modalGrid);
+            FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance;
+            ViewModel.UserInfo.PropertyChanged += (o, e) => { FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance; };
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -159,6 +160,20 @@ namespace Byster.Views
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
             return (value != null) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class FromSumToBonuses : IValueConverter
+    {
+        public static int bonuses;
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value < bonuses ? (double)value : bonuses;
         }
 
         public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)

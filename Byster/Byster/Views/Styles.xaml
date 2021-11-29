@@ -944,6 +944,65 @@
         </Setter>
     </Style>
 
+    <Style TargetType="Slider">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=Slider}, Path=Minimum}" Style="{DynamicResource infoTextBlockStyle}" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2"/>
+                        <TextBlock Text="{Binding RelativeSource={RelativeSource AncestorType=Slider}, Path=Maximum}" Style="{DynamicResource infoTextBlockStyle}" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="2"/>
+                        <Track x:Name="PART_Track" Grid.Row="1">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Background="{DynamicResource FontOrangeColor}" Height="3">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    Width="{TemplateBinding Width}"
+                                                    Height="{TemplateBinding Height}">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Ellipse Width="15" Height="15" Fill="{DynamicResource FontOrangeColor}" x:Name="thumbGeo" Stroke="{DynamicResource FontInfoColor}" StrokeThickness="0.5"/>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="thumbGeo" Property="Fill" Value="{DynamicResource FontOrangeColor}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Background="{DynamicResource FontInfoColor}" Height="3">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    Width="{TemplateBinding Width}"
+                                                    Height="{TemplateBinding Height}">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.IncreaseRepeatButton>
+                        </Track>
+                    </Grid>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
     <!-- Параметры для генерации стилей UI -->
     <!-- Цвета -->
     <SolidColorBrush x:Key="BackgroundUIColor">#323339</SolidColorBrush>

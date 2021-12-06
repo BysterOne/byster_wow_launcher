@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -163,7 +163,6 @@ namespace Byster.Models.Services
                 Log("Ошибка получения данных пользователя", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
                 return BranchType.UNKNOWN;
             }
-            return BranchType.DEV;
             return response.Data.dev ? BranchType.DEV :
                 response.Data.test ? BranchType.TEST :
                 response.Data.master ? BranchType.MASTER : BranchType.UNKNOWN;

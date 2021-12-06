@@ -154,5 +154,41 @@ namespace Byster.Models.Services
             }
             return false;
         }
+
+        public BranchType GetUserType()
+        {
+            var response = client.Get<RestBranchResponse>(new RestRequest("launcher/branch_choices"));
+            if(response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                Log("Ошибка получения данных пользователя", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
+                return BranchType.UNKNOWN;
+            }
+            return BranchType.DEV;
+            return response.Data.dev ? BranchType.DEV :
+                response.Data.test ? BranchType.TEST :
+                response.Data.master ? BranchType.MASTER : BranchType.UNKNOWN;
+        }
+
+        public bool ExecuteChangePasswordRequest(string newPwdHash)
+        {
+            var response = client.Post<RestChangePasswordResponse>(new RestRequest("launcher/change_password").AddJsonBody(new RestChangePasswordRequest()
+            {
+                new_password = newPwdHash,
+            }));
+            if(response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                Log("Ошибка изменения пароля", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
+                return false;
+            }
+            Log("Пароль изменён");
+            return true;
+        }
+
+        public bool ExecuteLinkEmailRequest(string email)
+        {
+            //var response = client.Post<>()
+            Log("ПРЕДУПРЕЖДЕНИЕ Использована нереализованная функция");
+            return true;
+        }
     }
 }

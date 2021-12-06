@@ -6,7 +6,9 @@ using System.Threading.Tasks;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
-
+using Byster.Models.BysterModels;
+using Microsoft.Win32;
+using System.IO;
 
 namespace Byster.Models.Services
 {
@@ -15,12 +17,16 @@ namespace Byster.Models.Services
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
-
+        
         private string username;
         private string password;
         private string referalCode;
         private int bonusBalance;
-        
+        private string branch;
+        private int console;
+        private BranchType userType;
+        private int loadType;
+
         public string Username
         {
             get { return username; }
@@ -58,6 +64,71 @@ namespace Byster.Models.Services
                 OnPropertyChanged("ReferalCode");
             }
         }
+
+        public string Branch
+        {
+            get { return branch; }
+            set
+            {
+                branch = value;
+                OnPropertyChanged("Branch");
+            }
+        }
+
+        public int Console
+        {
+            get
+            {
+                return console;
+            }
+            set
+            {
+                console = value;
+                OnPropertyChanged("Console");
+            }
+        }
+        public BranchType UserType
+        {
+            get { return userType; }
+            set
+            {
+                userType = value;
+                OnPropertyChanged("UserType");
+                OnPropertyChanged("UserImage");
+            }
+        }
+
+        public int LoadType
+        {
+            get { return loadType; }
+            set
+            {
+                loadType = value;
+                OnPropertyChanged("LoadType");
+            }
+        }
+
+        public string UserImage
+        {
+            get
+            {
+                string root = "/Resources/Images/UserLogos/";
+                switch(UserType)
+                {
+                    case BranchType.DEV:
+                        return root + "DEV.png";
+                    case BranchType.TEST:
+                        return root + "TEST.png";
+                    default:
+                    case BranchType.MASTER:
+                        return root + "MASTER.png";
+                }
+            }
+        }
+
+        public List<Branch> BranchChoices { get; set; } = Byster.Models.BysterModels.Branch.AllBranches.ToList();
+        public List<LoadType> LoadTypes { get; set; } = Byster.Models.BysterModels.LoadType.AllLoadTypes.ToList();
+
         public void UpdateData()
         {
             (string _usernane, string _referalcode, int _bonuses) = RestService.GetUserInfo();
@@ -66,12 +137,60 @@ namespace Byster.Models.Services
             {
                 return;
             }
+            Console = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", -1));
+            if (Console == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (Console = 0));
+            Branch = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", "undefined") as string;
+            if(Branch == "undefined") Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", (Branch = "master"));
             (Username, ReferalCode, BonusBalance) = (_usernane, _referalcode, _bonuses);
+            LoadType = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", -1));
+            if (LoadType == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (LoadType = 3));
+            UserType = RestService.GetUserType();
+            Password = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "undefined") as string;
+            if (UserType == BranchType.TEST)
+            {
+                BranchChoices.Remove(BranchChoices.FirstOrDefault(branch => branch.BranchType == BranchType.DEV));
+            }
+        }
+        public void SetBranch(Branch branch)
+        {
+            Branch = branch.Name.ToLower();
+            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", Branch);
+        }
+
+        public void SetConsole(bool isConsoleEnabled)
+        {
+            Console = isConsoleEnabled ? 1 : 0;
+            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", Console);
+        }
+
+        public void SetLoadType(LoadType loadType)
+        {
+            LoadType = loadType.Value;
+            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", LoadType);
         }
 
         public UserInfoService(RestService service)
         {
             RestService = service;
+        }
+
+        public bool ChangePasssword(string newPassswordHash)
+        {
+            bool result = RestService.ExecuteChangePasswordRequest(newPassswordHash);
+            if(result)
+            {
+                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", newPassswordHash);
+                return true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        public bool LinkEmail(string email)
+        {
+            bool res = RestService.ExecuteLinkEmailRequest(email);
+            return res;
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

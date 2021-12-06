@@ -46,6 +46,8 @@ namespace Byster.Models.Services
         {
             get
             {
+                if (Sum - Bonuses < 0)
+                    Bonuses = (int)Sum;
                 return Sum - bonuses;
             }
         }

@@ -12,7 +12,7 @@ using static Byster.Models.Utilities.Logger;
 
 namespace Byster.Models.Services
 {
-    public class ActionService : IService
+    public class ActionService : IService, IDisposable
     {
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
@@ -45,6 +45,11 @@ namespace Byster.Models.Services
         {
             RestService = restService;
             UpdateAction = updateDel;
+        }
+
+        public void Dispose()
+        {
+            updatingTimer?.Dispose();
         }
     }
 }

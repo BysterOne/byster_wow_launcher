@@ -19,6 +19,7 @@ using RestSharp;
 using System.Net;
 using System.Globalization;
 using Byster.Models.Services;
+using System.ComponentModel;
 
 namespace Byster.Views
 {
@@ -83,6 +84,12 @@ namespace Byster.Views
                 ViewModel.Shop.FilterOptions.FilterTypes.Add(addingElement as string);
             }
             ViewModel.Shop.FilterProducts();
+        }
+
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            ViewModel.Dispose();
         }
     }
 

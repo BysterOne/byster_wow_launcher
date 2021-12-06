@@ -158,10 +158,12 @@ namespace Byster.Models.Utilities
                 default:
                 case InjectorStatusCode.INJECTED_OK:
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTED_OK;
-                    Timer timerToDelete = new Timer((obj) =>
+                    Task taskToDelete = new Task(() =>
                     {
-                        (obj as InjectInfo).InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
-                    }, changedElement, 60000, 60000);
+                        Thread.Sleep(60000);
+                        changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
+                    });
+                    taskToDelete.Start();
                     break;
                 case InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB:
                 case InjectorStatusCode.ERROR_WHILE_INJECTING:
@@ -213,8 +215,6 @@ namespace Byster.Models.Utilities
                     int i = 0;
                     while (File.Exists(FullLibPath + i + ".dll")) i++;
                     File.WriteAllBytes(FullLibPath + i + ".dll", response.RawBytes);
-
-                    Thread.Sleep(10000);
                     InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.INJECTION_STARTED);
                     bool injectionResult = Inject(injectingProcess.ProcessId, FullLibPath + i + ".dll");
                     if (injectionResult)

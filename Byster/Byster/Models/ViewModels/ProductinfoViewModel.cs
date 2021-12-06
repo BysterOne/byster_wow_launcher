@@ -11,9 +11,10 @@ namespace Byster.Models.ViewModels
     public class ShopProductInfoViewModel : ShopProductInfo
     {
         public Action<object> TestDel { get; set; }
-        public Action CloseDel;
-        public Action<object> AddDel;
-        public Action<object> RemoveDel;
+        public Action CloseDel { get; set; }
+        public Action CloseRotationsDel { get; set; }
+        public Action<object> AddDel { get; set; }
+        public Action<object> RemoveDel { get; set; }
 
         private Visibility isShowingInShop;
         public Visibility IsShowingInShop
@@ -25,6 +26,8 @@ namespace Byster.Models.ViewModels
                 OnPropertyChanged("IsShowingInShop");
             }
         }
+
+        public ShopRotation SelectedRotation;
 
         public ShopProductInfoViewModel(ShopProduct product, Action<object> testDel = null, Action closeDel = null) : base(product)
         {
@@ -70,6 +73,19 @@ namespace Byster.Models.ViewModels
                 {
                     RemoveDel(obj);
                 }));
+            }
+        }
+
+        private RelayCommand closeRotationCommand;
+        public RelayCommand CloseRotationCommand
+        {
+            get
+            {
+                return closeRotationCommand ??
+                  (closeRotationCommand = new RelayCommand(() =>
+                  {
+                      CloseRotationsDel();
+                  }));
             }
         }
     }

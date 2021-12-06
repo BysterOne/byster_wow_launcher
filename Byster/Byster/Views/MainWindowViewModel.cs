@@ -17,7 +17,7 @@ using System.Windows;
 
 namespace Byster.Views
 {
-    public class MainWindowViewModel : INotifyPropertyChanged
+    public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     {
 
         public ObservableCollection<Visibility> PageVisibilities { get; set; } = new ObservableCollection<Visibility>()
@@ -33,7 +33,7 @@ namespace Byster.Views
         };
 
 
-        private RestService restService;
+        internal RestService restService;
 
         public ActiveRotationsService ActiveRotations { get; set; }
         public ShopService Shop { get; set; }
@@ -61,8 +61,6 @@ namespace Byster.Views
                 OnPropertyChanged("SelectedProduct");
             }
         }
-
-        public ShadowManager ShadowManager { get; set; }
 
         public MainWindowViewModel(RestClient client, string sessionId)
         {
@@ -132,7 +130,7 @@ namespace Byster.Views
             updateAction();
         }
 
-        
+        private RelayCommand settingsCommand;
 
         public RelayCommand StartCommand
         {
@@ -164,6 +162,18 @@ namespace Byster.Views
                       int selectedIndex = Convert.ToInt32(obj as string);
                       selectPage(selectedIndex);
                   });
+            }
+        }
+        public RelayCommand SettingsCommand
+        {
+            get
+            {
+                return settingsCommand ??
+                (settingsCommand = new RelayCommand(() =>
+                    {
+                        SettingsWindow settingsWindow = new SettingsWindow(this);
+                        settingsWindow.Show();
+                    }));
             }
         }
 
@@ -200,7 +210,11 @@ namespace Byster.Views
         }
 
         
-
+        public void Dispose()
+        {
+            ActionService.Dispose();
+            SessionService.Dispose();
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string property = "")
@@ -223,23 +237,6 @@ namespace Byster.Views
                     selectControls(2);
                 }
             }
-        }
-    }
-
-    public class ShadowManager
-    {
-        Grid shadowGrid;
-        public ShadowManager(Grid gr)
-        {
-            shadowGrid = gr;
-        }
-        public void Shadow()
-        {
-            shadowGrid.Visibility = Visibility.Visible;
-        }
-        public void Unshadow()
-        {
-            shadowGrid.Visibility = Visibility.Collapsed;
         }
     }
 }

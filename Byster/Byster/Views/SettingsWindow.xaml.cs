@@ -1,0 +1,115 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using System.Windows.Shapes;
+using System.ComponentModel;
+
+using Byster.Models.BysterModels;
+using Byster.Models.ViewModels;
+using Byster.Models.Services;
+using Byster.Models.Utilities;
+
+namespace Byster.Views
+{
+    /// <summary>
+    /// Логика взаимодействия для SettingsWindow.xaml
+    /// </summary>
+    public partial class SettingsWindow : Window
+    {
+        public SettingsViewModel SettingsViewModel;
+
+        public SettingsWindow(MainWindowViewModel viewModel)
+        {
+            InitializeComponent();
+
+            SettingsViewModel = new SettingsViewModel()
+            {
+                MainViewModel = viewModel,
+            };
+            this.DataContext = SettingsViewModel;
+            if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.MASTER)
+            {
+                testElementGrid.Visibility = Visibility.Collapsed;
+                devElementGrid.Visibility = Visibility.Collapsed;
+                this.Height = 200;
+            }
+            else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
+            {
+                devElementGrid.Visibility = Visibility.Collapsed;
+                this.Height = 320;
+            }
+            SettingsViewModel.SelectedBranch = SettingsViewModel.MainViewModel.UserInfo.BranchChoices.Find(branch => branch.Name.ToLower() == SettingsViewModel.MainViewModel.UserInfo.Branch.ToLower());
+            SettingsViewModel.SelectedLoadType = SettingsViewModel.MainViewModel.UserInfo.LoadTypes.Find(loadtype => loadtype.Value == SettingsViewModel.MainViewModel.UserInfo.LoadType);
+            consoleSwitch.IsChecked = SettingsViewModel.MainViewModel.UserInfo.Console == 1;
+        }
+
+        private void closeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            SettingsViewModel.MainViewModel.UserInfo.SetBranch(SettingsViewModel.SelectedBranch);
+            SettingsViewModel.MainViewModel.UserInfo.SetConsole(consoleSwitch.IsChecked ?? false);
+            SettingsViewModel.MainViewModel.UserInfo.SetLoadType(SettingsViewModel.SelectedLoadType);
+            this.Close();
+        }
+
+        
+    }
+    public class SettingsViewModel : INotifyPropertyChanged
+    {
+        public MainWindowViewModel MainViewModel { get; set; }
+
+        private RelayCommand changePwdCommand;
+        public RelayCommand ChangePwdCommand
+        {
+            get
+            {
+                return changePwdCommand ?? (changePwdCommand = new RelayCommand(() =>
+                {
+                    ChangePasswordWindow changePasswordWindow = new ChangePasswordWindow("Изменение пароля", MainViewModel.UserInfo.Password, this);
+                    changePasswordWindow.ShowDialog();
+                }));
+            }
+        }
+
+        private RelayCommand linkEmailCommand;
+        public RelayCommand LinkEmailCommand
+        {
+            get
+            {
+                return linkEmailCommand ?? (linkEmailCommand = new RelayCommand(() =>
+                {
+                    LinkEmailWindow linkEmailWindow = new LinkEmailWindow("Привязка E-Mail", "Введите свой E-Mail", this);
+                    linkEmailWindow.ShowDialog();
+                }));
+            }
+        }
+        private RelayCommand openRotationSettingsWindow;
+        public RelayCommand OpenRotationSettingsWindow
+        {
+            get
+            {
+                return openRotationSettingsWindow ?? (openRotationSettingsWindow = new RelayCommand(() =>
+                {
+                    RotationSettingsWindow window = new RotationSettingsWindow(MainViewModel);
+                    window.ShowDialog();
+                }));
+            }
+        }
+        public Branch SelectedBranch { get; set; }
+        public LoadType SelectedLoadType { get; set; }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string property = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+    }
+}

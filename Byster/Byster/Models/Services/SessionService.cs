@@ -15,7 +15,7 @@ using RestSharp;
 
 namespace Byster.Models.Services
 {
-    public class SessionService : INotifyPropertyChanged
+    public class SessionService : INotifyPropertyChanged, IDisposable
     {
         public Dispatcher Dispatcher { get; set; }
         private WoWSearcher searcher;
@@ -81,6 +81,11 @@ namespace Byster.Models.Services
             Injector.AddProcessToInject(injectingSession.InjectInfo);
         }
 
+        public void Dispose()
+        {
+            searcher.Dispose();
+            Injector.Close();
+        }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string property = "")

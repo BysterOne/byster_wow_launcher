@@ -11,7 +11,7 @@ using System.Net.Sockets;
 using System.Net;
 using System.ComponentModel;
 using Byster.Models.Utilities;
-using static Byster.Models.Utilities.Logger;
+using static Byster.Models.Utilities.BysterLogger;
 
 
 namespace Byster.Models.Utilities
@@ -53,7 +53,6 @@ namespace Byster.Models.Utilities
                     try
                     {
                         var downloadingItem = ItemsToDownload.Dequeue();
-
                         WebClient client = new WebClient();
                         byte[] buffer = client.DownloadData(downloadingItem.PathOfNetworkSource);
                         File.WriteAllBytes(downloadingItem.PathOfLocalSource, buffer);
@@ -89,14 +88,14 @@ namespace Byster.Models.Utilities
         {
             if(!string.IsNullOrEmpty(networkPath))
             {
-                ImageItem imageItem = DownloadedItems.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + ".png"));
+                ImageItem imageItem = DownloadedItems.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + getExtensionOfNetworkSource(networkPath)));
                 if(imageItem != null)
                 {
                     return imageItem;
                 }
                 else
                 {
-                    imageItem = ItemsToDownload.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + ".png"));
+                    imageItem = ItemsToDownload.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + getExtensionOfNetworkSource(networkPath)));
                     if(imageItem != null)
                     {
                         return imageItem;
@@ -113,17 +112,33 @@ namespace Byster.Models.Utilities
         public static ImageItem AddToDownloadQueueOfNetworkSource(string pathToImage)
         {
             if (string.IsNullOrEmpty(pathToImage)) return null;
-            string newLocalPath = ImageRootPath + HashCalc.GetMD5Hash(pathToImage) + ".png";
+            string newLocalPath = ImageRootPath + HashCalc.GetMD5Hash(pathToImage) + getExtensionOfNetworkSource(pathToImage);
             File.Create(newLocalPath).Close();
             ImageItem creatingItem = new ImageItem()
             {
                 PathOfNetworkSource = pathToImage,
-                PathOfCurrentLocalSource = ImageRootPath + "placeholder.jpg",
+                PathOfCurrentLocalSource = ImageRootPath + "placeholder.png",
                 PathOfLocalSource = newLocalPath,
                 IsDownLoaded = false,
             };
             ItemsToDownload.Enqueue(creatingItem);
             return creatingItem;
+        }
+
+        private static string getExtensionOfNetworkSource(string netPath)
+        {
+            if(!string.IsNullOrEmpty(netPath))
+            {
+                string ext = ".";
+                string[] parts = netPath.Split('.');
+                if(parts.Last().Length <= 3 && parts.Last().Length > 0)
+                {
+                    ext += parts.Last();
+                    return ext;
+                }
+                return ".png";
+            }
+            return ".png";
         }
     }
 

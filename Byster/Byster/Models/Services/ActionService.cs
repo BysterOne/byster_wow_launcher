@@ -8,7 +8,7 @@ using System.ComponentModel;
 using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
-using static Byster.Models.Utilities.Logger;
+using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Models.Services
 {

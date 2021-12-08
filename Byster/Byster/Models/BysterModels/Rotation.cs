@@ -56,7 +56,19 @@ namespace Byster.Models.BysterModels
                 Medias.Count > 0 ?                                                          Medias[0].Uri :
                 Type.ToLower() == "bot" ?                                                   "/Resources/Images/bot-icon-default.png" :
                 Type.ToLower() == "utility" ?                                               "/Resources/Images/utility-icon-default.png" :
-                                                                                            "/Resources/Images/utility-icon-default.jpg";
+                                                                                            "/Resources/Images/utility-icon-default.png";
+            if(SpecOfRotation.EnumRotationSpecialization == RotationSpecializations.NULL && Medias.Count > 0)
+            {
+                Medias[0].PropertyChanged += (object obj, PropertyChangedEventArgs e) =>
+                {
+                    ImageUri =
+                    SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
+                    Medias.Count > 0 ? Medias[0].Uri :
+                    Type.ToLower() == "bot" ? "/Resources/Images/bot-icon-default.png" :
+                    Type.ToLower() == "utility" ? "/Resources/Images/utility-icon-default.png" :
+                                                                                                "/Resources/Images/utility-icon-default.png";
+                };
+            }      
         }
     }
 

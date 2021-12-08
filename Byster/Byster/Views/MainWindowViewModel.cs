@@ -78,7 +78,7 @@ namespace Byster.Views
             {
                 PreTestElementAction = () =>
                 {
-                    DialogWindow dialogWindow = new DialogWindow("Подтверждение", "Вы собираетесь приобрести тестовую версию продукта, всё верно?");
+                    DialogWindow dialogWindow = new DialogWindow("Подтверждение", "Вы собираетесь взять Тест ротации на 2 часа. Тест выдается только 1 раз на 1 ротацию. Вы уверены, что хотите взять его сейчас?");
                     bool result = dialogWindow.ShowDialog() ?? false;
                     return result;
                 },

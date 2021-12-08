@@ -143,7 +143,7 @@ namespace Byster.Models.Services
             if(Branch == "undefined") Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", (Branch = "master"));
             (Username, ReferalCode, BonusBalance) = (_usernane, _referalcode, _bonuses);
             LoadType = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", -1));
-            if (LoadType == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (LoadType = 3));
+            if (LoadType == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (LoadType = 1));
             UserType = RestService.GetUserType();
             Password = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "undefined") as string;
             if (UserType == BranchType.TEST)
@@ -153,7 +153,12 @@ namespace Byster.Models.Services
         }
         public void SetBranch(Branch branch)
         {
-            Branch = branch.Name.ToLower();
+            if (branch == null) return;
+
+            Branch = branch.BranchType == BranchType.DEVELOPER ? "dev" :
+                     branch.BranchType == BranchType.TEST ? "test" :
+                     branch.BranchType == BranchType.MASTER ? "master" :
+                                                            "master";
             Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", Branch);
         }
 

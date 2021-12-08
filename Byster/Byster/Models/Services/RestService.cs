@@ -7,7 +7,7 @@ using Byster.Models.RestModels;
 using RestSharp;
 using System.Collections.ObjectModel;
 using Byster.Models.BysterModels;
-using static Byster.Models.Utilities.Logger;
+using static Byster.Models.Utilities.BysterLogger;
 using Byster.Models.ViewModels;
 
 namespace Byster.Models.Services
@@ -115,6 +115,7 @@ namespace Byster.Models.Services
 
         public List<PaymentSystem> GetAllPaymentSystemList()
         {
+            bool isTesterOrDeveloper = !(GetUserType() == BranchType.MASTER);
             var response = client.Get<List<RestPaymentSystem>>(new RestRequest("shop/payment_systems"));
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -124,6 +125,7 @@ namespace Byster.Models.Services
             List<PaymentSystem> result = new List<PaymentSystem>();
             foreach(var item in response.Data)
             {
+                if (item.name.ToLower().Contains("тест") && !isTesterOrDeveloper) continue;
                 result.Add(new PaymentSystem()
                 {
                     Id = item.id,

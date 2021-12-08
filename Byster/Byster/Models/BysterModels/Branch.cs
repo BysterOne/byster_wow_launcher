@@ -25,7 +25,7 @@ namespace Byster.Models.BysterModels
                     case BranchType.TEST:
                         Name = "Tester";
                         break;
-                    case BranchType.DEV:
+                    case BranchType.DEVELOPER:
                         Name = "Developer";
                         break;
                     default:
@@ -44,7 +44,7 @@ namespace Byster.Models.BysterModels
                 case BranchType.TEST:
                     Name = "Tester";
                     break;
-                case BranchType.DEV:
+                case BranchType.DEVELOPER:
                     Name = "Developer";
                     break;
                 default:
@@ -57,7 +57,7 @@ namespace Byster.Models.BysterModels
             new Branch[]
             {
                 new Branch(BranchType.TEST),
-                new Branch(BranchType.DEV),
+                new Branch(BranchType.DEVELOPER),
                 new Branch(BranchType.MASTER),
             };
 
@@ -69,9 +69,9 @@ namespace Byster.Models.BysterModels
     }
     public enum BranchType
     {
-        DEV      = 3,
-        TEST     = 2,
-        MASTER   = 1,
-        UNKNOWN = -1,
+        DEVELOPER = 3,
+        TEST      = 2,
+        MASTER    = 1,
+        UNKNOWN   = -1,
     }
 }

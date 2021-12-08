@@ -115,7 +115,7 @@ namespace Byster.Models.Services
                 string root = "/Resources/Images/UserLogos/";
                 switch(UserType)
                 {
-                    case BranchType.DEV:
+                    case BranchType.DEVELOPER:
                         return root + "DEV.png";
                     case BranchType.TEST:
                         return root + "TEST.png";
@@ -148,7 +148,7 @@ namespace Byster.Models.Services
             Password = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "undefined") as string;
             if (UserType == BranchType.TEST)
             {
-                BranchChoices.Remove(BranchChoices.FirstOrDefault(branch => branch.BranchType == BranchType.DEV));
+                BranchChoices.Remove(BranchChoices.FirstOrDefault(branch => branch.BranchType == BranchType.DEVELOPER));
             }
         }
         public void SetBranch(Branch branch)

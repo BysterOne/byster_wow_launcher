@@ -52,7 +52,7 @@ namespace Byster.Views
             if(!File.Exists(pathOfRotationsFile)) File.Create(pathOfRotationsFile).Close();
             string rawRotations = File.ReadAllText(pathOfRotationsFile);
             Model = model;
-            SelectedBranch = Branch.AllBranches.First((branch) => branch.Name.ToLower() ==  Model.UserInfo.Branch.ToLower());
+            SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType.ToString().ToLower() ==  Model.UserInfo.Branch.ToLower());
             Dictionary<string, bool> rotations = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotations);
             Rotations = new ObservableCollection<LocalRotation>();
             foreach( var key in rotations.Keys )

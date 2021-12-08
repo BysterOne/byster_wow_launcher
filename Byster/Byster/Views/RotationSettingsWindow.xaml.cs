@@ -107,10 +107,10 @@ namespace Byster.Views
                 {
                     OpenFileDialog fileDialog = new OpenFileDialog()
                     {
-                        Filter = "st.toc|*.toc",
+                        Filter = "Byster Projects|*.toc",
                         CheckFileExists = true,
                         CheckPathExists = true,
-                        Title = "Выбор ротации",
+                        Title = "Выбор файла",
                     };
                     bool res = fileDialog.ShowDialog() ?? false;
                     if (res)

@@ -45,9 +45,21 @@ namespace Byster.Views
             else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
             {
                 devElementGrid.Visibility = Visibility.Collapsed;
-                this.Height = 320;
+                this.Height = 330;
             }
-            SettingsViewModel.SelectedBranch = SettingsViewModel.MainViewModel.UserInfo.BranchChoices.Find(branch => branch.Name.ToLower() == SettingsViewModel.MainViewModel.UserInfo.Branch.ToLower());
+            switch (viewModel.UserInfo.Branch.ToLower())
+            {
+                case "dev":
+                    SettingsViewModel.SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.DEVELOPER);
+                    break;
+                case "test":
+                    SettingsViewModel.SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.TEST);
+                    break;
+                default:
+                case "master":
+                    SettingsViewModel.SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.MASTER);
+                    break;
+            }
             SettingsViewModel.SelectedLoadType = SettingsViewModel.MainViewModel.UserInfo.LoadTypes.Find(loadtype => loadtype.Value == SettingsViewModel.MainViewModel.UserInfo.LoadType);
             consoleSwitch.IsChecked = SettingsViewModel.MainViewModel.UserInfo.Console == 1;
         }
@@ -60,7 +72,11 @@ namespace Byster.Views
             this.Close();
         }
 
-        
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
     }
     public class SettingsViewModel : INotifyPropertyChanged
     {

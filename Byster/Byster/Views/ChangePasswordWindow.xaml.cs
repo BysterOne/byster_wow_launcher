@@ -39,13 +39,6 @@ namespace Byster.Views
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
-            
-            if(HashCalc.GetMD5Hash(oldPassrowdBox.Password) != oldPasswordHash)
-            {
-                var w = new InfoWindow("Ошибка", "Введённый текущий пароль неверен");
-                w.ShowDialog();
-                return;
-            }
             if (newPassrowdBox.Password != newPassrowdBoxConfirm.Password)
             {
                 var w = new InfoWindow("Ошибка", "Введённые пароли не совпадают");
@@ -65,11 +58,6 @@ namespace Byster.Views
                 w.ShowDialog();
             }
                 
-        }
-
-        private void oldPassrowdBox_PasswordChanged(object sender, RoutedEventArgs e)
-        {
-            oldPassrowdBox.Tag = oldPassrowdBox.Password.Length > 0 ? "" : "Старый пароль";
         }
 
         private void newPassrowdBox_PasswordChanged(object sender, RoutedEventArgs e)

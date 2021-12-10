@@ -67,7 +67,7 @@ namespace Byster.Models.BysterModels
             else
             {
                 ImageUri = Rotations.Count == 1 ? Rotations[0].ImageUri :
-                "/Resources/Images/image-placeholder.jpg";
+                "/Resources/Images/image-placeholder.png";
             }
 
         }

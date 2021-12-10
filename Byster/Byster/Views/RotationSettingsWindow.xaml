@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         mc:Ignorable="d"
-        Title="RotationSettingsWindow" Height="500" Width="350"
+        Title="RotationSettingsWindow" Height="500" Width="700"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
-        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}">
+        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>
@@ -78,8 +79,8 @@
                 </ListBox>
             </Grid>
             <Grid Grid.Row="2">
-                <Button Style="{DynamicResource transparentButtonStyle}" Content="Добавить" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Width="150" Command="{Binding AddCommand}"/>
-                <Button Style="{DynamicResource transparentButtonStyle}" Content="Сохранить" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10" Width="150" Command="{Binding SaveCommand}"/>
+                <Button Style="{DynamicResource transparentButtonStyle}" Content="Добавить" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Width="320" Command="{Binding AddCommand}"/>
+                <Button Style="{DynamicResource transparentButtonStyle}" Content="Сохранить" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10" Width="320" Command="{Binding SaveCommand}"/>
             </Grid>
         </Grid>
     </Grid>

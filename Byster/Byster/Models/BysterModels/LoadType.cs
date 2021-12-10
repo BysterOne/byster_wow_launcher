@@ -13,9 +13,9 @@ namespace Byster.Models.BysterModels
         public string Name { get; set; }
 
         public static LoadType[] AllLoadTypes { get; set; } = new LoadType[] {
-            new LoadType(){ Name="Загрузка с сервера", Value=1},
-            new LoadType(){ Name="Смешанная загрузка", Value=2},
             new LoadType(){ Name="Локальная загрузка", Value=3},
+            new LoadType(){ Name="Смешанная загрузка", Value=2},
+            new LoadType(){ Name="Загрузка с сервера", Value=1},
         };
     }
 }

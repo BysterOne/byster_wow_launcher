@@ -36,6 +36,12 @@ namespace Byster.Views
         {
             this.Close();
         }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
     }
 
     public class RotationSettingsViewModel
@@ -52,7 +58,19 @@ namespace Byster.Views
             if(!File.Exists(pathOfRotationsFile)) File.Create(pathOfRotationsFile).Close();
             string rawRotations = File.ReadAllText(pathOfRotationsFile);
             Model = model;
-            SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType.ToString().ToLower() ==  Model.UserInfo.Branch.ToLower());
+                switch(model.UserInfo.Branch.ToLower())
+                {
+                    case "dev":
+                        SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.DEVELOPER);
+                    break;    
+                    case "test":
+                        SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.TEST);
+                    break;
+                    default:
+                    case "master":
+                        SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.MASTER);
+                    break;
+                }
             Dictionary<string, bool> rotations = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotations);
             Rotations = new ObservableCollection<LocalRotation>();
             foreach( var key in rotations.Keys )

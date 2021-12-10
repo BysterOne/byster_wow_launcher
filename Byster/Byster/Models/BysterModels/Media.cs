@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 using Byster.Models.Utilities;
 using System.ComponentModel;
+using static Byster.Models.Utilities.BysterLogger;
+
 
 namespace Byster.Models.BysterModels
 {
@@ -14,6 +16,7 @@ namespace Byster.Models.BysterModels
         public void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            Log($"Обновлён элемент {property}");
         }
 
         public ImageItem ImageItem { get; set; }
@@ -26,6 +29,7 @@ namespace Byster.Models.BysterModels
             {
                 uri = value;
                 OnPropertyChanged("Uri");
+                Log($"Получен новый Uri: {value}");
             }
         }
         public MediaTypes Type { get; set; }

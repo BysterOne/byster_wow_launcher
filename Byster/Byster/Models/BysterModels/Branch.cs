@@ -10,8 +10,6 @@ namespace Byster.Models.BysterModels
     public class Branch : INotifyPropertyChanged
     {
         public string Name { get; set; }
-
-        public event EventHandler BranchTypeChanged;
         private BranchType branchType;
         public BranchType BranchType
         {
@@ -23,14 +21,14 @@ namespace Byster.Models.BysterModels
                 switch (branchType)
                 {
                     case BranchType.TEST:
-                        Name = "Tester";
+                        Name = "Тестировщик";
                         break;
                     case BranchType.DEVELOPER:
-                        Name = "Developer";
+                        Name = "Разработчик";
                         break;
                     default:
                     case BranchType.MASTER:
-                        Name = "Master";
+                        Name = "Покупатель";
                         break;
                 }
                 OnPropertyChanged("Name");
@@ -42,23 +40,23 @@ namespace Byster.Models.BysterModels
             switch (BranchType)
             {
                 case BranchType.TEST:
-                    Name = "Tester";
+                    Name = "Тестировщик";
                     break;
                 case BranchType.DEVELOPER:
-                    Name = "Developer";
+                    Name = "Разработчик";
                     break;
                 default:
                 case BranchType.MASTER:
-                    Name = "Master";
+                    Name = "Покупатель";
                     break;
             }
         }
         public static Branch[] AllBranches { get; set; } =
             new Branch[]
             {
+                new Branch(BranchType.MASTER),
                 new Branch(BranchType.TEST),
                 new Branch(BranchType.DEVELOPER),
-                new Branch(BranchType.MASTER),
             };
 
         public event PropertyChangedEventHandler PropertyChanged;

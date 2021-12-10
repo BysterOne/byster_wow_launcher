@@ -4,10 +4,11 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
-        mc:Ignorable="d" Height="430" Width="300"
+        mc:Ignorable="d" Height="450" Width="300"
         Title="SettingsWindow"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
-        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}">
+        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>
@@ -36,22 +37,26 @@
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
                 <Button x:Name="changePasswordButton" Style="{DynamicResource transparentButtonStyle}" Content="Сменить пароль" Command="{Binding ChangePwdCommand}"/>
                 <Button x:Name="linkEnailButton" Style="{DynamicResource transparentButtonStyle}" Content="Привязать почту" Margin="0, 4" Command="{Binding LinkEmailCommand}"/>
-                <CheckBox Style="{DynamicResource rightCheckboxStyle}" Content="Показывать консоль"
+                <CheckBox Style="{DynamicResource rightCheckboxStyle}"
                           FontSize="{DynamicResource FontUISize}"
                           FontFamily="{DynamicResource Roboto}"
                           Foreground="{DynamicResource FontOrangeColor}"
-                          x:Name="consoleSwitch"/>
+                          x:Name="consoleSwitch">
+                    <TextBlock Text="Показывать консоль"/>
+                </CheckBox>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="2" Height="Auto" Margin="0, 10, 0, 0" x:Name="testElementGrid">
             <StackPanel>
-                <ComboBox x:Name="branchSelector" Style="{DynamicResource combobStyle}" Margin="9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.BranchChoices}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedBranch, Mode=TwoWay}"/>
+                <TextBlock Text="Выбор ветки ротации" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
+                <ComboBox x:Name="branchSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.BranchChoices}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedBranch, Mode=TwoWay}"/>
                 <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="Личный кабинет"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="3" Height="Auto" Margin="0, 0, 0, 10" x:Name="devElementGrid">
             <StackPanel>
-                <ComboBox x:Name="loadTypeSelector" Style="{DynamicResource combobStyle}" Margin="9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.LoadTypes}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedLoadType, Mode=TwoWay}"/>
+                <TextBlock Text="Выбор типа загрузки" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
+                <ComboBox x:Name="loadTypeSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.LoadTypes}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedLoadType, Mode=TwoWay}"/>
                 <Button x:Name="rotationSettingsBtn" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="Меню выбора ротаций" Command="{Binding OpenRotationSettingsWindow}"/>
             </StackPanel>
         </Grid>

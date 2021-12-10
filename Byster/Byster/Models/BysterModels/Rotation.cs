@@ -95,7 +95,7 @@ namespace Byster.Models.BysterModels
             ImageUri =
                 SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
                 Medias.Count > 0 ?                                                          Medias[0].Uri :
-                                                                                            "/Resources/Images/image-placeholder.jpg";
+                                                                                            "/Resources/Images/image-placeholder.png";
         }
     }
 

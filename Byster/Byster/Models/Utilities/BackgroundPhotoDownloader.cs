@@ -33,6 +33,7 @@ namespace Byster.Models.Utilities
 
             readImageDirectory();
 
+
             downloadingThread = new Thread(threadMethod);
             downloadingThread.IsBackground = true;
             downloadingThread.Name = "Downloader Of Images";
@@ -117,7 +118,7 @@ namespace Byster.Models.Utilities
             ImageItem creatingItem = new ImageItem()
             {
                 PathOfNetworkSource = pathToImage,
-                PathOfCurrentLocalSource = ImageRootPath + "placeholder.png",
+                PathOfCurrentLocalSource = "/Resources/Images/image-placeholder.png",
                 PathOfLocalSource = newLocalPath,
                 IsDownLoaded = false,
             };

@@ -73,14 +73,18 @@ namespace Byster.Views
                 }
             Dictionary<string, bool> rotations = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotations);
             Rotations = new ObservableCollection<LocalRotation>();
-            foreach( var key in rotations.Keys )
+            
+            if(rotations != null)
             {
-                Rotations.Add(new LocalRotation()
+                foreach (var key in rotations.Keys)
                 {
-                    IsEnabled = rotations[key],
-                    Path = key,
-                    Parent = Rotations,
-                });
+                    Rotations.Add(new LocalRotation()
+                    {
+                        IsEnabled = rotations[key],
+                        Path = key,
+                        Parent = Rotations,
+                    });
+                }
             }
         }
 

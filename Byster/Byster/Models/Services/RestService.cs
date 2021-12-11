@@ -165,7 +165,6 @@ namespace Byster.Models.Services
                 Log("Ошибка получения данных пользователя", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
                 return BranchType.UNKNOWN;
             }
-            return BranchType.DEVELOPER;
             return response.Data.dev ? BranchType.DEVELOPER :
                 response.Data.test ? BranchType.TEST :
                 response.Data.master ? BranchType.MASTER : BranchType.UNKNOWN;

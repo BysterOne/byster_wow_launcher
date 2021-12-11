@@ -46,9 +46,9 @@ namespace Byster.Models.Services
         {
             get
             {
-                if (Sum - Bonuses < 0)
-                    Bonuses = (int)Sum;
-                return Sum - bonuses;
+                if ((Sum-1) - Bonuses < 0)
+                    Bonuses = (int)(Sum-1);
+                return Sum - Bonuses;
             }
         }
         public RestService RestService { get; set; }
@@ -283,6 +283,22 @@ namespace Byster.Models.Services
             get
             {
                 return new RelayCommand(ClearCart);
+            }
+        }
+
+        private RelayCommand closeProduct;
+        public RelayCommand CloseProduct
+        {
+            get
+            {
+                return closeProduct ??
+                    (closeProduct = new RelayCommand((obj) =>
+                    {
+                        if(Convert.ToBoolean(obj))
+                        {
+                            CloseElement();
+                        }
+                    }));
             }
         }
 

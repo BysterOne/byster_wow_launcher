@@ -87,6 +87,9 @@
     <Reference Include="Jupiter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Jupiter.1.6.0\lib\netstandard2.0\Jupiter.dll</HintPath>
     </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.IdentityModel.Logging, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.15.0\lib\net461\Microsoft.IdentityModel.Logging.dll</HintPath>
     </Reference>
@@ -111,6 +114,9 @@
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Transactions" />
     <Reference Include="System.Web" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -332,14 +338,10 @@
     <Resource Include="Resources\Images\ClassesWOW\Wizard.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\ClassesWOW\Wow.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\UserLogos\master.png" />
     <Resource Include="Resources\Images\UserLogos\test.png" />
     <Resource Include="Resources\Images\UserLogos\dev.png" />
     <Resource Include="Resources\Images\utility-icon-default.png" />
-    <Resource Include="Resources\Images\Types\ANY.png" />
     <Resource Include="Resources\Images\Types\DPS.png" />
     <Resource Include="Resources\Images\Types\Heal.png" />
     <Resource Include="Resources\Images\Types\Tank.png" />
@@ -385,6 +387,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="1.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Types\ANY.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Wow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

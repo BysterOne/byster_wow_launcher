@@ -81,7 +81,7 @@
     <SignAssembly>false</SignAssembly>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>1.ico</ApplicationIcon>
+    <ApplicationIcon>byster.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Jupiter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
@@ -386,11 +386,11 @@
     <Resource Include="Resources\Images\image-placeholder.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="1.ico" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\Types\ANY.png" />
     <Resource Include="Resources\Images\ClassesWOW\Wow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="byster.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

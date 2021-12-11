@@ -37,7 +37,6 @@ namespace Byster.Models.BysterModels
         {
             Id = RestShopProduct.id;
             Name = RestShopProduct.name;
-            Description = RestShopProduct.description;
             Price = RestShopProduct.price;
             Currency = RestShopProduct.currency;
             Duration = RestShopProduct.duration;
@@ -52,6 +51,7 @@ namespace Byster.Models.BysterModels
                 Rotations.Add(new ShopRotation(restRotation));
             }
             IsPack = Rotations.Count > 1;
+            Description = string.IsNullOrEmpty(RestShopProduct.description) ? Rotations[0].Description : RestShopProduct.description;
             IsTestable = RestShopProduct.can_test;
 
 

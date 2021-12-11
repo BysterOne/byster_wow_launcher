@@ -168,10 +168,10 @@
         </Style.Setters>
         <Style.Triggers>
             <Trigger Property="IsMouseOver" Value="True">
-                <Setter Property="Background" Value="#2d2f33"/>
+                <Setter Property="Background" Value="#45808080"/>
             </Trigger>
             <Trigger Property="IsPressed" Value="True">
-                <Setter Property="Background" Value="#27282b"/>
+                <Setter Property="Background" Value="#15808080"/>
             </Trigger>
         </Style.Triggers>
     </Style>
@@ -302,13 +302,14 @@
                         <Grid>
                             <ToggleButton Style="{DynamicResource combobToggleButtonStyle}"
                                           IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
-                                          ClickMode="Press"/>
-                            <ContentPresenter Content="{TemplateBinding SelectedItem}"
-                            ContentTemplate="{TemplateBinding ItemTemplate}"
-                            ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
-                            Margin="10,10,30,10"
-                            VerticalAlignment="Stretch"
-                            HorizontalAlignment="Left"/>
+                                          ClickMode="Press">
+                                <ContentPresenter Content="{TemplateBinding SelectedItem}"
+                                                    ContentTemplate="{TemplateBinding ItemTemplate}"
+                                                    ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                    Margin="10,10,30,10"
+                                                    VerticalAlignment="Stretch"
+                                                    HorizontalAlignment="Left"/>
+                            </ToggleButton>
                             <Popup x:Name="Popup"
                                     Placement="Bottom"
                                     IsOpen="{TemplateBinding IsDropDownOpen}"
@@ -335,6 +336,7 @@
 
     <Style TargetType="ToggleButton" x:Key="combobToggleButtonStyle">
         <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
             <Setter Property="Background" Value="{DynamicResource BackgroundUIColor}"/>
             <Setter Property="Template">
                 <Setter.Value>
@@ -351,6 +353,7 @@
                                       Grid.Column="1"
                                       VerticalAlignment="Center"
                                       HorizontalAlignment="Center"/>
+                                <ContentPresenter Grid.Column="0"/>
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>

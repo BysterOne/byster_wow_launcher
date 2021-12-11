@@ -17,6 +17,7 @@ using Byster.Models.BysterModels;
 using Byster.Models.ViewModels;
 using Byster.Models.Services;
 using Byster.Models.Utilities;
+using System.Diagnostics;
 
 namespace Byster.Views
 {
@@ -34,6 +35,10 @@ namespace Byster.Views
             SettingsViewModel = new SettingsViewModel()
             {
                 MainViewModel = viewModel,
+                CloseAction = () =>
+                {
+                    this.Close();
+                }
             };
             this.DataContext = SettingsViewModel;
             if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.MASTER)
@@ -80,6 +85,7 @@ namespace Byster.Views
     }
     public class SettingsViewModel : INotifyPropertyChanged
     {
+        public Action CloseAction { get; set; }
         public MainWindowViewModel MainViewModel { get; set; }
 
         private RelayCommand changePwdCommand;
@@ -115,7 +121,20 @@ namespace Byster.Views
                 return openRotationSettingsWindow ?? (openRotationSettingsWindow = new RelayCommand(() =>
                 {
                     RotationSettingsWindow window = new RotationSettingsWindow(MainViewModel);
-                    window.ShowDialog();
+                    window.Show();
+                    CloseAction();
+                }));
+            }
+        }
+
+        private RelayCommand openAccountPageCommand;
+        public RelayCommand OpenAccountPageCommand
+        {
+            get
+            {
+                return openAccountPageCommand ?? (openAccountPageCommand = new RelayCommand(() =>
+                {
+                    Process.Start("https://admin.byster.ru/");
                 }));
             }
         }

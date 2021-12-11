@@ -50,7 +50,7 @@
             <StackPanel>
                 <TextBlock Text="Выбор ветки ротации" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox x:Name="branchSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.BranchChoices}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedBranch, Mode=TwoWay}"/>
-                <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="Личный кабинет"/>
+                <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="Личный кабинет" Command="{Binding OpenAccountPageCommand}"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="3" Height="Auto" Margin="0, 0, 0, 10" x:Name="devElementGrid">

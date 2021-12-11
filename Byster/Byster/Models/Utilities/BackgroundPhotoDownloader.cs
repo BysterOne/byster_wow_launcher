@@ -68,6 +68,7 @@ namespace Byster.Models.Utilities
                         Log("Ошибка при скачивании", ex.Message, " - ", ex.ToString());   
                     }
                 }
+                Thread.Sleep(100);
             }
         }
 

@@ -91,6 +91,7 @@ namespace Byster.Views
         {
             App.Current.MainWindow = new LoginOrRegistrationWindow();
             App.Current.MainWindow.Show();
+            while(!App.Current.MainWindow.IsLoaded) { }
             Close();
             return;
         }

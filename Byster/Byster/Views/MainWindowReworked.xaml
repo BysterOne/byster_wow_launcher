@@ -8,7 +8,8 @@
         mc:Ignorable="d"
         Title="MainWindowReworked" Height="585" Width="975"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
-        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}" MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        KeyDown="Window_KeyDown">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -187,5 +188,9 @@
                 </Grid>
             </Grid>
         </Grid>
+        <Grid Background="#A0000000" x:Name="updatingDataActionGrid" Grid.RowSpan="3" Visibility="Collapsed">
+            <TextBlock Text="Обновление данных..." VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" FontWeight="Bold"/>
+        </Grid>
     </Grid>
+    
 </Window>

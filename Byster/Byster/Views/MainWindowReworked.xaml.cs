@@ -34,6 +34,14 @@ namespace Byster.Views
             App.Sessionid = sessionId;
 
             ViewModel = new MainWindowViewModel(App.Rest, App.Sessionid);
+            ViewModel.UpdateStarted += () =>
+            {
+                 updatingDataActionGrid.Visibility = Visibility.Visible;
+            };
+            ViewModel.UpdateCompleted += () =>
+            {
+                 updatingDataActionGrid.Visibility = Visibility.Collapsed;
+            };
             InitializeComponent();
             this.DataContext = ViewModel;
             FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance;
@@ -90,6 +98,14 @@ namespace Byster.Views
         {
             base.OnClosing(e);
             ViewModel.Dispose();
+        }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if(e.Key == Key.F5)
+            {
+                ViewModel.UpdateData();
+            }
         }
     }
 

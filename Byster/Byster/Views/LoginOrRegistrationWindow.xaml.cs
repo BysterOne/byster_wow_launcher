@@ -50,6 +50,7 @@ namespace Byster.Views
                     Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "");
                 }
             }
+            autoAuthPresenterGrid.Visibility = Visibility.Collapsed;
             var response = App.Rest.Post<List<RegisterChoice>>(new RestRequest("launcher/register_choices"));
             if (response.StatusCode == HttpStatusCode.OK)
             {

@@ -136,7 +136,7 @@ namespace Byster.Models.Services
             Log("Получены данные платёжных систем");
             return result;
         }
-        string lastActionId = "";
+        List<string> updatedActionIds = new List<string>();
         public bool GetActionState(string sessionId)
         {
             var response = client.Get<List<RestAction>>(new RestRequest("launcher/ping"));
@@ -145,16 +145,17 @@ namespace Byster.Models.Services
                 Log("Ошибка обновления данных", response.Content.ToString(), " - ", response.ErrorMessage);
                 return false;
             }
+            bool res = false;
             List<RestAction> actions = response.Data;
             foreach(var action in actions)
             {
-                if(action.action_id != lastActionId && action.session == sessionId && (action.action_type == 1 || action.action_type == 11))
+                if(!updatedActionIds.Contains(action.action_id) && action.session == sessionId && (action.action_type == 1 || action.action_type == 11))
                 {
-                    lastActionId = action.action_id;
-                    return true;
+                    updatedActionIds.Add(action.action_id);
+                    res = true;
                 }
             }
-            return false;
+            return res;
         }
 
         public BranchType GetUserType()

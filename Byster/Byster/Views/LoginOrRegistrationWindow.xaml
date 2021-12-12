@@ -59,7 +59,11 @@
                         <Hyperlink x:Name="navigateToAuth" Style="{StaticResource hlStyle}" Click="navigateToAuth_Click">Авторизоваться?</Hyperlink>
                     </TextBlock>
                 </StackPanel>
+                
             </Grid>
         </StackPanel>
+        <Grid Background="#A0000000" x:Name="autoAuthPresenterGrid">
+            <TextBlock Style="{DynamicResource orangeTextBlockStyle}" Text="Попытка входа..." VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+        </Grid>
     </Grid>
 </Window>

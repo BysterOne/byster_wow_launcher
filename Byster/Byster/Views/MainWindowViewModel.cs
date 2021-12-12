@@ -35,6 +35,9 @@ namespace Byster.Views
 
         internal RestService restService;
 
+
+        public event Action UpdateStarted;
+        public event Action UpdateCompleted;
         public ActiveRotationsService ActiveRotations { get; set; }
         public ShopService Shop { get; set; }
         public UserInfoService UserInfo { get; set; }
@@ -120,7 +123,7 @@ namespace Byster.Views
                 },
                 SessionId = sessionId,
             };
-            ActionService = new ActionService(restService, updateAction)
+            ActionService = new ActionService(restService, UpdateData)
             {
                 SessionId = sessionId,
                 Dispatcher = App.Current.MainWindow.Dispatcher,
@@ -233,7 +236,22 @@ namespace Byster.Views
             syncData();
         }
 
-        
+        public void UpdateData()
+        {
+            Task.Run(() =>
+            {
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    UpdateStarted?.Invoke();
+                    UserInfo.UpdateRemoteData();
+                    Shop.UpdateData();
+                    syncData();
+                    UpdateCompleted?.Invoke();
+                });
+                return;
+            });
+        }
+
         public void Dispose()
         {
             ActionService.Dispose();

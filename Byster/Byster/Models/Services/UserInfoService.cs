@@ -129,22 +129,27 @@ namespace Byster.Models.Services
         public List<Branch> BranchChoices { get; set; } = Byster.Models.BysterModels.Branch.AllBranches.ToList();
         public List<LoadType> LoadTypes { get; set; } = Byster.Models.BysterModels.LoadType.AllLoadTypes.ToList();
 
-        public void UpdateData()
+        public void UpdateRemoteData()
         {
             (string _usernane, string _referalcode, int _bonuses) = RestService.GetUserInfo();
-            if(string.IsNullOrEmpty(_usernane) &&
+            if (string.IsNullOrEmpty(_usernane) &&
                string.IsNullOrEmpty(_referalcode))
             {
                 return;
             }
+            (Username, ReferalCode, BonusBalance) = (_usernane, _referalcode, _bonuses);
+            UserType = RestService.GetUserType();
+        }
+
+        public void UpdateData()
+        {
+            UpdateRemoteData();
             Console = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", -1));
             if (Console == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (Console = 0));
             Branch = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", "undefined") as string;
             if(Branch == "undefined") Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", (Branch = "master"));
-            (Username, ReferalCode, BonusBalance) = (_usernane, _referalcode, _bonuses);
             LoadType = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", -1));
             if (LoadType == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (LoadType = 1));
-            UserType = RestService.GetUserType();
             Password = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "undefined") as string;
             if (UserType == BranchType.TEST)
             {

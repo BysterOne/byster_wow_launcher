@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -46,8 +46,8 @@ namespace Byster.Models.Services
         {
             get
             {
-                if ((Sum-1) - Bonuses < 0)
-                    Bonuses = (int)(Sum-1);
+                if (Sum - Bonuses < 0)
+                    Bonuses = (int)Sum;
                 return Sum - Bonuses;
             }
         }

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -132,36 +132,39 @@ namespace Byster.Views
 
         private RelayCommand settingsCommand;
 
+        private RelayCommand startCommand;
         public RelayCommand StartCommand
         {
             get
             {
-                return new RelayCommand((obj) =>
+                return startCommand ?? (startCommand = new RelayCommand((obj) =>
                      {
                          SessionService.StartInjecting(SelectedSession.WowApp.Process.Id);
-                     });
+                     }));
             }
         }
+        private RelayCommand unselectSessionCommand;
         public RelayCommand UnselectSessionCommand
         {
             get
             {
-                return new RelayCommand((obj) =>
+                return unselectSessionCommand ?? (unselectSessionCommand = new RelayCommand((obj) =>
                     {
                         SelectedSession = null;
-                    });
+                    }));
             }
         }
 
+        private RelayCommand selectPageCommand;
         public RelayCommand SelectPageCommand
         {
             get
             {
-                return new RelayCommand((obj) =>
+                return selectPageCommand ?? (selectPageCommand = new RelayCommand((obj) =>
                   {
                       int selectedIndex = Convert.ToInt32(obj as string);
                       selectPage(selectedIndex);
-                  });
+                  }));
             }
         }
         public RelayCommand SettingsCommand
@@ -174,6 +177,27 @@ namespace Byster.Views
                         SettingsWindow settingsWindow = new SettingsWindow(this);
                         settingsWindow.Show();
                     }));
+            }
+        }
+
+        private RelayCommand shopCommand;
+        public RelayCommand ShopCommand
+        {
+            get
+            {
+                return shopCommand ?? (shopCommand = new RelayCommand(() =>
+                {
+                    Shop.FilterOptions = new Filter()
+                    {
+                        FilterClasses = new ObservableCollection<FilterClass>()
+                        {
+                            new FilterClass(ActiveRotations.FilterClass),
+                        },
+                        FilterTypes = new ObservableCollection<string>()
+                        {},
+                    };
+                    selectPage(1);
+                }));
             }
         }
 

@@ -5,11 +5,16 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         mc:Ignorable="d"
-        Title="LinkEmailWindow" Height="180" Width="270"
-        ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" WindowStyle="None">
+        Title="LinkEmailWindow" Height="235" Width="300"
+        ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" WindowStyle="None"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown">
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>
+    <Window.Effect>
+        <DropShadowEffect ShadowDepth="0" BlurRadius="20"
+                          Color="{DynamicResource EffectProductItemColor}"/>
+    </Window.Effect>
     <Border Background="{StaticResource BackgroundWindowColor}"
             BorderBrush="{StaticResource BorderProductItemColor}"
             BorderThickness="1">

@@ -68,5 +68,11 @@ namespace Byster.Views
         {
             newPassrowdBoxConfirm.Tag = newPassrowdBoxConfirm.Password.Length > 0 ? "" : "Подтверждение пароля";
         }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
     }
 }

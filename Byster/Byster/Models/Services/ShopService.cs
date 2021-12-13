@@ -157,14 +157,17 @@ namespace Byster.Models.Services
 
         public void UpdateData()
         {
-            AllProducts.Clear();
-            var newProducts = RestService.GetAllProductCollection();
-            foreach (var product in newProducts)
+            App.Current.Dispatcher.InvokeAsync(() =>
             {
-                AllProducts.Add(product);
-            } 
-            FilterProducts();
-            setElementsActions();
+                AllProducts.Clear();
+                var newProducts = RestService.GetAllProductCollection();
+                foreach (var product in newProducts)
+                {
+                    AllProducts.Add(product);
+                }
+                FilterProducts();
+                setElementsActions();
+            }).Wait();
         }
 
         

@@ -12,6 +12,10 @@
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>
+    <Window.Effect>
+        <DropShadowEffect ShadowDepth="0" BlurRadius="40"
+                          Color="{DynamicResource EffectProductItemColor}"/>
+    </Window.Effect>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
@@ -33,7 +37,7 @@
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
-            <Image Source="{Binding Path=MainViewModel.UserInfo.UserImage}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Stretch="Uniform" Grid.Column="0"/>
+            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Path=MainViewModel.UserInfo.UserImage}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Stretch="Uniform" Grid.Column="0"/>
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
                 <Button x:Name="changePasswordButton" Style="{DynamicResource transparentButtonStyle}" Content="Сменить пароль" Command="{Binding ChangePwdCommand}"/>
                 <Button x:Name="linkEnailButton" Style="{DynamicResource transparentButtonStyle}" Content="Привязать почту" Margin="0, 4" Command="{Binding LinkEmailCommand}"/>
@@ -50,7 +54,7 @@
             <StackPanel>
                 <TextBlock Text="Выбор ветки ротации" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox x:Name="branchSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.BranchChoices}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedBranch, Mode=TwoWay}"/>
-                <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="Личный кабинет" Command="{Binding OpenAccountPageCommand}"/>
+                <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="admin.byster.ru" Command="{Binding OpenAccountPageCommand}"/>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="3" Height="Auto" Margin="0, 0, 0, 10" x:Name="devElementGrid">

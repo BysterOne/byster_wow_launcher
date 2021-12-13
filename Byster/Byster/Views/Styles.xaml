@@ -476,7 +476,8 @@
                                 <Image Grid.Column="0"
                                        Source="{Binding Path=ImageUri}"
                                        VerticalAlignment="Stretch"
-                                       Stretch="Uniform"/>
+                                       Stretch="Uniform"
+                                       RenderOptions.BitmapScalingMode="HighQuality"/>
                                 <Grid Grid.Column="1" Margin="10">
                                     <TextBlock Text="Активна до:"
                                                             VerticalAlignment="Bottom"
@@ -488,8 +489,8 @@
                                                Style="{DynamicResource orangeTextBlockStyle}"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                                         <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Type}" VerticalAlignment="Center"/>
-                                        <Image Source="{Binding Path=RotationClass.ImageUri}" VerticalAlignment="Top" Height="36" Margin="7, 0"/>
-                                        <Image Source="{Binding Path=RoleOfRotation.ImageUri}" VerticalAlignment="Top" Height="36"/>
+                                        <Image Source="{Binding Path=RotationClass.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Height="36" Margin="7, 0"/>
+                                        <Image Source="{Binding Path=RoleOfRotation.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Height="36"/>
                                     </StackPanel>
                                     <TextBlock Style="{DynamicResource infoTextBlockStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="{Binding Path=ExpiringTime}"/>
                                 </Grid>
@@ -540,7 +541,8 @@
                                                Height="40"
                                                Width="40"
                                                Stretch="Uniform"
-                                               x:Name="sessionImage">
+                                               x:Name="sessionImage"
+                                               RenderOptions.BitmapScalingMode="HighQuality">
                                             <Image.Effect>
                                                 <DropShadowEffect ShadowDepth="0" Color="{DynamicResource sessionStartEffectColor}" BlurRadius="6"/>
                                             </Image.Effect>
@@ -828,7 +830,7 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
-                                <Image x:Name="mediaImage" Margin="5, 0"/>
+                                <Image x:Name="mediaImage" Margin="5, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
                                 <ControlTemplate.Triggers>
                                     <DataTrigger Binding="{Binding Path=Type}" Value="1">
                                         <Setter TargetName="mediaImage" Property="Source" Value="{Binding Path=Uri}"/>
@@ -883,14 +885,14 @@
                                                     <ColumnDefinition Width="80"/>
                                                     <ColumnDefinition/>
                                                 </Grid.ColumnDefinitions>
-                                                <Image Source="{Binding Path=ImageUri}" Grid.Column="0" Stretch="Uniform" Height="80"/>
+                                                <Image Source="{Binding Path=ImageUri}" Grid.Column="0" Stretch="Uniform" Height="80" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                 <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                     <TextBlock Text="{Binding Path=Name}" Style="{DynamicResource orangeTextBlockStyle}" HorizontalAlignment="Center" Margin="0, 0, 0, 6"/>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
                                                         <TextBlock Text="{Binding Path=Type}" Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center"/>
-                                                        <Image Source="{Binding Path=RotationClass.ImageUri}" Stretch="Uniform" Height="30" Margin="8, 0"/>
+                                                        <Image Source="{Binding Path=RotationClass.ImageUri}" Stretch="Uniform" Height="30" Margin="8, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                         <TextBlock Text="{Binding Path=RotationClass.NameOfClass}" Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center"/>
-                                                        <Image Source="{Binding Path=RoleOfRotation.ImageUri}" Stretch="Uniform" Height="30" Margin="8, 0"/>
+                                                        <Image Source="{Binding Path=RoleOfRotation.ImageUri}" Stretch="Uniform" Height="30" Margin="8, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                         <TextBlock Text="{Binding Path=SpecOfRotation.Name}" Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center"/>
                                                     </StackPanel>
                                                 </StackPanel>
@@ -1131,10 +1133,10 @@
                                                                           Visibility="Collapsed"
                                                                           Height="30">
                                                         <Image x:Name="rotationClass" HorizontalAlignment="Left" VerticalAlignment="Center"
-                                                                           Height="30"/>
+                                                                           Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                         <TextBlock x:Name="rotationType" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource infoTextBlockStyle}"/>
                                                         <Image x:Name="rotationRole" HorizontalAlignment="Right" VerticalAlignment="Center"
-                                                                           Height="30"/>
+                                                                           Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                     </Grid>
                                                     <Grid Grid.Row="0"
                                                                           x:Name="multipleProductShortInfoGrid"
@@ -1148,7 +1150,7 @@
                                                     </Grid>
                                                     <TextBlock Grid.Row="1" Text="{Binding Path=Product.Name}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource infoTextBlockStyle}" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
                                                 </Grid>
-                                                <Image Grid.Row="1" Source="{Binding Path=Product.ImageUri}"/>
+                                                <Image Grid.Row="1" Source="{Binding Path=Product.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                 <Button Style="{DynamicResource imageButtonStyle}" Command="{Binding RelativeSource={RelativeSource AncestorType=ListBox}, Path=DataContext.Shop.CloseProduct}"
                                                             CommandParameter="{Binding RelativeSource={RelativeSource AncestorType=ListBoxItem}, Path=IsSelected}"
                                                             IsEnabled="False"
@@ -1183,11 +1185,11 @@
                                                         </Grid>
                                                         <Grid HorizontalAlignment="Stretch" x:Name="CountControls">
                                                             <Button Style="{DynamicResource uibStyle}" HorizontalAlignment="Left" Command="{Binding RemoveCommand}" CommandParameter="{Binding Path=Product.Id}">
-                                                                <Image Source="/Resources/Images/minus-button.png" Stretch="Uniform" Width="20" Margin="5" />
+                                                                <Image Source="/Resources/Images/minus-button.png" Stretch="Uniform" Width="20" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                             </Button>
                                                             <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Count}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                                                             <Button Style="{DynamicResource uibStyle}" HorizontalAlignment="Right"  Command="{Binding AddCommand}" CommandParameter="{Binding Path=Product.Id}">
-                                                                <Image Source="/Resources/Images/plus-button.png" Stretch="Uniform" Width="20" Margin="5"/>
+                                                                <Image Source="/Resources/Images/plus-button.png" Stretch="Uniform" Width="20" Margin="5" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                             </Button>
                                                         </Grid>
                                                     </Grid>
@@ -1213,11 +1215,11 @@
                                                             <TextBlock x:Name="productTypeName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}"
                                                                    Margin="0"/>
                                                             <Image x:Name="productClassImage" Height="40"
-                                                               Margin="13, 0"/>
+                                                               Margin="13, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                             <TextBlock x:Name="productClassName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" TextAlignment="Center"
                                                                    Margin="0"/>
                                                             <Image x:Name="productRoleImage" Height="40"
-                                                               Margin="13, 0"/>
+                                                               Margin="13, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                             <TextBlock x:Name="productSpecializationName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" TextAlignment="Right"
                                                                    Margin="0"/>
                                                         </StackPanel>
@@ -1351,6 +1353,26 @@
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="CheckPart" Property="Visibility" Value="Visible"/>
                         </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="False"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="CheckPart" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="CheckPart" Property="Stroke" Value="{DynamicResource FontUIColor}"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="CheckPart" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="CheckPart" Property="Stroke" Value="{DynamicResource FontDarkOrangeColor}"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -1389,6 +1411,26 @@
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="CheckPart" Property="Visibility" Value="Visible"/>
                         </Trigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="False"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="CheckPart" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="CheckPart" Property="Stroke" Value="{DynamicResource FontUIColor}"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
+                        <MultiTrigger>
+                            <MultiTrigger.Conditions>
+                                <Condition Property="IsChecked" Value="True"/>
+                                <Condition Property="IsMouseOver" Value="True"/>
+                            </MultiTrigger.Conditions>
+                            <MultiTrigger.Setters>
+                                <Setter TargetName="CheckPart" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="CheckPart" Property="Stroke" Value="{DynamicResource FontDarkOrangeColor}"/>
+                            </MultiTrigger.Setters>
+                        </MultiTrigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
@@ -1409,6 +1451,7 @@
     <SolidColorBrush x:Key="FontInfoColor">#9fa4b2</SolidColorBrush>
     <SolidColorBrush x:Key="FontTitleColor">#ffffff</SolidColorBrush>
     <SolidColorBrush x:Key="FontOrangeColor">#fbb94b</SolidColorBrush>
+    <SolidColorBrush x:Key="FontDarkOrangeColor">#bf8c26</SolidColorBrush>
     
     <SolidColorBrush x:Key="BackgroundButtonColor">#497f46</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundButtonColorHover">#3d6b3b</SolidColorBrush>

@@ -49,9 +49,60 @@ namespace Byster.Models.Services
             }
         }
 
+        private void sortAllRotations()
+        {
+            int count = 0;
+            for(int i = count; i < AllActiveRotations.Count; i++)
+            {
+                if (AllActiveRotations[i].Type.ToLower() == "pvp")
+                {
+                    count++;
+                    for (int j = 0; j < i; j++)
+                    {
+                        if (AllActiveRotations[j].Type.ToLower() != "pvp")
+                        {
+                            AllActiveRotations.Move(i, j);
+                        }
+                    }
+                }
+            }
+            for (int i = count; i < AllActiveRotations.Count; i++)
+            {
+                if (AllActiveRotations[i].Type.ToLower() == "pve")
+                {
+                    count++;
+                    for (int j = 0; j < i; j++)
+                    {
+                        if (AllActiveRotations[j].Type.ToLower() != "pve" &&
+                            AllActiveRotations[j].Type.ToLower() != "pvp")
+                        {
+                            AllActiveRotations.Move(i, j);
+                        }
+                    }
+                }
+            }
+            for (int i = count; i < AllActiveRotations.Count; i++)
+            {
+                if (AllActiveRotations[i].Type.ToLower() == "bot")
+                {
+                    count++;
+                    for (int j = 0; j < i; j++)
+                    {
+                        if (AllActiveRotations[j].Type.ToLower() != "pve" &&
+                            AllActiveRotations[j].Type.ToLower() != "pvp" &&
+                            AllActiveRotations[j].Type.ToLower() != "bot")
+                        {
+                            AllActiveRotations.Move(i, j);
+                        }
+                    }
+                }
+            }
+        }
+
         public void UpdateData()
         {
             AllActiveRotations = RestService.GetActiveRotationCollection();
+            sortAllRotations();
             FilterRotations();
         }
 

@@ -108,7 +108,7 @@ namespace Byster.Views
             {
                 return linkEmailCommand ?? (linkEmailCommand = new RelayCommand(() =>
                 {
-                    LinkEmailWindow linkEmailWindow = new LinkEmailWindow("Привязка E-Mail", "Введите свой E-Mail", this);
+                    LinkEmailWindow linkEmailWindow = new LinkEmailWindow("Привязка E-Mail", "Привяжите свой E-Mail, что бы вы могли восстановить пароль к своей учетной записи и получать важные обновления!", this);
                     linkEmailWindow.ShowDialog();
                 }));
             }
@@ -134,7 +134,7 @@ namespace Byster.Views
             {
                 return openAccountPageCommand ?? (openAccountPageCommand = new RelayCommand(() =>
                 {
-                    Process.Start("https://admin.byster.ru/");
+                    Process.Start("https://admin.byster.ru/shop/rotation/");
                 }));
             }
         }

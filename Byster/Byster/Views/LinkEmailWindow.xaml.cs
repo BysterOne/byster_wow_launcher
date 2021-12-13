@@ -62,5 +62,11 @@ namespace Byster.Views
         {
             this.DialogResult = false;
         }
+
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
     }
 }

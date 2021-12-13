@@ -243,12 +243,14 @@ namespace Byster.Views
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateStarted?.Invoke();
-                    UserInfo.UpdateRemoteData();
-                    Shop.UpdateData();
-                    syncData();
+                });
+                UserInfo.UpdateRemoteData();
+                Shop.UpdateData();
+                syncData();
+                App.Current.Dispatcher.Invoke(() =>
+                {
                     UpdateCompleted?.Invoke();
                 });
-                return;
             });
         }
 

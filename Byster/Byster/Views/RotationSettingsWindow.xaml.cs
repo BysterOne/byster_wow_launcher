@@ -26,10 +26,10 @@ namespace Byster.Views
     /// </summary>
     public partial class RotationSettingsWindow : Window
     {
-        public RotationSettingsWindow(MainWindowViewModel model)
+        public RotationSettingsWindow()
         {
             InitializeComponent();
-            this.DataContext = new RotationSettingsViewModel(model);
+            this.DataContext = new RotationSettingsViewModel();
         }
 
         private void closeBtn_Click(object sender, RoutedEventArgs e)
@@ -46,35 +46,18 @@ namespace Byster.Views
 
     public class RotationSettingsViewModel
     {
-        public Branch SelectedBranch { get; set; }
         public ObservableCollection<LocalRotation> Rotations { get; set; }
         private readonly string pathOfConfigDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig";
         private readonly string pathOfRotationsFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig\\rotations.json";
-        public MainWindowViewModel Model { get; set; }
-
-        public RotationSettingsViewModel(MainWindowViewModel model)
+        public RotationSettingsViewModel()
         {
-            if(!Directory.Exists(pathOfConfigDir)) Directory.CreateDirectory(pathOfConfigDir);
-            if(!File.Exists(pathOfRotationsFile)) File.Create(pathOfRotationsFile).Close();
+            if (!Directory.Exists(pathOfConfigDir)) Directory.CreateDirectory(pathOfConfigDir);
+            if (!File.Exists(pathOfRotationsFile)) File.Create(pathOfRotationsFile).Close();
             string rawRotations = File.ReadAllText(pathOfRotationsFile);
-            Model = model;
-                switch(model.UserInfo.Branch.ToLower())
-                {
-                    case "dev":
-                        SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.DEVELOPER);
-                    break;    
-                    case "test":
-                        SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.TEST);
-                    break;
-                    default:
-                    case "master":
-                        SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.MASTER);
-                    break;
-                }
             Dictionary<string, bool> rotations = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotations);
             Rotations = new ObservableCollection<LocalRotation>();
-            
-            if(rotations != null)
+
+            if (rotations != null)
             {
                 foreach (var key in rotations.Keys)
                 {
@@ -90,9 +73,9 @@ namespace Byster.Views
 
         public void AddRotation(string pathOfRotation)
         {
-            if(!Rotations.Any((location) => location.Path == pathOfRotation))
+            if (!Rotations.Any((location) => location.Path == pathOfRotation))
             {
-                if(!File.Exists(pathOfRotation))
+                if (!File.Exists(pathOfRotation))
                 {
                     return;
                 }
@@ -110,16 +93,16 @@ namespace Byster.Views
             if (!Directory.Exists(pathOfConfigDir)) Directory.CreateDirectory(pathOfConfigDir);
             if (!File.Exists(pathOfRotationsFile)) File.Create(pathOfRotationsFile).Close();
             Dictionary<string, bool> jsonRotations = new Dictionary<string, bool>();
-            foreach(var rot in Rotations)
+            foreach (var rot in Rotations)
             {
                 jsonRotations.Add(rot.Path, rot.IsEnabled);
             }
             File.WriteAllText(pathOfRotationsFile, JsonConvert.SerializeObject(jsonRotations));
-            Model.UserInfo.SetBranch(SelectedBranch);
         }
 
         private RelayCommand addCommand;
         private RelayCommand saveCommand;
+        private RelayCommand searchCommand;
 
         public RelayCommand AddCommand
         {
@@ -153,6 +136,28 @@ namespace Byster.Views
                 }));
             }
         }
+
+        public RelayCommand SearchCommand
+        {
+            get
+            {
+                return searchCommand ?? (searchCommand = new RelayCommand((obj) =>
+                {
+                    string strToSearch = obj as string;
+                    strToSearch = strToSearch.ToLower();
+                    foreach (var rot in Rotations)
+                    {
+                        if (string.IsNullOrEmpty(strToSearch) || rot.Path.ToLower().Contains(strToSearch))
+                        {
+                            rot.IsShowInCollection = Visibility.Visible;
+                        }
+                        else
+                        {
+                            rot.IsShowInCollection = Visibility.Collapsed;
+                        }
+                    }
+                }));
+            }
+        }
     }
 }
- 

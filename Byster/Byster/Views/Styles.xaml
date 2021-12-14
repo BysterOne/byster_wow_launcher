@@ -2,7 +2,7 @@
                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                             xmlns:sys="clr-namespace:System;assembly=mscorlib"
                             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-                            x:Class="Byster.Utilities.BysterEventHandlers">
+                            x:Class="Byster.Models.Utilities.BysterEventHandlers">
 
     <!-- Стили UI -->
     <Style TargetType="TextBox" x:Key="tbStyle">
@@ -507,13 +507,20 @@
 
     <Style TargetType="ListBox" x:Key="sessionsViewStyle">
         <Style.Setters>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
             <Setter Property="BorderBrush" Value="Transparent"/>
             <Setter Property="Background" Value="Transparent"/>
             <Setter Property="BorderThickness" Value="0"/>
             <Setter Property="Template">
                 <Setter.Value>
                     <ControlTemplate TargetType="ListBox">
-                        <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}">
+                        <ScrollViewer>
+                            <ScrollViewer.Template>
+                                <ControlTemplate TargetType="ScrollViewer">
+                                    <ScrollContentPresenter/>
+                                </ControlTemplate>
+                            </ScrollViewer.Template>
                             <ItemsPresenter/>
                         </ScrollViewer>
                     </ControlTemplate>
@@ -524,15 +531,14 @@
                     <ItemsPanelTemplate>
                         <StackPanel Orientation="Vertical"
                                     Margin="0, 3"
-                                Background="Transparent"
-                                ScrollViewer.HorizontalScrollBarVisibility="Disabled"
-                                ScrollViewer.VerticalScrollBarVisibility="Disabled"/>
+                                Background="Transparent"/>
                     </ItemsPanelTemplate>
                 </Setter.Value>
             </Setter>
             <Setter Property="ItemContainerStyle">
                 <Setter.Value>
                     <Style TargetType="ListBoxItem">
+                        <Setter Property="Cursor" Value="Hand"/>
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
@@ -552,7 +558,7 @@
                                                 <VisualState x:Name="Selected">
                                                     <VisualState.Storyboard>
                                                         <Storyboard  Duration="0:0:0.25">
-                                                            <ColorAnimation To="{DynamicResource sessionSelectedEffectColor}"
+                                                            <ColorAnimation To="#FFFFFF"
                                                                              Duration="0:0:0.25"
                                                                              Storyboard.TargetName="sessionImage"
                                                                              Storyboard.TargetProperty="Effect.Color"/>
@@ -562,7 +568,7 @@
                                                 <VisualState x:Name="Unselected">
                                                     <VisualState.Storyboard>
                                                         <Storyboard  Duration="0:0:0.25">
-                                                            <ColorAnimation To="{DynamicResource sessionStartEffectColor}"
+                                                            <ColorAnimation To="#000000"
                                                                              Duration="0:0:0.25"
                                                                              Storyboard.TargetName="sessionImage"
                                                                              Storyboard.TargetProperty="Effect.Color"/>
@@ -642,6 +648,8 @@
 
     <Style TargetType="ScrollViewer" x:Key="scrollViewerStyle">
         <Setter Property="Focusable" Value="False"/>
+        <Setter Property="OverridesDefaultStyle"
+          Value="True" />
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollViewer">
@@ -653,12 +661,13 @@
                         <Border Background="Transparent"
                                 BorderBrush="Transparent"
                                 Grid.Column="0">
-                            <ScrollContentPresenter/>
+                            <ScrollContentPresenter CanContentScroll="{TemplateBinding CanContentScroll}"/>
                         </Border>
                         <ScrollBar x:Name="PART_VerticalScrollBar"
                                    Value="{TemplateBinding VerticalOffset}"
                                    Maximum="{TemplateBinding ScrollableHeight}"
                                    ViewportSize="{TemplateBinding ViewportHeight}"
+                                   Visibility="{TemplateBinding ComputedVerticalScrollBarVisibility}"
                                    Grid.Column="1"
                                    Style="{DynamicResource scrollBarStyle}"
                                    Margin="0, 1"
@@ -677,12 +686,33 @@
                     <Border Background="Transparent">
                         <Track x:Name="PART_Track"
                                    IsDirectionReversed="True">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageUpCommand">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
                             <Track.Thumb>
                                 <Thumb Style="{DynamicResource thumbStyle}"
-                                           Width="9"
-                                           Height="{TemplateBinding ViewportSize}">
+                                           Width="9">
                                 </Thumb>
                             </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageDownCommand">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.IncreaseRepeatButton>
                         </Track>
                     </Border>
                 </ControlTemplate>
@@ -703,7 +733,7 @@
                         <Border Background="Transparent"
                                 BorderBrush="Transparent"
                                 Grid.Column="0">
-                            <ScrollContentPresenter/>
+                            <ScrollContentPresenter CanContentScroll="{TemplateBinding CanContentScroll}"/>
                         </Border>
                         <ScrollBar x:Name="PART_VerticalScrollBar"
                                    Value="{TemplateBinding VerticalOffset}"
@@ -725,16 +755,37 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ScrollBar">
                     <Border Background="Transparent">
-                            <Track x:Name="PART_Track"
+                        <Track x:Name="PART_Track"
                                    IsDirectionReversed="True">
-                                <Track.Thumb>
-                                    <Thumb Style="{DynamicResource thumbStyle}"
-                                           Width="5"
-                                           Height="{TemplateBinding ViewportSize}">
-                                    </Thumb>
-                                </Track.Thumb>
-                            </Track>
-                        </Border>
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageUpCommand">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{DynamicResource thumbStyle}"
+                                           Width="5">
+                                </Thumb>
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageDownCommand">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.IncreaseRepeatButton>
+                        </Track>
+                    </Border>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
@@ -744,13 +795,9 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Thumb">
-                    <Grid x:Name="borderGrid">
-                        <Border Background="{DynamicResource ThumbColor}"
+                    <Border Background="{DynamicResource ThumbColor}"
                             CornerRadius="4"
-                            VerticalAlignment="Stretch"
-                            Height="{Binding ElementName=borderGrid, Path=ActualHeight}"
                             x:Name="borderThumb"/>
-                    </Grid>
                     <ControlTemplate.Triggers>
                         <Trigger Property="IsMouseOver" Value="True">
                             <Setter TargetName="borderThumb" Property="Background" Value="{DynamicResource ThumbColorHover}"/>
@@ -1244,7 +1291,8 @@
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="SelectionStates">
                                             <VisualState x:Name="Selected">
-                                                <Storyboard Duration="0:0:0.5">
+                                                <Storyboard Duration="0:0:0.5"
+                                                            Completed="animationCompleted">
                                                     <DoubleAnimation Storyboard.TargetProperty="Width"
                                                          From="{TemplateBinding ActualWidth}"
                                                          To="588"
@@ -1259,6 +1307,7 @@
                                             </VisualState>
                                             <VisualState x:Name="Unselected">
                                                 <Storyboard Duration="0:0:0.5">
+
                                                     <DoubleAnimation Storyboard.TargetProperty="Width"
                                                          From="{TemplateBinding ActualWidth}"
                                                          To="180"
@@ -1305,7 +1354,7 @@
                                     </DataTrigger>
                                     <MultiTrigger>
                                         <MultiTrigger.Conditions>
-                                            <Condition  Property="IsMouseOver" Value="True"/>
+                                            <Condition Property="IsMouseOver" Value="True"/>
                                             <Condition Property="IsSelected" Value="False"/>
                                         </MultiTrigger.Conditions>
                                         <Setter Property="Background" Value="{DynamicResource BackgroundProductItemColorHover}"/>

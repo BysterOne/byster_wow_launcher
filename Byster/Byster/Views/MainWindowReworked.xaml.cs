@@ -4,6 +4,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Threading;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -46,8 +47,14 @@ namespace Byster.Views
             this.DataContext = ViewModel;
             FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance;
             ViewModel.UserInfo.PropertyChanged += (o, e) => { FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance; };
+            BysterEventHandlers.animationCompetedAction = new Action(() => //-По возможности переделать
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    ProductListBox.ScrollIntoView(ProductListBox.SelectedItem);
+                });
+            });
         }
-
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);

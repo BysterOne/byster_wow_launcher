@@ -27,6 +27,18 @@ namespace Byster.Models.Utilities
         {
             return $"[{Process.Id}][{(WorldLoaded ? "+" : "-")}]{(WorldLoaded ? $" {Name} - {Class} - {RealmName}" : "Not loaded")}";
         }
+
+        public static bool operator ==(WoW item1, WoW item2)
+        {
+            if (item1?.Process?.Id == item2?.Process?.Id) return true;
+            return false;
+        }
+
+        public static bool operator !=(WoW item1, WoW item2)
+        {
+            if (item1?.Process?.Id == item2?.Process?.Id) return false;
+            return true;
+        }
     }
 
     public enum Classes
@@ -51,7 +63,7 @@ namespace Byster.Models.Utilities
         {
             Title = title;
 
-            TimerWatcher = new Timer(new TimerCallback(TimerTick), null, 1000, 1000);
+            TimerWatcher = new Timer(new TimerCallback(TimerTick), null, 5000, 5000);
         }
 
         public void Dispose()

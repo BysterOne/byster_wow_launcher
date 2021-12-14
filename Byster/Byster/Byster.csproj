@@ -182,6 +182,7 @@
     <Compile Include="Models\Services\ShopService.cs" />
     <Compile Include="Models\Services\UserInfoService.cs" />
     <Compile Include="Models\Utilities\BackgroundPhotoDownloader.cs" />
+    <Compile Include="Models\Utilities\BysterEventHandlers.cs" />
     <Compile Include="Models\Utilities\Injector.cs" />
     <Compile Include="Models\Utilities\HashCalc.cs" />
     <Compile Include="Models\Utilities\BysterLogger.cs" />

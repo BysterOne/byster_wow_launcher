@@ -9,6 +9,7 @@ using Byster.Models.ViewModels;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Collections.Specialized;
 using System.Windows.Threading;
 
 namespace Byster.Models.Services

@@ -117,7 +117,7 @@ namespace Byster.Models.Utilities
 
             w.Version = _(ref updated, w.Version, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xCAD851, 30)));
             w.RealmName = _(ref updated, w.RealmName, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79B9E, 30)));
-
+            w.RealmServer = _(ref updated, w.RealmServer, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0x879B9E, 30)));
             if (w.WorldLoaded)
             {
                 w.Name = _(ref updated, w.Name, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79D18, 30)));

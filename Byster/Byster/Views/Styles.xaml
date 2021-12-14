@@ -544,7 +544,7 @@
                                                x:Name="sessionImage"
                                                RenderOptions.BitmapScalingMode="HighQuality">
                                             <Image.Effect>
-                                                <DropShadowEffect ShadowDepth="0" Color="{DynamicResource sessionStartEffectColor}" BlurRadius="6"/>
+                                                <DropShadowEffect ShadowDepth="0" BlurRadius="15"/>
                                             </Image.Effect>
                                         </Image>
                                         <VisualStateManager.VisualStateGroups>
@@ -552,20 +552,20 @@
                                                 <VisualState x:Name="Selected">
                                                     <VisualState.Storyboard>
                                                         <Storyboard  Duration="0:0:0.25">
-                                                            <DoubleAnimation To="15"
+                                                            <ColorAnimation To="{DynamicResource sessionSelectedEffectColor}"
                                                                              Duration="0:0:0.25"
                                                                              Storyboard.TargetName="sessionImage"
-                                                                             Storyboard.TargetProperty="Effect.BlurRadius"/>
+                                                                             Storyboard.TargetProperty="Effect.Color"/>
                                                         </Storyboard>
                                                     </VisualState.Storyboard>
                                                 </VisualState>
                                                 <VisualState x:Name="Unselected">
                                                     <VisualState.Storyboard>
                                                         <Storyboard  Duration="0:0:0.25">
-                                                            <DoubleAnimation To="6"
+                                                            <ColorAnimation To="{DynamicResource sessionStartEffectColor}"
                                                                              Duration="0:0:0.25"
                                                                              Storyboard.TargetName="sessionImage"
-                                                                             Storyboard.TargetProperty="Effect.BlurRadius"/>
+                                                                             Storyboard.TargetProperty="Effect.Color"/>
                                                         </Storyboard>
                                                     </VisualState.Storyboard>
                                                 </VisualState>

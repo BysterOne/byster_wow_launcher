@@ -72,13 +72,13 @@
                                                 Visibility="{Binding Path=IsShowInCollection}">
                                             <Grid MaxWidth="680">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition Width="20"/>
                                                     <ColumnDefinition/>
                                                     <ColumnDefinition Width="20"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox IsChecked="{Binding Path=IsEnabled}" Style="{DynamicResource checkboxStyle}" VerticalAlignment="Center" HorizontalAlignment="Left"/>
-                                                <TextBlock Text="{Binding Path=Path}" Style="{DynamicResource infoTextBlockStyle}" Grid.Column="1" Margin="10, 0"/>
-                                                <Button Style="{DynamicResource uibStyle}" Height="20" Command="{Binding RemoveCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="2">
+                                                <CheckBox IsChecked="{Binding Path=IsEnabled}" Style="{DynamicResource checkboxStyle}" VerticalAlignment="Center" HorizontalAlignment="Left">
+                                                    <TextBlock Text="{Binding Path=DisplayedPath}" Style="{DynamicResource infoTextBlockStyle}" Margin="10, 0"/>
+                                                </CheckBox>
+                                                <Button Style="{DynamicResource uibStyle}" Height="20" Command="{Binding RemoveCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Grid.Column="1">
                                                     <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Margin="5"/>
                                                 </Button>
                                             </Grid>

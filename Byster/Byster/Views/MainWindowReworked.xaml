@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:Byster.Views"
+        xmlns:lb="clr-namespace:Byster.Models.Utilities"
         mc:Ignorable="d"
         Title="MainWindowReworked" Height="585" Width="975"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
@@ -144,12 +145,10 @@
                 <RowDefinition Height="90"/>
             </Grid.RowDefinitions>
             <Grid x:Name="sideShopPanel" Grid.Column="0">
-                <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}">
-                    <StackPanel>
-                        <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterClassListBox" Tag="Класс" ItemsSource="{Binding Path=Shop.AllClasses}" DisplayMemberPath="Name" SelectionChanged="filterClassListBox_SelectionChanged"/>
-                        <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterTypeListBox" Tag="Тип" ItemsSource="{Binding Path=Shop.AllTypes}" SelectionChanged="filterTypeListBox_SelectionChanged"/>
-                    </StackPanel>
-                </ScrollViewer>
+                <StackPanel Orientation="Vertical">
+                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterClassListBox" Tag="Классы" ItemsSource="{Binding Path=Shop.AllClasses}" DisplayMemberPath="Name" SelectionChanged="filterClassListBox_SelectionChanged"/>
+                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterTypeListBox" Tag="Типы" ItemsSource="{Binding Path=Shop.AllTypes}" SelectionChanged="filterTypeListBox_SelectionChanged"/>
+                </StackPanel>
             </Grid>
             <Grid x:Name="contentShopPanel" Grid.Column="1">
                 <Border BorderThickness="1"

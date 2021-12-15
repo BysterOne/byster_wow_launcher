@@ -44,8 +44,8 @@
                 <CheckBox Style="{DynamicResource rightCheckboxStyle}"
                           FontSize="{DynamicResource FontUISize}"
                           FontFamily="{DynamicResource Roboto}"
-                          Foreground="{DynamicResource FontOrangeColor}"
-                          x:Name="consoleSwitch">
+                          x:Name="consoleSwitch"
+                          Foreground="{DynamicResource FontOrangeColor}">
                     <TextBlock Text="Показывать консоль"/>
                 </CheckBox>
             </StackPanel>

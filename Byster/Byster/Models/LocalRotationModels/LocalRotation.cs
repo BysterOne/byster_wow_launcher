@@ -25,6 +25,25 @@ namespace Byster.Models.LocalRotationModels
             {
                 path = value;
                 OnPropertyChanged("Path");
+                OnPropertyChanged("DisplayedPath");
+            }
+        }
+
+        public string DisplayedPath
+        {
+            get
+            {
+                if(Path.Split('\\').Length > 5)
+                {
+                    string p = "...";
+                    string[] parts = Path.Split('\\');
+                    for(int i = parts.Length - 5; i < parts.Length; i++)
+                    {
+                        p += "\\" + parts[i];
+                    }
+                    return p;
+                }
+                return Path;
             }
         }
         public bool IsEnabled

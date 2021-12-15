@@ -25,10 +25,26 @@ namespace Byster.Views
     /// Логика взаимодействия для LoadingWindow.xaml
     /// </summary>
     public partial class LoadingWindow : Window
-    { 
+    {
+        private readonly string NLogConfig = "<?xml version=\"1.0\" encoding=\"utf-8\" ?><nlog xmlns=\"http://www.nlog-project.org/schemas/NLog.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><targets><target name=\"logfile\" xsi:type=\"File\" fileName=\"${specialfolder:folder=ApplicationData:cached=true}/BysterConfig/Byster.log\" layout=\"[${longdate} ${logger}] ${message}${exception:format=ToString}\" keepFileOpen=\"true\" encoding=\"utf-8\" createDirs=\"true\"/></targets><rules><logger name=\"*\" minlevel=\"Info\" writeTo=\"logfile\" /></rules></nlog>";
+
         public LoadingWindow()
         {
             InitializeComponent();
+            string currentDir = Directory.GetCurrentDirectory();
+
+            if (!File.Exists("NLog.config"))
+            {
+                File.Create("NLog.config").Close();
+                File.WriteAllText("NLog.config", NLogConfig);
+                var processes = Process.GetProcessesByName("Byster.exe");
+                Process.Start("Byster.exe");
+                foreach (var p in processes)
+                {
+                    p.Kill();
+                }
+                Close();
+            }
             BackgroundPhotoDownloader.Init();
             statusUpdate.Minimum = 0;
             statusUpdate.Maximum = 100;

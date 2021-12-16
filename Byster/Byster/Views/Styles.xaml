@@ -2,7 +2,6 @@
                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                             xmlns:sys="clr-namespace:System;assembly=mscorlib"
                             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-                            x:Class="Byster.Models.Utilities.BysterEventHandlers"
                             xmlns:lb="clr-namespace:Byster.Models.Utilities">
 
     <!-- Стили UI -->
@@ -918,7 +917,7 @@
                         <Setter Property="Template">
                             <Setter.Value>
                                 <ControlTemplate TargetType="ListBoxItem">
-                                    <Border x:Name="itemBorder"
+                                    <Border x:Name="borderItem"
                                             BorderBrush="{DynamicResource BorderProductItemColor}"
                                             BorderThickness="0, 1, 0, 0"
                                             Background="{TemplateBinding Background}">
@@ -1297,8 +1296,7 @@
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="SelectionStates">
                                             <VisualState x:Name="Selected">
-                                                <Storyboard Duration="0:0:0.5"
-                                                            Completed="animationCompleted">
+                                                <Storyboard Duration="0:0:0.5">
                                                     <DoubleAnimation Storyboard.TargetProperty="Width"
                                                          From="{TemplateBinding ActualWidth}"
                                                          To="588"

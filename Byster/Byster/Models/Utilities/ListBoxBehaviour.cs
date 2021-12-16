@@ -78,7 +78,7 @@ namespace Byster.Models.Utilities
         {
             VisualState selectedState = null;
             VisualStateGroup selectionGroup = null;
-            var groups = VisualStateManager.GetVisualStateGroups(listboxitem);
+            var groups = VisualStateManager.GetVisualStateGroups((Border)listboxitem.Template.FindName("borderItem", listboxitem));
             foreach (var group in groups)
             {
                 var gr = group as VisualStateGroup;

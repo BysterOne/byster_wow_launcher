@@ -47,13 +47,6 @@ namespace Byster.Views
             this.DataContext = ViewModel;
             FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance;
             ViewModel.UserInfo.PropertyChanged += (o, e) => { FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance; };
-            BysterEventHandlers.animationCompetedAction = new Action(() => //-По возможности переделать
-            {
-                Dispatcher.Invoke(() =>
-                {
-                    ProductListBox.ScrollIntoView(ProductListBox.SelectedItem);
-                });
-            });
         }
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

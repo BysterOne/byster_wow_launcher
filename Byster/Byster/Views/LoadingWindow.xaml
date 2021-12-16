@@ -5,9 +5,10 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         mc:Ignorable="d"
-        Title="LoadingWindow" Height="180" Width="300"
+        Title="LoadingWindow" Height="180" Width="180"
         WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
-        Background="{DynamicResource BackgroundWindowColor}" Loaded="Window_Loaded" MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        Background="Transparent" Icon="/byster.ico" Loaded="Window_Loaded" MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        AllowsTransparency="True">
     <Window.Resources>
         <ResourceDictionary Source="./Styles.xaml"/>
     </Window.Resources>
@@ -15,12 +16,12 @@
         <DropShadowEffect ShadowDepth="0" BlurRadius="20"
                           Color="{DynamicResource EffectProductItemColor}"/>
     </Window.Effect>
-    <Grid Margin="20, 10">
-        <Grid.RowDefinitions>
-            <RowDefinition  Height="*"/>
-            <RowDefinition Height="0.25*"/>
-        </Grid.RowDefinitions>
-        <Image Source="../Resources/Images/logo.png" Stretch="None" Grid.Row="0" VerticalAlignment="Center" HorizontalAlignment="Center"/>
-        <ProgressBar Style="{StaticResource prbStyle}" Margin="0" Grid.Row="1" VerticalAlignment="Stretch" x:Name="statusUpdate"/>
+    <Grid>
+        <Image Source="/Resources/Images/loading-background.png" VerticalAlignment="Center" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality"/>
+        <Image Source="/Resources/Images/loading-progress.png" RenderOptions.EdgeMode="Aliased" VerticalAlignment="Center" HorizontalAlignment="Center" RenderOptions.BitmapScalingMode="HighQuality">
+            <Image.RenderTransform>
+                <RotateTransform x:Name="rotateProgressTransform" Angle="0"/>
+            </Image.RenderTransform>
+        </Image>
     </Grid>
 </Window>

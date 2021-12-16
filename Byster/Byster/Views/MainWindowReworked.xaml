@@ -10,7 +10,8 @@
         Title="MainWindowReworked" Height="585" Width="975"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}" MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        KeyDown="Window_KeyDown">
+        KeyDown="Window_KeyDown"
+        AllowsTransparency="True">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>

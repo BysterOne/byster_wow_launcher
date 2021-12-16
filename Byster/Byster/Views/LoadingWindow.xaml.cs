@@ -18,6 +18,9 @@ using RestSharp;
 using System.Diagnostics;
 using System.Threading;
 using Byster.Models.Utilities;
+using System.Windows.Media.Animation;
+using Microsoft.Win32;
+using Byster.Models.RestModels;
 
 namespace Byster.Views
 {
@@ -45,53 +48,113 @@ namespace Byster.Views
                 }
                 Close();
             }
-            BackgroundPhotoDownloader.Init();
-            statusUpdate.Minimum = 0;
-            statusUpdate.Maximum = 100;
-            statusUpdate.Value = 0;
-            if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
-            if (File.Exists("update.bat")) File.Delete("update.bat");
-            incrementStatus();
-
-            string version = "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
-            incrementStatus();
-
-
-            var response = App.Rest.Get(new RestRequest("launcher/check_updates"));
-            {
-                if (response.StatusCode != HttpStatusCode.OK)
-                {
-                    MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                    closeApp();
-                    return;
-                }
-            }
-            string onlineVersion = Encoding.UTF8.GetString(response.RawBytes);
-            incrementStatus();
-
-            if (onlineVersion != version)
-            {
-                Thread thread = new Thread(() => { updateApp(onlineVersion); });
-                thread.Start();
-            }
-            else
-            {
-                incrementStatus();
-                incrementStatus();
-                startApp();
-                return;
-            }
+            
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            
+            rotateProgressTransform.CenterX = this.ActualWidth / 2;
+            rotateProgressTransform.CenterY = this.ActualHeight / 2;
+            rotateProgressTransform.BeginAnimation(RotateTransform.AngleProperty, new DoubleAnimation()
+            {
+                To = 360,
+                Duration = new Duration(new TimeSpan(0, 0, 2)),
+                RepeatBehavior = RepeatBehavior.Forever,
+            });
+
+            Task.Run(() =>
+            {
+                BackgroundPhotoDownloader.Init();
+                if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
+                if (File.Exists("update.bat")) File.Delete("update.bat");
+
+                string version = "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+
+
+                var response = App.Rest.Get(new RestRequest("launcher/check_updates"));
+                {
+                    if (response.StatusCode != HttpStatusCode.OK)
+                    {
+                        MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        closeApp();
+                        return;
+                    }
+                }
+                string onlineVersion = Encoding.UTF8.GetString(response.RawBytes);
+
+                if (onlineVersion != version)
+                {
+                    Thread thread = new Thread(() => { updateApp(onlineVersion); });
+                    thread.Start();
+                }
+                else
+                {
+                    string login = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", null);
+                    string password = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", null);
+                    if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))
+                    {
+                        string passwordHash = password;
+                        string sessionId;
+                        if (TryAuth(login, passwordHash, out sessionId))
+                        {
+                            StartMainWindow(login, sessionId);
+                            Close();
+                            return;
+                        }
+                        else
+                        {
+                            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", "");
+                            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "");
+                            startApp();
+                        }
+                    }
+                }
+            });
         }
 
-        private void incrementStatus()
+        public void StartMainWindow(string login, string sessionId)
         {
-            statusUpdate.Value += 20;
+            App.Current.Dispatcher.Invoke(new Action(() =>
+            {
+                App.Current.MainWindow = new MainWindowReworked(login, sessionId);
+                App.Current.MainWindow.Show();
+                while(!App.Current.MainWindow.IsLoaded) { }
+                Close();
+            }));
         }
+
+        private bool TryAuth(string login, string passwordHash, out string sessionId)
+        {
+            if (string.IsNullOrEmpty(login))
+            {
+                MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                sessionId = null;
+                return false;
+            }
+            if (string.IsNullOrEmpty(passwordHash))
+            {
+                MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                sessionId = null;
+                return false;
+            }
+            var response = App.Rest.Post<AuthResponse>(new RestRequest("launcher/login", Method.POST).AddJsonBody(new AuthRequest()
+            {
+                login = login,
+                password = passwordHash,
+            }));
+
+            if (response.StatusCode != HttpStatusCode.OK)
+            {
+                MessageBox.Show(response.Data.error, "Ошибка Byster", MessageBoxButton.OK, MessageBoxImage.Error);
+                sessionId = null;
+                return false;
+            }
+            App.Rest.Authenticator = new BysterAuthenticator(response.Data.session);
+            sessionId = response.Data.session;
+            return true;
+        }
+
+
         private void closeApp()
         {
             foreach(Window window in App.Current.Windows)
@@ -105,11 +168,13 @@ namespace Byster.Views
         }
         private void startApp()
         {
-            App.Current.MainWindow = new LoginOrRegistrationWindow();
-            App.Current.MainWindow.Show();
-            while(!App.Current.MainWindow.IsLoaded) { }
-            Close();
-            return;
+            App.Current.Dispatcher.Invoke(() =>
+            {
+                App.Current.MainWindow = new LoginOrRegistrationWindow();
+                App.Current.MainWindow.Show();
+                while(!App.Current.MainWindow.IsLoaded) { }
+                Close();
+            });
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -130,10 +195,6 @@ namespace Byster.Views
                 return;
             }
             File.WriteAllBytes("BysterUpdate.exe", response.RawBytes);
-            this.Dispatcher.Invoke(new Action(() =>
-            {
-                incrementStatus();
-            }));
             File.WriteAllLines("update.bat", new List<string>(){
                     "taskkill /IM \"Byster.exe\" /F",
                     "timeout /t 2 /NOBREAK",
@@ -141,10 +202,6 @@ namespace Byster.Views
                     "rename BysterUpdate.exe Byster.exe",
                     "Byster.exe",
                 });
-            this.Dispatcher.Invoke(new Action(() =>
-            {
-                incrementStatus();
-            }));
             Process process = new Process();
             process.StartInfo.FileName = "update.bat";
             process.StartInfo.CreateNoWindow = true;

@@ -9,7 +9,8 @@
         Title="RotationSettingsWindow" Height="500" Width="700"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}"
-        MouseLeftButtonDown="Window_MouseLeftButtonDown">
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        AllowsTransparency="True">
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>

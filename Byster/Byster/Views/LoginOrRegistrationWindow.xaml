@@ -12,7 +12,8 @@
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Background="{DynamicResource BackgroundWindowColor}"
-        WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" Loaded="Window_Loaded">
+        WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" Loaded="Window_Loaded"
+        AllowsTransparency="True">
     <Window.Resources>
         <ResourceDictionary Source="./Styles.xaml"/> <!--Стили-->
     </Window.Resources>

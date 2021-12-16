@@ -54,7 +54,7 @@ namespace Byster.Models.Services
                 {
                     WowApp = p,
                     UserName = p.Name,
-                    ServerName = p.RealmServer,
+                    ServerName = p.RealmName,
                     SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class)),
                 };
                 Sessions.Add(sessionToAdd);
@@ -70,7 +70,7 @@ namespace Byster.Models.Services
                 if (sessionToChange == null) return;
                 sessionToChange.WowApp = p;
                 sessionToChange.SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class));
-                sessionToChange.ServerName = p.RealmServer;
+                sessionToChange.ServerName = p.RealmName;
                 sessionToChange.UserName = p.Name;
             });
             return true;

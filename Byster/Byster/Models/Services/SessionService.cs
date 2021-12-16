@@ -49,6 +49,7 @@ namespace Byster.Models.Services
         {
             Dispatcher.Invoke(() =>
             {
+                if (Sessions.FirstOrDefault((session) => session.WowApp == p) != null) return;
                 var sessionToAdd = new SessionViewModel()
                 {
                     WowApp = p,

@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
+        xmlns:lb="clr-namespace:Byster.Models.Utilities"
         mc:Ignorable="d"
         Title="RotationSettingsWindow" Height="500" Width="700"
         WindowStyle="None" WindowStartupLocation="CenterScreen"

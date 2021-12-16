@@ -7,86 +7,71 @@ using System.Windows;
 using System.Windows.Controls;
 using System.ComponentModel;
 using System.Windows.Media.Animation;
-
+using System.Windows.Interactivity;
 namespace Byster.Models.Utilities
 {
-    public class ListBoxBehaviour
+
+    public class ScrollToViewAfterSelectionBehavior : Behavior<ListBox>
     {
-        static readonly Dictionary<ListBoxItem, Capture> Associations = new Dictionary<ListBoxItem, Capture>();
-        public static bool GetScrollToViewAfterAnimation(DependencyObject obj)
+        protected override void OnAttached()
         {
-            return (bool)obj.GetValue(ScrollToViewAfterAnimationProperty);
+            base.OnAttached();
+            AssociatedObject.Loaded += ItemLoaded;
+            AssociatedObject.Unloaded += ItemUnloaded;
         }
 
-        public static void SetScrollToViewAfterAnimation(DependencyObject obj, bool value)
+        protected override void OnDetaching()
         {
-            obj.SetValue(ScrollToViewAfterAnimationProperty, value);
+            base.OnDetaching();
+            AssociatedObject.Loaded -= ItemLoaded;
+            ItemUnloaded(AssociatedObject, new RoutedEventArgs());
+            AssociatedObject.Unloaded -= ItemUnloaded;
         }
-
-        public static readonly DependencyProperty ScrollToViewAfterAnimationProperty = 
-            DependencyProperty.RegisterAttached("ScrollToViewAfterAnimation", typeof(bool), typeof(ListBoxItem),
-                new UIPropertyMetadata(false, new PropertyChangedCallback(OnScrollToViewAfterAnimationChanged)));
-
-        public static void OnScrollToViewAfterAnimationChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        protected override void OnChanged()
         {
-            var listboxitem = (ListBoxItem)d;
-            if (listboxitem == null) return;
-            bool oldVal = (bool)e.OldValue, newVal = (bool)e.NewValue;
-            if (newVal == oldVal) return;
-            if(newVal)
+            base.OnChanged();
+            foreach(var item in AssociatedObject.Items)
             {
-                listboxitem.Loaded += Listboxitem_Loaded;
-                listboxitem.Unloaded += Listboxitem_Unloaded;
-            }
-            else
-            {
-                listboxitem.Loaded -= Listboxitem_Loaded;
-                listboxitem.Unloaded -= Listboxitem_Unloaded;
-                if (Associations.ContainsKey(listboxitem)) Associations[listboxitem].Dispose();
+                var listboxitem = (ListBoxItem)AssociatedObject.ItemContainerGenerator.ContainerFromItem(item);
+                if (listboxitem == null) continue;
+                var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
+                if(storyboard == null) continue;
+                storyboard.Completed -= SelectionCompleted; 
+                storyboard.Completed += SelectionCompleted;
             }
         }
 
-        private static void Listboxitem_Unloaded(object sender, RoutedEventArgs e)
+        private void ItemUnloaded(object sender, RoutedEventArgs e)
         {
-            var listboxitem = (ListBoxItem)sender;
-            listboxitem.Unloaded -= Listboxitem_Unloaded;
-            if(Associations.ContainsKey(listboxitem))
-                Associations[listboxitem].Dispose();
-        }
-
-        private static void Listboxitem_Loaded(object sender, RoutedEventArgs e)
-        {
-            var listboxitem = (ListBoxItem)sender;
-            listboxitem.Loaded -= Listboxitem_Loaded;
-            Associations[listboxitem] = new Capture(listboxitem);
-        }
-    }
-
-    public class Capture : IDisposable
-    {
-        private readonly ListBoxItem listBoxItem;
-
-        public Capture(ListBoxItem listboxitem)
-        {
-            this.listBoxItem = listboxitem;
-            Storyboard storyboard = getStoryboardOfSelectedStateOfListBox(listBoxItem);
-            if(storyboard != null)
+            AssociatedObject.Unloaded -= ItemUnloaded;
+            foreach (var item in AssociatedObject.Items)
             {
-                storyboard.Completed += OnSelectionChanged;
+                var listboxitem = (ListBoxItem)AssociatedObject.ItemContainerGenerator.ContainerFromItem(item);
+                if (listboxitem == null) continue;
+                var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
+                if (storyboard == null) continue;
+                storyboard.Completed -= SelectionCompleted;
             }
         }
-        public void Dispose()
+
+        private void ItemLoaded(object sender, RoutedEventArgs e)
         {
-            if (listBoxItem != null)
+            AssociatedObject.Loaded -= ItemLoaded;
+            for (int i = 0; i < AssociatedObject.Items.Count; i++)
             {
-                Storyboard storyboard = getStoryboardOfSelectedStateOfListBox(listBoxItem);
-                if(storyboard == null) return;
-                storyboard.Completed -= OnSelectionChanged;
+                var item = AssociatedObject.ItemContainerGenerator.ContainerFromIndex(i);
+                if(item == null) continue;
+                var listboxitem = item as ListBoxItem;
+                if (listboxitem == null) continue;
+                var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
+                if (storyboard == null) continue;
+                storyboard.Completed += SelectionCompleted;
             }
         }
-        private void OnSelectionChanged(object sender, EventArgs e)
+        private void SelectionCompleted(object sender, EventArgs e)
         {
-            (listBoxItem.Parent as ListBox).ScrollIntoView((listBoxItem.Parent as ListBox).SelectedItem);
+            var listbox = AssociatedObject;
+            listbox.ScrollIntoView(listbox.SelectedItem);
         }
 
         private Storyboard getStoryboardOfSelectedStateOfListBox(ListBoxItem listboxitem)
@@ -117,7 +102,5 @@ namespace Byster.Models.Utilities
             if (selectedState == null) return null;
             return selectedState.Storyboard;
         }
-
-        
     }
 }

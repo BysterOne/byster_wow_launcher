@@ -17,6 +17,18 @@ using System.Windows;
 
 namespace Byster.Views
 {
+
+    public static class BysterWindowExtensions
+    {
+        public static MainWindowViewModel Model { get; set; }
+        public static bool ShowModalDialog(this Window window)
+        {
+            Model.IsModalWindowOpened = Visibility.Visible;
+            bool result = window.ShowDialog() ?? false;   
+            Model.IsModalWindowOpened = Visibility.Collapsed;
+            return result;
+        }
+    }
     public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     {
 
@@ -52,8 +64,55 @@ namespace Byster.Views
             {
                 selectedSession = value;
                 OnPropertyChanged("SelectedSession");
+                OnPropertyChanged("IsSessionDefined");
+                OnPropertyChanged("IsSessionUndefined");
+                OnPropertyChanged("IsWorldUnloaded");
             }
         }
+
+        public Visibility IsSessionDefined
+        {
+            get
+            {
+                if(SelectedSession == null || !SelectedSession.WowApp.WorldLoaded)
+                {
+                    return Visibility.Collapsed;
+                }
+                else
+                {
+                    return Visibility.Visible;
+                }
+            }
+        }
+        public Visibility IsSessionUndefined
+        {
+            get
+            {
+                if(SelectedSession == null)
+                {
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    return Visibility.Collapsed;
+                }
+            }
+        }
+        public Visibility IsWorldUnloaded
+        {
+            get
+            {
+                if(SelectedSession?.WowApp?.WorldLoaded ?? true)
+                {
+                    return Visibility.Collapsed;
+                }
+                else
+                {
+                    return Visibility.Visible;
+                }
+            }
+        }
+
         private ShopProductInfoViewModel selectedShopProductInfo;
         public ShopProductInfoViewModel SelectedProduct
         {
@@ -65,9 +124,27 @@ namespace Byster.Views
             }
         }
 
+        private Visibility isModalWindowOpened = Visibility.Collapsed;
+        public Visibility IsModalWindowOpened
+        {
+            get { return isModalWindowOpened; }
+            set
+            {
+                isModalWindowOpened = value;
+                OnPropertyChanged("IsModalWindowOpened");
+            }
+        }
+
+        private void showModalWindow(Action showModalWindowAction)
+        {
+            IsModalWindowOpened = Visibility.Visible;
+            showModalWindowAction();
+            IsModalWindowOpened = Visibility.Collapsed;
+        }
+
         public MainWindowViewModel(RestClient client, string sessionId)
         {
-
+            BysterWindowExtensions.Model = this;
             restService = new RestService(client);
             UserInfo = new UserInfoService(restService)
             {
@@ -82,18 +159,19 @@ namespace Byster.Views
                 PreTestElementAction = () =>
                 {
                     DialogWindow dialogWindow = new DialogWindow("Подтверждение", "Вы собираетесь взять Тест ротации на 2 часа. Тест выдается только 1 раз на 1 ротацию. Вы уверены, что хотите взять его сейчас?");
-                    bool result = dialogWindow.ShowDialog() ?? false;
+                    bool result = false;
+                    result = dialogWindow.ShowModalDialog();
                     return result;
                 },
                 TestElementSuccessAction = () =>
                 {
                     InfoWindow infoWindow = new InfoWindow("Успех", "Тестовая версия продукта успешно получена");
-                    infoWindow.ShowDialog();
+                    infoWindow.ShowModalDialog();
                 },
                 TestElementFailAction = () =>
                 {
                     InfoWindow infoWindow = new InfoWindow("Ошибка", "Произошла ошибка при получении тестовой версии продукта");
-                    infoWindow.ShowDialog();
+                    infoWindow.ShowModalDialog();
                 },
                 CloseElementAction = () =>
                 {
@@ -102,24 +180,24 @@ namespace Byster.Views
                 PreBuyCartAction = () =>
                 {
                     PaymentSystemSelectorWindow selectorWindow = new PaymentSystemSelectorWindow("Выбор платёжной системы", "Выберите платёжную систему для оплаты", Shop.GetAllPaymentSystemsList());
-                    bool res = selectorWindow.ShowDialog() ?? false;
-                    if(res)
+                    bool res = false;
+                    res = selectorWindow.ShowModalDialog();
+                    if (res)
                     {
                         return selectorWindow.SystemId;
                     }
                     return -1;
-                    
                 },
                 BuyCartSuccessAction = (string str) =>
                 {
                     LinkPresenterWindow infoWindow = new LinkPresenterWindow("", str);
-                    infoWindow.ShowDialog();
+                    infoWindow.ShowModalDialog();
                     Shop.ClearCart();
                 },
                 BuyCartFailAction = () =>
                 {
                     InfoWindow infoWindow = new InfoWindow("Ошибка", "Произошла ошибка при покупке товара, попробуйте позже...");
-                    infoWindow.ShowDialog();
+                    infoWindow.ShowModalDialog();
                 },
                 SessionId = sessionId,
             };
@@ -178,7 +256,7 @@ namespace Byster.Views
                 (settingsCommand = new RelayCommand(() =>
                     {
                         SettingsWindow settingsWindow = new SettingsWindow(this);
-                        settingsWindow.Show();
+                        settingsWindow.ShowModalDialog();
                     }));
             }
         }

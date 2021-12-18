@@ -48,8 +48,8 @@ namespace Byster.Views
         internal RestService restService;
 
 
-        public event Action UpdateStarted;
-        public event Action UpdateCompleted;
+        public event Action UpdateDataStarted;
+        public event Action UpdateDataCompleted;
         public ActiveRotationsService ActiveRotations { get; set; }
         public ShopService Shop { get; set; }
         public UserInfoService UserInfo { get; set; }
@@ -135,13 +135,6 @@ namespace Byster.Views
             }
         }
 
-        private void showModalWindow(Action showModalWindowAction)
-        {
-            IsModalWindowOpened = Visibility.Visible;
-            showModalWindowAction();
-            IsModalWindowOpened = Visibility.Collapsed;
-        }
-
         public MainWindowViewModel(RestClient client, string sessionId)
         {
             BysterWindowExtensions.Model = this;
@@ -204,12 +197,15 @@ namespace Byster.Views
             ActionService = new ActionService(restService, UpdateData)
             {
                 SessionId = sessionId,
-                Dispatcher = App.Current.MainWindow.Dispatcher,
             };
-            ActionService.Init();
-            SessionService = new SessionService(App.Rest, App.Current.MainWindow.Dispatcher);
-            updateAction();
+            SessionService = new SessionService(App.Rest);
         }
+
+        public void Initialize()
+        {
+
+        }
+
 
         private RelayCommand settingsCommand;
 
@@ -320,14 +316,14 @@ namespace Byster.Views
             {
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    UpdateStarted?.Invoke();
+                    UpdateDataStarted?.Invoke();
                 });
                 UserInfo.UpdateRemoteData();
                 Shop.UpdateData();
                 syncData();
                 App.Current.Dispatcher.Invoke(() =>
                 {
-                    UpdateCompleted?.Invoke();
+                    UpdateDataCompleted?.Invoke();
                 });
             });
         }

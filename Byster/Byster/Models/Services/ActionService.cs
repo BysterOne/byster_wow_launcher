@@ -14,17 +14,13 @@ namespace Byster.Models.Services
 {
     public class ActionService : IService, IDisposable
     {
+        public bool IsInitialized { get; private set; }
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
 
         public Action UpdateAction;
         public Timer updatingTimer;
-
-        public void Init()
-        {
-            updatingTimer = new Timer(new TimerCallback(TimerTick), null, 5000, 5000);
-        }
 
         private void TimerTick(object obj)
         {
@@ -33,7 +29,8 @@ namespace Byster.Models.Services
             {
                 Dispatcher?.Invoke(() =>
                 {
-                    UpdateAction();
+                    if(UpdateAction != null)
+                        UpdateAction();
                 });
                 Log("Получен запрос на обновление данных");
             }
@@ -50,6 +47,12 @@ namespace Byster.Models.Services
         public void Dispose()
         {
             updatingTimer?.Dispose();
+        }
+
+        public void Initialize()
+        {
+            IsInitialized = true;
+            updatingTimer = new Timer(new TimerCallback(TimerTick), null, 5000, 5000);
         }
     }
 }

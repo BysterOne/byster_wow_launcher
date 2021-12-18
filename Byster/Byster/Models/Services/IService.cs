@@ -8,9 +8,11 @@ namespace Byster.Models.Services
 {
     internal interface IService
     {
+        bool IsInitialized { get; set; }
         Dispatcher Dispatcher { get; set; }
         string SessionId { get; set; }
         RestService RestService { get; set; }
         void UpdateData();
+        void Initialize();
     }
 }

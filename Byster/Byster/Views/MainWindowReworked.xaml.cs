@@ -35,11 +35,11 @@ namespace Byster.Views
             App.Sessionid = sessionId;
 
             ViewModel = new MainWindowViewModel(App.Rest, App.Sessionid);
-            ViewModel.UpdateStarted += () =>
+            ViewModel.UpdateDataStarted += () =>
             {
                  updatingDataActionGrid.Visibility = Visibility.Visible;
             };
-            ViewModel.UpdateCompleted += () =>
+            ViewModel.UpdateDataCompleted += () =>
             {
                  updatingDataActionGrid.Visibility = Visibility.Collapsed;
             };

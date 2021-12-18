@@ -47,9 +47,22 @@ namespace Byster.Views
 
         internal RestService restService;
 
+        private string statusText;
+        public string StatusText
+        {
+            get { return statusText; }
+            set
+            {
+                statusText = value;
+                OnPropertyChanged("StatusText");
+            }
+        }
 
         public event Action UpdateDataStarted;
         public event Action UpdateDataCompleted;
+
+        public event Action InitializationStarted;
+        public event Action InitializationCompleted;
         public ActiveRotationsService ActiveRotations { get; set; }
         public ShopService Shop { get; set; }
         public UserInfoService UserInfo { get; set; }
@@ -203,7 +216,15 @@ namespace Byster.Views
 
         public void Initialize()
         {
-
+            StatusText = "Инициализация...";
+            InitializationStarted?.Invoke();
+            ActiveRotations.Initialize();
+            Shop.Initialize();
+            SessionService.Initialize();
+            UserInfo.Initialize();
+            ActionService.Initialize();
+            UpdateData();
+            InitializationCompleted?.Invoke();
         }
 
 
@@ -302,18 +323,11 @@ namespace Byster.Views
 
         }
 
-        private void updateAction()
-        {
-            UserInfo.UpdateData();
-            Shop.UpdateData();
-            ActiveRotations.UpdateData();
-            syncData();
-        }
-
         public void UpdateData()
         {
             Task.Run(() =>
             {
+                StatusText = "Обновление данных...";
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataStarted?.Invoke();

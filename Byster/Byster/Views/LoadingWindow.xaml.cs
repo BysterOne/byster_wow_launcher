@@ -114,13 +114,32 @@ namespace Byster.Views
 
         public void StartMainWindow(string login, string sessionId)
         {
-            App.Current.Dispatcher.Invoke(new Action(() =>
+            //App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            //Thread newMainThread = new Thread(new ThreadStart(() =>
+            //{
+            //    var mainWindow = new MainWindowReworked(login, sessionId);
+            //    mainWindow.Show();
+            //    while(App.Current.MainWindow.IsActive) { }
+            //    System.Windows.Threading.Dispatcher.Run();
+            //}));
+            //newMainThread.SetApartmentState(ApartmentState.STA);
+            //newMainThread.Name = "TestMainThread";
+            //newMainThread.IsBackground = true;
+            //newMainThread.Start();
+            //Dispatcher.Invoke(() =>
+            //{
+            //    System.Windows.Threading.Dispatcher.CurrentDispatcher.InvokeShutdown();
+            //    Close();
+            //});
+
+
+            Dispatcher.Invoke(() =>
             {
-                App.Current.MainWindow = new MainWindowReworked(login, sessionId);
-                App.Current.MainWindow.Show();
-                while(!App.Current.MainWindow.IsLoaded) { }
+                var mainWindow = new MainWindowReworked(login, sessionId);
+                mainWindow.Show();
                 Close();
-            }));
+                mainWindow.Initialize();
+            });
         }
 
         private bool TryAuth(string login, string passwordHash, out string sessionId)

@@ -16,6 +16,7 @@ namespace Byster.Models.Services
 {
     public class ActiveRotationsService : INotifyPropertyChanged, IService
     {
+        public bool IsInitialized { get; set; } = false;
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
@@ -123,6 +124,12 @@ namespace Byster.Models.Services
                 throw new ArgumentNullException(nameof(service));
             }
             RestService = service;
+        }
+
+        public void Initialize()
+        {
+            IsInitialized = true;
+            UpdateData();
         }
     }
 }

@@ -17,7 +17,7 @@ namespace Byster.Models.Services
 {
     public class SessionService : INotifyPropertyChanged, IDisposable
     {
-        public bool IsInitialized { get; private set; }
+        public bool IsInitialized { get; private set; } = false;
         public Dispatcher Dispatcher { get; set; }
         private WoWSearcher searcher;
 
@@ -26,11 +26,6 @@ namespace Byster.Models.Services
         public SessionService(RestClient client)
         {
             Injector.Rest = client;
-            
-            searcher = new WoWSearcher("World of Warcraft");
-            searcher.OnWowChanged += searcherWowChanged;
-            searcher.OnWowFounded += searcherWowFound;
-            searcher.OnWowClosed += searcherWowClosed;
             Sessions = new ObservableCollection<SessionViewModel>();
         }
 
@@ -38,6 +33,10 @@ namespace Byster.Models.Services
         {
             IsInitialized = true;
             Injector.Init();
+            searcher = new WoWSearcher("World of Warcraft");
+            searcher.OnWowChanged += searcherWowChanged;
+            searcher.OnWowFounded += searcherWowFound;
+            searcher.OnWowClosed += searcherWowClosed;
         }
         
         private bool searcherWowClosed(WoW p)

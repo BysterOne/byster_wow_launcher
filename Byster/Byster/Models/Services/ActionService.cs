@@ -14,7 +14,7 @@ namespace Byster.Models.Services
 {
     public class ActionService : IService, IDisposable
     {
-        public bool IsInitialized { get; private set; }
+        public bool IsInitialized { get; set; } = false;
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
@@ -52,7 +52,7 @@ namespace Byster.Models.Services
         public void Initialize()
         {
             IsInitialized = true;
-            updatingTimer = new Timer(new TimerCallback(TimerTick), null, 5000, 5000);
+            updatingTimer = new Timer(new TimerCallback(TimerTick), null, 0, 5000);
         }
     }
 }

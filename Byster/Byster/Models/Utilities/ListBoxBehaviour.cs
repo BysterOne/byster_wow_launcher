@@ -8,6 +8,8 @@ using System.Windows.Controls;
 using System.ComponentModel;
 using System.Windows.Media.Animation;
 using System.Windows.Interactivity;
+using System.Collections.Specialized;
+
 namespace Byster.Models.Utilities
 {
 
@@ -67,7 +69,38 @@ namespace Byster.Models.Utilities
                 if (storyboard == null) continue;
                 storyboard.Completed += SelectionCompleted;
             }
+            var incc = AssociatedObject.ItemsSource as INotifyCollectionChanged;
+            if(incc != null)
+                incc.CollectionChanged += incc_CollectionChanged;
         }
+
+        private void incc_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
+        {
+            if(e.Action != NotifyCollectionChangedAction.Add) return;
+            foreach (var col_item in e.NewItems)
+            {
+                var item = AssociatedObject.ItemContainerGenerator.ContainerFromItem(col_item);
+                if (item == null) continue;
+                var listboxitem = item as ListBoxItem;
+                if (listboxitem == null) continue;
+                if(listboxitem.IsVisible)
+                {
+                    var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
+                    if (storyboard == null) continue;
+                    storyboard.Completed += SelectionCompleted;
+                }
+                else
+                {
+                    listboxitem.IsVisibleChanged += (o, args) =>
+                    {
+                        var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
+                        if (storyboard == null) return;
+                        storyboard.Completed += SelectionCompleted;
+                    };
+                }
+            }
+        }
+
         private void SelectionCompleted(object sender, EventArgs e)
         {
             var listbox = AssociatedObject;

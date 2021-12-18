@@ -200,7 +200,7 @@
             </Grid>
         </Grid>
         <Grid Background="#A0000000" x:Name="updatingDataActionGrid" Grid.RowSpan="3" Visibility="Collapsed">
-            <TextBlock Text="Обновление данных..." VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" FontWeight="Bold"/>
+            <TextBlock Text="{Binding Path=StatusText}" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" FontWeight="Bold"/>
         </Grid>
 
         <Grid Background="#A0000000" x:Name="modalWindowOpenedGrid" Grid.RowSpan="3" Visibility="{Binding IsModalWindowOpened}">

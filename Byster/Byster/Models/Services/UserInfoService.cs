@@ -14,6 +14,7 @@ namespace Byster.Models.Services
 {
     public class UserInfoService : INotifyPropertyChanged, IService
     {
+        public bool IsInitialized { get; set; } = false;
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
@@ -182,6 +183,12 @@ namespace Byster.Models.Services
         public UserInfoService(RestService service)
         {
             RestService = service;
+        }
+
+        public void Initialize()
+        {
+            IsInitialized = true;
+            UpdateData();
         }
 
         public bool ChangePasssword(string newPassswordHash)

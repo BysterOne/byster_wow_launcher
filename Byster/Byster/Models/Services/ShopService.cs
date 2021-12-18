@@ -16,6 +16,7 @@ namespace Byster.Models.Services
 {
     public class ShopService : INotifyPropertyChanged, IService
     {
+        public bool IsInitialized { get; set; } = false;
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         private int bonuses = 0;
@@ -270,6 +271,12 @@ namespace Byster.Models.Services
             {
                 Sum = 0;
             });
+            
+        }
+
+        public void Initialize()
+        {
+            IsInitialized = true;
             UpdateData();
         }
 

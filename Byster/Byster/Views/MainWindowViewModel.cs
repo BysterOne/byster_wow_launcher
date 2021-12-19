@@ -14,6 +14,7 @@ using Byster.Models.Services;
 using Byster.Models.Utilities;
 using Byster.Models.ViewModels;
 using System.Windows;
+using System.Windows.Threading;
 
 namespace Byster.Views
 {
@@ -214,15 +215,15 @@ namespace Byster.Views
             SessionService = new SessionService(App.Rest);
         }
 
-        public void Initialize()
+        public void Initialize(Dispatcher dispatcher)
         {
             StatusText = "Инициализация...";
             InitializationStarted?.Invoke();
-            ActiveRotations.Initialize();
-            Shop.Initialize();
-            SessionService.Initialize();
-            UserInfo.Initialize();
-            ActionService.Initialize();
+            ActiveRotations.Initialize(dispatcher);
+            Shop.Initialize(dispatcher);
+            SessionService.Initialize(dispatcher);
+            UserInfo.Initialize(dispatcher);
+            ActionService.Initialize(dispatcher);
             UpdateData();
             InitializationCompleted?.Invoke();
         }

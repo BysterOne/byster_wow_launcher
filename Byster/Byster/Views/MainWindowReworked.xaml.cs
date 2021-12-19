@@ -59,7 +59,7 @@ namespace Byster.Views
 
         public void Initialize()
         {
-            ViewModel.Initialize();
+            ViewModel.Initialize(Dispatcher);
         }
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

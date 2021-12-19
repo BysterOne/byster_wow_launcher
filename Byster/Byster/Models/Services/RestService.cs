@@ -25,7 +25,7 @@ namespace Byster.Models.Services
             client = _client;
         }
 
-        public ObservableCollection<ActiveRotationViewModel> GetActiveRotationCollection()
+        public IEnumerable<ActiveRotationViewModel> GetActiveRotationCollection()
         {
             var response = client.Post<List<RestRotationWOW>>(new RestRequest("shop/my_subscriptions"));
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
@@ -34,7 +34,7 @@ namespace Byster.Models.Services
                 return null;
             }
             List<RestRotationWOW> responseRotations = response.Data;
-            ObservableCollection<ActiveRotationViewModel> res = new ObservableCollection<ActiveRotationViewModel>();
+            List<ActiveRotationViewModel> res = new List<ActiveRotationViewModel>();
             foreach(var restRotation in responseRotations)
             {
                 res.Add(new ActiveRotationViewModel(restRotation));
@@ -43,7 +43,7 @@ namespace Byster.Models.Services
             return res;
         }
 
-        public ObservableCollection<ShopProductInfoViewModel> GetAllProductCollection()
+        public IEnumerable<ShopProductInfoViewModel> GetAllProductCollection()
         {
             var response = client.Post<List<RestShopProduct>>(new RestRequest("shop/product_list"));
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
@@ -52,7 +52,7 @@ namespace Byster.Models.Services
                 return null;
             }
             List<RestShopProduct> responseProducts = response.Data;
-            ObservableCollection<ShopProductInfoViewModel> res = new ObservableCollection<ShopProductInfoViewModel>();
+            List<ShopProductInfoViewModel> res = new List<ShopProductInfoViewModel>();
             foreach(var product in responseProducts)
             {
                 res.Add(new ShopProductInfoViewModel(new ShopProduct(product)));
@@ -113,7 +113,7 @@ namespace Byster.Models.Services
             return (response.Data.username, response.Data.referral_code, Convert.ToInt32(response.Data.balance));
         }
 
-        public List<PaymentSystem> GetAllPaymentSystemList()
+        public IEnumerable<PaymentSystem> GetAllPaymentSystemList()
         {
             bool isTesterOrDeveloper = !(GetUserType() == BranchType.MASTER);
             var response = client.Get<List<RestPaymentSystem>>(new RestRequest("shop/payment_systems"));

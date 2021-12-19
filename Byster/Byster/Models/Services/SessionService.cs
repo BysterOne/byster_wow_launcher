@@ -29,8 +29,9 @@ namespace Byster.Models.Services
             Sessions = new ObservableCollection<SessionViewModel>();
         }
 
-        public void Initialize()
+        public void Initialize(Dispatcher dispatcher)
         {
+            Dispatcher = dispatcher;
             IsInitialized = true;
             Injector.Init();
             searcher = new WoWSearcher("World of Warcraft");

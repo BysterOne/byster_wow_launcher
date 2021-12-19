@@ -185,8 +185,9 @@ namespace Byster.Models.Services
             RestService = service;
         }
 
-        public void Initialize()
+        public void Initialize(Dispatcher dispatcher)
         {
+            Dispatcher = dispatcher;
             IsInitialized = true;
             UpdateData();
         }

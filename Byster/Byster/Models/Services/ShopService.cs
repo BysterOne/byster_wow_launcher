@@ -156,19 +156,20 @@ namespace Byster.Models.Services
             changingProduct.RemoveAll();
         }
 
-        public void UpdateData()
+        public async void UpdateData()
         {
-            App.Current.Dispatcher.InvokeAsync(() =>
+            IEnumerable<ShopProductInfoViewModel> products = null;
+            await Task.Run(() => products = RestService.GetAllProductCollection());
+            Dispatcher.Invoke(() =>
             {
                 AllProducts.Clear();
-                var newProducts = RestService.GetAllProductCollection();
-                foreach (var product in newProducts)
+                foreach(var item in products)
                 {
-                    AllProducts.Add(product);
+                    AllProducts.Add(item);
                 }
-                FilterProducts();
                 setElementsActions();
-            }).Wait();
+                FilterProducts();
+            });
         }
 
         
@@ -200,7 +201,7 @@ namespace Byster.Models.Services
 
         public List<PaymentSystem> GetAllPaymentSystemsList()
         {
-            return RestService.GetAllPaymentSystemList();
+            return RestService.GetAllPaymentSystemList().ToList();
         }
 
 
@@ -274,8 +275,9 @@ namespace Byster.Models.Services
             
         }
 
-        public void Initialize()
+        public void Initialize(Dispatcher dispatcher)
         {
+            Dispatcher = dispatcher;
             IsInitialized = true;
             UpdateData();
         }

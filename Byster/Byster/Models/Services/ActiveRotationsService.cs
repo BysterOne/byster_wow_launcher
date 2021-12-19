@@ -11,6 +11,7 @@ using System.Runtime.CompilerServices;
 using System.Windows;
 using System.Collections.Specialized;
 using System.Windows.Threading;
+using Byster.Models.Utilities;
 
 namespace Byster.Models.Services
 {
@@ -101,9 +102,11 @@ namespace Byster.Models.Services
             }
         }
 
-        public void UpdateData()
+        public async void UpdateData()
         {
-            AllActiveRotations = RestService.GetActiveRotationCollection();
+            IEnumerable<ActiveRotationViewModel> products = null;
+            await Task.Run(() => products = RestService.GetActiveRotationCollection());
+            AllActiveRotations = products.ToObservableCollection();
             sortAllRotations();
             FilterRotations();
         }
@@ -126,8 +129,9 @@ namespace Byster.Models.Services
             RestService = service;
         }
 
-        public void Initialize()
+        public void Initialize(Dispatcher dispatcher)
         {
+            Dispatcher = dispatcher;
             IsInitialized = true;
             UpdateData();
         }

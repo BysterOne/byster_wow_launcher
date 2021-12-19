@@ -13,6 +13,6 @@ namespace Byster.Models.Services
         string SessionId { get; set; }
         RestService RestService { get; set; }
         void UpdateData();
-        void Initialize();
+        void Initialize(Dispatcher dispatcher);
     }
 }

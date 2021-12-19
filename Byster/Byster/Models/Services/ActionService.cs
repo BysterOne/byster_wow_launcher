@@ -49,10 +49,11 @@ namespace Byster.Models.Services
             updatingTimer?.Dispose();
         }
 
-        public void Initialize()
+        public async void Initialize(Dispatcher dispatcher)
         {
+            Dispatcher = dispatcher;
             IsInitialized = true;
-            updatingTimer = new Timer(new TimerCallback(TimerTick), null, 0, 5000);
+            await Task.Run(() => updatingTimer = new Timer(new TimerCallback(TimerTick), null, 0, 5000));
         }
     }
 }

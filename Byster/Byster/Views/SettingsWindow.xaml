@@ -14,8 +14,8 @@
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>
     <Window.Effect>
-        <DropShadowEffect ShadowDepth="0" BlurRadius="40"
-                          Color="{DynamicResource EffectProductItemColor}"/>
+        <DropShadowEffect BlurRadius="20"
+                          Color="White"/>
     </Window.Effect>
     <Grid>
         <Grid.RowDefinitions>

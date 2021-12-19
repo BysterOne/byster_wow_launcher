@@ -25,10 +25,6 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Window.Effect>
-        <DropShadowEffect ShadowDepth="0" BlurRadius="20"
-                          Color="{DynamicResource EffectProductItemColor}"/>
-    </Window.Effect>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="85"/>

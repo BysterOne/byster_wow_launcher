@@ -15,12 +15,8 @@
         WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" Loaded="Window_Loaded"
         AllowsTransparency="True">
     <Window.Resources>
-        <ResourceDictionary Source="./Styles.xaml"/> <!--Стили-->
+        <ResourceDictionary Source="./Styles.xaml"/>
     </Window.Resources>
-    <Window.Effect>
-        <DropShadowEffect ShadowDepth="0" BlurRadius="20"
-                          Color="{DynamicResource EffectProductItemColor}"/>
-    </Window.Effect>
     <Grid>
         <Grid.Resources>
             <Thickness x:Key="marginUI">0, 7</Thickness>

@@ -26,6 +26,16 @@ namespace Byster.Models.BysterModels
     public class ActiveRotation : RotationBase, INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
+        private bool isVisibleInList = true;
+        public bool IsVisibleInList
+        {
+            get { return isVisibleInList; }
+            set
+            {
+                isVisibleInList = value;
+                OnPropertyChanged("IsVisibleInList");
+            }
+        }
 
         public void OnPropertyChanged([CallerMemberName]string property = "")
         {

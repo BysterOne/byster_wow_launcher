@@ -451,6 +451,11 @@
                                             Margin="10">
                                             <ContentPresenter/>
                                         </Border>
+                                        <ControlTemplate.Triggers>
+                                            <DataTrigger Binding="{Binding Path=IsVisibleInList}" Value="False">
+                                                <Setter Property="Visibility" Value="Collapsed"/>
+                                            </DataTrigger>
+                                        </ControlTemplate.Triggers>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>

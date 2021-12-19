@@ -226,6 +226,7 @@ namespace Byster.Models.Utilities
                         InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.ERROR_WHILE_INJECTING);
                     }
                 }
+                Thread.Sleep(100);
             }
         }
     }

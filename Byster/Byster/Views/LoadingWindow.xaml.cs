@@ -114,25 +114,6 @@ namespace Byster.Views
 
         public void StartMainWindow(string login, string sessionId)
         {
-            //App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            //Thread newMainThread = new Thread(new ThreadStart(() =>
-            //{
-            //    var mainWindow = new MainWindowReworked(login, sessionId);
-            //    mainWindow.Show();
-            //    while(App.Current.MainWindow.IsActive) { }
-            //    System.Windows.Threading.Dispatcher.Run();
-            //}));
-            //newMainThread.SetApartmentState(ApartmentState.STA);
-            //newMainThread.Name = "TestMainThread";
-            //newMainThread.IsBackground = true;
-            //newMainThread.Start();
-            //Dispatcher.Invoke(() =>
-            //{
-            //    System.Windows.Threading.Dispatcher.CurrentDispatcher.InvokeShutdown();
-            //    Close();
-            //});
-
-
             Dispatcher.Invoke(() =>
             {
                 var mainWindow = new MainWindowReworked(login, sessionId);
@@ -140,6 +121,26 @@ namespace Byster.Views
                 Close();
                 mainWindow.Initialize();
             });
+            //Dispatcher.Invoke(() =>
+            //{
+            //    App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
+            //});
+            //Thread newThread = new Thread(new ThreadStart(() =>
+            //{
+            //    var mainWindow = new MainWindowReworked(login, sessionId);
+            //    mainWindow.Show();
+            //    System.Windows.Threading.Dispatcher.Run();
+            //    mainWindow.Initialize();
+            //    App.Current.ShutdownMode = ShutdownMode.OnLastWindowClose;
+            //}));
+            //newThread.IsBackground = true;
+            //newThread.SetApartmentState(ApartmentState.STA);
+            //newThread.Start();
+            //Dispatcher.BeginInvoke(new Action(() =>
+            //{
+            //    Close();
+            //    Dispatcher.InvokeShutdown();
+            //}));
         }
 
         private bool TryAuth(string login, string passwordHash, out string sessionId)

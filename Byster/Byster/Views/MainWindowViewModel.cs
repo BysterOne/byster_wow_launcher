@@ -76,7 +76,25 @@ namespace Byster.Views
             get { return selectedSession; }
             set
             {
+                if (selectedSession != null)
+                {
+                    selectedSession.PropertyChanged -= (o, e) =>
+                    {
+                        OnPropertyChanged("SelectedSession");
+                        OnPropertyChanged("IsSessionDefined");
+                        OnPropertyChanged("IsSessionUndefined");
+                        OnPropertyChanged("IsWorldUnloaded");
+                    };
+                }
                 selectedSession = value;
+                if (selectedSession != null)
+                    selectedSession.PropertyChanged += (o, e) =>
+                    {
+                        OnPropertyChanged("SelectedSession");
+                        OnPropertyChanged("IsSessionDefined");
+                        OnPropertyChanged("IsSessionUndefined");
+                        OnPropertyChanged("IsWorldUnloaded");
+                    };
                 OnPropertyChanged("SelectedSession");
                 OnPropertyChanged("IsSessionDefined");
                 OnPropertyChanged("IsSessionUndefined");
@@ -212,7 +230,10 @@ namespace Byster.Views
             {
                 SessionId = sessionId,
             };
-            SessionService = new SessionService(App.Rest);
+            SessionService = new SessionService(App.Rest)
+            {
+ 
+            };
         }
 
         public void Initialize(Dispatcher dispatcher)
@@ -333,14 +354,23 @@ namespace Byster.Views
                 {
                     UpdateDataStarted?.Invoke();
                 });
-                UserInfo.UpdateRemoteData();
-                Shop.UpdateData();
-                syncData();
+                try
+                {
+                    UserInfo.UpdateRemoteData();
+                    ActiveRotations.UpdateData();
+                    Shop.UpdateData();
+                    syncData();
+                }
+                catch(Exception ex)
+                {
+                    MessageBox.Show(ex.Message + "\n" + ex.ToString(), "Ошибка при обновлении данных");
+                }
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataCompleted?.Invoke();
                 });
             });
+            
         }
 
         public void Dispose()
@@ -356,7 +386,7 @@ namespace Byster.Views
             if (property == "SelectedSession")
             {
                 ActiveRotations.FilterClass = SelectedSession?.SessionClass?.EnumWOWClass ?? WOWClasses.ANY;
-                if (ActiveRotations.FilteredActiveRotations.Count > 0)
+                if (ActiveRotations.AllActiveRotations.FirstOrDefault((rotation) => rotation.IsVisibleInList) != null)
                 {
                     if (SelectedSession == null)
                     {

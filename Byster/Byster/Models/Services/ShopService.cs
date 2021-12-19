@@ -156,10 +156,10 @@ namespace Byster.Models.Services
             changingProduct.RemoveAll();
         }
 
-        public async void UpdateData()
+        public void UpdateData()
         {
             IEnumerable<ShopProductInfoViewModel> products = null;
-            await Task.Run(() => products = RestService.GetAllProductCollection());
+            products = RestService.GetAllProductCollection();
             Dispatcher.Invoke(() =>
             {
                 AllProducts.Clear();
@@ -279,7 +279,6 @@ namespace Byster.Models.Services
         {
             Dispatcher = dispatcher;
             IsInitialized = true;
-            UpdateData();
         }
 
         public RelayCommand BuyCartCommand

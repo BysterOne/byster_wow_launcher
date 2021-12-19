@@ -83,19 +83,41 @@ namespace Byster.Models.Utilities
                 if (item == null) continue;
                 var listboxitem = item as ListBoxItem;
                 if (listboxitem == null) continue;
-                if(listboxitem.IsVisible)
+                if(listboxitem.IsLoaded)
                 {
-                    var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
-                    if (storyboard == null) continue;
-                    storyboard.Completed += SelectionCompleted;
+                    if (listboxitem.IsVisible)
+                    {
+                        var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
+                        if (storyboard != null)
+                            storyboard.Completed += SelectionCompleted;
+                    }
+                    listboxitem.IsVisibleChanged += (o, args) =>
+                    {
+                        if (!Convert.ToBoolean(args.NewValue)) return;
+                        var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
+                        if (storyboard == null) return;
+                        storyboard.Completed -= SelectionCompleted;
+                        storyboard.Completed += SelectionCompleted;
+                    };
                 }
                 else
                 {
-                    listboxitem.IsVisibleChanged += (o, args) =>
+                    listboxitem.Loaded += (o, args) =>
                     {
-                        var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
-                        if (storyboard == null) return;
-                        storyboard.Completed += SelectionCompleted;
+                        if (listboxitem.IsVisible)
+                        {
+                            var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
+                            if (storyboard != null)
+                                storyboard.Completed += SelectionCompleted;
+                        }
+                        listboxitem.IsVisibleChanged += (_o, _args) =>
+                        {
+                            if (!Convert.ToBoolean(_args.NewValue)) return;
+                            var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
+                            if (storyboard == null) return;
+                            storyboard.Completed -= SelectionCompleted;
+                            storyboard.Completed += SelectionCompleted;
+                        };
                     };
                 }
             }
@@ -111,7 +133,9 @@ namespace Byster.Models.Utilities
         {
             VisualState selectedState = null;
             VisualStateGroup selectionGroup = null;
-            var groups = VisualStateManager.GetVisualStateGroups((Border)listboxitem.Template.FindName("borderItem", listboxitem));
+            var element = (Border)listboxitem.Template.FindName("borderItem", listboxitem);
+            if(element == null) return null;
+            var groups = VisualStateManager.GetVisualStateGroups(element);
             foreach (var group in groups)
             {
                 var gr = group as VisualStateGroup;

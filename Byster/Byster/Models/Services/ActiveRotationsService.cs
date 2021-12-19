@@ -22,7 +22,6 @@ namespace Byster.Models.Services
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
         public ObservableCollection<ActiveRotationViewModel> AllActiveRotations { get; set; }
-        public ObservableCollection<ActiveRotationViewModel> FilteredActiveRotations { get; set; }
 
         private WOWClasses filterClass;
         public WOWClasses FilterClass
@@ -40,14 +39,17 @@ namespace Byster.Models.Services
 
         public void FilterRotations()
         {
-            FilteredActiveRotations.Clear();
             foreach(var rotation in AllActiveRotations)
             {
                 if (rotation.RotationClass.EnumWOWClass == FilterClass ||
                     rotation.RotationClass.EnumWOWClass == WOWClasses.ANY ||
                     FilterClass == WOWClasses.ANY)
                 {
-                    FilteredActiveRotations.Add(rotation);
+                    rotation.IsVisibleInList = true;
+                }
+                else
+                {
+                    rotation.IsVisibleInList = false;
                 }
             }
         }
@@ -102,13 +104,23 @@ namespace Byster.Models.Services
             }
         }
 
-        public async void UpdateData()
+        public void UpdateData()
         {
-            IEnumerable<ActiveRotationViewModel> products = null;
-            await Task.Run(() => products = RestService.GetActiveRotationCollection());
-            AllActiveRotations = products.ToObservableCollection();
-            sortAllRotations();
-            FilterRotations();
+            Task.Run(() =>
+            {
+                IEnumerable<ActiveRotationViewModel> products = null;
+                products = RestService.GetActiveRotationCollection();
+                Dispatcher.Invoke(() =>
+                {
+                    foreach (var product in products)
+                    {
+                        AllActiveRotations.Add(product);
+                    }
+                    sortAllRotations();
+                    FilterRotations();
+                });
+                
+            });
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
@@ -121,7 +133,6 @@ namespace Byster.Models.Services
         public ActiveRotationsService(RestService service)
         {
             AllActiveRotations = new ObservableCollection<ActiveRotationViewModel>();
-            FilteredActiveRotations = new ObservableCollection<ActiveRotationViewModel>();
             if(service == null)
             {
                 throw new ArgumentNullException(nameof(service));
@@ -133,7 +144,6 @@ namespace Byster.Models.Services
         {
             Dispatcher = dispatcher;
             IsInitialized = true;
-            UpdateData();
         }
     }
 }

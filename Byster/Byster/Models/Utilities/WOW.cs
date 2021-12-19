@@ -56,14 +56,15 @@ namespace Byster.Models.Utilities
     }
 
     public class WoWSearcher : IDisposable
-    {
+    { 
         public string Title { get; set; }
         public List<WoW> Wows { get; set; } = new List<WoW>();
         public WoWSearcher(string title)
         {
             Title = title;
 
-            TimerWatcher = new Timer(new TimerCallback(TimerTick), null, 5000, 5000);
+            TimerWatcher = new Timer(new TimerCallback(TimerTick), null, 0, 1000);
+            
         }
 
         public void Dispose()
@@ -125,16 +126,21 @@ namespace Byster.Models.Utilities
         private void Update(WoW w)
         {
             bool updated = false;
-            w.WorldLoaded = _(ref updated, w.WorldLoaded, w.Memory.ReadVirtualMemory((IntPtr)0xBEBA40, 1)[0] == 1);
-
-            w.Version = _(ref updated, w.Version, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xCAD851, 30)));
-            w.RealmName = _(ref updated, w.RealmName, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79B9E, 30)));
-            w.RealmServer = _(ref updated, w.RealmServer, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0x879B9E, 30)));
-            if (w.WorldLoaded)
+            try
             {
-                w.Name = _(ref updated, w.Name, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79D18, 30)));
-                w.Class = _(ref updated, w.Class, (Classes)w.Memory.ReadVirtualMemory<byte>((IntPtr)0xC79E89));
+                w.WorldLoaded = _(ref updated, w.WorldLoaded, w.Memory.ReadVirtualMemory((IntPtr)0xBEBA40, 1)[0] == 1);
+
+                w.Version = _(ref updated, w.Version, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xCAD851, 30)));
+                w.RealmName = _(ref updated, w.RealmName, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79B9E, 30)));
+                w.RealmServer = _(ref updated, w.RealmServer, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0x879B9E, 30)));
+                if (w.WorldLoaded)
+                {
+                    w.Name = _(ref updated, w.Name, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79D18, 30)));
+                    w.Class = _(ref updated, w.Class, (Classes)w.Memory.ReadVirtualMemory<byte>((IntPtr)0xC79E89));
+                }
             }
+            catch { }
+            
 
             if (updated)
                 OnWowChanged?.Invoke(w);

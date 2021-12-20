@@ -14,14 +14,12 @@ namespace Byster.Models.Utilities
         {
             if (!LogManager.IsLoggingEnabled()) MessageBox.Show("Логгер не активирован");
             Logger logger = LogManager.GetCurrentClassLogger();
-            logger.Error(msg);
             StringBuilder stringBuilder = new StringBuilder();
-            stringBuilder.Append(DateTime.Now.ToString("[dd.MM.yyyy HH:MM:ss.ff] - ["));
+            stringBuilder.Append("[");
             stringBuilder.Append(msg);
             stringBuilder.Append("]\t");
             foreach(object o in p)
                 stringBuilder.Append(o?.ToString() ?? "{Ошибка преобразования}");
-            stringBuilder.Append("\n");
             logger.Info(stringBuilder.ToString());
         }
     }

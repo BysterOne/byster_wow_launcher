@@ -22,6 +22,8 @@ using System.Windows.Media.Animation;
 using Microsoft.Win32;
 using Byster.Models.RestModels;
 
+using NLog;
+
 namespace Byster.Views
 {
     /// <summary>
@@ -29,26 +31,35 @@ namespace Byster.Views
     /// </summary>
     public partial class LoadingWindow : Window
     {
-        private readonly string NLogConfig = "<?xml version=\"1.0\" encoding=\"utf-8\" ?><nlog xmlns=\"http://www.nlog-project.org/schemas/NLog.xsd\" xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"><targets><target name=\"logfile\" xsi:type=\"File\" fileName=\"${specialfolder:folder=ApplicationData:cached=true}/BysterConfig/Byster.log\" layout=\"[${longdate} ${logger}] ${message}${exception:format=ToString}\" keepFileOpen=\"true\" encoding=\"utf-8\" createDirs=\"true\"/></targets><rules><logger name=\"*\" minlevel=\"Info\" writeTo=\"logfile\" /></rules></nlog>";
 
         public LoadingWindow()
         {
             InitializeComponent();
             string currentDir = Directory.GetCurrentDirectory();
 
-            if (!File.Exists("NLog.config"))
-            {
-                File.Create("NLog.config").Close();
-                File.WriteAllText("NLog.config", NLogConfig);
-                var processes = Process.GetProcessesByName("Byster.exe");
-                Process.Start("Byster.exe");
-                foreach (var p in processes)
-                {
-                    p.Kill();
-                }
-                Close();
-            }
-            
+            var config = new NLog.Config.LoggingConfiguration();
+
+            // Targets where to log to: File and Console
+            var logfile = new NLog.Targets.FileTarget("logfile") {
+                FileName = "${specialfolder:folder=ApplicationData:cached=true}/BysterConfig/Byster.log",
+                Layout = "[${longdate}] ${message}${exception:format=ToString}",
+                KeepFileOpen = true,
+                Encoding = Encoding.UTF8,
+                CreateDirs = true,
+                ArchiveFileName = "${specialfolder:folder=ApplicationData:cached=true}/BysterConfig/BysterLogsArchive/${longdate}-BysterLogs.zip",
+                EnableArchiveFileCompression = true,
+                ArchiveAboveSize = 400,
+                ArchiveOldFileOnStartupAboveSize = 100,
+            };
+            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+
+            // Rules for mapping loggers to targets            
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile);
+
+            // Apply config           
+            NLog.LogManager.Configuration = config;
+
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

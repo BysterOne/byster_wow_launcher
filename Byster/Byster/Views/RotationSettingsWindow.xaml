@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:lb="clr-namespace:Byster.Models.Utilities"
         mc:Ignorable="d"
-        Title="RotationSettingsWindow" Height="500" Width="700"
+        Title="Меню выбора ротаций" Height="500" Width="700"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"

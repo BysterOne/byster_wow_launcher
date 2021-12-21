@@ -7,7 +7,7 @@
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:lb="clr-namespace:Byster.Models.Utilities"
         mc:Ignorable="d"
-        Title="MainWindowReworked" Height="585" Width="975"
+        Title="Byster" Height="585" Width="975"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}" MouseLeftButtonDown="Window_MouseLeftButtonDown"
         KeyDown="Window_KeyDown"

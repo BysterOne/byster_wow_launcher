@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         mc:Ignorable="d"
-        Title="LoadingWindow" Height="180" Width="180"
+        Title="Byster - Загрузка" Height="180" Width="180"
         WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
         Background="Transparent" Icon="/byster.ico" Loaded="Window_Loaded" MouseLeftButtonDown="Window_MouseLeftButtonDown"
         AllowsTransparency="True">

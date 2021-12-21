@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Login"
+        Title="Byster - Вход"
         Height="330"
         Width="340"
         ResizeMode="NoResize"

@@ -31,6 +31,7 @@ namespace Byster.Views
         public PaymentSystemSelectorWindow(string title, string infoText, List<PaymentSystem> systems)
         {
             InitializeComponent();
+            this.Title = title;
             titleTextBlock.Text = title;
             infoTextBlock.Text = infoText;
             systemSelector.ItemsSource = systems;

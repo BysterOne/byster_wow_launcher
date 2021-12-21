@@ -1153,10 +1153,10 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
                                 <Border Margin="12"
-                                                        Width="180"
-                                                        Height="380"
-                                                        x:Name="borderItem"
-                                                        Visibility="{Binding Path=IsShowingInShop}">
+                                        Width="180"
+                                        Height="380"
+                                        x:Name="borderItem"
+                                        Visibility="{Binding Path=IsShowingInShop}">
                                     <Border Background="{TemplateBinding Background}"
                                                         BorderThickness="1"
                                                         BorderBrush="{DynamicResource BorderProductItemColor}"
@@ -1219,7 +1219,7 @@
                                                         <RowDefinition/>
                                                         <RowDefinition Height="Auto"/>
                                                     </Grid.RowDefinitions>
-                                                    <Grid Grid.Row="0" Margin="10">
+                                                    <Grid x:Name="noninfinityDurationGrid" Grid.Row="0" Margin="10">
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                                             <TextBlock Text="{Binding Path=Product.Duration}" Style="{DynamicResource infoTextBlockStyle}"/>
                                                             <TextBlock Text=" дней" Style="{DynamicResource infoTextBlockStyle}"/>
@@ -1229,6 +1229,9 @@
                                                             <TextBlock Text=" " Style="{DynamicResource infoTextBlockStyle}"/>
                                                             <TextBlock Text="{Binding Path=Product.Currency}" Style="{DynamicResource infoTextBlockStyle}"/>
                                                         </StackPanel>
+                                                    </Grid>
+                                                    <Grid x:Name="infinityDurationGrid" Grid.Row="0" Margin="10" Visibility="Collapsed">
+                                                        <TextBlock Text="Навсегда" Style="{DynamicResource infoTextBlockStyle}"/>
                                                     </Grid>
                                                     
                                                     <Grid Grid.Row="1" Margin="10">
@@ -1333,6 +1336,10 @@
                                     </VisualStateManager.VisualStateGroups>
                                 </Border>
                                 <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Path=Product.Duration}" Value="99999">
+                                        <Setter TargetName="infinityDurationGrid" Property="Visibility" Value="Visible"/>
+                                        <Setter TargetName="noninfinityDurationGrid" Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
                                     <Trigger Property="IsSelected" Value="True">
                                         <Setter TargetName="closePanel" Property="IsEnabled" Value="True"/>
                                     </Trigger>
@@ -1505,7 +1512,7 @@
     <SolidColorBrush x:Key="FontTitleColor">#ffffff</SolidColorBrush>
     <SolidColorBrush x:Key="FontOrangeColor">#fbb94b</SolidColorBrush>
     <SolidColorBrush x:Key="FontDarkOrangeColor">#bf8c26</SolidColorBrush>
-    
+
     <SolidColorBrush x:Key="BackgroundButtonColor">#497f46</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundButtonColorHover">#3d6b3b</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundButtonColorClicked">#437541</SolidColorBrush>
@@ -1525,7 +1532,7 @@
     <Color x:Key="EffectProductItemColor">#282a2f</Color>
 
     <SolidColorBrush x:Key="BorderProductItemColor">#454649</SolidColorBrush>
-
+    
     <SolidColorBrush x:Key="BackgroundProductButtonColor">#fbb94b</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundProductButtonColorHover">#f0af48</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundProductButtonColorClicked">#f5b349</SolidColorBrush>

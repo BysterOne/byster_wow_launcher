@@ -1279,7 +1279,7 @@
                                                             <TextBlock x:Name="productSpecializationName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" TextAlignment="Right"
                                                                    Margin="0"/>
                                                         </StackPanel>
-                                                        <ScrollViewer Style="{DynamicResource scrollViewerStyle}"
+                                                        <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}"
                                                                 Grid.Row="1" Margin="0, 10">
                                                             <TextBlock Style="{DynamicResource infoTextBlockStyle}" TextWrapping="Wrap" Text="{Binding Path=Product.Description}"/>
                                                         </ScrollViewer>

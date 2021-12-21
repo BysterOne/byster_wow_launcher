@@ -112,6 +112,7 @@ namespace Byster.Models.Services
                 products = RestService.GetActiveRotationCollection();
                 Dispatcher.Invoke(() =>
                 {
+                    AllActiveRotations.Clear();
                     foreach (var product in products)
                     {
                         AllActiveRotations.Add(product);

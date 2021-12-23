@@ -56,7 +56,8 @@ namespace Byster.Models.Utilities
     }
 
     public class WoWSearcher : IDisposable
-    { 
+    {
+        private bool isFirstWowFound = false;
         public string Title { get; set; }
         public List<WoW> Wows { get; set; } = new List<WoW>();
         public WoWSearcher(string title)
@@ -77,6 +78,8 @@ namespace Byster.Models.Utilities
         public event ProcessDelegate OnWowFounded;
         public event ProcessDelegate OnWowClosed;
         public event ProcessDelegate OnWowChanged;
+        public event ProcessDelegate OnFirstWowFound;
+
 
         Timer TimerWatcher;
 
@@ -101,6 +104,11 @@ namespace Byster.Models.Utilities
                 Wows.Add(wow);
 
                 OnWowFounded?.Invoke(wow);
+                if(!isFirstWowFound)
+                {
+                    isFirstWowFound = true;
+                    OnFirstWowFound?.Invoke(wow);
+                }
                 Update(wow);
             }
 

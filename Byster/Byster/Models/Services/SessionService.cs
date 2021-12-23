@@ -18,6 +18,13 @@ namespace Byster.Models.Services
     public class SessionService : INotifyPropertyChanged, IDisposable
     {
         public bool IsInitialized { get; private set; } = false;
+
+        public Action<SessionWOW> WowFoundAction { get; set; }
+        public Action<SessionWOW> WowUpdatedAction { get; set; }
+        public Action<SessionWOW> WowDeletedAction { get; set; }
+        public Action<SessionWOW> FirstWowFoundAction { get; set; }
+
+
         public Dispatcher Dispatcher { get; set; }
         private WoWSearcher searcher;
 
@@ -38,16 +45,26 @@ namespace Byster.Models.Services
             searcher.OnWowChanged += searcherWowChanged;
             searcher.OnWowFounded += searcherWowFound;
             searcher.OnWowClosed += searcherWowClosed;
+            searcher.OnFirstWowFound += searcherFirstWowFound;
         }
-        
+
+        private bool searcherFirstWowFound(WoW p)
+        {
+            var firstSession = Sessions.First((session) => session.WowApp.Process.Id == p.Process.Id);
+            FirstWowFoundAction?.Invoke(firstSession);
+            return true;
+        }
+
         private bool searcherWowClosed(WoW p)
         {
             Dispatcher.Invoke(() =>
             {
                 var sessionToRemove = Sessions.First((session) => session.WowApp.Process.Id == p.Process.Id);
                 if (sessionToRemove == null) return;
+                WowDeletedAction?.Invoke(sessionToRemove);
                 Sessions.Remove(sessionToRemove);
             });
+            
             return true;
         }
 
@@ -64,6 +81,7 @@ namespace Byster.Models.Services
                     SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class)),
                 };
                 Sessions.Add(sessionToAdd);
+                WowFoundAction?.Invoke(sessionToAdd);
             });
             return true;
         }
@@ -78,6 +96,7 @@ namespace Byster.Models.Services
                 sessionToChange.SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class));
                 sessionToChange.ServerName = p.RealmName;
                 sessionToChange.UserName = p.Name;
+                WowUpdatedAction?.Invoke(sessionToChange);
             });
             return true;
         }

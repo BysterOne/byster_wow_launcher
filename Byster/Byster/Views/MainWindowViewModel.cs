@@ -25,7 +25,7 @@ namespace Byster.Views
         public static bool ShowModalDialog(this Window window)
         {
             Model.IsModalWindowOpened = Visibility.Visible;
-            bool result = window.ShowDialog() ?? false;   
+            bool result = window.ShowDialog() ?? false;
             Model.IsModalWindowOpened = Visibility.Collapsed;
             return result;
         }
@@ -232,7 +232,10 @@ namespace Byster.Views
             };
             SessionService = new SessionService(App.Rest)
             {
- 
+                FirstWowFoundAction = (session) =>
+                {
+                    SelectedSession = session as SessionViewModel;
+                },
             };
         }
 

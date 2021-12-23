@@ -663,7 +663,7 @@
                     <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0, 5">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="17"/>
+                            <ColumnDefinition Width="15"/>
                         </Grid.ColumnDefinitions>
                         <Border Background="Transparent"
                                 BorderBrush="Transparent"
@@ -686,6 +686,84 @@
         </Setter>
     </Style>
 
+    <Style TargetType="ScrollViewer" x:Key="hor_scrollViewerStyle">
+        <Setter Property="Focusable" Value="False"/>
+        <Setter Property="OverridesDefaultStyle"
+          Value="True" />
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollViewer">
+                    <Grid VerticalAlignment="Stretch" HorizontalAlignment="Stretch" Margin="0">
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition Height="8"/>
+                        </Grid.RowDefinitions>
+                        <Border Background="Transparent"
+                                BorderBrush="Transparent"
+                                Grid.Column="0">
+                            <ScrollContentPresenter CanContentScroll="{TemplateBinding CanContentScroll}"/>
+                        </Border>
+                        <ScrollBar x:Name="PART_HorizontalScrollBar"
+                                   Value="{TemplateBinding HorizontalOffset}"
+                                   Maximum="{TemplateBinding ScrollableWidth}"
+                                   ViewportSize="{TemplateBinding ViewportWidth}"
+                                   Visibility="{TemplateBinding ComputedHorizontalScrollBarVisibility}"
+                                   Grid.Row="1"
+                                   Margin="1, 0"
+                                   HorizontalAlignment="Stretch"
+                                   VerticalAlignment="Center"
+                                   Style="{DynamicResource hor_scrollBarStyle}"
+                                   Orientation="Horizontal">
+                        </ScrollBar>
+                    </Grid>
+                    
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ScrollBar" x:Key="hor_scrollBarStyle">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ScrollBar">
+                    <Border Background="Transparent">
+                        <Track x:Name="PART_Track"
+                               Orientation="Horizontal">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageLeftCommand">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb Style="{DynamicResource thumbStyle}"
+                                           Height="9">
+                                </Thumb>
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Command="ScrollBar.PageUpCommand">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="Transparent">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.IncreaseRepeatButton>
+                        </Track>
+                    </Border>
+                    
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+    
     <Style TargetType="ScrollBar" x:Key="scrollBarStyle">
         <Setter Property="Template">
             <Setter.Value>
@@ -705,8 +783,7 @@
                                 </RepeatButton>
                             </Track.DecreaseRepeatButton>
                             <Track.Thumb>
-                                <Thumb Style="{DynamicResource thumbStyle}"
-                                           Width="9">
+                                <Thumb Style="{DynamicResource thumbStyle}" Width="9">
                                 </Thumb>
                             </Track.Thumb>
                             <Track.IncreaseRepeatButton>
@@ -1128,12 +1205,15 @@
     </Style>
 
     <Style TargetType="{x:Type ListBox}" x:Key="shopViewStyle">
-        <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="SelectionMode" Value="Single"/>
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
-                    <ScrollViewer Style="{DynamicResource scrollViewerStyle}">
+                    <ScrollViewer Style="{DynamicResource hor_scrollViewerStyle}">
+                        <i:Interaction.Behaviors>
+                            <lb:UseHorizontalScroll/>
+                        </i:Interaction.Behaviors>
                         <ItemsPresenter/>
                     </ScrollViewer>
                 </ControlTemplate>
@@ -1154,7 +1234,7 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
-                                <Border Margin="12"
+                                <Border Margin="10"
                                         Width="180"
                                         Height="380"
                                         x:Name="borderItem"

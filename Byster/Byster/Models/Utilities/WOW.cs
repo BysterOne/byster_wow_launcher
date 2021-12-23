@@ -39,6 +39,19 @@ namespace Byster.Models.Utilities
             if (item1?.Process?.Id == item2?.Process?.Id) return false;
             return true;
         }
+
+        public override bool Equals(object obj)
+        {
+            if(obj == null) return false;
+            if(!(obj is WoW)) return false;
+            if((obj as WoW) != this) return false;
+            return true;
+        }
+
+        public override int GetHashCode()
+        {
+            return base.GetHashCode();
+        }
     }
 
     public enum Classes

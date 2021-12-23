@@ -237,6 +237,10 @@ namespace Byster.Views
                     SelectedSession = session as SessionViewModel;
                 },
             };
+            ActiveRotations.AllActiveRotations.CollectionChanged += (o, e) =>
+            {
+                checkRotations();
+            };
         }
 
         public void Initialize(Dispatcher dispatcher)
@@ -245,10 +249,11 @@ namespace Byster.Views
             InitializationStarted?.Invoke();
             ActiveRotations.Initialize(dispatcher);
             Shop.Initialize(dispatcher);
-            SessionService.Initialize(dispatcher);
             UserInfo.Initialize(dispatcher);
             ActionService.Initialize(dispatcher);
+            SessionService.Initialize(dispatcher);
             UpdateData();
+            checkRotations();
             InitializationCompleted?.Invoke();
         }
 
@@ -386,22 +391,26 @@ namespace Byster.Views
         public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-            if (property == "SelectedSession")
+            if(property == "SelectedSession")
             {
-                ActiveRotations.FilterClass = SelectedSession?.SessionClass?.EnumWOWClass ?? WOWClasses.ANY;
-                if (ActiveRotations.AllActiveRotations.FirstOrDefault((rotation) => rotation.IsVisibleInList) != null)
+                checkRotations();
+            }
+        }
+        private void checkRotations()
+        {
+            ActiveRotations.FilterClass = SelectedSession?.SessionClass?.EnumWOWClass ?? WOWClasses.ANY;
+            if (ActiveRotations.AllActiveRotations.FirstOrDefault((rotation) => rotation.IsVisibleInList) != null)
+            {
+                if (SelectedSession == null)
                 {
-                    if (SelectedSession == null)
-                    {
-                        selectControls(3);
-                        return;
-                    }
-                    selectControls(0);
+                    selectControls(3);
+                    return;
                 }
-                else
-                {
-                    selectControls(2);
-                }
+                selectControls(0);
+            }
+            else
+            {
+                selectControls(2);
             }
         }
     }

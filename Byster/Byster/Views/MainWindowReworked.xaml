@@ -157,7 +157,7 @@
                         Background="{DynamicResource BackgroundMainWindowColor}">
                     <ListBox x:Name="ProductListBox" Style="{DynamicResource shopViewStyle}" ItemsSource="{Binding Path=Shop.AllProducts}" SelectedItem="{Binding Path=SelectedProduct, Mode=TwoWay}">
                         <i:Interaction.Behaviors>
-                            <lb:ScrollToViewAfterSelectionBehavior/>
+                            <lb:ScrollToLeftViewAfterSelectionBehavior/>
                         </i:Interaction.Behaviors>
                     </ListBox>
                 </Border>

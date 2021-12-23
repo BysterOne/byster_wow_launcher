@@ -86,7 +86,6 @@ namespace Byster.Models.Services
             Log("Выполнен запрос на покупку продукта - ", response.Data.payment_url);
             return (true, response.Data.payment_url);
         }
-        //"{\"payment_url\": \"https://api.byster.ru/shop/test_payment_webhook?id=21&username=byster_service&token=6f22f01ee45c45f3bca856a604664d6d\", \"status\": \"init\"}"
         public bool ExecuteTestRequest(int id)
         {
             var response = client.Post<BaseResponse>(new RestRequest("shop/test").AddJsonBody(new RestTestRequest()

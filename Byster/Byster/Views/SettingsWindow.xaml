@@ -13,10 +13,6 @@
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>
-    <Window.Effect>
-        <DropShadowEffect BlurRadius="20"
-                          Color="White"/>
-    </Window.Effect>
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>

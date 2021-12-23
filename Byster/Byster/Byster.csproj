@@ -160,6 +160,7 @@
     <Compile Include="Models\RestModels\Auth.cs" />
     <Compile Include="Models\RestModels\BaseResponse.cs" />
     <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
+    <Compile Include="Models\RestModels\LinkEmailRequest.cs" />
     <Compile Include="Models\RestModels\Register.cs" />
     <Compile Include="Models\RestModels\RestAction.cs" />
     <Compile Include="Models\RestModels\RestBranch.cs" />
@@ -182,6 +183,7 @@
     <Compile Include="Models\Services\ShopService.cs" />
     <Compile Include="Models\Services\UserInfoService.cs" />
     <Compile Include="Models\Utilities\BackgroundPhotoDownloader.cs" />
+    <Compile Include="Models\Utilities\Converters.cs" />
     <Compile Include="Models\Utilities\IEnumerableExtensions.cs" />
     <Compile Include="Models\Utilities\Injector.cs" />
     <Compile Include="Models\Utilities\HashCalc.cs" />
@@ -351,9 +353,6 @@
     <Resource Include="Resources\Images\UserLogos\test.png" />
     <Resource Include="Resources\Images\UserLogos\dev.png" />
     <Resource Include="Resources\Images\utility-icon-default.png" />
-    <Resource Include="Resources\Images\Types\DPS.png" />
-    <Resource Include="Resources\Images\Types\Heal.png" />
-    <Resource Include="Resources\Images\Types\Tank.png" />
     <Resource Include="Resources\Images\Specializations\DEMONOLOGY.png" />
     <Resource Include="Resources\Images\settings-image.png" />
     <Resource Include="Resources\Images\top-decoration-figure.png" />
@@ -396,7 +395,6 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Types\ANY.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Wow.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="byster.ico" />
@@ -409,6 +407,14 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\loading-progress.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Types\DPS.png" />
+    <Resource Include="Resources\Images\Types\Heal.png" />
+    <Resource Include="Resources\Images\Types\Tank.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\ClassesWOW\Wow.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.6.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.6.0\build\Fody.targets')" />

@@ -169,6 +169,7 @@ namespace Byster.Views
 
                 switch (statusCode)
                 {
+                    default:
                     case InjectInfoStatusCode.INACTIVE:
                         return "Инжект инактивен...";
                     case InjectInfoStatusCode.ENEQUEUED:
@@ -179,7 +180,6 @@ namespace Byster.Views
                         return "Инжект...";
                     case InjectInfoStatusCode.INJECTED_OK:
                         return "Инжект завершён, перейдите в игру.";
-
                 }
             }
             return "---";
@@ -217,4 +217,8 @@ namespace Byster.Views
             return DependencyProperty.UnsetValue;
         }
     }
+
+    
+
+        
 }

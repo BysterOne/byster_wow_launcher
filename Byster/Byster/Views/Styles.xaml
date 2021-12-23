@@ -2,8 +2,10 @@
                             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
                             xmlns:sys="clr-namespace:System;assembly=mscorlib"
                             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
-                            xmlns:lb="clr-namespace:Byster.Models.Utilities">
+                            xmlns:lb="clr-namespace:Byster.Models.Utilities"
+                            xmlns:converters="clr-namespace:Byster.Models.Utilities">
 
+    <converters:WordEndAssociator x:Key="wordEndAssociatorConverter"/>
     <!-- Стили UI -->
     <Style TargetType="TextBox" x:Key="tbStyle">
         <Style.Setters>
@@ -1197,8 +1199,8 @@
                                                                           Height="30">
                                                         <StackPanel Orientation="Horizontal"
                                                                     HorizontalAlignment="Center">
-                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Product.Rotations.Count}"/>
-                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text=" ротаций"/>
+                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Product.Rotations.Count}" x:Name="rotCount"/>
+                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding ElementName=rotCount, Path=Text, Converter={StaticResource wordEndAssociatorConverter}, ConverterParameter=ротац}"/>
                                                         </StackPanel>
                                                     </Grid>
                                                     <TextBlock Grid.Row="1" Text="{Binding Path=Product.Name}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource infoTextBlockStyle}" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>

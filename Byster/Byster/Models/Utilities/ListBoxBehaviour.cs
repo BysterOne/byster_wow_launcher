@@ -9,6 +9,7 @@ using System.ComponentModel;
 using System.Windows.Media.Animation;
 using System.Windows.Interactivity;
 using System.Collections.Specialized;
+using System.Windows.Media;
 
 namespace Byster.Models.Utilities
 {
@@ -333,6 +334,11 @@ namespace Byster.Models.Utilities
 
         private void mouseWheelCallback(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
+            IEnumerable<ScrollViewer> scrollviewers = getAllVisualElementsByType<ScrollViewer>(AssociatedObject);
+            foreach(var scrolviewer in scrollviewers)
+            {
+                if (scrolviewer.IsMouseOver) return;
+            }
             AssociatedObject.ScrollToHorizontalOffset(AssociatedObject.HorizontalOffset - e.Delta);
         }
 
@@ -341,6 +347,23 @@ namespace Byster.Models.Utilities
             base.OnDetaching();
             if (AssociatedObject == null) return;
             AssociatedObject.PreviewMouseWheel -= mouseWheelCallback;
+        }
+
+        private static IEnumerable<T> getAllVisualElementsByType<T>(DependencyObject dependencyObject) where T : DependencyObject
+        {
+            List<T> children = new List<T>();
+            if (dependencyObject == null) return null;
+
+            for(int i = 0; i < VisualTreeHelper.GetChildrenCount(dependencyObject); i++)
+            {
+                var rawChild = VisualTreeHelper.GetChild(dependencyObject, i);
+                if(rawChild is T)
+                {
+                    children.Add((T)rawChild);
+                }
+                children.AddRange(getAllVisualElementsByType<T>(rawChild));
+            }
+            return children;
         }
     }
 }

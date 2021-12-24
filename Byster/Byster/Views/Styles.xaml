@@ -1236,7 +1236,7 @@
                             <ControlTemplate TargetType="ListBoxItem">
                                 <Border Margin="10"
                                         Width="180"
-                                        Height="380"
+                                        Height="379"
                                         x:Name="borderItem"
                                         Visibility="{Binding Path=IsShowingInShop}">
                                     <Border Background="{TemplateBinding Background}"

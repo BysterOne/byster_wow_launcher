@@ -109,7 +109,6 @@ namespace Byster.Views
                         if (TryAuth(login, passwordHash, out sessionId))
                         {
                             StartMainWindow(login, sessionId);
-                            Close();
                             return;
                         }
                         else

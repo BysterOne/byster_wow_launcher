@@ -1313,7 +1313,14 @@
                                                         </StackPanel>
                                                     </Grid>
                                                     <Grid x:Name="infinityDurationGrid" Grid.Row="0" Margin="10" Visibility="Collapsed">
-                                                        <TextBlock Text="Навсегда" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
+                                                            <TextBlock Text="Навсегда" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                        </StackPanel>
+                                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                                            <TextBlock Text="{Binding Path=Product.Price}" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                            <TextBlock Text=" " Style="{DynamicResource infoTextBlockStyle}"/>
+                                                            <TextBlock Text="{Binding Path=Product.Currency}" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                        </StackPanel>
                                                     </Grid>
                                                     
                                                     <Grid Grid.Row="1" Margin="10">

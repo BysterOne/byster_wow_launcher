@@ -241,6 +241,13 @@ namespace Byster.Views
             {
                 checkRotations();
             };
+            UserInfo.PropertyChanged += (obj, args) =>
+            {
+                if (args.PropertyName == "Branch")
+                {
+                    Injector.Branch = UserInfo.Branch;
+                };
+            };
         }
 
         public void Initialize(Dispatcher dispatcher)

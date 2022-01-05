@@ -115,9 +115,9 @@ namespace Byster.Views
                         {
                             Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", "");
                             Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "");
-                            startApp();
                         }
                     }
+                    startApp();
                 }
             });
         }

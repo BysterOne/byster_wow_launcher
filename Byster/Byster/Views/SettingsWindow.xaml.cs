@@ -41,16 +41,20 @@ namespace Byster.Views
                 }
             };
             this.DataContext = SettingsViewModel;
-            if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.MASTER)
+            if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.DEVELOPER)
+            {
+                this.Height = devElementGrid.Height + masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
+            }
+            else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.MASTER)
             {
                 testElementGrid.Visibility = Visibility.Collapsed;
                 devElementGrid.Visibility = Visibility.Collapsed;
-                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight;
+                this.Height = masterGrid.Height + nameGrid.Height + 30;
             }
             else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
             {
                 devElementGrid.Visibility = Visibility.Collapsed;
-                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + testElementGrid.ActualHeight;
+                this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
             }
             switch (viewModel.UserInfo.Branch.ToLower())
             {

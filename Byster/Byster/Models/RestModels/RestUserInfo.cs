@@ -11,5 +11,7 @@ namespace Byster.Models.RestModels
         public string username { get; set; }
         public double balance { get; set; }
         public string referral_code { get; set; }
+
+        public string currency { get; set; }
     }
 }

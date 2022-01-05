@@ -7,9 +7,9 @@
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:lb="clr-namespace:Byster.Models.Utilities"
         mc:Ignorable="d"
-        Title="Byster" Height="585" Width="975"
+        Title="Byster" Height="615" Width="1005"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
-        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}" MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        ResizeMode="CanMinimize" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown"
         KeyDown="Window_KeyDown"
         AllowsTransparency="True">
     <Window.Resources>
@@ -25,11 +25,18 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="85"/>
             <RowDefinition/>
         </Grid.RowDefinitions>
+        <Border Background="{DynamicResource BackgroundWindowColor}"
+                Grid.ColumnSpan="2"
+                Grid.RowSpan="3">
+            <Border.Effect>
+                <DropShadowEffect Color="{DynamicResource EffectProductItemColor}" BlurRadius="15" ShadowDepth="0"/>
+            </Border.Effect>
+        </Border>
         <Grid x:Name="topPanel" Grid.Row="0">
             <Button x:Name="titleButton" Style="{DynamicResource imageButtonStyle}" HorizontalAlignment="Left" Margin="5" Cursor="Hand"
                     Command="{Binding UnselectSessionCommand}">
@@ -49,6 +56,10 @@
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Bottom">
                 <TextBlock Style="{DynamicResource orangeTextBlockStyle}" VerticalAlignment="Center" Margin="10, 0" x:Name="usernameHolder" Text="{Binding Path=UserInfo.Username}"/>
+                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0,0,4,0">
+                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=UserInfo.BonusBalance}" Margin="0,0,3,0"/>
+                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=UserInfo.Currency}"/>
+                </StackPanel>
                 <Button Style="{DynamicResource uibStyle}" x:Name="settingsBtn" Command="{Binding Path=SettingsCommand}">
                     <Image RenderOptions.BitmapScalingMode="HighQuality" Source="/Resources/Images/settings-image.png" Stretch="Uniform" Height="25" Margin="5"/>
                 </Button>
@@ -202,7 +213,5 @@
         <Grid Background="#A0000000" x:Name="modalWindowOpenedGrid" Grid.RowSpan="3" Visibility="{Binding IsModalWindowOpened}">
             <TextBlock Text="" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" FontWeight="Bold"/>
         </Grid>
-
     </Grid>
-    
 </Window>

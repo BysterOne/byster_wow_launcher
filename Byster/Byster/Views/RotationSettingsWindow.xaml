@@ -6,19 +6,24 @@
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:lb="clr-namespace:Byster.Models.Utilities"
         mc:Ignorable="d"
-        Title="Меню выбора ротаций" Height="500" Width="700"
+        Title="Меню выбора ротаций" Height="530" Width="730"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
-        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}"
+        ResizeMode="CanMinimize" Background="Transparent"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         AllowsTransparency="True">
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="*"/>
         </Grid.RowDefinitions>
+        <Border Grid.RowSpan="2" Background="{DynamicResource BackgroundWindowColor}">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="0" Color="{DynamicResource EffectProductItemColor}"/>
+            </Border.Effect>
+        </Border>
         <Button Style="{DynamicResource uibStyle}" x:Name="closeBtn" Height="30" Click="closeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Right">
             <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Margin="5"/>
         </Button>

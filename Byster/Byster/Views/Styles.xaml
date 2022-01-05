@@ -490,15 +490,18 @@
                                                             VerticalAlignment="Bottom"
                                                             HorizontalAlignment="Left"
                                                Style="{DynamicResource orangeTextBlockStyle}"/>
-                                    <TextBlock Text="{Binding Path=Name}"
+                                    <Grid VerticalAlignment="Top">
+                                        <TextBlock Text="{Binding Path=Name}"
                                                             HorizontalAlignment="Left"
-                                                            VerticalAlignment="Top"
+                                                            VerticalAlignment="Center"
                                                Style="{DynamicResource orangeTextBlockStyle}"/>
-                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
-                                        <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Type}" VerticalAlignment="Center"/>
-                                        <Image Source="{Binding Path=RotationClass.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Height="36" Margin="7, 0"/>
-                                        <Image Source="{Binding Path=RoleOfRotation.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Height="36"/>
-                                    </StackPanel>
+                                        <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Type}" VerticalAlignment="Center"/>
+                                            <Image Source="{Binding Path=RotationClass.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Height="36" Margin="7, 0"/>
+                                            <Image Source="{Binding Path=RoleOfRotation.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Height="36"/>
+                                        </StackPanel>
+                                    </Grid>
+                                    
                                     <TextBlock Style="{DynamicResource infoTextBlockStyle}" HorizontalAlignment="Right" VerticalAlignment="Bottom" Text="{Binding Path=ExpiringTime}"/>
                                 </Grid>
                             </Grid>
@@ -1202,6 +1205,11 @@
                             </Track.IncreaseRepeatButton>
                         </Track>
                     </Grid>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="Maximum" Value="0">
+                            <Setter Property="Visibility" Value="Collapsed"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
                 </ControlTemplate>
             </Setter.Value>
         </Setter>

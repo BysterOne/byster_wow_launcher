@@ -4,22 +4,28 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
-        mc:Ignorable="d" Height="470" Width="300"
+        mc:Ignorable="d" Height="505" Width="330"
         Title="Настройки"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
-        ResizeMode="CanMinimize" Background="{DynamicResource BackgroundWindowColor}"
+        ResizeMode="CanMinimize" Background="Transparent"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         AllowsTransparency="True">
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="15">
         <Grid.RowDefinitions>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
             <RowDefinition Height="Auto"/>
         </Grid.RowDefinitions>
+        <Border Background="{DynamicResource BackgroundWindowColor}"
+                Grid.RowSpan="4">
+            <Border.Effect>
+                <DropShadowEffect Color="{DynamicResource EffectProductItemColor}" BlurRadius="15" ShadowDepth="0"/>
+            </Border.Effect>
+        </Border>
         <Button Style="{DynamicResource uibStyle}" x:Name="closeBtn" Height="30" Click="closeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Right">
             <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Margin="5"/>
         </Button>
@@ -52,7 +58,7 @@
                 <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="admin.byster.ru" Command="{Binding OpenAccountPageCommand}"/>
             </StackPanel>
         </Grid>
-        <Grid Grid.Row="3" Height="Auto" Margin="0, 0, 0, 10" x:Name="devElementGrid">
+        <Grid Grid.Row="3" Height="Auto" Margin="0, 0, 0, 0" x:Name="devElementGrid">
             <StackPanel>
                 <TextBlock Text="Выбор типа загрузки" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox x:Name="loadTypeSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.LoadTypes}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedLoadType, Mode=TwoWay}"/>

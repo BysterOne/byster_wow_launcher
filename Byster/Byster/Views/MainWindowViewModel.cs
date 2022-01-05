@@ -233,6 +233,7 @@ namespace Byster.Views
                 {
                     InfoWindow infoWindow = new InfoWindow("Успех", "Оплата бонусами прошла успешно");
                     infoWindow.ShowModalDialog();
+                    Shop.ClearCart();
                 },
                 BuyCartByBonusesFailAction = () =>
                 {

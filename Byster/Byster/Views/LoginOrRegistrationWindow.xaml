@@ -7,21 +7,25 @@
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
         Title="Byster - Вход"
-        Height="330"
-        Width="340"
+        Height="360"
+        Width="370"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
-        Background="{DynamicResource BackgroundWindowColor}"
+        Background="Transparent"
         WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" Loaded="Window_Loaded"
         AllowsTransparency="True">
     <Window.Resources>
         <ResourceDictionary Source="./Styles.xaml"/>
     </Window.Resources>
-    <Grid>
+    <Grid Margin="15">
         <Grid.Resources>
             <Thickness x:Key="marginUI">0, 7</Thickness>
         </Grid.Resources>
-        
+        <Border Background="{DynamicResource BackgroundWindowColor}">
+            <Border.Effect>
+                    <DropShadowEffect Color="{DynamicResource EffectProductItemColor}" BlurRadius="15" ShadowDepth="0"/>
+                </Border.Effect>
+            </Border>
         <StackPanel>
             <Button x:Name="closeButton" HorizontalAlignment="Right" Style="{StaticResource uibStyle}" Height="45" Width="45" Click="closeButton_Click">
                 <Image Source="../Resources/Images/close-button-image.png" Stretch="Uniform" Margin="12"/>
@@ -65,7 +69,7 @@
             </Grid>
         </StackPanel>
         <Grid Background="#A0000000" x:Name="autoAuthPresenterGrid">
-            <TextBlock Style="{DynamicResource orangeTextBlockStyle}" Text="Попытка входа..." VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+            <TextBlock Style="{DynamicResource orangeTextBlockStyle}" Text="Авторизация..." VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
         </Grid>
     </Grid>
 </Window>

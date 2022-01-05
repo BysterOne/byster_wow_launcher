@@ -41,7 +41,6 @@ namespace Byster.Views
                 if (TryAuth(login, passwordHash, out sessionId))
                 {
                     StartMainWindow(login, sessionId);
-                    Close();
                     return;
                 }
                 else
@@ -157,6 +156,8 @@ namespace Byster.Views
             {
                 App.Current.MainWindow = new MainWindowReworked(login, sessionId);
                 App.Current.MainWindow.Show();
+                Close();
+                (App.Current.MainWindow as MainWindowReworked).Initialize();
             }));
         }
 
@@ -175,7 +176,7 @@ namespace Byster.Views
         {
             authBlock.Visibility = Visibility.Collapsed;
             registerBlock.Visibility = Visibility.Visible;
-            this.Height = 490;
+            this.Height = 520;
             loginBtn.IsDefault = false;
             registerBtn.IsDefault = true;
         }
@@ -183,7 +184,7 @@ namespace Byster.Views
         {
             authBlock.Visibility = Visibility.Visible;
             registerBlock.Visibility = Visibility.Collapsed;
-            this.Height = 330;
+            this.Height = 360;
             loginBtn.IsDefault = true;
             registerBtn.IsDefault = false;
         }

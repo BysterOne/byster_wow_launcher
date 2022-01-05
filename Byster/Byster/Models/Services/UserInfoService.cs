@@ -27,7 +27,7 @@ namespace Byster.Models.Services
         private int console;
         private BranchType userType;
         private int loadType;
-
+        private string currency;
         public string Username
         {
             get { return username; }
@@ -127,18 +127,28 @@ namespace Byster.Models.Services
             }
         }
 
+        public string Currency
+        {
+            get { return currency; }
+            set
+            {
+                currency = value;
+                OnPropertyChanged("Currency");
+            }
+        }
+
         public List<Branch> BranchChoices { get; set; } = Byster.Models.BysterModels.Branch.AllBranches.ToList();
         public List<LoadType> LoadTypes { get; set; } = Byster.Models.BysterModels.LoadType.AllLoadTypes.ToList();
 
         public void UpdateRemoteData()
         {
-            (string _usernane, string _referalcode, int _bonuses) = RestService.GetUserInfo();
+            (string _usernane, string _referalcode, int _bonuses, string _currency) = RestService.GetUserInfo();
             if (string.IsNullOrEmpty(_usernane) &&
                string.IsNullOrEmpty(_referalcode))
             {
                 return;
             }
-            (Username, ReferalCode, BonusBalance) = (_usernane, _referalcode, _bonuses);
+            (Username, ReferalCode, BonusBalance, Currency) = (_usernane, _referalcode, _bonuses, _currency);
             UserType = RestService.GetUserType();
         }
 

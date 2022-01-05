@@ -107,17 +107,17 @@ namespace Byster.Models.Services
             return true;
         }
 
-        public (string ,string, int) GetUserInfo()
+        public (string ,string, int,string) GetUserInfo()
         {
             var response = client.Post<RestUserInfoResponse>(new RestRequest("launcher/info"));
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
                 Log("Ошибка обновления данных пользователя - ", response.Data.error, " - ", response.ErrorMessage);
-                return (null, null, 0);
+                return (null, null, 0, null);
             }
             Log("Обновлены данные пользователя");
-            return (response.Data.username, response.Data.referral_code, Convert.ToInt32(response.Data.balance));
+            return (response.Data.username, response.Data.referral_code, Convert.ToInt32(response.Data.balance), response.Data.currency);
         }
 
         public IEnumerable<PaymentSystem> GetAllPaymentSystemList()

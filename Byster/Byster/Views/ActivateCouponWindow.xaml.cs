@@ -15,13 +15,13 @@ using System.Windows.Shapes;
 namespace Byster.Views
 {
     /// <summary>
-    /// Логика взаимодействия для LinkEmailWindow.xaml
+    /// Логика взаимодействия для ActivateCouponWindow.xaml
     /// </summary>
-    public partial class LinkEmailWindow : Window
+    public partial class ActivateCouponWindow : Window
     {
         private SettingsViewModel Model { get; set; } = null;
 
-        public LinkEmailWindow(SettingsViewModel model)
+        public ActivateCouponWindow(SettingsViewModel model)
         {
             InitializeComponent();
             Model = model;
@@ -29,27 +29,19 @@ namespace Byster.Views
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
-            string email = emailTextBox.Text;
-            if (string.IsNullOrEmpty(email)) return;
-            if ((!(email.ToLower().EndsWith(".ru") ||
-                email.ToLower().EndsWith(".com") ||
-                email.ToLower().EndsWith(".net"))) ||
-                    (email.Count(c => c == '@') != 1))
+            string couponCode = couponCodeTextBox.Text;
+            if (string.IsNullOrEmpty(couponCode)) return;
+            string status = Model.MainViewModel.Shop.ActivateCoupon(couponCode);
+            bool result = status == "success";
+            if (result)
             {
-                var w = new InfoWindow("Ошибка", "Введённый текст не является E-Mail");
-                w.ShowDialog();
-                return;
-            }
-            bool result = Model.MainViewModel.UserInfo.LinkEmail(email);
-            if(result)
-            {
-                var w = new InfoWindow("Успех", "E-Mail привязан");
+                var w = new InfoWindow("Успех", "Купон активирован");
                 w.ShowDialog();
                 this.DialogResult = true;
             }
             else
             {
-                var w = new InfoWindow("Ошибка", "Ошибка привязки E-Mail");
+                var w = new InfoWindow("Ошибка", $"Произошла ошибка активации купона\n{status}");
                 w.ShowDialog();
             }
 

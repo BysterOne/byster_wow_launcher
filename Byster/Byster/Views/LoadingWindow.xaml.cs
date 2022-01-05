@@ -48,8 +48,8 @@ namespace Byster.Views
                 CreateDirs = true,
                 ArchiveFileName = "${specialfolder:folder=ApplicationData:cached=true}/BysterConfig/BysterLogsArchive/${longdate}-BysterLogs.zip",
                 EnableArchiveFileCompression = true,
-                ArchiveAboveSize = 400,
-                ArchiveOldFileOnStartupAboveSize = 100,
+                ArchiveAboveSize = 40000,
+                ArchiveOldFileOnStartupAboveSize = 1000,
             };
             var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 

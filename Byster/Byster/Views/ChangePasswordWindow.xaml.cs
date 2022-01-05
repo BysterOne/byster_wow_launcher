@@ -21,14 +21,10 @@ namespace Byster.Views
     /// </summary>
     public partial class ChangePasswordWindow : Window
     {
-        private string oldPasswordHash { get; set; } = "";
         private SettingsViewModel Model { get; set; } = null;
-        public ChangePasswordWindow(string title, string oldPasswordHash, SettingsViewModel model)
+        public ChangePasswordWindow(SettingsViewModel model)
         {
             InitializeComponent();
-            this.Title = title;
-            titleTextBlock.Text = title;
-            this.oldPasswordHash = oldPasswordHash;
             Model = model;
         }
 

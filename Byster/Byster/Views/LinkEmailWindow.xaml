@@ -5,8 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         mc:Ignorable="d"
-        Title="LinkEmailWindow" Height="235" Width="300"
-        ResizeMode="NoResize" ShowInTaskbar="False" WindowStartupLocation="CenterScreen" WindowStyle="None"
+        Title="Привязка E-Mail" Height="235" Width="300"
+        ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen" WindowStyle="None"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         AllowsTransparency="True">
     <Window.Resources>
@@ -21,13 +21,13 @@
                 <RowDefinition/>
                 <RowDefinition Height="37"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource titleTextBlockStyle}" FontSize="15"/>
+            <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource titleTextBlockStyle}" FontSize="15" Text="Привязка E-Mail"/>
             <Grid Grid.Row="1">
                 <Grid.RowDefinitions>
                     <RowDefinition/>
                     <RowDefinition/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" x:Name="infoTextBlock" TextWrapping="Wrap"  Style="{StaticResource infoTextBlockStyle}" Margin="0, 4"/>
+                <TextBlock Grid.Row="0" x:Name="infoTextBlock" TextWrapping="Wrap"  Style="{StaticResource infoTextBlockStyle}" Margin="0, 4" Text="Привяжите свой E-Mail, что бы вы могли восстановить пароль к своей учетной записи и получать важные обновления!"/>
                 <TextBox Grid.Row="1" x:Name="emailTextBox" Margin="0, 4" Style="{DynamicResource tbStyle}" Tag="E-Mail" VerticalAlignment="Center"/>
             </Grid>
             <Grid Grid.Row="2">

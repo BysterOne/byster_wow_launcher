@@ -1,11 +1,11 @@
-﻿<Window x:Class="Byster.Views.ChangePasswordWindow"
+﻿<Window x:Class="Byster.Views.ActivateCouponWindow"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         mc:Ignorable="d"
-        Title="Изменение пароля" Height="200" Width="270"
+        Title="Активация купона" Height="185" Width="300"
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         AllowsTransparency="True">
@@ -21,11 +21,15 @@
                 <RowDefinition/>
                 <RowDefinition Height="37"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource titleTextBlockStyle}" FontSize="15" Text="Изменение пароля"/>
-            <StackPanel Grid.Row="1">
-                <PasswordBox Tag="Новый пароль" x:Name="newPassrowdBox" Style="{DynamicResource pbStyle}" Margin="0, 5" PasswordChanged="newPassrowdBox_PasswordChanged"/>
-                <PasswordBox Tag="Подтверждение пароля" x:Name="newPassrowdBoxConfirm" Style="{DynamicResource pbStyle}" Margin="0, 5" PasswordChanged="newPassrowdBoxConfirm_PasswordChanged"/>
-            </StackPanel>
+            <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource titleTextBlockStyle}" FontSize="15" Text="Активация купона"/>
+            <Grid Grid.Row="1">
+                <Grid.RowDefinitions>
+                    <RowDefinition/>
+                    <RowDefinition/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" x:Name="infoTextBlock" TextWrapping="Wrap"  Style="{StaticResource infoTextBlockStyle}" Margin="0, 4" Text="Введите код купона для активации"/>
+                <TextBox Grid.Row="1" x:Name="couponCodeTextBox" Margin="0, 4" Style="{DynamicResource tbStyle}" Tag="Код купона" VerticalAlignment="Center"/>
+            </Grid>
             <Grid Grid.Row="2">
                 <Button Style="{StaticResource transparentButtonStyle}" Content="Отмена" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn" Click="cancelBtn_Click"/>
                 <Button Style="{StaticResource bStyle}" Content="ОК" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Right" IsDefault="True" x:Name="okBtn" Click="okBtn_Click"/>

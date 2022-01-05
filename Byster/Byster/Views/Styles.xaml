@@ -1179,6 +1179,9 @@
                                                 <Trigger Property="IsMouseOver" Value="True">
                                                     <Setter TargetName="thumbGeo" Property="Fill" Value="{DynamicResource FontOrangeColor}"/>
                                                 </Trigger>
+                                                <Trigger Property="IsMouseCaptured" Value="True">
+                                                    <Setter TargetName="thumbGeo" Property="Fill" Value="{DynamicResource FontUIColor}"/>
+                                                </Trigger>
                                             </ControlTemplate.Triggers>
                                         </ControlTemplate>
                                     </Thumb.Template>

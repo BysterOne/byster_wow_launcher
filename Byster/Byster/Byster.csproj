@@ -166,6 +166,7 @@
     <Compile Include="Models\RestModels\RestBranch.cs" />
     <Compile Include="Models\RestModels\RestBuy.cs" />
     <Compile Include="Models\RestModels\RestChangePassword.cs" />
+    <Compile Include="Models\RestModels\RestCoupon.cs" />
     <Compile Include="Models\RestModels\RestLibRequest.cs" />
     <Compile Include="Models\RestModels\RestPaymentSystem.cs" />
     <Compile Include="Models\RestModels\RestProduct.cs" />
@@ -195,6 +196,9 @@
     <Compile Include="Models\ViewModels\RelayCommand.cs" />
     <Compile Include="Models\ViewModels\RotationViewModel.cs" />
     <Compile Include="Models\ViewModels\SessionViewModel.cs" />
+    <Compile Include="Views\ActivateCouponWindow.xaml.cs">
+      <DependentUpon>ActivateCouponWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ChangePasswordWindow.xaml.cs">
       <DependentUpon>ChangePasswordWindow.xaml</DependentUpon>
     </Compile>
@@ -229,6 +233,10 @@
     <Compile Include="Views\SettingsWindow.xaml.cs">
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
+    <Page Include="Views\ActivateCouponWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\ChangePasswordWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

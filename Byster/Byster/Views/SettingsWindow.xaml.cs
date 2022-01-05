@@ -45,12 +45,12 @@ namespace Byster.Views
             {
                 testElementGrid.Visibility = Visibility.Collapsed;
                 devElementGrid.Visibility = Visibility.Collapsed;
-                this.Height = 200;
+                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight;
             }
             else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
             {
                 devElementGrid.Visibility = Visibility.Collapsed;
-                this.Height = 330;
+                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + testElementGrid.ActualHeight;
             }
             switch (viewModel.UserInfo.Branch.ToLower())
             {
@@ -95,7 +95,7 @@ namespace Byster.Views
             {
                 return changePwdCommand ?? (changePwdCommand = new RelayCommand(() =>
                 {
-                    ChangePasswordWindow changePasswordWindow = new ChangePasswordWindow("Изменение пароля", MainViewModel.UserInfo.Password, this);
+                    ChangePasswordWindow changePasswordWindow = new ChangePasswordWindow(this);
                     changePasswordWindow.ShowDialog();
                 }));
             }
@@ -108,7 +108,7 @@ namespace Byster.Views
             {
                 return linkEmailCommand ?? (linkEmailCommand = new RelayCommand(() =>
                 {
-                    LinkEmailWindow linkEmailWindow = new LinkEmailWindow("Привязка E-Mail", "Привяжите свой E-Mail, что бы вы могли восстановить пароль к своей учетной записи и получать важные обновления!", this);
+                    LinkEmailWindow linkEmailWindow = new LinkEmailWindow(this);
                     linkEmailWindow.ShowDialog();
                 }));
             }
@@ -138,6 +138,20 @@ namespace Byster.Views
                 }));
             }
         }
+
+        private RelayCommand activateCouponCommand;
+        public RelayCommand ActivateCouponCommand
+        {
+            get
+            {
+                return activateCouponCommand ?? (activateCouponCommand = new RelayCommand(() =>
+                {
+                    ActivateCouponWindow window = new ActivateCouponWindow(this);
+                    window.ShowDialog();
+                }));
+            }
+        }
+
         public Branch SelectedBranch { get; set; }
         public LoadType SelectedLoadType { get; set; }
 

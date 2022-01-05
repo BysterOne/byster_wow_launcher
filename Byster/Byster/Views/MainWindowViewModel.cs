@@ -195,7 +195,7 @@ namespace Byster.Views
                 },
                 TestElementFailAction = () =>
                 {
-                    InfoWindow infoWindow = new InfoWindow("Ошибка", "Произошла ошибка при получении тестовой версии продукта");
+                    InfoWindow infoWindow = new InfoWindow("Ошибка", $"Произошла ошибка при получении тестовой версии продукта\n{restService.LastError}");
                     infoWindow.ShowModalDialog();
                 },
                 CloseElementAction = () =>
@@ -221,7 +221,22 @@ namespace Byster.Views
                 },
                 BuyCartFailAction = () =>
                 {
-                    InfoWindow infoWindow = new InfoWindow("Ошибка", "Произошла ошибка при покупке товара, попробуйте позже...");
+                    InfoWindow infoWindow = new InfoWindow("Ошибка", $"Произошла ошибка при покупке товара, попробуйте позже...\n{restService.LastError}");
+                    infoWindow.ShowModalDialog();
+                },
+                PreBuyCartByBonusesAction = () =>
+                {
+                    DialogWindow dialogWindow = new DialogWindow("Подтверждение", "Вы собираетесь оплатить всю корзину бонусами, Вы уверены?");
+                    return dialogWindow.ShowModalDialog();
+                },
+                BuyCartByBonusesSuccessAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow("Успех", "Оплата бонусами прошла успешно");
+                    infoWindow.ShowModalDialog();
+                },
+                BuyCartByBonusesFailAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow("Ошибка", $"Произошла ошибка при оплате бонусами\n{restService.LastError}");
                     infoWindow.ShowModalDialog();
                 },
                 SessionId = sessionId,

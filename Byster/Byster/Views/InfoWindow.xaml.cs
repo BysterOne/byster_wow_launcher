@@ -19,6 +19,11 @@ namespace Byster.Views
     /// </summary>
     public partial class InfoWindow : Window
     {
+        public static void ShowWindow(string title, string infoText)
+        {
+            new InfoWindow(title, infoText).Show();
+        }
+
         public InfoWindow(string title, string infoText)
         {
             InitializeComponent();

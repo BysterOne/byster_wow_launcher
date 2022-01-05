@@ -59,6 +59,9 @@ namespace Byster.Models.Services
         public Func<bool> PreTestElementAction { get; set; }
         public Action TestElementSuccessAction { get; set; }
         public Action TestElementFailAction { get; set; }
+        public Func<bool> PreBuyCartByBonusesAction { get; set; }
+        public Action BuyCartByBonusesSuccessAction { get; set; }
+        public Action BuyCartByBonusesFailAction { get; set; }
         public Func<int> PreBuyCartAction { get; set; }
         public Action<string> BuyCartSuccessAction { get; set; }
         public Action BuyCartFailAction { get; set; }
@@ -92,18 +95,37 @@ namespace Byster.Models.Services
         {
             Cart cart = createCartProductCollection();
             if (cart.Products.Count == 0) return;
-            int paymentSystemId = PreBuyCartAction?.Invoke() ?? 3;
-            if (paymentSystemId == -1) return;
-            bool status;
-            string link;
-            (status, link) = RestService.ExecuteBuyRequest(cart, paymentSystemId);
-            if(status && !string.IsNullOrEmpty(link))
+            if (Bonuses < Sum)
             {
-                BuyCartSuccessAction?.Invoke(link);
+                int paymentSystemId = PreBuyCartAction?.Invoke() ?? 3;
+                if (paymentSystemId == -1) return;
+                bool status;
+                string link;
+                (status, link) = RestService.ExecuteBuyRequest(cart, paymentSystemId);
+                if (status && !string.IsNullOrEmpty(link))
+                {
+                    BuyCartSuccessAction?.Invoke(link);
+                }
+                else
+                {
+                    BuyCartFailAction?.Invoke();
+                }
             }
             else
             {
-                BuyCartFailAction?.Invoke();
+                bool confirm = PreBuyCartByBonusesAction?.Invoke() ?? false;
+                if (!confirm) return;
+                bool status;
+                string link;
+                (status, link) = RestService.ExecuteBuyRequest(cart, -1);
+                if(status)
+                {
+                    BuyCartByBonusesSuccessAction?.Invoke();
+                }
+                else
+                {
+                    BuyCartByBonusesFailAction?.Invoke();
+                }
             }
         }
 
@@ -172,7 +194,10 @@ namespace Byster.Models.Services
             });
         }
 
-        
+        public string ActivateCoupon(string couponCode)
+        {
+           return RestService.ExecuteCouponRequest(couponCode) ? "success" : RestService.LastError;
+        }
         private void setElementsActions()
         {
             foreach(var product in AllProducts)

@@ -167,6 +167,28 @@ namespace Byster.Views
             }
         }
 
+        private string sourceOfImageToOpen;
+        public string SourceOfImageToOpen
+        {
+            get { return sourceOfImageToOpen; }
+            set
+            {
+                sourceOfImageToOpen = value;
+                OnPropertyChanged("SourceOfImageToOpen");
+            }
+        }
+
+        private string sourceOfVideoToOpen;
+        public string SourceOfVideoToOpen
+        {
+            get { return sourceOfVideoToOpen; }
+            set
+            {
+                sourceOfImageToOpen = value;
+                OnPropertyChanged("SourceOfVideoToOpen");
+            }
+        }
+
         public MainWindowViewModel(RestClient client, string sessionId)
         {
             BysterWindowExtensions.Model = this;
@@ -338,6 +360,7 @@ namespace Byster.Views
             {
                 return shopCommand ?? (shopCommand = new RelayCommand(() =>
                 {
+                    
                     Shop.FilterOptions = new Filter()
                     {
                         FilterClasses = new ObservableCollection<FilterClass>()
@@ -385,6 +408,7 @@ namespace Byster.Views
                 {
                     UpdateDataStarted?.Invoke();
                 });
+                BackgroundImageDownloader.Suspend();
                 try
                 {
                     UserInfo.UpdateRemoteData();
@@ -396,6 +420,7 @@ namespace Byster.Views
                 {
                     MessageBox.Show(ex.Message + "\n" + ex.ToString(), "Ошибка при обновлении данных");
                 }
+                BackgroundImageDownloader.Resume();
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataCompleted?.Invoke();

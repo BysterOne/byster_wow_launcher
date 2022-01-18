@@ -235,7 +235,7 @@ namespace Byster.Models.Services
             foreach (var rotation in product.Product.Rotations)
             {
                 if (filterOptions?.FilterTypes?.Count == 0 ||
-                    (filterOptions?.FilterTypes?.Any((ftype) => ftype.ToLower() == rotation.Type.ToLower()) ?? false))
+                    (filterOptions?.FilterTypes?.Any((ftype) => ftype.ToLower() == rotation.Type.Name.ToLower()) ?? false))
                     if ((rotation.RotationClass.EnumWOWClass == WOWClasses.ANY ||
                         filterOptions?.FilterClasses?.Count == 0 ||
                         (filterOptions?.FilterClasses?.Any((fclass) => fclass.EnumClass == rotation.RotationClass.EnumWOWClass) ?? false)))

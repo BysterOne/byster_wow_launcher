@@ -157,10 +157,13 @@ namespace Byster.Models.Services
             UpdateRemoteData();
             Console = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", -1));
             if (Console == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (Console = 0));
+            
             Branch = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", "undefined") as string;
             if(Branch == "undefined") Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", (Branch = "master"));
+
             LoadType = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", -1));
-            if (LoadType == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (LoadType = 3));
+            if (LoadType == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", (LoadType = 3));
+            
             Password = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "undefined") as string;
             if (UserType == BranchType.TEST)
             {

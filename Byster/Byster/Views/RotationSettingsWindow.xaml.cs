@@ -29,7 +29,16 @@ namespace Byster.Views
         public RotationSettingsWindow()
         {
             InitializeComponent();
-            this.DataContext = new RotationSettingsViewModel();
+            this.DataContext = new RotationSettingsViewModel()
+            {
+                CloseAction = () =>
+                {
+                    Dispatcher.Invoke(() =>
+                    {
+                        Close();
+                    });
+                }
+            };
         }
 
         private void closeBtn_Click(object sender, RoutedEventArgs e)
@@ -49,6 +58,8 @@ namespace Byster.Views
         public ObservableCollection<LocalRotation> Rotations { get; set; }
         private readonly string pathOfConfigDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig";
         private readonly string pathOfRotationsFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig\\rotations.json";
+
+        public Action CloseAction { get; set; }
         public RotationSettingsViewModel()
         {
             if (!Directory.Exists(pathOfConfigDir)) Directory.CreateDirectory(pathOfConfigDir);
@@ -133,6 +144,7 @@ namespace Byster.Views
                 return saveCommand ?? (saveCommand = new RelayCommand(() =>
                 {
                     Save();
+                    CloseAction?.Invoke();
                 }));
             }
         }

@@ -47,7 +47,7 @@ namespace Byster.Models.BysterModels
 
         public Media(string uri, MediaTypes type)
         {
-            ImageItem = BackgroundPhotoDownloader.GetImageItemByNetworkPath(uri);
+            ImageItem = BackgroundImageDownloader.GetImageItemByNetworkPath(uri);
             ImageItem.PropertyChanged += ImageItemCahnged;
             Uri = ImageItem.PathOfCurrentLocalSource;
             Type = type;

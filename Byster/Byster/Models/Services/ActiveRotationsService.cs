@@ -59,12 +59,12 @@ namespace Byster.Models.Services
             int count = 0;
             for(int i = count; i < AllActiveRotations.Count; i++)
             {
-                if (AllActiveRotations[i].Type.ToLower() == "pvp")
+                if (AllActiveRotations[i].Type.Name.ToLower() == "pvp")
                 {
                     count++;
                     for (int j = 0; j < i; j++)
                     {
-                        if (AllActiveRotations[j].Type.ToLower() != "pvp")
+                        if (AllActiveRotations[j].Type.Name.ToLower() != "pvp")
                         {
                             AllActiveRotations.Move(i, j);
                         }
@@ -73,13 +73,13 @@ namespace Byster.Models.Services
             }
             for (int i = count; i < AllActiveRotations.Count; i++)
             {
-                if (AllActiveRotations[i].Type.ToLower() == "pve")
+                if (AllActiveRotations[i].Type.Name.ToLower() == "pve")
                 {
                     count++;
                     for (int j = 0; j < i; j++)
                     {
-                        if (AllActiveRotations[j].Type.ToLower() != "pve" &&
-                            AllActiveRotations[j].Type.ToLower() != "pvp")
+                        if (AllActiveRotations[j].Type.Name.ToLower() != "pve" &&
+                            AllActiveRotations[j].Type.Name.ToLower() != "pvp")
                         {
                             AllActiveRotations.Move(i, j);
                         }
@@ -88,14 +88,14 @@ namespace Byster.Models.Services
             }
             for (int i = count; i < AllActiveRotations.Count; i++)
             {
-                if (AllActiveRotations[i].Type.ToLower() == "bot")
+                if (AllActiveRotations[i].Type.Name.ToLower() == "bot")
                 {
                     count++;
                     for (int j = 0; j < i; j++)
                     {
-                        if (AllActiveRotations[j].Type.ToLower() != "pve" &&
-                            AllActiveRotations[j].Type.ToLower() != "pvp" &&
-                            AllActiveRotations[j].Type.ToLower() != "bot")
+                        if (AllActiveRotations[j].Type.Name.ToLower() != "pve" &&
+                            AllActiveRotations[j].Type.Name.ToLower() != "pvp" &&
+                            AllActiveRotations[j].Type.Name.ToLower() != "bot")
                         {
                             AllActiveRotations.Move(i, j);
                         }

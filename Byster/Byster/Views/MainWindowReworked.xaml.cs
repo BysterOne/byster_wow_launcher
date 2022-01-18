@@ -77,7 +77,7 @@ namespace Byster.Views
         }
         private void ClosingHandler(object sender, System.ComponentModel.CancelEventArgs e)
         {
-            BackgroundPhotoDownloader.Close();
+            BackgroundImageDownloader.Close();
             Injector.Close();
         }
 
@@ -218,7 +218,19 @@ namespace Byster.Views
         }
     }
 
-    
+    public class FromVisibilityToBool : IValueConverter
+    {
+        public static int bonuses;
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (Visibility)value == Visibility.Visible ? true : false;
+        }
 
-        
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+
 }

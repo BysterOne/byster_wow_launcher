@@ -496,7 +496,8 @@
                                                             VerticalAlignment="Center"
                                                Style="{DynamicResource orangeTextBlockStyle}"/>
                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
-                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Type}" VerticalAlignment="Center"/>
+                                            <!--<TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Type}" VerticalAlignment="Center"/>-->
+                                            <Image Source="{Binding Path=Type.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Height="36"/>
                                             <Image Source="{Binding Path=RotationClass.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Height="36" Margin="7, 0"/>
                                             <Image Source="{Binding Path=RoleOfRotation.ImageUri}" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Height="36"/>
                                         </StackPanel>
@@ -609,6 +610,20 @@
                 <ControlTemplate TargetType="RadioButton">
                     <TextBlock x:Name="textblockButton" Text="{TemplateBinding Content}" Style="{DynamicResource tabButtonTextBlockStyle}"/>
                     <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Trigger.Setters>
+                                <Setter TargetName="textblockButton" Property="VerticalAlignment" Value="Center"/>
+                                <Setter TargetName="textblockButton" Property="HorizontalAlignment" Value="Center"/>
+                                <Setter TargetName="textblockButton" Property="Foreground" Value="{DynamicResource FontTabButtonColorHover}"/>
+                            </Trigger.Setters>
+                        </Trigger>
+                        <Trigger Property="IsPressed" Value="True">
+                            <Trigger.Setters>
+                                <Setter TargetName="textblockButton" Property="VerticalAlignment" Value="Center"/>
+                                <Setter TargetName="textblockButton" Property="HorizontalAlignment" Value="Center"/>
+                                <Setter TargetName="textblockButton" Property="Foreground" Value="{DynamicResource FontTabButtonColorPressed}"/>
+                            </Trigger.Setters>
+                        </Trigger>
                         <Trigger Property="IsChecked" Value="True">
                             <Setter TargetName="textblockButton" Property="Effect">
                                 <Setter.Value>
@@ -911,6 +926,9 @@
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
                     <ScrollViewer>
+                        <i:Interaction.Behaviors>
+                            <lb:UseHorizontalScroll/>
+                        </i:Interaction.Behaviors>
                         <ScrollViewer.Template>
                             <ControlTemplate TargetType="ScrollViewer">
                                 <Grid>
@@ -951,8 +969,8 @@
                         <ItemsPresenter/>
                     </ScrollViewer>
                     <ControlTemplate.Triggers>
-                        <Trigger  Property="HasItems" Value="False">
-                            <Setter Property="Visibility" Value="Hidden"/>
+                        <Trigger Property="HasItems" Value="False">
+                            <Setter Property="Visibility" Value="Collapsed"/>
                         </Trigger>
                     </ControlTemplate.Triggers>
                 </ControlTemplate>
@@ -1023,11 +1041,11 @@
                                                 <StackPanel Grid.Column="1" Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center">
                                                     <TextBlock Text="{Binding Path=Name}" Style="{DynamicResource orangeTextBlockStyle}" HorizontalAlignment="Center" Margin="0, 0, 0, 6"/>
                                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Center">
-                                                        <TextBlock Text="{Binding Path=Type}" Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center"/>
-                                                        <Image Source="{Binding Path=RotationClass.ImageUri}" Stretch="Uniform" Height="30" Margin="8, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                         <TextBlock Text="{Binding Path=RotationClass.NameOfClass}" Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center"/>
-                                                        <Image Source="{Binding Path=RoleOfRotation.ImageUri}" Stretch="Uniform" Height="30" Margin="8, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                                        <TextBlock Text="{Binding Path=SpecOfRotation.Name}" Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center"/>
+                                                        <TextBlock Text="{Binding Path=SpecOfRotation.Name}" Style="{DynamicResource infoTextBlockStyle}" Margin="8, 0" VerticalAlignment="Center"/>
+                                                        <Image Source="{Binding Path=Type.ImageUri}" Stretch="Uniform" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                        <Image Source="{Binding Path=RotationClass.ImageUri}" Stretch="Uniform" Height="30" Margin="8, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                                        <Image Source="{Binding Path=RoleOfRotation.ImageUri}" Stretch="Uniform" Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                     </StackPanel>
                                                 </StackPanel>
                                             </Grid>
@@ -1280,7 +1298,9 @@
                                                                           Height="30">
                                                         <Image x:Name="rotationClass" HorizontalAlignment="Left" VerticalAlignment="Center"
                                                                            Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
-                                                        <TextBlock x:Name="rotationType" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                        <!--<TextBlock x:Name="rotationType" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource infoTextBlockStyle}"/>-->
+                                                        <Image x:Name="rotationType" HorizontalAlignment="Center" VerticalAlignment="Center"
+                                                                           Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                         <Image x:Name="rotationRole" HorizontalAlignment="Right" VerticalAlignment="Center"
                                                                            Height="30" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                     </Grid>
@@ -1446,7 +1466,7 @@
                                     <DataTrigger Binding="{Binding Path=Product.Rotations.Count}" Value="1">
                                         <Setter TargetName="rotationClass" Property="Source" Value="{Binding Path=Product.Rotations[0].RotationClass.ImageUri}"/>
                                         <Setter TargetName="rotationRole" Property="Source" Value="{Binding Path=Product.Rotations[0].RoleOfRotation.ImageUri}"/>
-                                        <Setter TargetName="rotationType" Property="Text" Value="{Binding Path=Product.Rotations[0].Type}"/>
+                                        <Setter TargetName="rotationType" Property="Source" Value="{Binding Path=Product.Rotations[0].Type.ImageUri}"/>
 
                                         <Setter TargetName="productTypeName" Property="Text" Value="{Binding Path=Product.Rotations[0].Type}"/>
                                         <Setter TargetName="productClassImage" Property="Source" Value="{Binding Path=Product.Rotations[0].RotationClass.ImageUri}"/>
@@ -1607,6 +1627,8 @@
     <SolidColorBrush x:Key="FontUIColor">#6e6e75</SolidColorBrush>
     <SolidColorBrush x:Key="FontButtonColor">#f1f7ff</SolidColorBrush>
     <SolidColorBrush x:Key="FontTabButtonColor">#f1f7ff</SolidColorBrush>
+    <SolidColorBrush x:Key="FontTabButtonColorPressed">#B8BCC1</SolidColorBrush>
+    <SolidColorBrush x:Key="FontTabButtonColorHover">#CDD1D6</SolidColorBrush>
     <Color x:Key="EffectTabButtonColor">#f1f7ff</Color>
     <SolidColorBrush x:Key="FontInfoColor">#9fa4b2</SolidColorBrush>
     <SolidColorBrush x:Key="FontTitleColor">#ffffff</SolidColorBrush>

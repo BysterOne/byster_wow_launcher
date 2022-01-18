@@ -12,7 +12,7 @@ using System.Net;
 using System.IO;
 using Byster.Models.RestModels;
 using System.Windows;
-
+using static Byster.Models.Utilities.BysterLogger;
 namespace Byster.Models.Utilities
 {
     public class Injector
@@ -157,6 +157,7 @@ namespace Byster.Models.Utilities
             {
                 default:
                 case InjectorStatusCode.INJECTED_OK:
+                    Log("Инжект завершён");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTED_OK;
                     Task taskToDelete = new Task(() =>
                     {
@@ -169,15 +170,19 @@ namespace Byster.Models.Utilities
                 case InjectorStatusCode.ERROR_WHILE_INJECTING:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_FOUND:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED:
+                    Log("Ошибка инжекта", "Статус-код:", injectorStatusCode.ToString());
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
                     break;
                 case InjectorStatusCode.ADDED_OK:
+                    Log("Добавлен инжект в очередь");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.ENEQUEUED;
                     break;
                 case InjectorStatusCode.LIBRARY_DOWNLOADING_STARTED:
+                    Log("Скачивание библиотеки начато");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.DOWNLOADING;
                     break;
                 case InjectorStatusCode.INJECTION_STARTED:
+                    Log("Запуск инжекта");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTING;
                     break;
             }

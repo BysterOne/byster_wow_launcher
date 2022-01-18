@@ -16,7 +16,7 @@ using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Models.Utilities
 {
-    public class BackgroundPhotoDownloader
+    public class BackgroundImageDownloader
     {
         public static string ImageRootPath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterImages\\";
         public static Queue<ImageItem> ItemsToDownload { get; set; }
@@ -24,6 +24,7 @@ namespace Byster.Models.Utilities
 
         private static Thread downloadingThread;
 
+        private static SuspendToken suspendToken = new SuspendToken();
         public static void Init()
         {
             ItemsToDownload = new Queue<ImageItem>();
@@ -49,23 +50,31 @@ namespace Byster.Models.Utilities
         {
             while(true)
             {
-                if(ItemsToDownload.Count > 0)
+                if(suspendToken.GetSuspendRequestStatus())
                 {
-                    try
+                    suspendToken.AcceptSuspend();
+                }
+                if(!suspendToken.GetSuspendStatus())
+                {
+                    if (ItemsToDownload.Count > 0)
                     {
-                        var downloadingItem = ItemsToDownload.Dequeue();
-                        WebClient client = new WebClient();
-                        byte[] buffer = client.DownloadData(downloadingItem.PathOfNetworkSource);
-                        File.WriteAllBytes(downloadingItem.PathOfLocalSource, buffer);
-                        downloadingItem.IsDownLoaded = true;
-                        downloadingItem.PathOfCurrentLocalSource = downloadingItem.PathOfLocalSource;
-                        DownloadedItems.Add(downloadingItem);
-                        client.Dispose();
-                        Log("Скачан файл изображения", "Путь:", downloadingItem.PathOfCurrentLocalSource);
-                    }
-                    catch (Exception ex)
-                    {
-                        Log("Ошибка при скачивании", ex.Message, " - ", ex.ToString());   
+                        try
+                        {
+                            var downloadingItem = ItemsToDownload.Dequeue();
+                            Log("Попытка скачивания", "Url", downloadingItem.PathOfNetworkSource);
+                            WebClient client = new WebClient();
+                            byte[] buffer = client.DownloadData(downloadingItem.PathOfNetworkSource);
+                            File.WriteAllBytes(downloadingItem.PathOfLocalSource, buffer);
+                            downloadingItem.IsDownLoaded = true;
+                            downloadingItem.PathOfCurrentLocalSource = downloadingItem.PathOfLocalSource;
+                            DownloadedItems.Add(downloadingItem);
+                            client.Dispose();
+                            Log("Скачан файл изображения", "Путь:", downloadingItem.PathOfCurrentLocalSource, "Url:", downloadingItem.PathOfNetworkSource);
+                        }
+                        catch (Exception ex)
+                        {
+                            Log("Ошибка при скачивании", ex.Message, " - ", ex.ToString());
+                        }
                     }
                 }
                 Thread.Sleep(100);
@@ -125,6 +134,16 @@ namespace Byster.Models.Utilities
             };
             ItemsToDownload.Enqueue(creatingItem);
             return creatingItem;
+        }
+
+        public static void Suspend()
+        {
+            suspendToken.RequestSuspend();
+        }
+
+        public static void Resume()
+        {
+            suspendToken.Resume();
         }
 
         private static string getExtensionOfNetworkSource(string netPath)
@@ -197,6 +216,46 @@ namespace Byster.Models.Utilities
         public ImageItem()
         {
             IsDownLoaded = false;
+        }
+    }
+
+    class SuspendToken
+    {
+        bool isSuspendRequestCreated = false;
+        bool isSuspended = false;
+        public void RequestSuspend()
+        {
+            if (isSuspendRequestCreated || isSuspended) return;
+            isSuspendRequestCreated = true;
+            while (!isSuspended)
+            {
+
+            }
+            return;
+        }
+
+        public bool GetSuspendRequestStatus()
+        {
+            return isSuspendRequestCreated;
+        }
+
+        public bool GetSuspendStatus()
+        {
+            return isSuspended;
+        }
+
+        public void AcceptSuspend()
+        {
+            if(isSuspendRequestCreated)
+            {
+                isSuspendRequestCreated = false;
+                isSuspended = true;
+            }
+        }
+
+        public void Resume()
+        {
+            if(isSuspended) isSuspended = false;
         }
     }
 }

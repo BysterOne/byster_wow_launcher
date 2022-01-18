@@ -183,13 +183,13 @@
     <Compile Include="Models\Services\SessionService.cs" />
     <Compile Include="Models\Services\ShopService.cs" />
     <Compile Include="Models\Services\UserInfoService.cs" />
-    <Compile Include="Models\Utilities\BackgroundPhotoDownloader.cs" />
+    <Compile Include="Models\Utilities\BackgroundImageDownloader.cs" />
     <Compile Include="Models\Utilities\Converters.cs" />
     <Compile Include="Models\Utilities\IEnumerableExtensions.cs" />
     <Compile Include="Models\Utilities\Injector.cs" />
     <Compile Include="Models\Utilities\HashCalc.cs" />
     <Compile Include="Models\Utilities\BysterLogger.cs" />
-    <Compile Include="Models\Utilities\ListBoxBehaviour.cs" />
+    <Compile Include="Models\Utilities\Behaviors.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />
     <Compile Include="Models\Utilities\EventHandlers.cs" />
     <Compile Include="Models\ViewModels\ProductinfoViewModel.cs" />
@@ -345,18 +345,6 @@
     </BootstrapperPackage>
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\ClassesWOW\DeathKnight.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Droid.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Hunter.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Paladin.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Priest.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Robber.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Shaman.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Warlock.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Warrior.png" />
-    <Resource Include="Resources\Images\ClassesWOW\Wizard.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\UserLogos\master.png" />
     <Resource Include="Resources\Images\UserLogos\test.png" />
     <Resource Include="Resources\Images\UserLogos\dev.png" />
@@ -402,7 +390,7 @@
     <Resource Include="Resources\Images\image-placeholder.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\Types\ANY.png" />
+    <Resource Include="Resources\Images\Roles\ANY.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="byster.ico" />
@@ -417,12 +405,30 @@
     <Resource Include="Resources\Images\loading-progress.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\Types\DPS.png" />
-    <Resource Include="Resources\Images\Types\Heal.png" />
-    <Resource Include="Resources\Images\Types\Tank.png" />
+    <Resource Include="Resources\Images\Roles\DPS.png" />
+    <Resource Include="Resources\Images\Roles\Heal.png" />
+    <Resource Include="Resources\Images\Roles\Tank.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\ClassesWOW\DeathKnight.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Droid.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Hunter.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Paladin.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Priest.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Robber.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Shaman.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Warlock.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Warrior.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Wizard.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\ClassesWOW\Wow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Types\bot.png" />
+    <Resource Include="Resources\Images\Types\pve.png" />
+    <Resource Include="Resources\Images\Types\pvp.png" />
+    <Resource Include="Resources\Images\Types\utility.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.6.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.6.0\build\Fody.targets')" />

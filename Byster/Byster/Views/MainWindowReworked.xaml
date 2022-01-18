@@ -21,6 +21,7 @@
                     <local:FromInjectInfoStatusCodeToStatusText x:Key="FromInjectInfoStatusCodeToStatusTextConverter"/>
                     <local:FromNullToVisibility x:Key="FromNullToVisibilityConverter"/>
                     <local:FromSumToBonuses x:Key="FromSumToBonusesConverter"/>
+                    <local:FromVisibilityToBool x:Key="FromVisibilityToBoolConverter"/>
                 </ResourceDictionary>
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
@@ -66,10 +67,10 @@
             </StackPanel>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="160, 0, 0, 5">
-                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="ГЛАВНАЯ" GroupName="pageSelector" x:Name="rotPageSelect" IsChecked="True"
+                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="ГЛАВНАЯ" GroupName="pageSelector" x:Name="rotPageSelect" IsChecked="{Binding Path=PageVisibilities[0], Converter={StaticResource FromVisibilityToBoolConverter}, Mode=TwoWay}"
                              Command="{Binding SelectPageCommand}"
                              CommandParameter="0"/>
-                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="МАГАЗИН" GroupName="pageSelector" x:Name="shopPageSelect"
+                <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" Content="МАГАЗИН" GroupName="pageSelector" x:Name="shopPageSelect" IsChecked="{Binding Path=PageVisibilities[1], Converter={StaticResource FromVisibilityToBoolConverter}, Mode=TwoWay}"
                              Command="{Binding SelectPageCommand}"
                              CommandParameter="1"/>
             </StackPanel>
@@ -211,7 +212,8 @@
         </Grid>
 
         <Grid Background="#A0000000" x:Name="modalWindowOpenedGrid" Grid.RowSpan="3" Visibility="{Binding IsModalWindowOpened}">
-            <TextBlock Text="" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" FontWeight="Bold"/>
+            <Image Source="{Binding SourceOfImageToOpen}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+            <MediaElement Source="{Binding SourceOfLoadingVideo}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         </Grid>
     </Grid>
 </Window>

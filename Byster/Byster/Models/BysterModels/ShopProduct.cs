@@ -57,7 +57,7 @@ namespace Byster.Models.BysterModels
 
             if (!string.IsNullOrEmpty(RestShopProduct.image_url))
             {
-                ImageItem item = BackgroundPhotoDownloader.GetImageItemByNetworkPath(RestShopProduct.image_url);
+                ImageItem item = BackgroundImageDownloader.GetImageItemByNetworkPath(RestShopProduct.image_url);
                 if (item != null)
                 {
                     item.PropertyChanged += ImageUriPropChanged;

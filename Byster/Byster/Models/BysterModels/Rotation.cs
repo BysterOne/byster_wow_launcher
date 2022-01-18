@@ -18,7 +18,7 @@ namespace Byster.Models.BysterModels
         public string ImageUri { get; set; }
         public RotationRole RoleOfRotation { get; set; }
         public RotationSpecialization SpecOfRotation { get; set; }
-        public string Type { get; set; }
+        public RotationType Type { get; set; }
         public string Description { get; set; }
         public List<Media> Medias { get; set; }
     }
@@ -52,7 +52,7 @@ namespace Byster.Models.BysterModels
             RotationClass = new ClassWOW(ClassWOW.GetClassByName(response.rotation.klass));
             RoleOfRotation = new RotationRole(RotationRole.GetRoleByName(response.rotation.role_type));
             SpecOfRotation = new RotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));
-            Type = response.rotation.type;
+            Type = new RotationType(RotationType.GetTypeByName(response.rotation.type));
             Name = response.rotation.name;
 
             Medias = new List<Media>();
@@ -64,8 +64,8 @@ namespace Byster.Models.BysterModels
             ImageUri = 
                 SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
                 Medias.Count > 0 ?                                                          Medias[0].Uri :
-                Type.ToLower() == "bot" ?                                                   "/Resources/Images/bot-icon-default.png" :
-                Type.ToLower() == "utility" ?                                               "/Resources/Images/utility-icon-default.png" :
+                Type.Name.ToLower() == "bot" ?                                                   "/Resources/Images/bot-icon-default.png" :
+                Type.Name.ToLower() == "utility" ?                                               "/Resources/Images/utility-icon-default.png" :
                                                                                             "/Resources/Images/utility-icon-default.png";
             if(SpecOfRotation.EnumRotationSpecialization == RotationSpecializations.NULL && Medias.Count > 0)
             {
@@ -74,8 +74,8 @@ namespace Byster.Models.BysterModels
                     ImageUri =
                     SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
                     Medias.Count > 0 ? Medias[0].Uri :
-                    Type.ToLower() == "bot" ? "/Resources/Images/bot-icon-default.png" :
-                    Type.ToLower() == "utility" ? "/Resources/Images/utility-icon-default.png" :
+                    Type.Name.ToLower() == "bot" ? "/Resources/Images/bot-icon-default.png" :
+                    Type.Name.ToLower() == "utility" ? "/Resources/Images/utility-icon-default.png" :
                                                                                                 "/Resources/Images/utility-icon-default.png";
                 };
             }      
@@ -92,7 +92,7 @@ namespace Byster.Models.BysterModels
             RotationClass = new ClassWOW(ClassWOW.GetClassByName(rotation.klass));
             RoleOfRotation = new RotationRole(RotationRole.GetRoleByName(rotation.role_type));
             SpecOfRotation = new RotationSpecialization(RotationSpecialization.GetSpecByName(rotation.specialization));
-            Type = rotation.type;
+            Type = new RotationType(RotationType.GetTypeByName(rotation.type));
             Name = rotation.name;
 
             Description = rotation.description;
@@ -107,6 +107,40 @@ namespace Byster.Models.BysterModels
                 Medias.Count > 0 ?                                                          Medias[0].Uri :
                                                                                             "/Resources/Images/image-placeholder.png";
         }
+    }
+
+    public class RotationType
+    {
+        public RotationTypes EnumType { get; set; }
+        public string Name { get; set; }
+        public string ImageUri { get; set; }
+        public RotationType(RotationTypes enumType)
+        {
+            EnumType = enumType;
+            Name = enumType.ToString();
+            ImageUri = "/Resources/Images/Types/" + Name + ".png";
+        }
+
+        public static RotationTypes GetTypeByName(string name)
+        {
+            for(int i = 0; i < 4; i++)
+            {
+                if(((RotationTypes)i).ToString().ToLower() == name.ToLower())
+                {
+                    return (RotationTypes)i;
+                }
+            }
+            return RotationTypes.UNKNOWN;
+        }
+    }
+
+    public enum RotationTypes
+    {
+        UNKNOWN = -1,
+        PvE = 0,
+        PvP = 1,
+        Bot = 2,
+        Utility = 3,
     }
 
     public class RotationRole
@@ -146,7 +180,7 @@ namespace Byster.Models.BysterModels
                 "Tank",
                 "Heal",
             };
-            string rootUri = "/Resources/Images/Types/";
+            string rootUri = "/Resources/Images/Roles/";
             Name = names[(int)role];
             ImageUri = rootUri + Name + ".png";
             EnumRotationRole = role;

@@ -318,11 +318,6 @@ namespace Byster.Models.Utilities
         }
     }
 
-
-
-
-
-
     public class UseHorizontalScroll : Behavior<ScrollViewer>
     {
         protected override void OnAttached()

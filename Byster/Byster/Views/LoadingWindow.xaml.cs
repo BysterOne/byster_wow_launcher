@@ -75,7 +75,7 @@ namespace Byster.Views
 
             Task.Run(() =>
             {
-                BackgroundPhotoDownloader.Init();
+                BackgroundImageDownloader.Init();
                 if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
                 if (File.Exists("update.bat")) File.Delete("update.bat");
 

@@ -192,6 +192,7 @@
     <Compile Include="Models\Utilities\Behaviors.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />
     <Compile Include="Models\Utilities\EventHandlers.cs" />
+    <Compile Include="Models\ViewModels\MediaControl.cs" />
     <Compile Include="Models\ViewModels\ProductinfoViewModel.cs" />
     <Compile Include="Models\ViewModels\RelayCommand.cs" />
     <Compile Include="Models\ViewModels\RotationViewModel.cs" />

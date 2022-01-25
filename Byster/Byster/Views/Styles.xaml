@@ -3,8 +3,8 @@
                             xmlns:sys="clr-namespace:System;assembly=mscorlib"
                             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
                             xmlns:lb="clr-namespace:Byster.Models.Utilities"
-                            xmlns:converters="clr-namespace:Byster.Models.Utilities">
-
+                            xmlns:converters="clr-namespace:Byster.Models.Utilities"
+                            xmlns:viewmodels="clr-namespace:Byster.Models.ViewModels">
     <converters:WordEndAssociator x:Key="wordEndAssociatorConverter"/>
     <!-- Стили UI -->
     <Style TargetType="TextBox" x:Key="tbStyle">
@@ -918,7 +918,7 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <StackPanel Orientation="Horizontal"/>
+                    <VirtualizingStackPanel Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
@@ -982,11 +982,29 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
-                                <Image x:Name="mediaImage" Margin="5, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
+                                <Grid Cursor="Hand">
+                                    <viewmodels:MediaControl MediaElement="{Binding ElementName=mediaElement}" x:Name="mediaControl"/>
+                                    <MediaElement x:Name="mediaElement" Margin="5, 0" RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Path=Uri}" SpeedRatio="1"/>
+                                    <Grid Visibility="Collapsed" x:Name="waterPlayButton" VerticalAlignment="Center" HorizontalAlignment="Center">
+                                        <Path Data="M 0 0 L 0 16 L 16 8 Z" Fill="{DynamicResource MediaPlayButtonColor}"/>
+                                    </Grid>
+                                    <Grid x:Name="mediaBackground" Margin="5, 0"/>
+                                    <i:Interaction.Triggers>
+                                        <i:EventTrigger EventName="MouseDown">
+                                            <i:InvokeCommandAction Command="{Binding ElementName=mediaControl, Path=OpenCommand}"/>
+                                        </i:EventTrigger>
+                                    </i:Interaction.Triggers>
+                                </Grid>
                                 <ControlTemplate.Triggers>
-                                    <DataTrigger Binding="{Binding Path=Type}" Value="1">
-                                        <Setter TargetName="mediaImage" Property="Source" Value="{Binding Path=Uri}"/>
+                                    <DataTrigger Binding="{Binding Path=Type}" Value="2">
+                                        <Setter TargetName="waterPlayButton" Property="Visibility" Value="Visible"/>
                                     </DataTrigger>
+                                    <Trigger Property="IsMouseOver" Value="True">
+                                        <Setter TargetName="mediaBackground" Property="Background" Value="#40000000"/>
+                                    </Trigger>
+                                    <Trigger Property="IsMouseCaptured" Value="True">
+                                        <Setter TargetName="mediaBackground" Property="Background" Value="#60000000"/>
+                                    </Trigger>
                                 </ControlTemplate.Triggers>
                             </ControlTemplate>
                         </Setter.Value>
@@ -1239,7 +1257,7 @@
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="ListBox">
-                    <ScrollViewer Style="{DynamicResource hor_scrollViewerStyle}">
+                    <ScrollViewer CanContentScroll="False" Style="{DynamicResource hor_scrollViewerStyle}">
                         <i:Interaction.Behaviors>
                             <lb:UseHorizontalScroll/>
                         </i:Interaction.Behaviors>
@@ -1388,8 +1406,10 @@
                                                             <Path Fill="{DynamicResource FontInfoColor}" Data="M 0 4 L 8 0 L 8 8 Z" Margin="10"/>
                                                         </Button>
                                                         <StackPanel Orientation="Horizontal">
-                                                            <TextBlock x:Name="productTypeName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}"
-                                                                   Margin="0"/>
+                                                            <!--<TextBlock x:Name="productTypeName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}"
+                                                                   Margin="0"/>-->
+                                                            <Image x:Name="productTypeImage" Height="40"
+                                                               Margin="0" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                             <Image x:Name="productClassImage" Height="40"
                                                                Margin="13, 0" RenderOptions.BitmapScalingMode="HighQuality"/>
                                                             <TextBlock x:Name="productClassName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" TextAlignment="Center"
@@ -1468,7 +1488,7 @@
                                         <Setter TargetName="rotationRole" Property="Source" Value="{Binding Path=Product.Rotations[0].RoleOfRotation.ImageUri}"/>
                                         <Setter TargetName="rotationType" Property="Source" Value="{Binding Path=Product.Rotations[0].Type.ImageUri}"/>
 
-                                        <Setter TargetName="productTypeName" Property="Text" Value="{Binding Path=Product.Rotations[0].Type}"/>
+                                        <Setter TargetName="productTypeImage" Property="Source" Value="{Binding Path=Product.Rotations[0].Type.ImageUri}"/>
                                         <Setter TargetName="productClassImage" Property="Source" Value="{Binding Path=Product.Rotations[0].RotationClass.ImageUri}"/>
                                         <Setter TargetName="productClassName" Property="Text" Value="{Binding Path=Product.Rotations[0].RotationClass.NameOfClass}"/>
                                         <Setter TargetName="productRoleImage" Property="Source" Value="{Binding Path=Product.Rotations[0].RoleOfRotation.ImageUri}"/>
@@ -1639,6 +1659,7 @@
     <SolidColorBrush x:Key="BackgroundButtonColorHover">#3d6b3b</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundButtonColorClicked">#437541</SolidColorBrush>
 
+    <SolidColorBrush x:Key="MediaPlayButtonColor">#a0aaaaaa</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundMainWindowColor">#34373e</SolidColorBrush>
     <SolidColorBrush x:Key="BorderMainWindowColor">#676b74</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundControlColor">#2d2e33</SolidColorBrush>

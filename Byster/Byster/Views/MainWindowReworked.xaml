@@ -6,6 +6,7 @@
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:lb="clr-namespace:Byster.Models.Utilities"
+        xmlns:controls="clr-namespace:Byster.Models.ViewModels"
         mc:Ignorable="d"
         Title="Byster" Height="615" Width="1005"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
@@ -212,8 +213,24 @@
         </Grid>
 
         <Grid Background="#A0000000" x:Name="modalWindowOpenedGrid" Grid.RowSpan="3" Visibility="{Binding IsModalWindowOpened}">
-            <Image Source="{Binding SourceOfImageToOpen}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-            <MediaElement Source="{Binding SourceOfLoadingVideo}" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+        </Grid>
+        <Grid Background="#A0000000" x:Name="mediaOpenedGrid" Grid.RowSpan="3" Visibility="{Binding IsMediaOpened}">
+            <controls:MediaPresenterControl x:Name="playerControl" Player="{Binding ElementName=mediaPlayer}"/>
+            <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60">
+                <MediaElement x:Name="mediaPlayer" Source="{Binding SourceOfMediaToOpen, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" Height="300" LoadedBehavior="Manual">
+                </MediaElement>
+                <StackPanel Orientation="Horizontal" x:Name="mediaControlsGrid" HorizontalAlignment="Center" Visibility="{Binding ElementName=playerControl, Path=ControlVisibility}">
+                    <Button x:Name="playButton" Style="{StaticResource transparentButtonStyle}" Command="{Binding ElementName=playerControl, Path=PlayCommand}">
+                        <TextBlock Style="{StaticResource infoTextBlockStyle}" Text="Play" Margin="10"/>
+                    </Button>
+                    <Button x:Name="pauseButton" Style="{StaticResource transparentButtonStyle}" Command="{Binding ElementName=playerControl, Path=PauseCommand}">
+                        <TextBlock Style="{StaticResource infoTextBlockStyle}" Text="Pause" Margin="10"/>
+                    </Button>
+                </StackPanel>
+            </StackPanel>
+            <Button Style="{StaticResource uibStyle}" Command="{Binding CloseMediaCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
+                <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
         </Grid>
     </Grid>
 </Window>

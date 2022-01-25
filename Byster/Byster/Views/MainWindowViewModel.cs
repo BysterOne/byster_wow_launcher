@@ -167,27 +167,30 @@ namespace Byster.Views
             }
         }
 
-        private string sourceOfImageToOpen;
-        public string SourceOfImageToOpen
+        private Visibility isMediaOpened = Visibility.Collapsed;
+        public Visibility IsMediaOpened
         {
-            get { return sourceOfImageToOpen; }
+            get { return isMediaOpened; }
             set
             {
-                sourceOfImageToOpen = value;
-                OnPropertyChanged("SourceOfImageToOpen");
+                isMediaOpened = value;
+                OnPropertyChanged("IsMediaOpened");
             }
         }
 
-        private string sourceOfVideoToOpen;
-        public string SourceOfVideoToOpen
+
+        private string sourceOfMediaToOpen;
+        public string SourceOfMediaToOpen
         {
-            get { return sourceOfVideoToOpen; }
+            get { return sourceOfMediaToOpen; }
             set
             {
-                sourceOfImageToOpen = value;
-                OnPropertyChanged("SourceOfVideoToOpen");
+                sourceOfMediaToOpen = value;
+                OnPropertyChanged("SourceOfMediaToOpen");
             }
         }
+
+        
 
         public MainWindowViewModel(RestClient client, string sessionId)
         {
@@ -286,6 +289,11 @@ namespace Byster.Views
                     Injector.Branch = UserInfo.Branch;
                 };
             };
+            MediaControl.OpenAction = (uri) =>
+            {
+                SourceOfMediaToOpen = uri;
+                IsMediaOpened = Visibility.Visible;
+            };
         }
 
         public void Initialize(Dispatcher dispatcher)
@@ -301,7 +309,18 @@ namespace Byster.Views
             checkRotations();
             InitializationCompleted?.Invoke();
         }
-
+        private RelayCommand closeMediaCommand;
+        public RelayCommand CloseMediaCommand
+        {
+            get
+            {
+                return closeMediaCommand ?? (closeMediaCommand = new RelayCommand(() =>
+                {
+                    SourceOfMediaToOpen = "";
+                    IsMediaOpened = Visibility.Collapsed;
+                }));
+            }
+        }
 
         private RelayCommand settingsCommand;
 

@@ -48,14 +48,13 @@ namespace Byster.Views
                 CreateDirs = true,
                 ArchiveFileName = "${specialfolder:folder=ApplicationData:cached=true}/BysterConfig/BysterLogsArchive/${longdate}-BysterLogs.zip",
                 EnableArchiveFileCompression = true,
-                ArchiveAboveSize = 40000,
-                ArchiveOldFileOnStartupAboveSize = 1000,
+                ArchiveOldFileOnStartupAboveSize = 5000,
             };
             var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
 
             // Rules for mapping loggers to targets            
             config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
-            config.AddRule(LogLevel.Debug, LogLevel.Fatal, logfile);
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, logfile);
 
             // Apply config           
             NLog.LogManager.Configuration = config;

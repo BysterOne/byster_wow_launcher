@@ -197,6 +197,18 @@ namespace Byster.Models.Services
             return true;
         }
 
+        public List<RestDeveloperRotation> ExecuteDeveloperRotationRequest()
+        {
+            var response = client.Post<List<RestDeveloperRotation>>(new RestRequest("launcher/git_pull"));
+            if(response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                LastError = JsonConvert.DeserializeObject<BaseResponse>(response.Content).error;
+                Log("Ошибка получения данных ротаций для разработчиков", LastError, " - ", response.ErrorMessage);
+                return null;
+            }
+            return response.Data;
+        }
+
         public bool ExecuteLinkEmailRequest(string email)
         {
             //var response = client.Post<>()

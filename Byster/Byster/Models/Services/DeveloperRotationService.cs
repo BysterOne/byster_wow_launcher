@@ -10,6 +10,7 @@ using System.IO;
 using System.Windows;
 using Byster.Views;
 using System.Diagnostics;
+using System.Windows.Forms;
 using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Models.Services
@@ -21,13 +22,14 @@ namespace Byster.Models.Services
 
         private int repeatDelay = 30000;
         public string BaseDirectory { get; set; }
-
+        public bool IsReadyToSyncronization { get; set; } = false;
+        
         public event Action EmptyConfigurationRead;
         public event Action InitializationStarted;
         public event Action InitializationCompleted;
         public event Action SyncronizationStarted;
         public event Action SyncronizationCompleted;
-        public event Action<int, List<string>> SynchronizationErrorDetected;
+        public event Action<int, int, List<string>> SynchronizationErrorDetected;
 
 
         public RestService RestService { get; set; }
@@ -71,7 +73,14 @@ namespace Byster.Models.Services
         {
             while(true)
             {
+                if (!IsReadyToSyncronization)
+                {
+                    Thread.Sleep(50);
+                    continue;
+                }
                 var errors = new List<string>();
+                int counterRepositories = 0;
+                int counterErrorRepositories = 0;
                 int counterTrigger = 0;
                 StatusCode = DeveloperRotationStatusCodes.CHECKING;
                 var devRotations = RestService.ExecuteDeveloperRotationRequest();
@@ -81,23 +90,37 @@ namespace Byster.Models.Services
                     if (!Directory.Exists(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass)) Directory.CreateDirectory(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass);
                     if (!Directory.Exists(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name)) Directory.CreateDirectory(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name);
                     StatusCode = DeveloperRotationStatusCodes.SYNCRONIZATION;
+                    counterTrigger++;
                     Task.Run(() =>
+                    {
+                        Log("Синхронизация репозитория: ", BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name + "\\");
+                        counterRepositories++;
+                        Process gitCloneProcess = Process.Start(new ProcessStartInfo()
                         {
-                            Process gitCloneProcess = Process.Start(new ProcessStartInfo()
-                            {
-                                FileName = "git",
-                                WorkingDirectory = BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name + "\\",
-                                Arguments = $"clone --remote-submodules --recursive --branch=dev {devRotation.git_ssh_url}",
-                                CreateNoWindow = true,
-                            });
-                            gitCloneProcess.WaitForExit();
-                            MessageBox.Show(gitCloneProcess.ExitCode.ToString());
+                            FileName = "git",
+                            WorkingDirectory = BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name + "\\",
+                            Arguments = $"clone --remote-submodules --recursive --branch=dev {devRotation.git_ssh_url}",
+                            CreateNoWindow = true,
                         });
-                    Log("Синхронизация репозитория: ", BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name + "\\");    
+                        gitCloneProcess.WaitForExit();
+                        if(gitCloneProcess.ExitCode != 0)
+                        {
+                            counterErrorRepositories++;
+                            Log("Ошибка синхронизациии репозитория", $"Код эавершения: {gitCloneProcess.ExitCode}");
+                            errors.Add($"Ошибка синхронизации репозитория {BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name}");
+                            counterTrigger--;
+                        }
+                        Log("Синхронизация репозитория завершена", BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name);
+                    });
                 }
                 while(counterTrigger != 0)
                 {
                     Thread.Sleep(1);
+                }
+                StatusCode = DeveloperRotationStatusCodes.IDLE;
+                if(errors.Count > 0)
+                {
+                    SynchronizationErrorDetected?.Invoke(counterRepositories, counterErrorRepositories, errors);
                 }
                 Thread.Sleep(repeatDelay);
             }
@@ -105,22 +128,40 @@ namespace Byster.Models.Services
 
         private void readConfFile()
         {
-            if (!File.Exists(internalConfigurationFilePath)) EmptyConfigurationRead?.Invoke();
+            if (!File.Exists(internalConfigurationFilePath))
+            {
+                EmptyConfigurationRead?.Invoke();
+                return;
+            }
             var rawConfStr = File.ReadAllText(internalConfigurationFilePath);
-            if (string.IsNullOrEmpty(rawConfStr)) EmptyConfigurationRead?.Invoke();
+            if (string.IsNullOrEmpty(rawConfStr))
+            {
+                EmptyConfigurationRead?.Invoke();
+                return;
+            }
             var configuration = JsonConvert.DeserializeObject<JsonConfiguration>(rawConfStr);
-            if (string.IsNullOrEmpty(configuration?.baseDir ?? null)) EmptyConfigurationRead?.Invoke();
+            if (string.IsNullOrEmpty(configuration?.baseDir ?? null))
+            {
+                EmptyConfigurationRead?.Invoke();
+                return;
+            }
             BaseDirectory = configuration.baseDir;
+            IsReadyToSyncronization = true;
         }
 
         public void ChangeBaseDirectory(string newBaseDir)
         {
+            if(string.IsNullOrEmpty(BaseDirectory))
+            {
+                Directory.Delete(BaseDirectory, true);
+            }
             BaseDirectory = newBaseDir;
             var newConfStr = JsonConvert.SerializeObject(new JsonConfiguration()
             {
                 baseDir = BaseDirectory,
             });
             File.WriteAllText(internalConfigurationFilePath, newConfStr);
+            IsReadyToSyncronization = true;
         }
     }
 
@@ -131,10 +172,44 @@ namespace Byster.Models.Services
         INITIALIZATION = 2,
         CHECKING = 3,
     }
-    //public class DeveloperRotationService : IService 
-    //{
-        
-    //}
+    public class DeveloperRotationService : IService
+    {
+
+        public RestService RestService { get; set; }
+        public bool IsInitialized { get; set; }
+        public Dispatcher Dispatcher { get; set; }
+        public string SessionId { get; set; }
+
+        private DeveloperRotationCore core;
+
+
+        public void Initialize(Dispatcher dispatcher)
+        {
+            core = new DeveloperRotationCore()
+            {
+                RestService = this.RestService,
+            };
+            core.EmptyConfigurationRead += () =>
+            {
+                FolderBrowserDialog dialog = new FolderBrowserDialog();
+                dialog.ShowNewFolderButton = true;
+                dialog.Description = "Выберите директорию для сохранения ротация для разработчиков";
+                DialogResult dialogResult;
+                do
+                {
+                    dialogResult = dialog.ShowDialog();
+                }
+                while (dialogResult != DialogResult.OK);
+                core.ChangeBaseDirectory(dialog.SelectedPath);
+            };
+            core.Initialize();
+        }
+
+        public void UpdateData()
+        {
+
+        }
+    }
 
     public class JsonConfiguration
     {

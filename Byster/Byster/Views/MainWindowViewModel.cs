@@ -72,7 +72,7 @@ namespace Byster.Views
 
         private SessionViewModel selectedSession;
 
-        public DeveloperRotationCore DeveloperRotationCore { get; set; }
+        public DeveloperRotationService DeveloperRotations { get; set; }
         public SessionViewModel SelectedSession
         {
             get { return selectedSession; }
@@ -296,7 +296,7 @@ namespace Byster.Views
                 SourceOfMediaToOpen = uri;
                 IsMediaOpened = Visibility.Visible;
             };
-            DeveloperRotationCore = new DeveloperRotationCore()
+            DeveloperRotations = new DeveloperRotationService()
             {
                 RestService = restService,
             };
@@ -311,7 +311,7 @@ namespace Byster.Views
             UserInfo.Initialize(dispatcher);
             ActionService.Initialize(dispatcher);
             SessionService.Initialize(dispatcher);
-            DeveloperRotationCore.Initialize();
+            Task.Run(() => DeveloperRotations.Initialize(dispatcher));
             UpdateData();
             checkRotations();
             InitializationCompleted?.Invoke();

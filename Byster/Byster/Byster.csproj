@@ -164,6 +164,7 @@
     <Compile Include="Models\RestModels\LinkEmailRequest.cs" />
     <Compile Include="Models\RestModels\Register.cs" />
     <Compile Include="Models\RestModels\RestAction.cs" />
+    <Compile Include="Models\RestModels\RestAddRotation.cs" />
     <Compile Include="Models\RestModels\RestBranch.cs" />
     <Compile Include="Models\RestModels\RestBuy.cs" />
     <Compile Include="Models\RestModels\RestChangePassword.cs" />

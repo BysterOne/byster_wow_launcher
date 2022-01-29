@@ -10,7 +10,7 @@ namespace Byster.Models.RestModels
     {
     }
 
-    public class RestDeveloperRotation
+    public class RestDeveloperRotation : BaseResponse
     {
         public int id { get; set; }
         public string name { get; set; }

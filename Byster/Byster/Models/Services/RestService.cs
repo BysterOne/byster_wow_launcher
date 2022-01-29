@@ -209,6 +209,31 @@ namespace Byster.Models.Services
             return response.Data;
         }
 
+        public RestDeveloperRotation ExecuteAddRtationRequest(string name,
+                                            string description,
+                                            int type,
+                                            string klass,
+                                            string spec,
+                                            string roletype)
+        {
+            var response = client.Post<RestAddRotationResponse>(new RestRequest("launcher/add_rotation").AddJsonBody(new RestAddRotationRequest()
+            {
+                name = name,
+                description = description,
+                type = type,
+                klass = klass,
+                specialization = spec,
+                role_type = roletype,
+            }));
+            if(response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                LastError = response.Data.error;
+                Log("Ошибка создания ротации разработчиков", LastError, " - ", response.ErrorMessage);
+                return null;
+            }
+            return response.Data;
+        }
+
         public bool ExecuteLinkEmailRequest(string email)
         {
             //var response = client.Post<>()

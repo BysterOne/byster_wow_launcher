@@ -34,10 +34,21 @@ namespace Byster.Models.Services
         public event Action SyncronizationCompleted;
         public event Action<int, int, List<string>> SynchronizationErrorDetected;
 
+        public event Action StatusCodeChanged;
+
         public Dictionary<string, bool> DeveloperRotations { get; set; }
 
         public RestService RestService { get; set; }
-        public DeveloperRotationStatusCodes StatusCode { get; private set; } = DeveloperRotationStatusCodes.IDLE;
+        private DeveloperRotationStatusCodes statusCode = DeveloperRotationStatusCodes.IDLE;
+        public DeveloperRotationStatusCodes StatusCode
+        {
+            get { return statusCode; }
+            set
+            {
+                statusCode = value;
+                StatusCodeChanged?.Invoke();
+            }
+        }
 
         public string StatusCodeText
         {
@@ -112,6 +123,8 @@ namespace Byster.Models.Services
                             WorkingDirectory = path,
                             Arguments = $"clone --remote-submodules --recursive --branch=dev {devRotation.git_ssh_url}",
                             CreateNoWindow = true,
+                            UseShellExecute = false,
+                            WindowStyle = ProcessWindowStyle.Hidden,
                         });
                         gitCloneProcess.WaitForExit();
                         if (gitCloneProcess.ExitCode != 0)
@@ -122,7 +135,7 @@ namespace Byster.Models.Services
                         }
                         counterTrigger--;
                         
-                        string[] pathes = Directory.GetFiles(path);
+                        string[] pathes = getAllFilesWithSpecifiedExtension(path, ".toc");
                         foreach (string filePath in pathes)
                         {
                             FileInfo fileInfo = new FileInfo(filePath);
@@ -151,6 +164,8 @@ namespace Byster.Models.Services
                             WorkingDirectory = path,
                             Arguments = $"pull origin dev",
                             CreateNoWindow = true,
+                            UseShellExecute = false,
+                            WindowStyle = ProcessWindowStyle.Hidden,
                         });
                         gitCloneProcess.WaitForExit();
                         if (gitCloneProcess.ExitCode != 0)
@@ -161,13 +176,13 @@ namespace Byster.Models.Services
                         }
                         counterTrigger--;
 
-                        string[] pathes = Directory.GetFiles(path);
+                        string[] pathes = getAllFilesWithSpecifiedExtension(path, ".toc");
                         foreach (string filePath in pathes)
                         {
                             FileInfo fileInfo = new FileInfo(filePath);
                             if (fileInfo.Extension == ".toc")
                             {
-                                if (DeveloperRotations.ContainsKey(filePath)) continue;
+                                if(!DeveloperRotations.ContainsKey(filePath))
                                 DeveloperRotations.Add(filePath, false);
                             }
                         }
@@ -180,12 +195,28 @@ namespace Byster.Models.Services
             {
                 Thread.Sleep(1);
             }
+            File.WriteAllText(rotationConfigurationFilePath, JsonConvert.SerializeObject(DeveloperRotations));
             StatusCode = DeveloperRotationStatusCodes.IDLE;
             SyncronizationCompleted?.Invoke();
             if (errors.Count > 0)
             {
                 SynchronizationErrorDetected?.Invoke(counterRepositories, counterErrorRepositories, errors);
             }
+        }
+
+        private string[] getAllFilesWithSpecifiedExtension(string dirPath, string extension)
+        {
+            List<string> files = new List<string>();
+            foreach(var filePath in Directory.GetFiles(dirPath))
+            {
+                var info = new FileInfo(filePath);
+                if (info.Extension == extension) files.Add(filePath);
+            }
+            foreach(var directoryPath in Directory.GetDirectories(dirPath))
+            {
+                files = files.Union(getAllFilesWithSpecifiedExtension(directoryPath, extension)).ToList();
+            }
+            return files.ToArray();
         }
 
         private void readConfFile()
@@ -226,7 +257,7 @@ namespace Byster.Models.Services
             IsReadyToSyncronization = true;
         }
 
-        public void AddRotation(string name,
+        public bool AddRotation(string name,
                                 string description,
                                 int type,
                                 string klass,
@@ -234,7 +265,10 @@ namespace Byster.Models.Services
                                 string roletype)
         {
             var devRotation = RestService.ExecuteAddRtationRequest(name, description, type, klass, spec, roletype);
-            
+            if(devRotation == null)
+            {
+                return false;
+            }
             if (!Directory.Exists(BaseDirectory + "\\" + devRotation.type)) Directory.CreateDirectory(BaseDirectory + "\\" + devRotation.type);
             if (!Directory.Exists(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass)) Directory.CreateDirectory(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass);
             if (!Directory.Exists(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name)) Directory.CreateDirectory(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name);
@@ -249,13 +283,15 @@ namespace Byster.Models.Services
                     WorkingDirectory = path,
                     Arguments = $"clone --remote-submodules --recursive --branch=dev {devRotation.git_ssh_url}",
                     CreateNoWindow = true,
+                    UseShellExecute = false,
+                    WindowStyle = ProcessWindowStyle.Hidden,
                 });
                 gitCloneProcess.WaitForExit();
                 if (gitCloneProcess.ExitCode != 0)
                 {
                     Log("Ошибка синхронизациии репозитория", $"Код эавершения: {gitCloneProcess.ExitCode}");
                 }           
-                string[] pathes = Directory.GetFiles(path);
+                string[] pathes = getAllFilesWithSpecifiedExtension(path, ".toc");
                 foreach (string filePath in pathes)
                 {
                     FileInfo fileInfo = new FileInfo(filePath);
@@ -268,6 +304,8 @@ namespace Byster.Models.Services
                 Log("Синхронизация репозитория завершена", path);
                 semaphore.Release();
             });
+            File.WriteAllText(rotationConfigurationFilePath, JsonConvert.SerializeObject(DeveloperRotations));
+            return true;
         }
     }
 
@@ -288,7 +326,25 @@ namespace Byster.Models.Services
 
         private DeveloperRotationCore core;
 
+        public Func<bool> PreAddRotationAction { get; set; }
+        public Action AddRotationSuccess { get; set; }
+        public Action AddRotationFail { get; set; }
 
+        public string StatusCodeText
+        {
+            get
+            {
+                return core.StatusCodeText;
+            }
+        }
+
+        public Dictionary<string, bool> DeveloperRotations
+        {
+            get
+            {
+                return core.DeveloperRotations;
+            }
+        }
         public void Initialize(Dispatcher dispatcher)
         {
             core = new DeveloperRotationCore()
@@ -308,6 +364,11 @@ namespace Byster.Models.Services
                 while (dialogResult != DialogResult.OK);
                 core.ChangeBaseDirectory(dialog.SelectedPath);
             };
+            core.StatusCodeChanged += () =>
+            {
+                IsReadyForUsing = core.StatusCode == DeveloperRotationStatusCodes.IDLE ? Visibility.Collapsed : Visibility.Visible;
+                OnPropertyChanged("StatusCodeText");
+            };
             
             core.Initialize();
         }
@@ -317,14 +378,14 @@ namespace Byster.Models.Services
             core.UpdateData();
         }
 
-        public void AddRotation(string name,
+        public bool AddRotation(string name,
                                 string description,
                                 int type,
                                 string klass,
                                 string spec,
                                 string roletype)
         {
-            core.AddRotation(name,
+            return core.AddRotation(name,
                             description,
                             type,
                             klass,
@@ -332,88 +393,89 @@ namespace Byster.Models.Services
                             roletype);
         }
 
-        public List<(string, string)> Classes = new List<(string, string)>()
+        public List<DevClass> Classes { get; set; } = new List<DevClass>()
         {
-            ("ANY", "Все классы"),
-            ("DEATHKNIGHT", "Рыцарь смерти"),
-            ("DRUID", "Друид"),
-            ("HUNTER", "Охотник"),
-            ("MAGE", "Маг"),
-            ("PALADIN", "Паладин"),
-            ("PRIEST", "Жрец"),
-            ("ROGUE", "Разбойник"),
-            ("SHAMAN", "Шаман"),
-            ("WARLOCK", "Чернокнижник"),
-            ("WARRIOR", "Воин"),
+            new DevClass("ANY", "Все классы"),
+            new DevClass("DEATHKNIGHT", "Рыцарь смерти"),
+            new DevClass("DRUID", "Друид"),
+            new DevClass("HUNTER", "Охотник"),
+            new DevClass("MAGE", "Маг"),
+            new DevClass("PALADIN", "Паладин"),
+            new DevClass("PRIEST", "Жрец"),
+            new DevClass("ROGUE", "Разбойник"),
+            new DevClass("SHAMAN", "Шаман"),
+            new DevClass ("WARLOCK", "Чернокнижник"),
+            new DevClass("WARRIOR", "Воин"),
         };
 
-        public List<(int, string)> Types = new List<(int, string)>()
+        public List<DevRotationType> Types { get; set; } = new List<DevRotationType>()
         {
-            (-1,"Bot"),
-            (0, "PvE"),
-            (1, "PvP"),
-            (2, "Utility"),
-            (3, "Common"),
-            (4, "Core Module"),
-        };
-
-        public List<(string, string)> Specializations = new List<(string, string)>()
-        {
-            ("ARMS", "Arms Warrior"),
-            ("FURY", "Fury Warrior"),
-            ("PROTOWAR", "Proto Warrior"),
-            // PALADIN
-            ("HOLYPAL", "Holy Paladin"),
-            ("RETRIBUTION", "Ret Paladin"),
-            ("PROTOPAL", "Proto Paladin"),
-            // HUNTER
-            ("BM", "Beast Mastery Hunter"),
-            ("MM", "Marksmanship Hunter"),
-            ("SURVIVABILITY", "Survivability Hunter"),
-            // ROGUE
-            ("MUTILATION", "Mutilation Rogue"),
-            ("COMBAT", "Combat Rogue"),
-            ("SUBTLETY", "Subtlety Rogue"),
-            // PRIEST
-            ("DISCIPLINE", "Discipline Priest"),
-            ("HOLYPRIEST", "Holy Priest"),
-            ("SHADOW", "Shadow Priest"),
-            // DEATHKNIGHT
-            ("BLOOD", "Blood Death Knight"),
-            ("FROST", "Frost Death Knight"),
-            ("UNHOLY", "Unholy Death Knight"),
-            // SHAMAN
-            ("ENHANCEMENT", "Enhancement Shaman"),
-            ("ELEMENTAL", "Elemental Shaman"),
-            ("RESTORSHAMAN", "Resto Shaman"),
-            // MAGE
-            ("ARCANE", "Arcane Mage"),
-            ("FIRE", "Fire Mage"),
-            ("FROSTMAGE", "Frost Mage"),
-            // WARLOCK
-            ("AFFLICTION", "Affli Warlock"),
-            ("DEMONOLOGY", "Demon Warlock"),
-            ("DESTRUCTION", "Destro Warlock"),
-            // DRUID
-            ("MOONKIN", "Moonkin Druid"),
-            ("FERAL", "Feral Druid"),
-            ("RESTORDRUID", "Resto Druid"),
+            new DevRotationType(-1,"Bot"),
+            new DevRotationType(0, "PvE"),
+            new DevRotationType(1, "PvP"),
+            new DevRotationType(2, "Utility"),
+            new DevRotationType(3, "Common"),
+            new DevRotationType(4, "Core Module"),
         };
         
-        public List<(string, string)> Roletypes = new List<(string, string)>()
+        public List<DevSpecialization> Specializations { get; set; } = new List<DevSpecialization>()
         {
-            ("DPS", "ДПС"),
-            ("HEAL", "Хилер"),
-            ("TANK", "Танк"),
+            new DevSpecialization("ARMS", "Arms Warrior"),
+            new DevSpecialization("FURY", "Fury Warrior"),
+            new DevSpecialization("PROTOWAR", "Proto Warrior"),
+            // PALADIN
+            new DevSpecialization("HOLYPAL", "Holy Paladin"),
+            new DevSpecialization("RETRIBUTION", "Ret Paladin"),
+            new DevSpecialization("PROTOPAL", "Proto Paladin"),
+            // HUNTER
+            new DevSpecialization("BM", "Beast Mastery Hunter"),
+            new DevSpecialization("MM", "Marksmanship Hunter"),
+            new DevSpecialization("SURVIVABILITY", "Survivability Hunter"),
+            // ROGUE
+            new DevSpecialization("MUTILATION", "Mutilation Rogue"),
+            new DevSpecialization ("COMBAT", "Combat Rogue"),
+            new DevSpecialization("SUBTLETY", "Subtlety Rogue"),
+            // PRIEST
+            new DevSpecialization("DISCIPLINE", "Discipline Priest"),
+            new DevSpecialization("HOLYPRIEST", "Holy Priest"),
+            new DevSpecialization("SHADOW", "Shadow Priest"),
+            // DEATHKNIGHT
+            new DevSpecialization("BLOOD", "Blood Death Knight"),
+            new DevSpecialization("FROST", "Frost Death Knight"),
+            new DevSpecialization("UNHOLY", "Unholy Death Knight"),
+            // SHAMAN
+            new DevSpecialization("ENHANCEMENT", "Enhancement Shaman"),
+            new DevSpecialization("ELEMENTAL", "Elemental Shaman"),
+            new DevSpecialization("RESTORSHAMAN", "Resto Shaman"),
+            // MAGE
+            new DevSpecialization("ARCANE", "Arcane Mage"),
+            new DevSpecialization("FIRE", "Fire Mage"),
+            new DevSpecialization("FROSTMAGE", "Frost Mage"),
+            // WARLOCK
+            new DevSpecialization("AFFLICTION", "Affli Warlock"),
+            new DevSpecialization("DEMONOLOGY", "Demon Warlock"),
+            new DevSpecialization("DESTRUCTION", "Destro Warlock"),
+            // DRUID
+            new DevSpecialization("MOONKIN", "Moonkin Druid"),
+            new DevSpecialization("FERAL", "Feral Druid"),
+            new DevSpecialization("RESTORDRUID", "Resto Druid"),
+        };
+        
+        public List<DevRoleType> Roletypes { get; set; } = new List<DevRoleType>()
+        {
+            new DevRoleType("DPS", "ДПС"),
+            new DevRoleType("HEAL", "Хилер"),
+            new DevRoleType("TANK", "Танк"),
         };
 
-        private (string, string) selectedClass;
-        private (int, string) selectedType;
-        private (string, string) selectedSpecialization;
-        private (string, string) selectedRoletype;
+        private DevClass selectedClass;
+        private DevRotationType selectedType;
+        private DevSpecialization selectedSpecialization;
+        private DevRoleType selectedRoletype;
         private string enteredDescription;
+        private string enteredName;
 
-        public (string, string) SelectedClass
+        public DevClass SelectedClass
         {
             get => selectedClass;
             set
@@ -422,7 +484,7 @@ namespace Byster.Models.Services
                 OnPropertyChanged("SelectedClass");
             }
         }
-        public (int, string) SelectedType
+        public DevRotationType SelectedType
         {
             get => selectedType;
             set
@@ -431,7 +493,7 @@ namespace Byster.Models.Services
                 OnPropertyChanged("SelectedType");
             }
         }
-        public (string ,string) SelectedSpecialization
+        public DevSpecialization SelectedSpecialization
         {
             get => selectedSpecialization;
             set
@@ -440,7 +502,7 @@ namespace Byster.Models.Services
                 OnPropertyChanged("SelectedSpecialization");
             }
         }
-        public (string, string) SelectedRoletype
+        public DevRoleType SelectedRoletype
         {
             get => selectedRoletype;
             set
@@ -459,7 +521,18 @@ namespace Byster.Models.Services
             }
         }
 
+        public string EnteredName
+        {
+            get => enteredName;
+            set
+            {
+                enteredName = value;
+                OnPropertyChanged("EnteredName");
+            }
+        }
+
         private bool isSpecChoiceEnabled = false;
+        private bool isReadyToAddRotation = false;
         public bool IsSpecChoiceEnabled
         {
             get => isSpecChoiceEnabled;
@@ -467,6 +540,26 @@ namespace Byster.Models.Services
             {
                 isSpecChoiceEnabled = value;
                 OnPropertyChanged("IsSpecChoiceEnabled");
+            }
+        }
+        public bool IsReadyToAddRotation
+        {
+            get => isReadyToAddRotation;
+            set
+            {
+                isReadyToAddRotation = value;
+                OnPropertyChanged("IsReadyToAddRotation");
+            }
+        }
+
+        private Visibility isReadyForUsing = Visibility.Visible;
+        public Visibility IsReadyForUsing
+        {
+            get => isReadyForUsing;
+            set
+            {
+                isReadyForUsing = value;
+                OnPropertyChanged("IsReadyForUsing");
             }
         }
 
@@ -477,12 +570,17 @@ namespace Byster.Models.Services
             {
                 return addCommand ?? (addCommand = new RelayCommand(() =>
                 {
-                    AddRotation(SelectedClass.Item1,
+                    var result = PreAddRotationAction?.Invoke() ?? false;
+                    if (!result) return;
+                    Task.Run(() =>
+                    {
+                        AddRotation(SelectedClass.Value,
                                 EnteredDescription,
-                                SelectedType.Item1,
-                                SelectedClass.Item1,
-                                SelectedSpecialization.Item1,
-                                SelectedRoletype.Item1);
+                                SelectedType.Value,
+                                SelectedClass.Value,
+                                SelectedSpecialization.Value,
+                                SelectedRoletype.Value);
+                    });
                 }));
             }
         }
@@ -490,9 +588,72 @@ namespace Byster.Models.Services
         public void OnPropertyChanged(string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            if(property == "SelectedType" || property == "SelectedRoletype" || property == "SelectedClass" || property == "SelectedSpecialization" ||
+                property == "EnteredName" || property == "EnteredDescription")
+            {
+                if (SelectedType.Name.ToLower() == "pvp" || SelectedType.Name.ToLower() == "pve")
+                { 
+                    IsSpecChoiceEnabled = true;
+                }
+                else
+                {
+                    isSpecChoiceEnabled = false;
+                }
+
+                if (SelectedClass != null && SelectedType != null && SelectedRoletype != null && ((isSpecChoiceEnabled && selectedSpecialization != null) || !isSpecChoiceEnabled) && !string.IsNullOrEmpty(EnteredName) && !string.IsNullOrEmpty(EnteredDescription))
+                {
+                    IsReadyToAddRotation = true;
+                }
+                else
+                {
+                    IsReadyToAddRotation = false;
+                }
+            }
+        }
+
+    }
+    public class DevSpecialization
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+        public DevSpecialization(string val, string name)
+        {
+            Name = name;
+            Value = val;
+        }
+    }
+    public class DevRotationType
+    {
+        public int Value { get; set; }
+        public string Name { get; set; }
+        public DevRotationType(int val, string name)
+        {
+            Name = name;
+            Value = val;
         }
     }
 
+    public class DevRoleType
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+        public DevRoleType(string val, string name)
+        {
+            Name = name;
+            Value = val;
+        }
+    }
+
+    public class DevClass
+    {
+        public string Value { get; set; }
+        public string Name { get; set; }
+        public DevClass(string val, string name)
+        {
+            Name = name;
+            Value = val;
+        }
+    }
     public class JsonConfiguration
     {
         public string baseDir { get; set; }

@@ -204,6 +204,9 @@
     <Compile Include="Views\ActivateCouponWindow.xaml.cs">
       <DependentUpon>ActivateCouponWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\AddRotationWindow.xaml.cs">
+      <DependentUpon>AddRotationWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\ChangePasswordWindow.xaml.cs">
       <DependentUpon>ChangePasswordWindow.xaml</DependentUpon>
     </Compile>
@@ -239,6 +242,10 @@
       <DependentUpon>SettingsWindow.xaml</DependentUpon>
     </Compile>
     <Page Include="Views\ActivateCouponWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AddRotationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

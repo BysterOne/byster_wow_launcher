@@ -311,7 +311,10 @@ namespace Byster.Views
             UserInfo.Initialize(dispatcher);
             ActionService.Initialize(dispatcher);
             SessionService.Initialize(dispatcher);
-            Task.Run(() => DeveloperRotations.Initialize(dispatcher));
+            if(UserInfo.UserType == BranchType.DEVELOPER)
+            {
+                Task.Run(() => DeveloperRotations.Initialize(dispatcher));
+            }
             UpdateData();
             checkRotations();
             InitializationCompleted?.Invoke();

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:lb="clr-namespace:Byster.Models.Utilities"
         mc:Ignorable="d"
-        Title="Меню выбора ротаций" Height="530" Width="730"
+        Title="Меню выбора ротаций" Height="560" Width="730"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="Transparent"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
@@ -35,6 +35,7 @@
                 <RowDefinition Height="Auto"/>
                 <RowDefinition/>
                 <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <StackPanel Margin="10, 0">
@@ -50,7 +51,7 @@
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="1">
-                <ListBox x:Name="rotationListBox" Margin="10, 0" ItemsSource="{Binding Path=Rotations}">
+                <ListBox x:Name="rotationListBox" Margin="10, 0" ItemsSource="{Binding Path=DeveloperRotations.DeveloperRotations}">
                     <ListBox.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Vertical"/>
@@ -94,9 +95,12 @@
                 </ListBox>
             </Grid>
             <Grid Grid.Row="2">
-                <Button Style="{DynamicResource transparentButtonStyle}" Content="Добавить" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Width="320" Command="{Binding AddCommand}"/>
-                <Button Style="{DynamicResource transparentButtonStyle}" Content="Сохранить" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10" Width="320" Command="{Binding SaveCommand}"/>
+                <Button Style="{DynamicResource transparentButtonStyle}" Content="Добавить" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Width="320" Command="{Binding DeveloperRotations.AddCommand}"/>
+                <Button Style="{DynamicResource transparentButtonStyle}" Content="Сохранить" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10" Width="320" Command="{Binding DeveloperRotations.SaveCommand}"/>
             </Grid>
+        </Grid>
+        <Grid x:Name="backgroundGrid" Visibility="{Binding DeveloperRotations.IsReadyForUsing}" Background="#A0000000" Grid.RowSpan="3">
+            <TextBlock Text="{Binding DeveloperRotations.StatusCodeText}" Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
         </Grid>
     </Grid>
 </Window>

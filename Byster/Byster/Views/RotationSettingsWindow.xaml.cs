@@ -26,18 +26,14 @@ namespace Byster.Views
     /// </summary>
     public partial class RotationSettingsWindow : Window
     {
-        public RotationSettingsWindow()
+        public RotationSettingsWindow(MainWindowViewModel model)
         {
             InitializeComponent();
-            this.DataContext = new RotationSettingsViewModel()
+            this.DataContext = model;
+            model.DeveloperRotations.PreAddRotationAction = () =>
             {
-                CloseAction = () =>
-                {
-                    Dispatcher.Invoke(() =>
-                    {
-                        Close();
-                    });
-                }
+                var window = new AddRotationWindow(model);
+                return window.ShowDialog() ?? false;
             };
         }
 
@@ -51,125 +47,6 @@ namespace Byster.Views
             base.OnMouseLeftButtonDown(e);
             this.DragMove();
         }
-    }
 
-    public class RotationSettingsViewModel
-    {
-        public ObservableCollection<LocalRotation> Rotations { get; set; }
-        private readonly string pathOfConfigDir = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig";
-        private readonly string pathOfRotationsFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig\\rotations.json";
-
-        public Action CloseAction { get; set; }
-        public RotationSettingsViewModel()
-        {
-            if (!Directory.Exists(pathOfConfigDir)) Directory.CreateDirectory(pathOfConfigDir);
-            if (!File.Exists(pathOfRotationsFile)) File.Create(pathOfRotationsFile).Close();
-            string rawRotations = File.ReadAllText(pathOfRotationsFile);
-            Dictionary<string, bool> rotations = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotations);
-            Rotations = new ObservableCollection<LocalRotation>();
-
-            if (rotations != null)
-            {
-                foreach (var key in rotations.Keys)
-                {
-                    Rotations.Add(new LocalRotation()
-                    {
-                        IsEnabled = rotations[key],
-                        Path = key,
-                        Parent = Rotations,
-                    });
-                }
-            }
-        }
-
-        public void AddRotation(string pathOfRotation)
-        {
-            if (!Rotations.Any((location) => location.Path == pathOfRotation))
-            {
-                if (!File.Exists(pathOfRotation))
-                {
-                    return;
-                }
-                Rotations.Add(new LocalRotation()
-                {
-                    Path = pathOfRotation,
-                    IsEnabled = true,
-                    Parent = Rotations,
-                });
-            }
-        }
-
-        public void Save()
-        {
-            if (!Directory.Exists(pathOfConfigDir)) Directory.CreateDirectory(pathOfConfigDir);
-            if (!File.Exists(pathOfRotationsFile)) File.Create(pathOfRotationsFile).Close();
-            Dictionary<string, bool> jsonRotations = new Dictionary<string, bool>();
-            foreach (var rot in Rotations)
-            {
-                jsonRotations.Add(rot.Path, rot.IsEnabled);
-            }
-            File.WriteAllText(pathOfRotationsFile, JsonConvert.SerializeObject(jsonRotations));
-        }
-
-        private RelayCommand addCommand;
-        private RelayCommand saveCommand;
-        private RelayCommand searchCommand;
-
-        public RelayCommand AddCommand
-        {
-            get
-            {
-                return addCommand ?? (addCommand = new RelayCommand(() =>
-                {
-                    OpenFileDialog fileDialog = new OpenFileDialog()
-                    {
-                        Filter = "Byster Projects|*.toc",
-                        CheckFileExists = true,
-                        CheckPathExists = true,
-                        Title = "Выбор файла",
-                    };
-                    bool res = fileDialog.ShowDialog() ?? false;
-                    if (res)
-                    {
-                        AddRotation(fileDialog.FileName);
-                    }
-                }));
-            }
-        }
-
-        public RelayCommand SaveCommand
-        {
-            get
-            {
-                return saveCommand ?? (saveCommand = new RelayCommand(() =>
-                {
-                    Save();
-                    CloseAction?.Invoke();
-                }));
-            }
-        }
-
-        public RelayCommand SearchCommand
-        {
-            get
-            {
-                return searchCommand ?? (searchCommand = new RelayCommand((obj) =>
-                {
-                    string strToSearch = obj as string;
-                    strToSearch = strToSearch.ToLower();
-                    foreach (var rot in Rotations)
-                    {
-                        if (string.IsNullOrEmpty(strToSearch) || rot.Path.ToLower().Contains(strToSearch))
-                        {
-                            rot.IsShowInCollection = Visibility.Visible;
-                        }
-                        else
-                        {
-                            rot.IsShowInCollection = Visibility.Collapsed;
-                        }
-                    }
-                }));
-            }
-        }
     }
 }

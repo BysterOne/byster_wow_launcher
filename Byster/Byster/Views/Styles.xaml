@@ -139,6 +139,9 @@
             <Trigger Property="IsPressed" Value="True">
                 <Setter Property="Background" Value="{DynamicResource BackgroundButtonColorClicked}"/>
             </Trigger>
+            <Trigger Property="IsEnabled" Value="False">
+                <Setter Property="Background" Value="{DynamicResource BackgroundButtonColorDisabled}"/>
+            </Trigger>
         </Style.Triggers>
     </Style>
 
@@ -324,7 +327,9 @@
                                     <Border CornerRadius="{DynamicResource CornerUIRadius}"
                                             Background="{DynamicResource BackgroundUIColor}"
                                             HorizontalAlignment="Stretch">
-                                        <StackPanel IsItemsHost="True"/>
+                                        <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}">
+                                            <StackPanel IsItemsHost="True"/>
+                                        </ScrollViewer>
                                     </Border>
                                 </Grid>
                             </Popup>
@@ -1658,6 +1663,8 @@
     <SolidColorBrush x:Key="BackgroundButtonColor">#497f46</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundButtonColorHover">#3d6b3b</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundButtonColorClicked">#437541</SolidColorBrush>
+    <SolidColorBrush x:Key="BackgroundButtonColorDisabled">#676b74</SolidColorBrush>
+    
 
     <SolidColorBrush x:Key="MediaPlayButtonColor">#a0aaaaaa</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundMainWindowColor">#34373e</SolidColorBrush>

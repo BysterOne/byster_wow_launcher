@@ -124,7 +124,7 @@ namespace Byster.Views
             {
                 return openRotationSettingsWindow ?? (openRotationSettingsWindow = new RelayCommand(() =>
                 {
-                    RotationSettingsWindow window = new RotationSettingsWindow();
+                    RotationSettingsWindow window = new RotationSettingsWindow(this.MainViewModel);
                     CloseAction();
                     window.ShowModalDialog();
                 }));

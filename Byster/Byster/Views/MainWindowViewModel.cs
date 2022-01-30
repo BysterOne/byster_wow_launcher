@@ -192,7 +192,13 @@ namespace Byster.Views
             }
         }
 
-        
+        public string LastError
+        {
+            get
+            {
+                return restService.LastError;
+            }
+        }
 
         public MainWindowViewModel(RestClient client, string sessionId)
         {

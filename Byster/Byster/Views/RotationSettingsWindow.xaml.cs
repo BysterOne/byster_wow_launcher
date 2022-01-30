@@ -35,6 +35,17 @@ namespace Byster.Views
                 var window = new AddRotationWindow(model);
                 return window.ShowDialog() ?? false;
             };
+            model.DeveloperRotations.AddRotationSuccess = () =>
+            {
+                var window = new InfoWindow("Успех", "Создание ротации успешно");
+                window.ShowDialog();
+            };
+            model.DeveloperRotations.AddRotationFail = () =>
+            {
+                MessageBox.Show("Ошибка");
+                var window = new InfoWindow("Ошибка", "Ошибка при создании ротации\n" + model.LastError);
+                window.ShowDialog();
+            };
         }
 
         private void closeBtn_Click(object sender, RoutedEventArgs e)

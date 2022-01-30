@@ -19,6 +19,69 @@ using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Models.Services
 {
+
+    public class DeveloperRotation : INotifyPropertyChanged
+    {
+        private string path;
+        private string displayedPath;
+        private bool isEnabled;
+
+        public string Path
+        {
+            get => path;
+            set
+            {
+                path = value;
+                OnPropertyChanged("Path");
+            }
+        }
+        public string DisplayedPath
+        {
+            get => displayedPath;
+            private set
+            {
+                displayedPath = value;
+                OnPropertyChanged("DisplayedPath");
+            }
+        }
+
+        public bool IsEnabled
+        {
+            get => isEnabled;
+            set
+            {
+                isEnabled = value;
+                OnPropertyChanged("IsEnabled");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string property = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            if(property == "Path")
+            {
+                if (Path != null)
+                {
+                    if (Path.Split('\\').Length > 3)
+                    {
+                        string str = "";
+                        string[] parts = Path.Split('\\');
+                        for (int i = parts.Length - 1; i > parts.Length - 4; i--)
+                        {
+                            str = "\\" + parts[i] + str;
+                        }
+                        str = ".." + str;
+                        DisplayedPath = str;
+                    }
+                    else
+                    {
+                        DisplayedPath = Path;
+                    }
+                }
+            }
+        }
+    }
     public class DeveloperRotationCore
     {
         private readonly string internalConfigurationFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig\\launcherConfiguration.json";
@@ -36,7 +99,7 @@ namespace Byster.Models.Services
 
         public event Action StatusCodeChanged;
 
-        public Dictionary<string, bool> DeveloperRotations { get; set; }
+        public List<DeveloperRotation> DeveloperRotations { get; set; }
 
         public RestService RestService { get; set; }
         private DeveloperRotationStatusCodes statusCode = DeveloperRotationStatusCodes.IDLE;
@@ -74,6 +137,7 @@ namespace Byster.Models.Services
             InitializationStarted?.Invoke();
             StatusCode = DeveloperRotationStatusCodes.INITIALIZATION;
             readConfFile();
+            DeveloperRotations = new List<DeveloperRotation>();
             Task.Run(() => UpdateData());
             InitializationCompleted?.Invoke(); 
             StatusCode = DeveloperRotationStatusCodes.IDLE;
@@ -83,21 +147,31 @@ namespace Byster.Models.Services
 
         public void UpdateData()
         {
-
             if (!IsReadyToSyncronization)
             {
                 return;
             }
+            DeveloperRotations.Clear();
             var errors = new List<string>();
             int counterRepositories = 0;
             int counterErrorRepositories = 0;
             int counterTrigger = 0;
             StatusCode = DeveloperRotationStatusCodes.CHECKING;
-
+            
             if (!File.Exists(rotationConfigurationFilePath)) File.Create(rotationConfigurationFilePath).Close();
             string rawRotationsConf = File.ReadAllText(rotationConfigurationFilePath);
-            DeveloperRotations = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotationsConf);
-            if (DeveloperRotations == null) DeveloperRotations = new Dictionary<string, bool>();
+            Dictionary<string, bool> devRotationsdict = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotationsConf);
+            if (devRotationsdict != null)
+            {
+                foreach(var key in devRotationsdict.Keys)
+                {
+                    DeveloperRotations.Add(new DeveloperRotation()
+                    {
+                        IsEnabled = devRotationsdict[key],
+                        Path = key,
+                    });
+                }
+            }
             StatusCode = DeveloperRotationStatusCodes.SYNCRONIZATION;
             SyncronizationStarted?.Invoke();
             var devRotations = RestService.ExecuteDeveloperRotationRequest();
@@ -141,8 +215,12 @@ namespace Byster.Models.Services
                             FileInfo fileInfo = new FileInfo(filePath);
                             if (fileInfo.Extension == ".toc")
                             {
-                                if (DeveloperRotations.ContainsKey(filePath)) continue;
-                                DeveloperRotations.Add(filePath, false);
+                                if (DeveloperRotations.Find(item => item.Path == filePath) != null) continue;
+                                DeveloperRotations.Add(new DeveloperRotation()
+                                {
+                                    Path = filePath,
+                                    IsEnabled = false,
+                                });
                             }
                         }
                         Log("Синхронизация репозитория завершена", path);
@@ -182,8 +260,12 @@ namespace Byster.Models.Services
                             FileInfo fileInfo = new FileInfo(filePath);
                             if (fileInfo.Extension == ".toc")
                             {
-                                if(!DeveloperRotations.ContainsKey(filePath))
-                                DeveloperRotations.Add(filePath, false);
+                                if(DeveloperRotations.Find(item => item.Path == filePath) != null) continue;
+                                DeveloperRotations.Add(new DeveloperRotation()
+                                {
+                                    Path = filePath,
+                                    IsEnabled = false,
+                                });
                             }
                         }
                         Log("Синхронизация репозитория завершена", path);
@@ -195,7 +277,7 @@ namespace Byster.Models.Services
             {
                 Thread.Sleep(1);
             }
-            File.WriteAllText(rotationConfigurationFilePath, JsonConvert.SerializeObject(DeveloperRotations));
+            SaveRotations();
             StatusCode = DeveloperRotationStatusCodes.IDLE;
             SyncronizationCompleted?.Invoke();
             if (errors.Count > 0)
@@ -297,16 +379,31 @@ namespace Byster.Models.Services
                     FileInfo fileInfo = new FileInfo(filePath);
                     if (fileInfo.Extension == ".toc")
                     {
-                        if (DeveloperRotations.ContainsKey(filePath)) continue;
-                        DeveloperRotations.Add(filePath, false);
+                        if (DeveloperRotations.Find(item => item.Path == filePath) != null) continue;
+                        DeveloperRotations.Add(new DeveloperRotation()
+                        {
+                            Path = filePath,
+                            IsEnabled = false,
+                        });
                     }
                 }
                 Log("Синхронизация репозитория завершена", path);
+                SaveRotations();
                 semaphore.Release();
             });
-            File.WriteAllText(rotationConfigurationFilePath, JsonConvert.SerializeObject(DeveloperRotations));
             return true;
         }
+
+        public void SaveRotations()
+        {
+            Dictionary<string, bool> devRotationsDict = new Dictionary<string, bool>();
+            foreach (var item in DeveloperRotations)
+            {
+                devRotationsDict.Add(item.Path, item.IsEnabled);
+            }
+            File.WriteAllText(rotationConfigurationFilePath, JsonConvert.SerializeObject(devRotationsDict));
+        }
+
     }
 
     public enum DeveloperRotationStatusCodes
@@ -316,6 +413,9 @@ namespace Byster.Models.Services
         INITIALIZATION = 2,
         CHECKING = 3,
     }
+
+    
+
     public class DeveloperRotationService : IService, INotifyPropertyChanged
     {
 
@@ -338,7 +438,7 @@ namespace Byster.Models.Services
             }
         }
 
-        public Dictionary<string, bool> DeveloperRotations
+        public List<DeveloperRotation> DeveloperRotations
         {
             get
             {
@@ -574,12 +674,26 @@ namespace Byster.Models.Services
                     if (!result) return;
                     Task.Run(() =>
                     {
-                        AddRotation(SelectedClass.Value,
+                        if(AddRotation(EnteredName,
                                 EnteredDescription,
                                 SelectedType.Value,
                                 SelectedClass.Value,
                                 SelectedSpecialization.Value,
-                                SelectedRoletype.Value);
+                                SelectedRoletype.Value))
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                AddRotationSuccess?.Invoke();
+                            });
+                        }
+                        else
+                        {
+                            Dispatcher.Invoke(() =>
+                            {
+                                System.Windows.MessageBox.Show("Ошибка");
+                                AddRotationFail?.Invoke();
+                            });
+                        }
                     });
                 }));
             }
@@ -591,8 +705,8 @@ namespace Byster.Models.Services
             if(property == "SelectedType" || property == "SelectedRoletype" || property == "SelectedClass" || property == "SelectedSpecialization" ||
                 property == "EnteredName" || property == "EnteredDescription")
             {
-                if (SelectedType.Name.ToLower() == "pvp" || SelectedType.Name.ToLower() == "pve")
-                { 
+                if (SelectedType != null && (SelectedType.Name.ToLower() == "pvp" || SelectedType.Name.ToLower() == "pve"))
+                {
                     IsSpecChoiceEnabled = true;
                 }
                 else

@@ -12,7 +12,8 @@
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="Transparent" MouseLeftButtonDown="Window_MouseLeftButtonDown"
         KeyDown="Window_KeyDown"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        xmlns:vlc="clr-namespace:LibVLCSharp.WPF;assembly=LibVLCSharp.WPF">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -217,8 +218,7 @@
         <Grid Background="#A0000000" x:Name="mediaOpenedGrid" Grid.RowSpan="3" Visibility="{Binding IsMediaOpened}">
             <controls:MediaPresenterControl x:Name="playerControl" Player="{Binding ElementName=mediaPlayer}"/>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60">
-                <MediaElement x:Name="mediaPlayer" Source="{Binding SourceOfMediaToOpen, NotifyOnTargetUpdated=True, NotifyOnSourceUpdated=True}" Height="300" LoadedBehavior="Manual">
-                </MediaElement>
+                <vlc:VideoView x:Name="mediaPlayer" Content="{Binding Path=SourceOfMediaToOpen}" Height="450"/>
                 <StackPanel Orientation="Horizontal" x:Name="mediaControlsGrid" HorizontalAlignment="Center" Visibility="{Binding ElementName=playerControl, Path=ControlVisibility}">
                     <Button x:Name="playButton" Style="{StaticResource transparentButtonStyle}" Command="{Binding ElementName=playerControl, Path=PlayCommand}">
                         <TextBlock Style="{StaticResource infoTextBlockStyle}" Text="Play" Margin="10"/>

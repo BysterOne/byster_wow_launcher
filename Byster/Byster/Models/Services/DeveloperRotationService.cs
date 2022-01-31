@@ -22,6 +22,7 @@ namespace Byster.Models.Services
 
     public class DeveloperRotation : INotifyPropertyChanged
     {
+        private Visibility isShowInCollection = Visibility.Visible;
         private string path;
         private string displayedPath;
         private bool isEnabled;
@@ -52,6 +53,16 @@ namespace Byster.Models.Services
             {
                 isEnabled = value;
                 OnPropertyChanged("IsEnabled");
+            }
+        }
+
+        public Visibility IsShowInCollection
+        {
+            get => isShowInCollection;
+            set
+            {
+                isShowInCollection = value;
+                OnPropertyChanged("IsShowInCollection");
             }
         }
 
@@ -430,6 +441,18 @@ namespace Byster.Models.Services
         public Action AddRotationSuccess { get; set; }
         public Action AddRotationFail { get; set; }
 
+        private string searchRequest;
+
+        public string SearchRequest
+        {
+            get => searchRequest;
+            set
+            {
+                searchRequest = value;
+                OnPropertyChanged("SearchRequest");
+            }
+        }
+
         public string StatusCodeText
         {
             get
@@ -447,6 +470,7 @@ namespace Byster.Models.Services
         }
         public void Initialize(Dispatcher dispatcher)
         {
+            Dispatcher = dispatcher;
             core = new DeveloperRotationCore()
             {
                 RestService = this.RestService,
@@ -664,6 +688,8 @@ namespace Byster.Models.Services
         }
 
         private RelayCommand addCommand;
+        private RelayCommand saveCommand;
+        private RelayCommand searchCommand;
         public RelayCommand AddCommand
         {
             get
@@ -690,7 +716,6 @@ namespace Byster.Models.Services
                         {
                             Dispatcher.Invoke(() =>
                             {
-                                System.Windows.MessageBox.Show("Ошибка");
                                 AddRotationFail?.Invoke();
                             });
                         }
@@ -698,6 +723,43 @@ namespace Byster.Models.Services
                 }));
             }
         }
+
+        public RelayCommand SaveCommand
+        {
+            get
+            {
+                return saveCommand ?? (saveCommand = new RelayCommand(() =>
+                {
+                    core.SaveRotations();
+                }));
+            }
+        }
+
+        public RelayCommand SearchCommand
+        {
+            get
+            {
+                return searchCommand ?? (searchCommand = new RelayCommand(() =>
+                {
+                    if (SearchRequest == null) return;
+                    string strToSearch = SearchRequest.ToLower();
+                    foreach (var rot in DeveloperRotations)
+                    {
+                        if (string.IsNullOrEmpty(strToSearch) || rot.Path.ToLower().Contains(strToSearch))
+                        {
+                            rot.IsShowInCollection = Visibility.Visible;
+                        }
+                        else
+                        {
+                            rot.IsShowInCollection = Visibility.Collapsed;
+                        }
+                    }
+
+                }));
+            }
+        }
+
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string property = "")
         {

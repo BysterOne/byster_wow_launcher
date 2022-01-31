@@ -99,21 +99,34 @@ namespace Byster.Models.Utilities
         {
             if(!string.IsNullOrEmpty(networkPath))
             {
-                ImageItem imageItem = DownloadedItems.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + getExtensionOfNetworkSource(networkPath)));
-                if(imageItem != null)
+                if(getExtensionOfNetworkSource(networkPath) == ".mp4")
                 {
+                    ImageItem imageItem = new ImageItem()
+                    {
+                        PathOfNetworkSource = networkPath,
+                        PathOfCurrentLocalSource = "/Resources/Images/video-placeholder.png",
+                        PathOfLocalSource = "/Resources/Images/video-placeholder.png",
+                    };
                     return imageItem;
                 }
                 else
                 {
-                    imageItem = ItemsToDownload.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + getExtensionOfNetworkSource(networkPath)));
-                    if(imageItem != null)
+                    ImageItem imageItem = DownloadedItems.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + getExtensionOfNetworkSource(networkPath)));
+                    if (imageItem != null)
                     {
                         return imageItem;
                     }
                     else
                     {
-                        return AddToDownloadQueueOfNetworkSource(networkPath);
+                        imageItem = ItemsToDownload.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + getExtensionOfNetworkSource(networkPath)));
+                        if (imageItem != null)
+                        {
+                            return imageItem;
+                        }
+                        else
+                        {
+                            return AddToDownloadQueueOfNetworkSource(networkPath);
+                        }
                     }
                 }
             }

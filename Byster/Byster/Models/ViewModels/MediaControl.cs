@@ -9,7 +9,10 @@ using System.Windows;
 using System.Windows.Data;
 using System.Windows.Controls;
 using System.Reflection;
-
+using Byster.Models.Utilities;
+using Byster.Models.BysterModels;
+using LibVLCSharp.Shared;
+using LibVLCSharp.WPF;
 namespace Byster.Models.ViewModels
 {
     public class MediaControl : Control
@@ -23,29 +26,23 @@ namespace Byster.Models.ViewModels
             {
                 MessageBox.Show(uri, "Действие не определено");
             };
-            MediaElementProperty = DependencyProperty.Register("MediaElement", typeof(MediaElement), typeof(MediaControl), new PropertyMetadata()
+            MediaElementProperty = DependencyProperty.Register("MediaElement", typeof(Image), typeof(MediaControl), new PropertyMetadata()
             {
                 DefaultValue = null,
                 PropertyChangedCallback = (sender, e) =>
                 {
                     if (e.NewValue == null || e.NewValue == e.OldValue) return;
                     var mediaControl = sender as MediaControl;
-                    var mediaElement = e.NewValue as MediaElement;
-                    mediaElement.MediaOpened += (elementSender, args) =>
-                    {
-                        mediaElement.LoadedBehavior = MediaState.Manual;
-                        mediaElement.Play();
-                        mediaElement.Pause();
-                    };
+                    var mediaElement = e.NewValue as Image;
                 },
             });
         }
 
-        public MediaElement MediaElement
+        public Image MediaElement
         {
             get
             {
-                return (MediaElement)GetValue(MediaElementProperty);
+                return (Image)GetValue(MediaElementProperty);
             }
             set
             {
@@ -60,7 +57,7 @@ namespace Byster.Models.ViewModels
             {
                 return openCommand ?? (openCommand = new RelayCommand(() =>
                 {
-                    OpenAction?.Invoke(MediaElement?.Source?.AbsoluteUri ?? "");
+                    OpenAction?.Invoke((MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfCurrentLocalSource == "/Resources/Images/video-placeholder.png" ? (MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfNetworkSource : (MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfCurrentLocalSource);
                 }));
             }
         }
@@ -72,7 +69,7 @@ namespace Byster.Models.ViewModels
         public static readonly DependencyProperty PlayerProperty;
         static MediaPresenterControl()
         {
-            PlayerProperty = DependencyProperty.Register("Player", typeof(MediaElement), typeof(MediaPresenterControl), new PropertyMetadata()
+            PlayerProperty = DependencyProperty.Register("Player", typeof(VideoView), typeof(MediaPresenterControl), new PropertyMetadata()
             {
                 DefaultValue = null,
                 PropertyChangedCallback = propertyChangedCallback,
@@ -87,8 +84,8 @@ namespace Byster.Models.ViewModels
         private static void propertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.NewValue == null || e.NewValue == e.OldValue) return;
-            var player = (MediaElement)e.NewValue;
-            if (!string.IsNullOrEmpty(player.Source?.AbsolutePath ?? null) || (player.Source?.AbsolutePath.ToLower().EndsWith(".mp4") ?? false)) (sender as MediaPresenterControl).ControlVisibility = Visibility.Visible;
+            var player = (VideoView)e.NewValue;
+            if ((player.MediaPlayer.Media ?? null) != null || (player.MediaPlayer.Media?.Mrl?.ToLower().EndsWith(".mp4") ?? false)) (sender as MediaPresenterControl).ControlVisibility = Visibility.Visible;
             else (sender as MediaPresenterControl).ControlVisibility = Visibility.Collapsed;
             Binding.AddTargetUpdatedHandler(player, (playerSender, args) =>
             {
@@ -96,32 +93,38 @@ namespace Byster.Models.ViewModels
                 try
                 {
                     (sender as MediaPresenterControl).ControlVisibility = (!string.IsNullOrEmpty(player.Source?.AbsolutePath ?? "") && (player.Source?.AbsoluteUri.ToLower().EndsWith(".mp4") ?? false)) ? Visibility.Visible : Visibility.Hidden;
-                    player.Play();
+                    player.MediaPlayer.Play();
                 }
                 catch
                 {
                     (sender as MediaPresenterControl).ControlVisibility = Visibility.Hidden;
                 }
             });
-            Binding.RemoveTargetUpdatedHandler(player, (playerSender, args) =>
+            var oldPlayer = (MediaElement)e.OldValue;
+            if (oldPlayer != null)
             {
-                if (args.Property != MediaElement.SourceProperty) return;
-                try
+                Binding.RemoveTargetUpdatedHandler(oldPlayer, (playerSender, args) =>
                 {
-                    (sender as MediaPresenterControl).ControlVisibility = (!string.IsNullOrEmpty(player.Source?.AbsolutePath ?? "") && (player.Source?.AbsoluteUri.ToLower().EndsWith(".mp4") ?? false)) ? Visibility.Visible : Visibility.Hidden;
-                }
-                catch
-                {
-                    (sender as MediaPresenterControl).ControlVisibility = Visibility.Hidden;
-                }
-            });
+                    if (args.Property != MediaElement.SourceProperty) return;
+                    try
+                    {
+                        (sender as MediaPresenterControl).ControlVisibility = (!string.IsNullOrEmpty(oldPlayer.Source?.AbsolutePath ?? "") && (oldPlayer .Source?.AbsoluteUri.ToLower().EndsWith(".mp4") ?? false)) ? Visibility.Visible : Visibility.Hidden;
+                        player.Play();
+                    }
+                    catch
+                    {
+                        (sender as MediaPresenterControl).ControlVisibility = Visibility.Hidden;
+                    }
+                });
+            }
+            
         }
 
-        public MediaElement Player
+        public VideoView Player
         {
             get
             {
-                return (MediaElement)GetValue(PlayerProperty);
+                return (VideoView)GetValue(PlayerProperty);
             }
             set
             {

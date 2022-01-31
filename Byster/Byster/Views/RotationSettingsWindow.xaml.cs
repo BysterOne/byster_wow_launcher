@@ -42,7 +42,6 @@ namespace Byster.Views
             };
             model.DeveloperRotations.AddRotationFail = () =>
             {
-                MessageBox.Show("Ошибка");
                 var window = new InfoWindow("Ошибка", "Ошибка при создании ротации\n" + model.LastError);
                 window.ShowDialog();
             };

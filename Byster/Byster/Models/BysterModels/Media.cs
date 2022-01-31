@@ -16,7 +16,6 @@ namespace Byster.Models.BysterModels
         public void OnPropertyChanged(string property)
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-            Log($"Обновлён элемент {property}");
         }
 
         public ImageItem ImageItem { get; set; }
@@ -48,12 +47,12 @@ namespace Byster.Models.BysterModels
         public Media(string uri, MediaTypes type)
         {
             ImageItem = BackgroundImageDownloader.GetImageItemByNetworkPath(uri);
-            ImageItem.PropertyChanged += ImageItemCahnged;
+            ImageItem.PropertyChanged += ImageItemChanged;
             Uri = ImageItem.PathOfCurrentLocalSource;
             Type = type;
         }
 
-        private void ImageItemCahnged(object sender, PropertyChangedEventArgs e)
+        private void ImageItemChanged(object sender, PropertyChangedEventArgs e)
         {
             ImageItem item = (ImageItem)sender;
             Uri = item.PathOfCurrentLocalSource;

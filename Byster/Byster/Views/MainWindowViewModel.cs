@@ -181,7 +181,7 @@ namespace Byster.Views
         }
 
 
-        private string sourceOfMediaToOpen;
+        private string sourceOfMediaToOpen = "";
         public string SourceOfMediaToOpen
         {
             get { return sourceOfMediaToOpen; }

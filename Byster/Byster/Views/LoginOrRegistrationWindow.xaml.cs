@@ -176,7 +176,15 @@ namespace Byster.Views
         {
             authBlock.Visibility = Visibility.Collapsed;
             registerBlock.Visibility = Visibility.Visible;
-            this.Height = 520;
+            if((registerChoicesComboBox.SelectedItem as RegisterChoice).need_referral_code)
+            {
+                this.Height = 543;
+
+            }
+            else
+            {
+                this.Height = 500;
+            }
             loginBtn.IsDefault = false;
             registerBtn.IsDefault = true;
         }
@@ -242,6 +250,19 @@ namespace Byster.Views
         private void newPasswordConfirmBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
             if (newPasswordConfirmBox.Password == "") newPasswordConfirmBox.Tag = "Подтвердите пароль"; else newPasswordConfirmBox.Tag = "";
+        }
+
+        private void referalBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (!registerBlock.IsVisible) return;
+            if(referalBox.IsVisible)
+            {
+                this.Height = 543;
+            }
+            else
+            {
+                this.Height = 500;
+            }
         }
     }
 }

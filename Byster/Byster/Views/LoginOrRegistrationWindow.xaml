@@ -6,14 +6,15 @@
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
         mc:Ignorable="d"
-        Title="Byster - Вход"
-        Height="360"
+        Title="Byster - Регистрация"
+        Height="543"
         Width="370"
         ResizeMode="NoResize"
         WindowStartupLocation="CenterScreen"
         Background="Transparent"
         WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" Loaded="Window_Loaded"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        x:Name="window">
     <Window.Resources>
         <ResourceDictionary Source="./Styles.xaml"/>
     </Window.Resources>
@@ -23,15 +24,15 @@
         </Grid.Resources>
         <Border Background="{DynamicResource BackgroundWindowColor}">
             <Border.Effect>
-                    <DropShadowEffect Color="{DynamicResource EffectProductItemColor}" BlurRadius="15" ShadowDepth="0"/>
-                </Border.Effect>
-            </Border>
+                <DropShadowEffect Color="{DynamicResource EffectProductItemColor}" BlurRadius="15" ShadowDepth="0"/>
+            </Border.Effect>
+        </Border>
         <StackPanel>
             <Button x:Name="closeButton" HorizontalAlignment="Right" Style="{StaticResource uibStyle}" Height="45" Width="45" Click="closeButton_Click">
                 <Image Source="../Resources/Images/close-button-image.png" Stretch="Uniform" Margin="12"/>
             </Button>
             <Image Source="../Resources/Images/logo.png" Stretch="None" Margin="0 0 0 5"/>
-            <Grid x:Name="authBlock" Visibility="Visible">
+            <Grid x:Name="authBlock" Visibility="Collapsed">
                 <StackPanel Margin="20, 0">
                     <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
                     <PasswordBox Style="{StaticResource pbStyle}" x:Name="passwordBox" Tag="Пароль" PasswordChanged="passwordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
@@ -41,17 +42,19 @@
                     </TextBlock>
                 </StackPanel>
             </Grid>
-            <Grid x:Name="registerBlock" Visibility="Collapsed">
+            <Grid x:Name="registerBlock">
                 <StackPanel Margin="20, 0">
                     <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
                     <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
                     <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
-                    <TextBox x:Name="referalBox" Tag="Реферал код" Margin="{StaticResource marginUI}">
+                    <TextBlock Text="Откуда Вы узнали о Byster?" Style="{StaticResource infoTextBlockStyle}" Margin="0, 8,0,0"/>
+                    <ComboBox x:Name="registerChoicesComboBox" Margin="{StaticResource marginUI}" Style="{StaticResource combobStyle}"/>
+                    <TextBox x:Name="referalBox" Tag="Реферал код" Margin="{StaticResource marginUI}" IsVisibleChanged="referalBox_IsVisibleChanged">
                         <TextBox.Style>
                             <Style TargetType="TextBox" BasedOn="{StaticResource tbStyle}">
                                 <Style.Triggers>
                                     <DataTrigger Binding="{Binding ElementName=registerChoicesComboBox, Path=SelectedItem.need_referral_code}" Value="false">
-                                        <Setter Property="IsEnabled" Value="False"/>
+                                        <Setter Property="Visibility" Value="Collapsed"/>
                                         <Setter Property="Text" Value=""/>
                                         <Setter Property="Background" Value="{DynamicResource BackgroundUIColorHover}"/>
                                     </DataTrigger>
@@ -59,13 +62,12 @@
                             </Style>
                         </TextBox.Style>
                     </TextBox>
-                    <ComboBox x:Name="registerChoicesComboBox" Margin="{StaticResource marginUI}" Style="{StaticResource combobStyle}"/>
                     <Button Style="{StaticResource bStyle}" x:Name="registerBtn" Content="Зарегистрироваться" Click="registerBtn_Click" Margin="{StaticResource marginUI}"/>
                     <TextBlock Margin="{StaticResource marginUI}">
                         <Hyperlink x:Name="navigateToAuth" Style="{StaticResource hlStyle}" Click="navigateToAuth_Click">Авторизоваться?</Hyperlink>
                     </TextBlock>
                 </StackPanel>
-                
+
             </Grid>
         </StackPanel>
         <Grid Background="#A0000000" x:Name="autoAuthPresenterGrid">

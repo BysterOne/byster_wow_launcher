@@ -24,7 +24,8 @@ namespace Byster.Models.Utilities
 
         private static Thread downloadingThread;
 
-        private static SuspendToken suspendToken = new SuspendToken();
+        //private static SuspendToken suspendToken = new SuspendToken();
+        public static Mutex SuspendMutex { get; set; } = new Mutex();
         public static void Init()
         {
             ItemsToDownload = new Queue<ImageItem>();
@@ -50,12 +51,11 @@ namespace Byster.Models.Utilities
         {
             while(true)
             {
-                if(suspendToken.GetSuspendRequestStatus())
-                {
-                    suspendToken.AcceptSuspend();
-                }
-                if(!suspendToken.GetSuspendStatus())
-                {
+                SuspendMutex.WaitOne();
+                //suspendToken.mutex.WaitOne();
+                //suspendToken.AcceptSuspend();
+                //if(!suspendToken.GetSuspendStatus())
+                //{
                     if (ItemsToDownload.Count > 0)
                     {
                         try
@@ -76,7 +76,8 @@ namespace Byster.Models.Utilities
                             Log("Ошибка при скачивании", ex.Message, " - ", ex.ToString());
                         }
                     }
-                }
+                SuspendMutex.ReleaseMutex();
+                //}
                 Thread.Sleep(100);
             }
         }
@@ -151,12 +152,12 @@ namespace Byster.Models.Utilities
 
         public static void Suspend()
         {
-            suspendToken.RequestSuspend();
+            SuspendMutex.WaitOne();
         }
 
         public static void Resume()
         {
-            suspendToken.Resume();
+            SuspendMutex.ReleaseMutex();
         }
 
         private static string getExtensionOfNetworkSource(string netPath)
@@ -234,15 +235,18 @@ namespace Byster.Models.Utilities
 
     class SuspendToken
     {
+        Mutex mutex = new Mutex();
         bool isSuspendRequestCreated = false;
         bool isSuspended = false;
         public void RequestSuspend()
         {
+            mutex.WaitOne();
             if (isSuspendRequestCreated || isSuspended) return;
             isSuspendRequestCreated = true;
+            mutex.ReleaseMutex();
             while (!isSuspended)
             {
-
+               
             }
             return;
         }

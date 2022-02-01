@@ -78,7 +78,7 @@ namespace Byster.Views
                 if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
                 if (File.Exists("update.bat")) File.Delete("update.bat");
 
-                string version = "v" + Assembly.GetExecutingAssembly().GetName().Version.ToString();
+                string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
 
                 var response = App.Rest.Get(new RestRequest("launcher/check_updates"));
@@ -215,8 +215,7 @@ namespace Byster.Views
         private void updateApp(string versionToUpdate)
         {
             RestClient client = new RestClient("https://api.byster.ru/");
-            RestRequest downloadRequest = (RestRequest)new RestRequest("launcher/download").AddQueryParameter("version", versionToUpdate);
-            var response = client.Get(downloadRequest);
+            var response = client.Get(new RestRequest("launcher/download"));
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);

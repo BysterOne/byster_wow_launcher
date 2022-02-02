@@ -169,7 +169,7 @@ namespace Byster.Models.Services
             int counterErrorRepositories = 0;
             int counterTrigger = 0;
             StatusCode = DeveloperRotationStatusCodes.CHECKING;
-            
+
             if (!File.Exists(rotationConfigurationFilePath)) File.Create(rotationConfigurationFilePath).Close();
             string rawRotationsConf = File.ReadAllText(rotationConfigurationFilePath);
             Dictionary<string, bool> devRotationsdict = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotationsConf);
@@ -220,21 +220,6 @@ namespace Byster.Models.Services
                             errors.Add($"Ошибка синхронизации репозитория {path}");
                         }
                         counterTrigger--;
-                        
-                        string[] pathes = getAllFilesWithSpecifiedExtension(path, ".toc");
-                        foreach (string filePath in pathes)
-                        {
-                            FileInfo fileInfo = new FileInfo(filePath);
-                            if (fileInfo.Extension == ".toc")
-                            {
-                                if (DeveloperRotations.Find(item => item.Path == filePath) != null) continue;
-                                DeveloperRotations.Add(new DeveloperRotation()
-                                {
-                                    Path = filePath,
-                                    IsEnabled = false,
-                                });
-                            }
-                        }
                         Log("Синхронизация репозитория завершена", path);
                         semaphore.Release();
                     });
@@ -265,21 +250,6 @@ namespace Byster.Models.Services
                             errors.Add($"Ошибка синхронизации репозитория {path}");
                         }
                         counterTrigger--;
-
-                        string[] pathes = getAllFilesWithSpecifiedExtension(path, ".toc");
-                        foreach (string filePath in pathes)
-                        {
-                            FileInfo fileInfo = new FileInfo(filePath);
-                            if (fileInfo.Extension == ".toc")
-                            {
-                                if(DeveloperRotations.Find(item => item.Path == filePath) != null) continue;
-                                DeveloperRotations.Add(new DeveloperRotation()
-                                {
-                                    Path = filePath,
-                                    IsEnabled = false,
-                                });
-                            }
-                        }
                         Log("Синхронизация репозитория завершена", path);
                         semaphore.Release();
                     });
@@ -289,6 +259,42 @@ namespace Byster.Models.Services
             {
                 Thread.Sleep(1);
             }
+            string[] pathes = getAllFilesWithSpecifiedExtension(BaseDirectory, ".toc");
+            foreach(var filePath in pathes)
+            {
+                if(DeveloperRotations.Find((item) => item.Path == filePath) == null)
+                {
+                    DeveloperRotations.Add(new DeveloperRotation()
+                    {
+                        Path = filePath,
+                        IsEnabled = false,
+                    });
+                }
+            }
+            try
+            {
+                List<string> pathesToRemove = new List<string>();
+                foreach(var item in DeveloperRotations)
+                {
+                    if(!pathes.Contains(item.Path))
+                    {
+                        pathesToRemove.Add(item.Path);
+                    }
+                }
+                foreach(var path in pathesToRemove)
+                {
+                    try
+                    {
+                        DeveloperRotations.Remove(DeveloperRotations.Find(item => item.Path == path));
+                    }
+                    catch { }
+                }
+            }
+            catch (Exception ex)
+            {
+                System.Windows.MessageBox.Show(ex.ToString());
+            }
+
             SaveRotations();
             StatusCode = DeveloperRotationStatusCodes.IDLE;
             SyncronizationCompleted?.Invoke();
@@ -385,14 +391,13 @@ namespace Byster.Models.Services
                 if (gitCloneProcess.ExitCode != 0)
                 {
                     Log("Ошибка синхронизациии репозитория", $"Код эавершения: {gitCloneProcess.ExitCode}");
-                }           
-                string[] pathes = getAllFilesWithSpecifiedExtension(path, ".toc");
-                foreach (string filePath in pathes)
+                }
+                Log("Синхронизация репозитория завершена", path);
+                string[] pathes = getAllFilesWithSpecifiedExtension(BaseDirectory, ".toc");
+                foreach (var filePath in pathes)
                 {
-                    FileInfo fileInfo = new FileInfo(filePath);
-                    if (fileInfo.Extension == ".toc")
+                    if (DeveloperRotations.Find((item) => item.Path == filePath) == null)
                     {
-                        if (DeveloperRotations.Find(item => item.Path == filePath) != null) continue;
                         DeveloperRotations.Add(new DeveloperRotation()
                         {
                             Path = filePath,
@@ -400,7 +405,13 @@ namespace Byster.Models.Services
                         });
                     }
                 }
-                Log("Синхронизация репозитория завершена", path);
+                foreach (var item in DeveloperRotations)
+                {
+                    if (!pathes.Contains(item.Path))
+                    {
+                        DeveloperRotations.Remove(item);
+                    };
+                }
                 SaveRotations();
                 semaphore.Release();
             });

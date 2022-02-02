@@ -186,14 +186,17 @@ namespace Byster.Views
 
         private void closeApp()
         {
-            foreach(Window window in App.Current.Windows)
+            Dispatcher.Invoke(() =>
             {
-                App.Current.Dispatcher.Invoke(new Action(() =>
+                foreach (Window window in App.Current.Windows)
                 {
-                    window.Close();
-                }));
-                App.Current.Shutdown();
-            }
+                    App.Current.Dispatcher.Invoke(new Action(() =>
+                    {
+                        window.Close();
+                    }));
+                    App.Current.Shutdown();
+                }
+            });
         }
         private void startApp()
         {

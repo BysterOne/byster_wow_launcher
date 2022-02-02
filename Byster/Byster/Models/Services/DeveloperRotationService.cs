@@ -195,7 +195,7 @@ namespace Byster.Models.Services
                 semaphore.WaitOne();
                 if (!Directory.Exists(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name + "\\.git"))
                 {
-                    string path = BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name;
+                    string path = BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass;
 
                     counterTrigger++;
                     
@@ -366,8 +366,9 @@ namespace Byster.Models.Services
             if (!Directory.Exists(BaseDirectory + "\\" + devRotation.type)) Directory.CreateDirectory(BaseDirectory + "\\" + devRotation.type);
             if (!Directory.Exists(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass)) Directory.CreateDirectory(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass);
             if (!Directory.Exists(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name)) Directory.CreateDirectory(BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name);
-                semaphore.WaitOne();
-            string path = BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name;               
+                
+            semaphore.WaitOne();
+            string path = BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass;               
             Task.Run(() =>
             {
                 Log("Синхронизация репозитория - создание репозитория - создание новой ротации", path);
@@ -694,6 +695,7 @@ namespace Byster.Models.Services
         private RelayCommand addCommand;
         private RelayCommand saveCommand;
         private RelayCommand searchCommand;
+        private RelayCommand syncCommand;
         public RelayCommand AddCommand
         {
             get
@@ -763,6 +765,18 @@ namespace Byster.Models.Services
             }
         }
 
+        public RelayCommand SyncCommand
+        {
+            get
+            {
+                return syncCommand ?? (syncCommand = new RelayCommand(() =>
+                {
+                    Task.Run(() => UpdateData());
+                }));
+            }
+        }
+
+
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string property = "")
@@ -787,6 +801,22 @@ namespace Byster.Models.Services
                 else
                 {
                     IsReadyToAddRotation = false;
+                }
+            }
+            if(property == "SearchRequest")
+            {
+                if (SearchRequest == null) return;
+                string strToSearch = SearchRequest.ToLower();
+                foreach (var rot in DeveloperRotations)
+                {
+                    if (string.IsNullOrEmpty(strToSearch) || rot.Path.ToLower().Contains(strToSearch))
+                    {
+                        rot.IsShowInCollection = Visibility.Visible;
+                    }
+                    else
+                    {
+                        rot.IsShowInCollection = Visibility.Collapsed;
+                    }
                 }
             }
         }

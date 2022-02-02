@@ -319,7 +319,7 @@ namespace Byster.Views
             SessionService.Initialize(dispatcher);
             if(UserInfo.UserType == BranchType.DEVELOPER)
             {
-                Task.Run(() => DeveloperRotations.Initialize(dispatcher));
+                DeveloperRotations.Initialize(dispatcher);
             }
             UpdateData();
             checkRotations();

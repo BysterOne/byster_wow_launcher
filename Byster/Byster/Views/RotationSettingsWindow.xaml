@@ -5,6 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:lb="clr-namespace:Byster.Models.Utilities"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
         Title="Меню выбора ротаций" Height="560" Width="730"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
@@ -41,10 +42,11 @@
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
-                            <ColumnDefinition Width="120"/>
+                            <ColumnDefinition Width="160"/>
                         </Grid.ColumnDefinitions>
-                        <TextBox x:Name="searchRequest" Style="{DynamicResource tbStyle}" Margin="0, 0, 20, 0" Grid.Column="0" Text="{Binding Path=DeveloperRotations.SearchRequest, Mode=TwoWay}"/>
-                        <Button IsDefault="True" Command="{Binding DeveloperRotations.SearchCommand}" x:Name="searchBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{DynamicResource transparentButtonStyle}" Content="Искать" Grid.Column="1"/>
+                        <TextBox x:Name="searchRequest" Style="{DynamicResource tbStyle}" Margin="0, 0, 20, 0" Grid.Column="0" Text="{Binding Path=DeveloperRotations.SearchRequest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        </TextBox>
+                        <Button IsDefault="True" Command="{Binding DeveloperRotations.SyncCommand}" x:Name="searchBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{DynamicResource transparentButtonStyle}" Content="Синхронизировать" Grid.Column="1"/>
                     </Grid>
                 </StackPanel>
             </Grid>

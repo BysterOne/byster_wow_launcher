@@ -478,6 +478,7 @@ namespace Byster.Models.Services
             };
             core.EmptyConfigurationRead += () =>
             {
+                Log("Конфигурация не найдена. Установка нового пути для сохранения");
                 FolderBrowserDialog dialog = new FolderBrowserDialog();
                 dialog.ShowNewFolderButton = true;
                 dialog.Description = "Выберите директорию для сохранения ротация для разработчиков";
@@ -494,7 +495,6 @@ namespace Byster.Models.Services
                 IsReadyForUsing = core.StatusCode == DeveloperRotationStatusCodes.IDLE ? Visibility.Collapsed : Visibility.Visible;
                 OnPropertyChanged("StatusCodeText");
             };
-            
             core.Initialize();
         }
 

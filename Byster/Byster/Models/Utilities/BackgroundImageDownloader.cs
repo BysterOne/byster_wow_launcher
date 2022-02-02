@@ -138,7 +138,7 @@ namespace Byster.Models.Utilities
         {
             if (string.IsNullOrEmpty(pathToImage)) return null;
             string newLocalPath = ImageRootPath + HashCalc.GetMD5Hash(pathToImage) + getExtensionOfNetworkSource(pathToImage);
-            File.Create(newLocalPath).Close();
+            //File.Create(newLocalPath).Close();
             ImageItem creatingItem = new ImageItem()
             {
                 PathOfNetworkSource = pathToImage,

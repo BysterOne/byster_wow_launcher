@@ -479,16 +479,19 @@ namespace Byster.Models.Services
             core.EmptyConfigurationRead += () =>
             {
                 Log("Конфигурация не найдена. Установка нового пути для сохранения");
-                FolderBrowserDialog dialog = new FolderBrowserDialog();
-                dialog.ShowNewFolderButton = true;
-                dialog.Description = "Выберите директорию для сохранения ротация для разработчиков";
-                DialogResult dialogResult;
-                do
+                Dispatcher.Invoke(() =>
                 {
-                    dialogResult = dialog.ShowDialog();
-                }
-                while (dialogResult != DialogResult.OK);
-                core.ChangeBaseDirectory(dialog.SelectedPath);
+                    FolderBrowserDialog dialog = new FolderBrowserDialog();
+                    dialog.ShowNewFolderButton = true;
+                    dialog.Description = "Выберите директорию для сохранения ротаций для разработчиков";
+                    DialogResult dialogResult = DialogResult.None;
+                    do
+                    {
+                        dialogResult = dialog.ShowDialog();
+                    }
+                    while (dialogResult != DialogResult.OK);
+                    core.ChangeBaseDirectory(dialog.SelectedPath);
+                });
             };
             core.StatusCodeChanged += () =>
             {

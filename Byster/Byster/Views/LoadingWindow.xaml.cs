@@ -21,7 +21,7 @@ using Byster.Models.Utilities;
 using System.Windows.Media.Animation;
 using Microsoft.Win32;
 using Byster.Models.RestModels;
-
+using Newtonsoft.Json;
 using NLog;
 
 namespace Byster.Views
@@ -85,7 +85,7 @@ namespace Byster.Views
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}\nСообщние ошибки от сервера: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "Нет ответа от сервера"}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                         closeApp();
                         return;
                     }
@@ -221,7 +221,7 @@ namespace Byster.Views
             var response = client.Get(new RestRequest("launcher/download"));
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}\nСообщние ошибки от сервера: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "Нет ответа от сервера"}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 closeApp();
                 return;
             }

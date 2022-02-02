@@ -148,6 +148,7 @@ namespace Byster.Models.Services
             InitializationStarted?.Invoke();
             StatusCode = DeveloperRotationStatusCodes.INITIALIZATION;
             readConfFile();
+            while(!IsReadyToSyncronization) { }
             DeveloperRotations = new List<DeveloperRotation>();
             Task.Run(() => UpdateData());
             InitializationCompleted?.Invoke(); 

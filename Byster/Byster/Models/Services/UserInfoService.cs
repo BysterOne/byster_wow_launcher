@@ -150,6 +150,14 @@ namespace Byster.Models.Services
             }
             (Username, ReferalCode, BonusBalance, Currency) = (_usernane, _referalcode, _bonuses, _currency);
             UserType = RestService.GetUserType();
+            if(UserType == BranchType.MASTER || UserType == BranchType.UNKNOWN)
+            {
+                SetBranch(new Branch(BranchType.MASTER));
+            }
+            else if(UserType == BranchType.TEST && Branch == "dev")
+            {
+                SetBranch(new BysterModels.Branch(BranchType.MASTER));
+            }
         }
 
         public void UpdateData()

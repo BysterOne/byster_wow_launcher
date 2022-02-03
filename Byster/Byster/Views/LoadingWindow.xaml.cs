@@ -35,6 +35,11 @@ namespace Byster.Views
         public LoadingWindow()
         {
             InitializeComponent();
+            if(Environment.OSVersion.Version.Major <= 6)
+            {
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+            }
             string currentDir = Directory.GetCurrentDirectory();
 
             var config = new NLog.Config.LoggingConfiguration();

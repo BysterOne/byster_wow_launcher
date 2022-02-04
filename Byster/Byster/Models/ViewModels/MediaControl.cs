@@ -89,18 +89,17 @@ namespace Byster.Models.ViewModels
             if (e.OldValue == e.NewValue || e.NewValue == null) return;
             MediaPresenterControl mediaPresenterControl = (MediaPresenterControl)sender;
             MediaElement mediaElement = (MediaElement)e.NewValue;
-            if(mediaElement.LoadedBehavior != MediaState.Manual) mediaElement.LoadedBehavior = MediaState.Manual;
-            Binding.AddTargetUpdatedHandler(mediaElement, (mediaElementSender, sce) =>
+            Binding.AddSourceUpdatedHandler(mediaElement, (mediaElementSender, sce) =>
             {
                 if (sce.Property != MediaElement.SourceProperty) return;
                 try
                 {
-                    string source = mediaElement.Source.AbsoluteUri;
+                    string source = mediaElement.Source.AbsolutePath;
                     mediaPresenterControl.ControlVisibility = source.EndsWith(".mp4") ? Visibility.Visible : Visibility.Collapsed;
                 }
                 catch
                 {
-                    mediaPresenterControl.ControlVisibility = Visibility.Visible;
+                    mediaPresenterControl.ControlVisibility = Visibility.Collapsed;
                 }
                 mediaElement.Play();
             });

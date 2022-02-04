@@ -988,8 +988,8 @@
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
                                 <Grid Cursor="Hand">
-                                    <viewmodels:MediaControl MediaElement="{Binding ElementName=mediaElement}" x:Name="mediaControl"/>
-                                    <Image x:Name="mediaElement" Margin="5, 0" RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Path=Uri}"/>
+                                    <viewmodels:MediaControl MediaElement="{Binding ElementName=mediaImage}" x:Name="mediaControl"/>
+                                    <Image x:Name="mediaImage" Margin="5, 0" RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Path=Uri}"/>
                                     <Grid Visibility="Collapsed" x:Name="waterPlayButton" VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <Path Data="M 0 0 L 0 16 L 16 8 Z" Fill="{DynamicResource MediaPlayButtonColor}"/>
                                     </Grid>

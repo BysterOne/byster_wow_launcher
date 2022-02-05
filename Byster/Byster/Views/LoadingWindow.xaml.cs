@@ -38,7 +38,10 @@ namespace Byster.Views
             if(Environment.OSVersion.Version.Major <= 6)
             {
                 ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol =   SecurityProtocolType.Tls
+                                                       | SecurityProtocolType.Tls11
+                                                       | SecurityProtocolType.Tls12
+                                                       | SecurityProtocolType.Ssl3;
             }
             string currentDir = Directory.GetCurrentDirectory();
 
@@ -63,7 +66,10 @@ namespace Byster.Views
 
             // Apply config           
             NLog.LogManager.Configuration = config;
-
+            App.Current.DispatcherUnhandledException += (sender, e) =>
+            {
+                BysterLogger.Log("Ошибка", e.Exception.Message, e.Exception.StackTrace);
+            };
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

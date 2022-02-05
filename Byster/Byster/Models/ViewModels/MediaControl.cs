@@ -56,7 +56,7 @@ namespace Byster.Models.ViewModels
             {
                 return openCommand ?? (openCommand = new RelayCommand(() =>
                 {
-                   //OpenAction?.Invoke((MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfCurrentLocalSource == "/Resources/Images/video-placeholder.png" ? (MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfNetworkSource : (MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfCurrentLocalSource);
+                   OpenAction?.Invoke((MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfCurrentLocalSource == "/Resources/Images/video-placeholder.png" ? (MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfNetworkSource : (MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfCurrentLocalSource);
                 }));
             }
         }
@@ -72,7 +72,7 @@ namespace Byster.Models.ViewModels
         public static readonly DependencyProperty PlayerProperty;
         static MediaPresenterControl()
         {
-            PlayerProperty = DependencyProperty.Register("Player", typeof(Frame), typeof(MediaPresenterControl), new PropertyMetadata()
+            PlayerProperty = DependencyProperty.Register("Player", typeof(MediaElement), typeof(MediaPresenterControl), new PropertyMetadata()
             {
                 DefaultValue = null,
                 PropertyChangedCallback = propertyChangedCallback,
@@ -86,14 +86,31 @@ namespace Byster.Models.ViewModels
 
         private static void propertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
-
+            if (e.OldValue == e.NewValue || e.NewValue == null) return;
+            MediaPresenterControl mediaPresenterControl = (MediaPresenterControl)sender;
+            MediaElement mediaElement = (MediaElement)e.NewValue;
+            Binding.AddSourceUpdatedHandler(mediaElement, (mediaElementSender, sce) =>
+            {
+                if (sce.Property != MediaElement.SourceProperty) return;
+                try
+                {
+                    string source = mediaElement.Source.AbsolutePath;
+                    mediaPresenterControl.ControlVisibility = source.EndsWith(".mp4") ? Visibility.Visible : Visibility.Collapsed;
+                }
+                catch
+                {
+                    mediaPresenterControl.ControlVisibility = Visibility.Collapsed;
+                }
+                mediaElement.Play();
+            });
+            if(e.OldValue != null) { }
         }
 
-        public Frame Player
+        public MediaElement Player
         {
             get
             {
-                return (Frame)GetValue(PlayerProperty);
+                return (MediaElement)GetValue(PlayerProperty);
             }
             set
             {

@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,7 +31,7 @@ namespace Byster.Views
     /// </summary>
     public partial class LoadingWindow : Window
     {
-
+        public string[] TrustedHosts = new string[] {"api.byster.ru"};
         public LoadingWindow()
         {
             InitializeComponent();
@@ -42,6 +42,21 @@ namespace Byster.Views
                                                        | SecurityProtocolType.Tls11
                                                        | SecurityProtocolType.Tls12
                                                        | SecurityProtocolType.Ssl3;
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
+                {
+                    if (sslPolicyErrors == SslPolicyErrors.None)
+                    {
+                        return true;
+                    }
+
+                    var request = sender as HttpWebRequest;
+                    if (request != null)
+                    {
+                        return TrustedHosts.Contains(request.RequestUri.Host);
+                    }
+
+                    return false;
+                };
             }
             string currentDir = Directory.GetCurrentDirectory();
 

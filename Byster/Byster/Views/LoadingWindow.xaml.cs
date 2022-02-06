@@ -35,7 +35,7 @@ namespace Byster.Views
         public LoadingWindow()
         {
             InitializeComponent();
-            if(Environment.OSVersion.Version.Major <= 6)
+            if(Environment.OSVersion.Version.Major <= 7)
             {
                 ServicePointManager.Expect100Continue = true;
                 ServicePointManager.SecurityProtocol =   SecurityProtocolType.Tls

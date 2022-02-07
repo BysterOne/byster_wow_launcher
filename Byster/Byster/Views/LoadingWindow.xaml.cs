@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -31,14 +31,32 @@ namespace Byster.Views
     /// </summary>
     public partial class LoadingWindow : Window
     {
-
+        public string[] TrustedHosts = new string[] {"api.byster.ru"};
         public LoadingWindow()
         {
             InitializeComponent();
-            if(Environment.OSVersion.Version.Major <= 6)
+            if(Environment.OSVersion.Version.Major <= 7)
             {
                 ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                ServicePointManager.SecurityProtocol =   SecurityProtocolType.Tls
+                                                       | SecurityProtocolType.Tls11
+                                                       | SecurityProtocolType.Tls12
+                                                       | SecurityProtocolType.Ssl3;
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
+                {
+                    if (sslPolicyErrors == SslPolicyErrors.None)
+                    {
+                        return true;
+                    }
+
+                    var request = sender as HttpWebRequest;
+                    if (request != null)
+                    {
+                        return TrustedHosts.Contains(request.RequestUri.Host);
+                    }
+
+                    return false;
+                };
             }
             string currentDir = Directory.GetCurrentDirectory();
 
@@ -63,7 +81,10 @@ namespace Byster.Views
 
             // Apply config           
             NLog.LogManager.Configuration = config;
-
+            App.Current.DispatcherUnhandledException += (sender, e) =>
+            {
+                BysterLogger.Log("Ошибка", e.Exception.Message, e.Exception.StackTrace);
+            };
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

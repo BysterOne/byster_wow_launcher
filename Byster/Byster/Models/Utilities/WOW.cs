@@ -9,7 +9,7 @@ using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading;
 using Jupiter;
-
+using static Byster.Models.Utilities.BysterLogger;
 namespace Byster.Models.Utilities
 {
     public class WoW
@@ -102,39 +102,53 @@ namespace Byster.Models.Utilities
 
             foreach (var w in windows)
             {
-                uint pid;
-                GetWindowThreadProcessId(w.Key, out pid);
-
-                if (GetWowByPid((int)pid) != null)
-                    continue;
-
-                WoW wow = new WoW
+                try
                 {
-                    Process = Process.GetProcessById((int)pid),
-                    Memory = new MemoryModule((int)pid)
-                };
+                    uint pid;
+                    GetWindowThreadProcessId(w.Key, out pid);
 
-                Wows.Add(wow);
+                    if (GetWowByPid((int)pid) != null)
+                        continue;
 
-                OnWowFounded?.Invoke(wow);
-                if(!isFirstWowFound)
-                {
-                    isFirstWowFound = true;
-                    OnFirstWowFound?.Invoke(wow);
+                    WoW wow = new WoW
+                    {
+                        Process = Process.GetProcessById((int)pid),
+                        Memory = new MemoryModule((int)pid)
+                    };
+
+                    Wows.Add(wow);
+
+                    OnWowFounded?.Invoke(wow);
+                    if (!isFirstWowFound)
+                    {
+                        isFirstWowFound = true;
+                        OnFirstWowFound?.Invoke(wow);
+                    }
+                    Update(wow);
                 }
-                Update(wow);
+                catch
+                {
+
+                }
             }
 
             for (int i = 0; i < Wows.Count; i++)
             {
                 var w = Wows[i];
-                if (w.Process.HasExited)
+                try
+                {
+                    if (w.Process.HasExited)
+                    {
+                        Exited(w);
+                        i--;
+                    }
+                    else
+                        Update(w);
+                }
+                catch
                 {
                     Exited(w);
-                    i--;
                 }
-                else
-                    Update(w);
             }
         }
 
@@ -159,12 +173,13 @@ namespace Byster.Models.Utilities
                     w.Name = _(ref updated, w.Name, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79D18, 30)));
                     w.Class = _(ref updated, w.Class, (Classes)w.Memory.ReadVirtualMemory<byte>((IntPtr)0xC79E89));
                 }
+                if (updated)
+                    OnWowChanged?.Invoke(w);
             }
-            catch { }
-            
-
-            if (updated)
-                OnWowChanged?.Invoke(w);
+            catch
+            {
+                Exited(w);
+            }
         }
 
         private T _<T>(ref bool updated, T oldValue, T newValue)

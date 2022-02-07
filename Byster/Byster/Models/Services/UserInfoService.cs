@@ -153,10 +153,12 @@ namespace Byster.Models.Services
             if(UserType == BranchType.MASTER || UserType == BranchType.UNKNOWN)
             {
                 SetBranch(new Branch(BranchType.MASTER));
+                SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
             }
-            else if(UserType == BranchType.TEST && Branch == "dev")
+            else if(UserType == BranchType.TEST)
             {
-                SetBranch(new BysterModels.Branch(BranchType.MASTER));
+                if(Branch == "dev") SetBranch(new BysterModels.Branch(BranchType.MASTER));
+                SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
             }
         }
 

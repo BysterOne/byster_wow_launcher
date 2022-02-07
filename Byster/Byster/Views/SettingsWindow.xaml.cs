@@ -47,6 +47,7 @@ namespace Byster.Views
             }
             else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.MASTER)
             {
+                consoleSwitch.Visibility = Visibility.Collapsed;
                 testElementGrid.Visibility = Visibility.Collapsed;
                 this.Height = masterGrid.Height + nameGrid.Height + 30;
             }

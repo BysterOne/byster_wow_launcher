@@ -44,7 +44,7 @@ namespace Byster.Views
                                                        | SecurityProtocolType.Ssl3;
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
                 {
-                    if (sslPolicyErrors == SslPolicyErrors.None)
+                    if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None)
                     {
                         return true;
                     }
@@ -83,7 +83,8 @@ namespace Byster.Views
             NLog.LogManager.Configuration = config;
             App.Current.DispatcherUnhandledException += (sender, e) =>
             {
-                BysterLogger.Log("Ошибка", e.Exception.Message, e.Exception.StackTrace);
+                BysterLogger.Log("Fatal:Необработанное исключение", e.Exception.Message, e.Exception.StackTrace);
+                e.Handled = true;
             };
         }
 

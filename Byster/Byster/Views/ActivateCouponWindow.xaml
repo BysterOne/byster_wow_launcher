@@ -8,7 +8,8 @@
         Title="Активация купона" Height="185" Width="300"
         ResizeMode="NoResize" WindowStartupLocation="CenterScreen" WindowStyle="None"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        Icon="/byster.ico">
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>

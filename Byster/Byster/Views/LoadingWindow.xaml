@@ -7,8 +7,9 @@
         mc:Ignorable="d"
         Title="Byster - Загрузка" Height="180" Width="180"
         WindowStyle="None" WindowStartupLocation="CenterScreen" ResizeMode="NoResize"
-        Background="Transparent" Icon="/byster.ico" Loaded="Window_Loaded" MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        AllowsTransparency="True">
+        Background="Transparent" Loaded="Window_Loaded" MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        AllowsTransparency="True"
+        Icon="/byster.ico">
     <Window.Resources>
         <ResourceDictionary Source="./Styles.xaml"/>
     </Window.Resources>

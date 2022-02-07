@@ -8,7 +8,8 @@
         Title="LinkPresenterWindow" Height="420" Width="400"
         ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen" WindowStyle="None"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
-        AllowsTransparency="True">
+        AllowsTransparency="True"
+        Icon="/byster.ico">
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>

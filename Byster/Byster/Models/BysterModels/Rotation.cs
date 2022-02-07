@@ -37,7 +37,7 @@ namespace Byster.Models.BysterModels
             }
         }
 
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             if (PropertyChanged != null)
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
@@ -49,25 +49,25 @@ namespace Byster.Models.BysterModels
         {
             Id = response.rotation.id;
             ExpiringTime = DateTime.Parse(response.expired_date).Year <= 2050 ? DateTime.Parse(response.expired_date).ToString("dd.MM.yyyy HH:mm") : "Навсегда";
-            RotationClass = new ClassWOW(ClassWOW.GetClassByName(response.rotation.klass));
-            RoleOfRotation = new RotationRole(RotationRole.GetRoleByName(response.rotation.role_type));
-            SpecOfRotation = new RotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));
-            Type = new RotationType(RotationType.GetTypeByName(response.rotation.type));
+            RotationClass = ClassWOW.GetClassByEnumClass(ClassWOW.GetClassByName(response.rotation.klass));
+            RoleOfRotation = RotationRole.GetRotationRoleByEnumRotationRole(RotationRole.GetRoleByName(response.rotation.role_type));
+            SpecOfRotation = RotationSpecialization.GetRotationSpecializationByEnumRotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));
+            Type = RotationType.GetRotationTypeByRotationTypes(RotationType.GetTypeByName(response.rotation.type));
             Name = response.rotation.name;
 
             Medias = new List<Media>();
-            foreach(var restMedia in response.rotation.media)
+            foreach (var restMedia in response.rotation.media)
             {
                 Medias.Add(new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type)));
             }
 
-            ImageUri = 
+            ImageUri =
                 SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
-                Medias.Count > 0 ?                                                          Medias[0].Uri :
-                Type.Name.ToLower() == "bot" ?                                                   "/Resources/Images/bot-icon-default.png" :
-                Type.Name.ToLower() == "utility" ?                                               "/Resources/Images/utility-icon-default.png" :
+                Medias.Count > 0 ? Medias[0].Uri :
+                Type.Name.ToLower() == "bot" ? "/Resources/Images/bot-icon-default.png" :
+                Type.Name.ToLower() == "utility" ? "/Resources/Images/utility-icon-default.png" :
                                                                                             "/Resources/Images/utility-icon-default.png";
-            if(SpecOfRotation.EnumRotationSpecialization == RotationSpecializations.NULL && Medias.Count > 0)
+            if (SpecOfRotation.EnumRotationSpecialization == RotationSpecializations.NULL && Medias.Count > 0)
             {
                 Medias[0].PropertyChanged += (object obj, PropertyChangedEventArgs e) =>
                 {
@@ -78,7 +78,7 @@ namespace Byster.Models.BysterModels
                     Type.Name.ToLower() == "utility" ? "/Resources/Images/utility-icon-default.png" :
                                                                                                 "/Resources/Images/utility-icon-default.png";
                 };
-            }      
+            }
         }
     }
 
@@ -89,10 +89,10 @@ namespace Byster.Models.BysterModels
         public ShopRotation(RestRotationShop rotation)
         {
             Id = rotation.id;
-            RotationClass = new ClassWOW(ClassWOW.GetClassByName(rotation.klass));
-            RoleOfRotation = new RotationRole(RotationRole.GetRoleByName(rotation.role_type));
-            SpecOfRotation = new RotationSpecialization(RotationSpecialization.GetSpecByName(rotation.specialization));
-            Type = new RotationType(RotationType.GetTypeByName(rotation.type));
+            RotationClass = ClassWOW.GetClassByEnumClass(ClassWOW.GetClassByName(rotation.klass));
+            RoleOfRotation = RotationRole.GetRotationRoleByEnumRotationRole(RotationRole.GetRoleByName(rotation.role_type));
+            SpecOfRotation = RotationSpecialization.GetRotationSpecializationByEnumRotationSpecialization(RotationSpecialization.GetSpecByName(rotation.specialization));
+            Type = RotationType.GetRotationTypeByRotationTypes(RotationType.GetTypeByName(rotation.type));
             Name = rotation.name;
 
             Description = rotation.description;
@@ -104,13 +104,27 @@ namespace Byster.Models.BysterModels
 
             ImageUri =
                 SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
-                Medias.Count > 0 ?                                                          Medias[0].Uri :
+                Medias.Count > 0 ? Medias[0].Uri :
                                                                                             "/Resources/Images/image-placeholder.png";
         }
     }
 
     public class RotationType
     {
+        public static List<RotationType> AllTypes { get; set; }
+        static RotationType()
+        {
+            AllTypes = new List<RotationType>();
+            for (int i = 0; i < 4; i++)
+            {
+                AllTypes.Add(new RotationType((RotationTypes)i));
+            }
+        }
+        public static RotationType GetRotationTypeByRotationTypes(RotationTypes enumType)
+        {
+            return AllTypes.Where(_type => _type.EnumType == enumType).FirstOrDefault();
+        }
+
         public RotationTypes EnumType { get; set; }
         public string Name { get; set; }
         public string ImageUri { get; set; }
@@ -123,9 +137,9 @@ namespace Byster.Models.BysterModels
 
         public static RotationTypes GetTypeByName(string name)
         {
-            for(int i = 0; i < 4; i++)
+            for (int i = 0; i < 4; i++)
             {
-                if(((RotationTypes)i).ToString().ToLower() == name.ToLower())
+                if (((RotationTypes)i).ToString().ToLower() == name.ToLower())
                 {
                     return (RotationTypes)i;
                 }
@@ -145,7 +159,22 @@ namespace Byster.Models.BysterModels
 
     public class RotationRole
     {
-        
+        public static List<RotationRole> AllRotationRoles { get; set; }
+        static RotationRole()
+        {
+            AllRotationRoles = new List<RotationRole>();
+            for (int i = 0; i < 5; i++)
+            {
+                AllRotationRoles.Add(new RotationRole((RotationRoles)i));
+            }
+        }
+
+        public static RotationRole GetRotationRoleByEnumRotationRole(RotationRoles enumRole)
+        {
+            return AllRotationRoles.Where(_role => _role.EnumRotationRole == enumRole).FirstOrDefault();
+        }
+
+
         public string Name { get; set; }
         public string ImageUri { get; set; }
         public RotationRoles EnumRotationRole { get; set; }
@@ -160,8 +189,9 @@ namespace Byster.Models.BysterModels
                 "DPS",
                 "TANK",
                 "HEAL",
+                "placeholder",
             };
-            if(string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return RotationRoles.ANY;
             }
@@ -179,6 +209,7 @@ namespace Byster.Models.BysterModels
                 "DPS",
                 "Tank",
                 "Heal",
+                "placeholder",
             };
             string rootUri = "/Resources/Images/Roles/";
             Name = names[(int)role];
@@ -195,8 +226,23 @@ namespace Byster.Models.BysterModels
         NULL = 4,
     }
 
+
     public class RotationSpecialization
     {
+        public static List<RotationSpecialization> AllSpecializations { get; set; }
+        static RotationSpecialization()
+        {
+            AllSpecializations = new List<RotationSpecialization>();
+            for (int i = 0; i < 32; i++)
+            {
+                AllSpecializations.Add(new RotationSpecialization((RotationSpecializations)i));
+            }
+        }
+
+        public static RotationSpecialization GetRotationSpecializationByEnumRotationSpecialization(RotationSpecializations enumSpec)
+        {
+            return AllSpecializations.Where(_spec => _spec.EnumRotationSpecialization == enumSpec).FirstOrDefault();
+        }
 
         public string Name { get; set; }
         public string ImageUri { get; set; }
@@ -239,7 +285,7 @@ namespace Byster.Models.BysterModels
                 "RESTORDRUID",
                 null,
             };
-            if(string.IsNullOrEmpty(name))
+            if (string.IsNullOrEmpty(name))
             {
                 return RotationSpecializations.NULL;
             }
@@ -248,6 +294,8 @@ namespace Byster.Models.BysterModels
                 return (RotationSpecializations)names.IndexOf(name.ToUpper());
             }
         }
+
+
 
         public RotationSpecialization() { }
 
@@ -327,7 +375,7 @@ namespace Byster.Models.BysterModels
                 "RESTORDRUID",
                 null,
             };
-            if(Name != null)
+            if (Name != null)
             {
                 ImageUri = rootUri + imageNames[(int)spec] + ".png";
 

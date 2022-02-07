@@ -14,7 +14,8 @@
         Background="Transparent"
         WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" Loaded="Window_Loaded"
         AllowsTransparency="True"
-        x:Name="window">
+        x:Name="window"
+        Icon="/byster.ico">
     <Window.Resources>
         <ResourceDictionary Source="./Styles.xaml"/>
     </Window.Resources>

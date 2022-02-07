@@ -8,6 +8,20 @@ namespace Byster.Models.BysterModels
 {
     public class ClassWOW
     {
+        public static List<ClassWOW> AllClasses { get; set; }
+        static ClassWOW()
+        {
+            AllClasses = new List<ClassWOW>();
+            for(int i = 0; i < 11; i++)
+            {
+                AllClasses.Add(new ClassWOW((WOWClasses)i));
+            }
+        }
+        public static ClassWOW GetClassByEnumClass(WOWClasses enumClass)
+        {
+            return AllClasses.Where(_class => _class.EnumWOWClass == enumClass).FirstOrDefault();
+        }
+
         public string ImageUri { get; private set; }
         public string NameOfClass { get; private set; }
         public WOWClasses EnumWOWClass { get; private set; }

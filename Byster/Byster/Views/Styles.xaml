@@ -1671,7 +1671,8 @@
     <SolidColorBrush x:Key="BorderMainWindowColor">#676b74</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundControlColor">#2d2e33</SolidColorBrush>
     <SolidColorBrush x:Key="BackgroundWindowColor">#202124</SolidColorBrush>
-
+    <SolidColorBrush x:Key="BackgroundWindowDarkColor">#202124</SolidColorBrush>
+    
     <SolidColorBrush x:Key="ThumbColor">#9fa4b2</SolidColorBrush>
     <SolidColorBrush x:Key="ThumbColorHover">#60656e</SolidColorBrush>
     <SolidColorBrush x:Key="ThumbColorClick">#676c75</SolidColorBrush>

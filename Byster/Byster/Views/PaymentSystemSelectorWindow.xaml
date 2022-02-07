@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         mc:Ignorable="d"
-        Title="PaymentSystem" Height="300" Width="330"
+        Title="PaymentSystem" Height="350" Width="600"
         ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen" WindowStyle="None"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         AllowsTransparency="True"
@@ -16,29 +16,79 @@
     <Border Background="{StaticResource BackgroundWindowColor}"
             BorderBrush="{StaticResource BorderProductItemColor}"
             BorderThickness="1">
-        <Grid Margin="12">
-            <Grid.RowDefinitions>
-                <RowDefinition Height="15"/>
-                <RowDefinition Height="105"/>
-                <RowDefinition/>
-                <RowDefinition Height="37"/>
-            </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource titleTextBlockStyle}" FontSize="15"/>
-            <Grid Grid.Row="1">
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition/>
+                <ColumnDefinition/>
+            </Grid.ColumnDefinitions>
+            <Border BorderBrush="{StaticResource BorderProductItemColor}"
+                    BorderThickness="0,0,1,0">
+                <Grid Margin="12">
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="15"/>
+                        <RowDefinition Height="60"/>
+                        <RowDefinition/>
+                    </Grid.RowDefinitions>
+                    <TextBlock Grid.Row="0" Style="{DynamicResource titleTextBlockStyle}" Text="Выберите способ оплаты" FontSize="15"/>
+                    
+                    <Grid Grid.Row="1">
+                        <ComboBox Margin="0, 10" Grid.Row="1" Style="{DynamicResource combobStyle}" x:Name="systemSelector" DisplayMemberPath="Name"/>
+                    </Grid>
+                    <Grid Grid.Row="2">
+                        
+                    </Grid>
+                </Grid>
+            </Border>
+            
+            <Grid Margin="12" Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition/>
-                    <RowDefinition/>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="*"/>
+                    <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" x:Name="infoTextBlock" TextWrapping="Wrap"  Style="{StaticResource infoTextBlockStyle}" Margin="0, 4"/>
-                <ComboBox Margin="0, 6" Grid.Row="1" Style="{DynamicResource combobStyle}" x:Name="systemSelector" DisplayMemberPath="Name"/>
-            </Grid>
-            <Grid Grid.Row="2">
-                <TextBlock Text="{Binding ElementName=systemSelector, Path=SelectedItem.Description}" Style="{DynamicResource infoTextBlockStyle}" TextWrapping="Wrap"/>
-            </Grid>
-            <Grid Grid.Row="3">
-                <Button Style="{StaticResource transparentButtonStyle}" Content="Отмена" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn" Click="cancelBtn_Click"/>
-                <Button Style="{StaticResource bStyle}" Content="ОК" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Right" IsDefault="True" x:Name="okBtn" Click="okBtn_Click"/>
+                <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource titleTextBlockStyle}" Text="Расчёт" FontSize="15"/>
+                <Grid Grid.Row="1">
+                    <Grid Background="{StaticResource BackgroundControlColor}"
+                          Margin="0, 10">
+                        <Grid Margin="10">
+                            <StackPanel>
+                                <Grid>
+                                    <TextBlock Style="{StaticResource infoTextBlockStyle}" Text="Итого:"/>
+                                    <TextBlock Style="{StaticResource infoTextBlockStyle}"/>
+                                </Grid>
+                                <Grid Height="100">
+
+                                </Grid>
+                                <Grid>
+                                    <TextBlock Style="{StaticResource infoTextBlockStyle}" Text="Оплата бонусами:"/>
+                                </Grid>
+                                <Grid>
+                                    <TextBlock Style="{StaticResource infoTextBlockStyle}" Text="К оплате"/>
+                                </Grid>
+                                <Grid>
+                                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" TextAlignment="Right">
+                                        <Hyperlink Style="{StaticResource hlStyle}" FontSize="10">
+                                            Очистить корзину
+                                        </Hyperlink>
+                                    </TextBlock>
+                                </Grid>
+                            </StackPanel>
+
+                        </Grid>
+                    </Grid>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                        <Button Grid.Column="0" Style="{StaticResource transparentButtonStyle}" Content="Отмена" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn"/>
+                        <Button Grid.Column="1" Style="{StaticResource bStyle}" Content="Продолжить" HorizontalAlignment="Stretch" Margin="8, 0, 0, 0" IsDefault="True" x:Name="okBtn"/>
+                    </Grid>
+                </Grid>
             </Grid>
         </Grid>
+        
     </Border>
 </Window>

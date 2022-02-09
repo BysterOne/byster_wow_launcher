@@ -150,7 +150,7 @@ namespace Byster.Models.Services
             readConfFile();
             while(!IsReadyToSyncronization) { }
             DeveloperRotations = new List<DeveloperRotation>();
-            Task.Run(() => UpdateData());
+            //Task.Run(() => UpdateData());
             InitializationCompleted?.Invoke(); 
             StatusCode = DeveloperRotationStatusCodes.IDLE;
         }
@@ -226,7 +226,7 @@ namespace Byster.Models.Services
                 }
                 else
                 {
-                    continue; //Отключение обновления репозиториев - при необходимости включения - удалить данную строку
+                    //continue; //Отключение обновления репозиториев - при необходимости включения - удалить данную строку
                     string path = BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name;
 
                     counterTrigger++;

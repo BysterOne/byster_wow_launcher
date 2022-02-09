@@ -38,7 +38,7 @@
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="3*"/>
             </Grid.ColumnDefinitions>
-            <Image RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Path=MainViewModel.UserInfo.UserImage}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Stretch="Uniform" Grid.Column="0"/>
+            <Image Margin="2" RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Path=MainViewModel.UserInfo.UserImage}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Stretch="Uniform" Grid.Column="0"/>
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
                 <Button x:Name="changePasswordButton" Style="{DynamicResource transparentButtonStyle}" Content="Сменить пароль" Command="{Binding ChangePwdCommand}"/>
                 <Button x:Name="linkEnailButton" Style="{DynamicResource transparentButtonStyle}" Content="Привязать почту" Margin="0, 4" Command="{Binding LinkEmailCommand}"/>
@@ -49,6 +49,15 @@
                           x:Name="consoleSwitch"
                           Foreground="{DynamicResource FontOrangeColor}">
                     <TextBlock Text="Показывать консоль"/>
+                </CheckBox>
+                <CheckBox Style="{DynamicResource rightCheckboxStyle}"
+                          FontSize="{DynamicResource FontUISize}"
+                          FontFamily="{DynamicResource Roboto}"
+                          x:Name="encryptSwitch"
+                          IsChecked="{Binding MainViewModel.UserInfo.EncryptionWithAutoUpdate}"
+                          IsEnabled="{Binding MainViewModel.UserInfo.IsEncryptinChangeAllowed}"
+                          Foreground="{DynamicResource FontOrangeColor}">
+                    <TextBlock Text="Шифрование"/>
                 </CheckBox>
             </StackPanel>
         </Grid>

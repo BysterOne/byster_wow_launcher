@@ -183,6 +183,7 @@
     <Compile Include="Models\RestModels\RestChangePassword.cs" />
     <Compile Include="Models\RestModels\RestCoupon.cs" />
     <Compile Include="Models\RestModels\RestDeveloperRotation.cs" />
+    <Compile Include="Models\RestModels\RestEncryption.cs" />
     <Compile Include="Models\RestModels\RestLibRequest.cs" />
     <Compile Include="Models\RestModels\RestPaymentSystem.cs" />
     <Compile Include="Models\RestModels\RestProduct.cs" />
@@ -450,12 +451,14 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\Types\bot.png" />
-    <Resource Include="Resources\Images\Types\pve.png" />
     <Resource Include="Resources\Images\Types\pvp.png" />
     <Resource Include="Resources\Images\Types\utility.png" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\video-placeholder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Types\pve.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.6.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.6.0\build\Fody.targets')" />

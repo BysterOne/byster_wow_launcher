@@ -13,5 +13,6 @@ namespace Byster.Models.RestModels
         public string referral_code { get; set; }
 
         public string currency { get; set; }
+        public bool encryption { get; set; }
     }
 }

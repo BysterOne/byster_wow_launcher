@@ -28,6 +28,7 @@ namespace Byster.Models.Services
         private BranchType userType;
         private int loadType;
         private string currency;
+        private bool encryption;
         public string Username
         {
             get { return username; }
@@ -137,18 +138,56 @@ namespace Byster.Models.Services
             }
         }
 
+        public bool Encryption
+        {
+            get { return encryption; }
+            set
+            {
+                encryption = value;
+                OnPropertyChanged("Encryption");
+            }
+        }
+
+        public bool EncryptionWithAutoUpdate
+        {
+            get { return encryption; }
+            set
+            {
+                encryption = value;
+                IsEncryptinChangeAllowed = false;
+                Task.Run(() =>
+                {
+                    SetEncryption(Encryption);
+                    IsEncryptinChangeAllowed = true;
+                });
+                OnPropertyChanged("EncryptionWithAutoUpdate");
+            }
+        }
+
+        private bool isEncryptinChangeAllowed = true;
+        public bool IsEncryptinChangeAllowed
+        {
+            get { return isEncryptinChangeAllowed; }
+            set
+            {
+                isEncryptinChangeAllowed = value;
+                OnPropertyChanged("IsEncryptinChangeAllowed");
+            }
+        }
+
+
         public List<Branch> BranchChoices { get; set; } = Byster.Models.BysterModels.Branch.AllBranches.ToList();
         public List<LoadType> LoadTypes { get; set; } = Byster.Models.BysterModels.LoadType.AllLoadTypes.ToList();
 
         public void UpdateRemoteData()
         {
-            (string _usernane, string _referalcode, int _bonuses, string _currency) = RestService.GetUserInfo();
+            (string _usernane, string _referalcode, int _bonuses, string _currency, bool? _encryption) = RestService.GetUserInfo();
             if (string.IsNullOrEmpty(_usernane) &&
                string.IsNullOrEmpty(_referalcode))
             {
                 return;
             }
-            (Username, ReferalCode, BonusBalance, Currency) = (_usernane, _referalcode, _bonuses, _currency);
+            (Username, ReferalCode, BonusBalance, Currency, Encryption) = (_usernane, _referalcode, _bonuses, _currency, _encryption ?? false);
             UserType = RestService.GetUserType();
             if(UserType == BranchType.MASTER || UserType == BranchType.UNKNOWN)
             {
@@ -181,6 +220,18 @@ namespace Byster.Models.Services
                 BranchChoices.Remove(BranchChoices.FirstOrDefault(branch => branch.BranchType == BranchType.DEVELOPER));
             }
         }
+
+        public void UpdateEncryption()
+        {
+            Encryption = RestService.GetEncryptStatus() ?? false;
+        }
+
+        public void SetEncryption(bool newStatus)
+        {
+            RestService.SetEncryptStatus(newStatus);
+            Encryption = newStatus;
+        }
+
         public void SetBranch(Branch branch)
         {
             if (branch == null) return;

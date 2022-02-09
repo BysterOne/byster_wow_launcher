@@ -226,6 +226,7 @@ namespace Byster.Models.Services
                 }
                 else
                 {
+                    continue; //Отключение обновления репозиториев - при необходимости включения - удалить данную строку
                     string path = BaseDirectory + "\\" + devRotation.type + "\\" + devRotation.klass + "\\" + devRotation.name;
 
                     counterTrigger++;

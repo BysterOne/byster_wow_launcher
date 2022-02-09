@@ -86,6 +86,7 @@ namespace Byster.Views
             base.OnMouseLeftButtonDown(e);
             this.DragMove();
         }
+
     }
     public class SettingsViewModel : INotifyPropertyChanged
     {

@@ -107,17 +107,46 @@ namespace Byster.Models.Services
             return true;
         }
 
-        public (string ,string, int,string) GetUserInfo()
+        public (string ,string, int, string, bool?) GetUserInfo()
         {
             var response = client.Post<RestUserInfoResponse>(new RestRequest("launcher/info"));
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
                 Log("Ошибка обновления данных пользователя - ", response.Data.error, " - ", response.ErrorMessage);
-                return (null, null, 0, null);
+                return (null, null, 0, null, null);
             }
             Log("Обновлены данные пользователя");
-            return (response.Data.username, response.Data.referral_code, Convert.ToInt32(response.Data.balance), response.Data.currency);
+            return (response.Data.username, response.Data.referral_code, Convert.ToInt32(response.Data.balance), response.Data.currency, response.Data.encryption);
+        }
+
+        public bool? GetEncryptStatus()
+        {
+            var response = client.Get<RestUserInfoResponse>(new RestRequest("launcher/info"));
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            {
+                LastError = response.Data.error;
+                Log("Ошибка получения статуса encryption пользователя - ", response.Data.error, " - ", response.ErrorMessage);
+                return null;
+            }
+            Log("Получен статус encryption");
+            return response.Data.encryption;
+        }
+
+        public void SetEncryptStatus(bool newStatus)
+        {
+            var response = client.Post<RestUserInfoResponse>(new RestRequest("launcher/toggle_encryption").AddJsonBody(new RestEncryptionRequest()
+            {
+                enable = newStatus,
+            }));
+            if(response.StatusCode != System.Net.HttpStatusCode.OK || !string.IsNullOrEmpty(response.Data.error))
+            {
+                LastError = response.Data.error;
+                Log("Ошибка установки статуса encryption пользователя - ", response.Data.error, " - ", response.ErrorMessage);
+                return;
+            }
+            Log("Установлен новый encryption");
+            return;
         }
 
         public IEnumerable<PaymentSystem> GetAllPaymentSystemList()
@@ -166,6 +195,8 @@ namespace Byster.Models.Services
             }
             return res;
         }
+
+        
 
         public BranchType GetUserType()
         {

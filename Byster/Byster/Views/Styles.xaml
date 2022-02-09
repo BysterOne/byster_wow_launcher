@@ -1379,8 +1379,8 @@
                                                     
                                                     <Grid Grid.Row="1" Margin="10">
                                                         <Grid HorizontalAlignment="Stretch" x:Name="StartControls" Visibility="Collapsed">
-                                                            <Button Width="70" Style="{DynamicResource transparentButtonStyle}" x:Name="testBtn" Visibility="Collapsed" Content="Тест" Margin="0, 0, 10, 0" HorizontalAlignment="Left" Command="{Binding TestCommand}" CommandParameter="{Binding Path=Product.Id}"/>
-                                                            <Button Width="160" Style="{DynamicResource productButtonStyle}" x:Name="buyBtn" Content="Купить" HorizontalAlignment="Right" Command="{Binding AddCommand}" CommandParameter="{Binding Path=Product.Id}"/>
+                                                            <Button Width="53" Style="{DynamicResource transparentButtonStyle}" x:Name="testBtn" Visibility="Collapsed" Content="Тест" Margin="0, 0, 10, 0" HorizontalAlignment="Left" Command="{Binding TestCommand}" CommandParameter="{Binding Path=Product.Id}"/>
+                                                            <Button Width="160" Style="{DynamicResource productButtonStyle}" x:Name="buyBtn" Content="В корзину" HorizontalAlignment="Right" Command="{Binding AddCommand}" CommandParameter="{Binding Path=Product.Id}"/>
                                                         </Grid>
                                                         <Grid HorizontalAlignment="Stretch" x:Name="CountControls">
                                                             <Button Style="{DynamicResource uibStyle}" HorizontalAlignment="Left" Command="{Binding RemoveCommand}" CommandParameter="{Binding Path=Product.Id}">
@@ -1507,7 +1507,7 @@
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Path=Product.IsTestable}" Value="True">
                                         <Setter TargetName="testBtn" Property="Visibility" Value="Visible"/>
-                                        <Setter TargetName="buyBtn" Property="Width" Value="70"/>
+                                        <Setter TargetName="buyBtn" Property="Width" Value="90"/>
                                     </DataTrigger>
                                     <DataTrigger Binding="{Binding Path=Count}" Value="0">
                                         <Setter TargetName="CountControls" Property="Visibility" Value="Collapsed"/>

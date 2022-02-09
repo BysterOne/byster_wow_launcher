@@ -1741,16 +1741,32 @@
                                     <Grid Grid.Column="1">
                                         <Grid Margin="10">
                                             <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Style="{DynamicResource orangeTextBlockStyle}" Text="{Binding Product.Name}"/>
-                                            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Horizontal">
+                                            <StackPanel VerticalAlignment="Bottom" HorizontalAlignment="Right" Orientation="Horizontal">
                                                 <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Price}"/>
                                                 <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text=" "/>
                                                 <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Product.Currency}"/>
                                             </StackPanel>
-                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right">
-                                                <Hyperlink Command="{Binding RemoveAllCommand}" CommandParameter="{Binding Product.Id}" Foreground="{DynamicResource HyperlinkPaymentWindowColor}">Очистить</Hyperlink>
-                                            </TextBlock>
                                         </Grid>
                                     </Grid>
+                                    <Button Grid.ColumnSpan="2" Command="{Binding RemoveAllCommand}" CommandParameter="{Binding Product.Id}">
+                                        <Button.Template>
+                                            <ControlTemplate TargetType="Button">
+                                                <Grid Background="#00000000">
+                                                    <Image x:Name="crossImage" Visibility="Collapsed" Source="/Resources/Images/close-button-image.png" Height="20"
+                                                           VerticalAlignment="Top" HorizontalAlignment="Right" Stretch="Uniform" Margin="4"/>
+                                                        <ContentPresenter/>
+                                                </Grid>
+                                                <ControlTemplate.Triggers>
+                                                    <Trigger Property="IsMouseOver" Value="True">
+                                                        <Setter TargetName="crossImage" Property="Visibility" Value="Visible"/>
+                                                    </Trigger>
+                                                    <Trigger Property="IsMouseCaptured" Value="True">
+                                                    </Trigger>
+                                                </ControlTemplate.Triggers>
+                                            </ControlTemplate>
+                                        </Button.Template>
+                                    </Button>
+
                                 </Grid>
                                 <ControlTemplate.Triggers>
                                     <DataTrigger Binding="{Binding Price}" Value="0">

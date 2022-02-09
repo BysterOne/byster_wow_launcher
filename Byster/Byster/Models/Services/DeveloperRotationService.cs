@@ -444,6 +444,7 @@ namespace Byster.Models.Services
     public class DeveloperRotationService : IService, INotifyPropertyChanged
     {
 
+        public Action CloseDel { get; set; }
         public RestService RestService { get; set; }
         public bool IsInitialized { get; set; }
         public Dispatcher Dispatcher { get; set; }
@@ -749,6 +750,7 @@ namespace Byster.Models.Services
                 return saveCommand ?? (saveCommand = new RelayCommand(() =>
                 {
                     core.SaveRotations();
+                    CloseDel?.Invoke();
                 }));
             }
         }

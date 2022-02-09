@@ -45,6 +45,13 @@ namespace Byster.Views
                 var window = new InfoWindow("Ошибка", "Ошибка при создании ротации\n" + model.LastError);
                 window.ShowDialog();
             };
+            model.DeveloperRotations.CloseDel = () =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    Close();
+                });
+            };
         }
 
         private void closeBtn_Click(object sender, RoutedEventArgs e)

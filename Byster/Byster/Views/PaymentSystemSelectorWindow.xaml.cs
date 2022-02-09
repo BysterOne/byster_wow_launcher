@@ -11,8 +11,9 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
-
+using Byster.Models.ViewModels;
 using Byster.Models.BysterModels;
+using System.ComponentModel;
 
 namespace Byster.Views
 {
@@ -25,21 +26,28 @@ namespace Byster.Views
         {
             get
             {
-                return (systemSelector.SelectedItem as PaymentSystem).Id;
+                return (systemSelector.SelectedItem as PaymentSystem)?.Id ?? -1;
             }
         }
-        public PaymentSystemSelectorWindow(string title, string infoText, List<PaymentSystem> systems)
+        public PaymentSystemSelectorWindow(List<PaymentSystem> systems, MainWindowViewModel mainWindowViewModel, Cart carttoBuy)
         {
             InitializeComponent();
-            this.Title = title;
-            titleTextBlock.Text = title;
-            infoTextBlock.Text = infoText;
             systemSelector.ItemsSource = systems;
+            this.DataContext = new PaymentWindowViewModel()
+            {
+                MainViewModel = mainWindowViewModel,
+            };
+            mainWindowViewModel.Shop.PropertyChanged += (sender, args) =>
+            {
+                if (args.PropertyName != "Sum") return;
+                if (mainWindowViewModel.Shop.Sum == 0)
+                    Close();
+            };
         }
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
-            if(systemSelector.SelectedItem != null)
+            if(systemSelector.SelectedItem != null || (DataContext as PaymentWindowViewModel).MainViewModel.Shop.ResultSum == 0)
                 this.DialogResult = true;
         }
 
@@ -52,6 +60,29 @@ namespace Byster.Views
         {
             base.OnMouseLeftButtonDown(e);
             this.DragMove();
+        }
+    }
+
+
+    public class PaymentWindowViewModel : INotifyPropertyChanged
+    {
+        private RelayCommand clearCommand;
+
+        private MainWindowViewModel mainViewModel;
+        public MainWindowViewModel MainViewModel
+        {
+            get { return mainViewModel; }
+            set
+            {
+                mainViewModel = value;
+                OnPropertyChanged("MainViewModel");
+            }
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string property = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
     }
 }

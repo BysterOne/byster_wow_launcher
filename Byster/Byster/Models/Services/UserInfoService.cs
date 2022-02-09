@@ -154,6 +154,7 @@ namespace Byster.Models.Services
             {
                 SetBranch(new Branch(BranchType.MASTER));
                 SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
+                SetConsole(false);
             }
             else if(UserType == BranchType.TEST)
             {

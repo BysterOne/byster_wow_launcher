@@ -15,6 +15,7 @@ namespace Byster.Models.ViewModels
         public Action CloseRotationsDel { get; set; }
         public Action<object> AddDel { get; set; }
         public Action<object> RemoveDel { get; set; }
+        public Action<object> RemoveAllDel { get; set; }
 
         private Visibility isShowingInShop;
         public Visibility IsShowingInShop
@@ -83,6 +84,19 @@ namespace Byster.Models.ViewModels
                 }));
             }
         }
+
+        private RelayCommand removeAllCommand;
+        public RelayCommand RemoveAllCommand
+        {
+            get
+            {
+                return removeAllCommand ?? (removeAllCommand = new RelayCommand((obj) =>
+                {
+                    RemoveAllDel(obj);
+                }));
+            }
+        }
+
 
         private RelayCommand closeRotationCommand;
         public RelayCommand CloseRotationCommand

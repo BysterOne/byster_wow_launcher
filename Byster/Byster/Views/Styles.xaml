@@ -1189,7 +1189,7 @@
         </Setter>
     </Style>
 
-    <Style TargetType="Slider">
+    <Style x:Key="bonusSlider" TargetType="Slider">
         <Setter Property="Template">
             <Setter.Value>
                 <ControlTemplate TargetType="Slider">
@@ -1585,7 +1585,7 @@
             </Setter.Value>
         </Setter>
     </Style>
-    
+
     <Style TargetType="CheckBox" x:Key="checkboxStyle">
         <Setter Property="Template">
             <Setter.Value>
@@ -1642,6 +1642,239 @@
         </Setter>
     </Style>
 
+    <Style x:Key="bonusSliderReworked" TargetType="Slider">
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="Slider">
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition/>
+                            <RowDefinition/>
+                        </Grid.RowDefinitions>
+                        <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Bottom" Margin="2">
+                            <Image/>
+                            <TextBlock FontSize="20" Text="{Binding RelativeSource={RelativeSource AncestorType=Slider}, Path=Minimum}" Style="{DynamicResource infoTextBlockStyle}"/>
+                        </StackPanel>
+                        <TextBlock FontSize="20" Text="{Binding RelativeSource={RelativeSource AncestorType=Slider}, Path=Maximum}" Style="{DynamicResource infoTextBlockStyle}" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Bottom" Margin="2"/>
+                        <Track x:Name="PART_Track" Grid.Row="1">
+                            <Track.DecreaseRepeatButton>
+                                <RepeatButton Background="{DynamicResource SliderTrackColor}" Height="3">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    Width="{TemplateBinding Width}"
+                                                    Height="{TemplateBinding Height}">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.DecreaseRepeatButton>
+                            <Track.Thumb>
+                                <Thumb>
+                                    <Thumb.Template>
+                                        <ControlTemplate TargetType="Thumb">
+                                            <Ellipse Width="15" Height="15" Fill="{DynamicResource SliderThumbColor}" x:Name="thumbGeo" StrokeThickness="0.5"/>
+                                            <ControlTemplate.Triggers>
+                                                <Trigger Property="IsMouseOver" Value="True">
+                                                    <Setter TargetName="thumbGeo" Property="Fill" Value="{DynamicResource SliderThumbColorHover}"/>
+                                                </Trigger>
+                                                <Trigger Property="IsMouseCaptured" Value="True">
+                                                    <Setter TargetName="thumbGeo" Property="Fill" Value="{DynamicResource SliderThumbColorClicked}"/>
+                                                </Trigger>
+                                            </ControlTemplate.Triggers>
+                                        </ControlTemplate>
+                                    </Thumb.Template>
+                                </Thumb>
+                            </Track.Thumb>
+                            <Track.IncreaseRepeatButton>
+                                <RepeatButton Background="{DynamicResource SliderTrackColor}" Height="3">
+                                    <RepeatButton.Template>
+                                        <ControlTemplate TargetType="RepeatButton">
+                                            <Border Background="{TemplateBinding Background}"
+                                                    Width="{TemplateBinding Width}"
+                                                    Height="{TemplateBinding Height}">
+                                                <ContentPresenter/>
+                                            </Border>
+                                        </ControlTemplate>
+                                    </RepeatButton.Template>
+                                </RepeatButton>
+                            </Track.IncreaseRepeatButton>
+                        </Track>
+                    </Grid>
+                    <ControlTemplate.Triggers>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style x:Key="cartProductsView" TargetType="ListBox">
+        <Setter Property="ItemsPanel">
+            <Setter.Value>
+                <ItemsPanelTemplate>
+                    <StackPanel Background="Transparent" Orientation="Vertical"/>
+                </ItemsPanelTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ListBox">
+                    <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}">
+                        <ItemsPresenter/>
+                    </ScrollViewer>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+        <Setter Property="ItemContainerStyle">
+            <Setter.Value>
+                <Style TargetType="ListBoxItem">
+                    <Setter Property="Template">
+                        <Setter.Value>
+                            <ControlTemplate TargetType="ListBoxItem">
+                                <Grid Background="{DynamicResource BackgroundFieldPaymentWindow}" Margin="0, 5" Height="70">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition Width="70"/>
+                                        <ColumnDefinition/>
+                                    </Grid.ColumnDefinitions>
+                                    <Image Source="{Binding Product.ImageUri}" Grid.Column="0"/>
+                                    <Grid Grid.Column="1">
+                                        <Grid Margin="10">
+                                            <TextBlock VerticalAlignment="Top" HorizontalAlignment="Left" Style="{DynamicResource orangeTextBlockStyle}" Text="{Binding Product.Name}"/>
+                                            <StackPanel VerticalAlignment="Top" HorizontalAlignment="Right" Orientation="Horizontal">
+                                                <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Price}"/>
+                                                <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text=" "/>
+                                                <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Product.Currency}"/>
+                                            </StackPanel>
+                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right">
+                                                <Hyperlink Command="{Binding RemoveAllCommand}" CommandParameter="{Binding Product.Id}" Foreground="{DynamicResource HyperlinkPaymentWindowColor}">Очистить</Hyperlink>
+                                            </TextBlock>
+                                        </Grid>
+                                    </Grid>
+                                </Grid>
+                                <ControlTemplate.Triggers>
+                                    <DataTrigger Binding="{Binding Price}" Value="0">
+                                        <Setter Property="Visibility" Value="Collapsed"/>
+                                    </DataTrigger>
+                                </ControlTemplate.Triggers>
+                            </ControlTemplate>
+                        </Setter.Value>
+                    </Setter>
+                </Style>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+    <Style TargetType="ComboBox" x:Key="darkCombobStyle">
+        <Style.Setters>
+            <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+            <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundUIColor}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ComboBox">
+                        <Grid>
+                            <ToggleButton Style="{DynamicResource darkCombobToggleButtonStyle}"
+                                          IsChecked="{Binding Path=IsDropDownOpen, Mode=TwoWay, RelativeSource={RelativeSource TemplatedParent}}"
+                                          ClickMode="Press">
+                                <ContentPresenter Content="{TemplateBinding SelectedItem}"
+                                                    ContentTemplate="{TemplateBinding ItemTemplate}"
+                                                    ContentTemplateSelector="{TemplateBinding ItemTemplateSelector}"
+                                                    Margin="10,10,30,10"
+                                                    VerticalAlignment="Stretch"
+                                                    HorizontalAlignment="Left"/>
+                            </ToggleButton>
+                            <Popup x:Name="Popup"
+                                    Placement="Bottom"
+                                    IsOpen="{TemplateBinding IsDropDownOpen}"
+                                    AllowsTransparency="True"
+                                    Focusable="False"
+                                    PopupAnimation="Slide"
+                                   HorizontalAlignment="Stretch"
+                                   Width="{TemplateBinding ActualWidth}">
+                                <Grid>
+                                    <Border CornerRadius="{DynamicResource CornerUIRadius}"
+                                            Background="{DynamicResource BackgroundFieldPaymentWindow}"
+                                            HorizontalAlignment="Stretch">
+                                        <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}">
+                                            <StackPanel IsItemsHost="True"/>
+                                        </ScrollViewer>
+                                    </Border>
+                                </Grid>
+                            </Popup>
+                        </Grid>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+            <Setter Property="ItemContainerStyle" Value="{DynamicResource darkCombobItemStyle}"/>
+        </Style.Setters>
+    </Style>
+
+    <Style TargetType="ToggleButton" x:Key="darkCombobToggleButtonStyle">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundFieldPaymentWindow}"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ToggleButton">
+                        <Border Background="{TemplateBinding Background}"
+                                CornerRadius="{DynamicResource CornerUIRadius}">
+                            <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="20"/>
+                                </Grid.ColumnDefinitions>
+                                <Path Data="M 0 0 L 4 4 L 8 0 Z"
+                                      Fill="{DynamicResource FontUIColor}"
+                                      Grid.Column="1"
+                                      VerticalAlignment="Center"
+                                      HorizontalAlignment="Center"/>
+                                <ContentPresenter Grid.Column="0"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundFieldPaymentWindowHover}"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter Property="Background" Value="{DynamicResource BackgroundFieldPaymentWindowClicked}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style.Setters>
+    </Style>
+
+    <Style TargetType="ComboBoxItem" x:Key="darkCombobItemStyle">
+        <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
+        <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+        <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
+        <Setter Property="Background" Value="{DynamicResource BackgroundFieldPaymentWindow}"/>
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="ComboBoxItem">
+                    <Border Background="{TemplateBinding Background}"
+                            Padding="10"
+                            HorizontalAlignment="Stretch">
+                        <ContentPresenter/>
+                    </Border>
+                    <ControlTemplate.Triggers>
+                        <Trigger Property="IsMouseOver" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource BackgroundFieldPaymentWindowHover}"/>
+                        </Trigger>
+                        <Trigger Property="IsSelected" Value="True">
+                            <Setter Property="Background" Value="{DynamicResource BackgroundFieldPaymentWindowClicked}"/>
+                        </Trigger>
+                    </ControlTemplate.Triggers>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+
+
+
     <!-- Параметры для генерации стилей UI -->
     <!-- Цвета -->
     <SolidColorBrush x:Key="BackgroundUIColor">#323339</SolidColorBrush>
@@ -1697,6 +1930,16 @@
     <SolidColorBrush x:Key="CheckboxColorHover">#FFDA83</SolidColorBrush>
     <SolidColorBrush x:Key="CheckboxColorDisabled">#676A73</SolidColorBrush>
     <SolidColorBrush x:Key="CheckboxTextColorDisabled">#676A73</SolidColorBrush>
+
+    <SolidColorBrush x:Key="SliderTrackColor">#4C4F57</SolidColorBrush>
+    <SolidColorBrush x:Key="SliderThumbColor">#A5ABB9</SolidColorBrush>
+    <SolidColorBrush x:Key="SliderThumbColorHover">#8D919B</SolidColorBrush>
+    <SolidColorBrush x:Key="SliderThumbColorClicked">#999EAA</SolidColorBrush>
+    <SolidColorBrush x:Key="BackgroundPaymentWindow">#292A2E</SolidColorBrush>
+    <SolidColorBrush x:Key="BackgroundFieldPaymentWindow">#202124</SolidColorBrush>
+    <SolidColorBrush x:Key="BackgroundFieldPaymentWindowClicked">#18191C</SolidColorBrush>
+    <SolidColorBrush x:Key="BackgroundFieldPaymentWindowHover">#0F0F11</SolidColorBrush>
+    <SolidColorBrush x:Key="HyperlinkPaymentWindowColor">#6E727C</SolidColorBrush>
 
     <LinearGradientBrush x:Key="ProgressbarGrad" StartPoint="0, 0" EndPoint="1, 0">
         <LinearGradientBrush.GradientStops>

@@ -180,32 +180,30 @@
                   Background="{DynamicResource BackgroundControlColor}">
                 <Grid.ColumnDefinitions>
                     <ColumnDefinition/>
-                    <ColumnDefinition Width="200"/>
+                    <ColumnDefinition Width="Auto"/>
                     <ColumnDefinition Width="Auto"/>
                 </Grid.ColumnDefinitions>
-                <Slider x:Name="bonusesSlider" Minimum="0" Maximum="{Binding Path=Shop.Sum, Converter={StaticResource FromSumToBonusesConverter}}" Value="{Binding Path=Shop.Bonuses, Mode=TwoWay}"
-                        HorizontalAlignment="Center" VerticalAlignment="Center" Width="200"/>
                 <StackPanel Grid.Column="2"
                             Orientation="Horizontal"
                             FlowDirection="RightToLeft" Margin="0, 10">
-                    <Button Style="{DynamicResource bStyle}" x:Name="buyCartBtn" Command="{Binding Path=Shop.BuyCartCommand}" Content="Купить" Margin="10, 5" Width="160"/>
-                    <Button Style="{DynamicResource transparentButtonStyle}" x:Name="clearCartBtn" Command="{Binding Path=Shop.ClearCartCommand}" Content="Очистить корзину" Margin="10, 5" Width="160"/>
+                    <Button Style="{DynamicResource bStyle}" x:Name="buyCartBtn" Command="{Binding Path=Shop.BuyCartCommand}" Content="К оплате" Margin="10, 5" Width="160"/>
+                    <!--<Button Style="{DynamicResource transparentButtonStyle}" x:Name="clearCartBtn" Command="{Binding Path=Shop.ClearCartCommand}" Content="Очистить корзину" Margin="10, 5" Width="160"/>-->
                 </StackPanel>
                 <Grid Grid.Column="1">
-                    <StackPanel Orientation="Vertical" Margin="0,12">
-                        <Grid Margin="0, 5">
-                            <TextBlock Text="Подытог:" Margin="0,0,10,0" Style="{DynamicResource infoTextBlockStyle}"/>
-                            <TextBlock Text="{Binding Path=Shop.Sum}" Style="{DynamicResource infoTextBlockStyle}" HorizontalAlignment="Right"/>
+                    <Grid Margin="0,12">
+                        <Grid HorizontalAlignment="Right" VerticalAlignment="Top" Margin="0, 5">
+                            <StackPanel Orientation="Horizontal">
+                                <TextBlock Text="{Binding Path=Shop.Sum}" Style="{DynamicResource titleTextBlockStyle}" FontSize="20"/>
+                                <TextBlock Text=" " Style="{DynamicResource titleTextBlockStyle}" FontSize="20"/>
+                                <TextBlock Text="{Binding Path=UserInfo.Currency}" Style="{DynamicResource titleTextBlockStyle}" FontSize="20"/>
+                            </StackPanel>
                         </Grid>
-                        <Grid Margin="0, 0, 0, 5">
-                            <TextBlock Text="Оплата бонусами:" Margin="0,0,10,0" Style="{DynamicResource infoTextBlockStyle}"/>
-                            <TextBlock Text="{Binding Path=Shop.Bonuses}" Style="{DynamicResource infoTextBlockStyle}" HorizontalAlignment="Right"/>
-                        </Grid>
-                        <Grid>
-                            <TextBlock Text="Итого:" Margin="0,0,10,0" Style="{DynamicResource titleTextBlockStyle}"/>
-                            <TextBlock Text="{Binding Path=Shop.ResultSum}" Style="{DynamicResource titleTextBlockStyle}" HorizontalAlignment="Right"/>
-                        </Grid>
-                    </StackPanel>
+                        <TextBlock Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Bottom" HorizontalAlignment="Right" Margin="0,0,0,3">
+                            <Hyperlink Foreground="{DynamicResource HyperlinkPaymentWindowColor}" Command="{Binding Shop.ClearCartCommand}">
+                                Очистить корзину
+                            </Hyperlink>
+                        </TextBlock>
+                    </Grid>
                 </Grid>
             </Grid>
         </Grid>

@@ -66,7 +66,7 @@ namespace Byster.Models.Services
             return res;
         }
         
-        public (bool, string) ExecuteBuyRequest(Cart cart, int paymentSystemId)
+        public (bool, string) ExecuteBuyRequest(Cart cart)
         {
             List<RestBuyProduct> products = new List<RestBuyProduct>();
             foreach (var product in cart.Products)
@@ -80,7 +80,7 @@ namespace Byster.Models.Services
             var response = client.Post<RestBuyResponse>(new RestRequest("shop/buy").AddJsonBody(new RestBuyRequest()
             {
                 bonuses = cart.Bonuses,
-                payment_system_id = paymentSystemId,
+                payment_system_id = cart.PaymentSystemId,
                 items = products,
             }));
             if(response.StatusCode != System.Net.HttpStatusCode.OK)

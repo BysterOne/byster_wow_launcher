@@ -33,6 +33,14 @@ namespace Byster.Models.BysterModels
             {
                 count = value;
                 OnPropertyChanged("Count");
+                OnPropertyChanged("Price");
+            }
+        }
+        public double Price
+        {
+            get
+            {
+                return Count * Product.Price;
             }
         }
 

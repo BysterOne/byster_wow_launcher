@@ -33,6 +33,17 @@ namespace Byster.Models.BysterModels
             }
         }
 
+        private int paymentSystemId;
+        public int PaymentSystemId
+        {
+            get { return paymentSystemId; }
+            set
+            {
+                paymentSystemId = value;
+                OnPropertyChanged("PaymentSystemId");
+            }
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string property = "")
         {

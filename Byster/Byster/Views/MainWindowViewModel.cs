@@ -235,16 +235,14 @@ namespace Byster.Views
                 {
                     SelectedProduct = null;
                 },
-                PreBuyCartAction = () =>
+                PreBuyCartAction = (cart) =>
                 {
-                    PaymentSystemSelectorWindow selectorWindow = new PaymentSystemSelectorWindow("Выбор платёжной системы", "Выберите платёжную систему для оплаты", Shop.GetAllPaymentSystemsList());
+                    PaymentSystemSelectorWindow selectorWindow = new PaymentSystemSelectorWindow(Shop.GetAllPaymentSystemsList(), this, cart);
                     bool res = false;
                     res = selectorWindow.ShowModalDialog();
-                    if (res)
-                    {
-                        return selectorWindow.SystemId;
-                    }
-                    return -1;
+                    if (selectorWindow.SystemId == -1) return false;
+                    if (res)  Shop.SelectedPaymentSystemId = selectorWindow.SystemId;
+                    return res;
                 },
                 BuyCartSuccessAction = (string str) =>
                 {
@@ -256,11 +254,6 @@ namespace Byster.Views
                 {
                     InfoWindow infoWindow = new InfoWindow("Ошибка", $"Произошла ошибка при покупке товара, попробуйте позже...\n{restService.LastError}");
                     infoWindow.ShowModalDialog();
-                },
-                PreBuyCartByBonusesAction = () =>
-                {
-                    DialogWindow dialogWindow = new DialogWindow("Подтверждение", "Вы собираетесь оплатить всю корзину бонусами, Вы уверены?");
-                    return dialogWindow.ShowModalDialog();
                 },
                 BuyCartByBonusesSuccessAction = () =>
                 {

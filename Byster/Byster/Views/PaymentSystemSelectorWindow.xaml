@@ -13,7 +13,7 @@
     <Window.Resources>
         <ResourceDictionary Source="/Views/Styles.xaml"/>
     </Window.Resources>
-    <Border Background="{StaticResource BackgroundWindowColor}"
+    <Border Background="{StaticResource BackgroundPaymentWindow}"
             BorderBrush="{StaticResource BorderProductItemColor}"
             BorderThickness="1">
         <Grid>
@@ -25,54 +25,68 @@
                     BorderThickness="0,0,1,0">
                 <Grid Margin="12">
                     <Grid.RowDefinitions>
-                        <RowDefinition Height="15"/>
+                        <RowDefinition Height="21"/>
                         <RowDefinition Height="60"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Style="{DynamicResource titleTextBlockStyle}" Text="Выберите способ оплаты" FontSize="15"/>
+                    <TextBlock Grid.Row="0" Style="{DynamicResource infoTextBlockStyle}" Text="Выберите способ оплаты" FontSize="20"/>
                     
                     <Grid Grid.Row="1">
-                        <ComboBox Margin="0, 10" Grid.Row="1" Style="{DynamicResource combobStyle}" x:Name="systemSelector" DisplayMemberPath="Name"/>
+                        <ComboBox Margin="0, 10" Grid.Row="1" Style="{DynamicResource darkCombobStyle}" x:Name="systemSelector" DisplayMemberPath="Name"/>
                     </Grid>
                     <Grid Grid.Row="2">
-                        
+                        <ListBox x:Name="productList" Style="{DynamicResource cartProductsView}" ItemsSource="{Binding MainViewModel.Shop.AllProducts}"/>
                     </Grid>
                 </Grid>
             </Border>
             
             <Grid Margin="12" Grid.Column="1">
                 <Grid.RowDefinitions>
-                    <RowDefinition Height="15"/>
+                    <RowDefinition Height="21"/>
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource titleTextBlockStyle}" Text="Расчёт" FontSize="15"/>
+                <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource infoTextBlockStyle}" Text="Расчёт" FontSize="20"/>
                 <Grid Grid.Row="1">
-                    <Grid Background="{StaticResource BackgroundControlColor}"
+                    <Grid Background="{StaticResource BackgroundFieldPaymentWindow}"
                           Margin="0, 10">
                         <Grid Margin="10">
                             <StackPanel>
                                 <Grid>
-                                    <TextBlock Style="{StaticResource infoTextBlockStyle}" Text="Итого:"/>
-                                    <TextBlock Style="{StaticResource infoTextBlockStyle}"/>
+                                    <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="Итого:"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Path=MainViewModel.Shop.Sum}"/>
+                                        <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text=" "/>
+                                        <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Path=MainViewModel.UserInfo.Currency}"/>
+                                    </StackPanel>
                                 </Grid>
-                                <Grid Height="100">
-
+                                <Grid Margin="0, 10">
+                                    <Slider Style="{StaticResource bonusSliderReworked}" Maximum="{Binding Path=MainViewModel.UserInfo.BonusBalance}" Value="{Binding Path=MainViewModel.Shop.Bonuses}"/>
+                                </Grid>
+                                <Grid Margin="0, 10">
+                                    <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="Оплата бонусами:"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Path=MainViewModel.Shop.Bonuses}"/>
+                                        <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text=" "/>
+                                        <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Path=MainViewModel.UserInfo.Currency}"/>
+                                    </StackPanel>
                                 </Grid>
                                 <Grid>
-                                    <TextBlock Style="{StaticResource infoTextBlockStyle}" Text="Оплата бонусами:"/>
-                                </Grid>
-                                <Grid>
-                                    <TextBlock Style="{StaticResource infoTextBlockStyle}" Text="К оплате"/>
-                                </Grid>
-                                <Grid>
-                                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" TextAlignment="Right">
-                                        <Hyperlink Style="{StaticResource hlStyle}" FontSize="10">
-                                            Очистить корзину
-                                        </Hyperlink>
-                                    </TextBlock>
+                                    <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="К оплате:"/>
+                                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                                        <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Path=MainViewModel.Shop.ResultSum}"/>
+                                        <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text=" "/>
+                                        <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Path=MainViewModel.UserInfo.Currency}"/>
+                                    </StackPanel>
                                 </Grid>
                             </StackPanel>
+                            <Grid VerticalAlignment="Bottom">
+                                <TextBlock FontSize="20" Style="{DynamicResource infoTextBlockStyle}" TextAlignment="Right">
+                                        <Hyperlink Command="{Binding MainViewModel.Shop.ClearCartCommand}" Style="{StaticResource hlStyle}" Foreground="{DynamicResource HyperlinkPaymentWindowColor}" FontSize="10">
+                                            Очистить корзину
+                                        </Hyperlink>
+                                </TextBlock>
+                            </Grid>
 
                         </Grid>
                     </Grid>
@@ -83,8 +97,8 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Style="{StaticResource transparentButtonStyle}" Content="Отмена" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn"/>
-                        <Button Grid.Column="1" Style="{StaticResource bStyle}" Content="Продолжить" HorizontalAlignment="Stretch" Margin="8, 0, 0, 0" IsDefault="True" x:Name="okBtn"/>
+                        <Button Grid.Column="0" Style="{StaticResource transparentButtonStyle}" Content="Отмена" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn" Click="cancelBtn_Click"/>
+                        <Button Grid.Column="1" Style="{StaticResource bStyle}" Content="Продолжить" HorizontalAlignment="Stretch" Margin="8, 0, 0, 0" IsDefault="True" x:Name="okBtn" Click="okBtn_Click"/>
                     </Grid>
                 </Grid>
             </Grid>

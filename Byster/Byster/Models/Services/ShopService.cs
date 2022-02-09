@@ -43,6 +43,17 @@ namespace Byster.Models.Services
             }
         }
 
+        private int selectedPaymentSystemId;
+        public int SelectedPaymentSystemId
+        {
+            get { return selectedPaymentSystemId; }
+            set
+            {
+                selectedPaymentSystemId = value;
+                OnPropertyChanged("SelectedPaymentSystemId");
+            }
+        }
+
         public double ResultSum
         {
             get
@@ -59,10 +70,9 @@ namespace Byster.Models.Services
         public Func<bool> PreTestElementAction { get; set; }
         public Action TestElementSuccessAction { get; set; }
         public Action TestElementFailAction { get; set; }
-        public Func<bool> PreBuyCartByBonusesAction { get; set; }
+        public Predicate<Cart> PreBuyCartAction { get; set; }
         public Action BuyCartByBonusesSuccessAction { get; set; }
         public Action BuyCartByBonusesFailAction { get; set; }
-        public Func<int> PreBuyCartAction { get; set; }
         public Action<string> BuyCartSuccessAction { get; set; }
         public Action BuyCartFailAction { get; set; }
 
@@ -95,13 +105,14 @@ namespace Byster.Models.Services
         {
             Cart cart = createCartProductCollection();
             if (cart.Products.Count == 0) return;
-            if (Bonuses < Sum)
+            if (!PreBuyCartAction?.Invoke(null) ?? false) return;
+            cart = createCartProductCollection();
+            cart.PaymentSystemId = SelectedPaymentSystemId;
+            bool status;
+            string link;
+            (status, link) = RestService.ExecuteBuyRequest(cart);
+            if(ResultSum > 0)
             {
-                int paymentSystemId = PreBuyCartAction?.Invoke() ?? 3;
-                if (paymentSystemId == -1) return;
-                bool status;
-                string link;
-                (status, link) = RestService.ExecuteBuyRequest(cart, paymentSystemId);
                 if (status && !string.IsNullOrEmpty(link))
                 {
                     BuyCartSuccessAction?.Invoke(link);
@@ -113,11 +124,6 @@ namespace Byster.Models.Services
             }
             else
             {
-                bool confirm = PreBuyCartByBonusesAction?.Invoke() ?? false;
-                if (!confirm) return;
-                bool status;
-                string link;
-                (status, link) = RestService.ExecuteBuyRequest(cart, -1);
                 if(status)
                 {
                     BuyCartByBonusesSuccessAction?.Invoke();
@@ -127,6 +133,8 @@ namespace Byster.Models.Services
                     BuyCartByBonusesFailAction?.Invoke();
                 }
             }
+            
+
         }
 
         public void TestProduct(int id)
@@ -206,6 +214,7 @@ namespace Byster.Models.Services
                 product.TestDel = new Action<object>((obj) => { TestProduct(Convert.ToInt32(obj)); });
                 product.AddDel = new Action<object>((obj) => { AddOneToCountInProduct(Convert.ToInt32(obj)); });
                 product.RemoveDel = new Action<object>((obj) => { RemoveOneFromCountInProduct(Convert.ToInt32(obj)); });
+                product.RemoveAllDel = new Action<object>((obj) => { ClearAllCountFromProduct(Convert.ToInt32(obj)); });
             }
         }
 

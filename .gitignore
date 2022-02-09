@@ -5,3 +5,5 @@
 **/bin/
 **/obj/
 /Byster/.editorconfig
+/update.bat
+/updateToMaster.bat

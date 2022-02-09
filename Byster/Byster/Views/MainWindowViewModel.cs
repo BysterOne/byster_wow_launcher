@@ -340,6 +340,7 @@ namespace Byster.Views
             {
                 return startCommand ?? (startCommand = new RelayCommand((obj) =>
                      {
+                         Injector.Branch = UserInfo.Branch;
                          SessionService.StartInjecting(SelectedSession.WowApp.Process.Id);
                      }));
             }

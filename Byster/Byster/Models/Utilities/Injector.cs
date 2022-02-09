@@ -170,19 +170,19 @@ namespace Byster.Models.Utilities
                 case InjectorStatusCode.ERROR_WHILE_INJECTING:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_FOUND:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED:
-                    Log("Ошибка инжекта", "Статус-код:", injectorStatusCode.ToString());
+                    Log("Ошибка инжекта", "Статус-код:", injectorStatusCode.ToString(), $"ID Инжекта: {changedElement.InjectInfoId}");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
                     break;
                 case InjectorStatusCode.ADDED_OK:
-                    Log("Добавлен инжект в очередь");
+                    Log("Добавлен инжект в очередь", $"ID Инжекта: {changedElement.InjectInfoId}");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.ENEQUEUED;
                     break;
                 case InjectorStatusCode.LIBRARY_DOWNLOADING_STARTED:
-                    Log("Скачивание библиотеки начато");
+                    Log("Скачивание библиотеки начато", $"ID Инжекта: {changedElement.InjectInfoId}");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.DOWNLOADING;
                     break;
                 case InjectorStatusCode.INJECTION_STARTED:
-                    Log("Запуск инжекта");
+                    Log("Запуск инжекта", $"ID Инжекта: {changedElement.InjectInfoId}");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTING;
                     break;
             }
@@ -238,11 +238,17 @@ namespace Byster.Models.Utilities
 
     public class InjectInfo : INotifyPropertyChanged
     {
+        private static int idOfInjectInfo = 0;
         public event PropertyChangedEventHandler PropertyChanged;
 
         public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+        public int InjectInfoId { get; private set; }
+        public InjectInfo()
+        {
+            InjectInfoId = idOfInjectInfo++;
         }
         private InjectInfoStatusCode injectInfoStatusCode;
         public InjectInfoStatusCode InjectInfoStatusCode

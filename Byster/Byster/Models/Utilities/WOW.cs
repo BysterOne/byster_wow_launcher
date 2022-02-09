@@ -56,6 +56,7 @@ namespace Byster.Models.Utilities
 
     public enum Classes
     {
+        UNDEFINED = -1,
         WARRIOR = 1,
         PALADIN = 2,
         HUNTER = 3,
@@ -172,6 +173,11 @@ namespace Byster.Models.Utilities
                 {
                     w.Name = _(ref updated, w.Name, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79D18, 30)));
                     w.Class = _(ref updated, w.Class, (Classes)w.Memory.ReadVirtualMemory<byte>((IntPtr)0xC79E89));
+                }
+                else
+                {
+                    w.Name = "";
+                    w.Class = Classes.UNDEFINED;
                 }
                 if (updated)
                     OnWowChanged?.Invoke(w);

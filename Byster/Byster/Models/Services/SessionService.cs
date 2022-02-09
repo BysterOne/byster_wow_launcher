@@ -72,14 +72,14 @@ namespace Byster.Models.Services
         {
             Dispatcher.Invoke(() =>
             {
-                if (Sessions.FirstOrDefault((session) => session.WowApp.Process.Id == p.Process.Id) != null) return;
+                if (Sessions.FirstOrDefault((session) => session.WowApp.Process.Id == p.Process.Id && session.WowApp.Process.Id != 0) != null) return;
                 var sessionToAdd = new SessionViewModel()
                 {
-                    WowApp = p,
                     UserName = p.Name,
                     ServerName = p.RealmName,
                     SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class)),
                 };
+                sessionToAdd.WowApp = p;
                 Sessions.Add(sessionToAdd);
                 WowFoundAction?.Invoke(sessionToAdd);
             });

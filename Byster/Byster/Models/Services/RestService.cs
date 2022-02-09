@@ -307,8 +307,11 @@ namespace Byster.Models.Services
                 System.Net.HttpStatusCode.GatewayTimeout,
                 System.Net.HttpStatusCode.BadGateway,
             };
-            LastError = "Ошибка соединения с сервером";
-            Log("Сервер недоступен", statusCode.ToString());
+            if(restrictedCodes.Contains(statusCode))
+            {
+                LastError = "Ошибка соединения с сервером";
+                Log("Сервер недоступен", statusCode.ToString());
+            }
             return restrictedCodes.Contains(statusCode);
         }
     }

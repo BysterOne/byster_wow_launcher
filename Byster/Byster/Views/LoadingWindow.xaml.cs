@@ -23,7 +23,7 @@ using Microsoft.Win32;
 using Byster.Models.RestModels;
 using Newtonsoft.Json;
 using NLog;
-
+using static Byster.Models.Utilities.BysterLogger;
 namespace Byster.Views
 {
     /// <summary>
@@ -35,29 +35,7 @@ namespace Byster.Views
         public LoadingWindow()
         {
             InitializeComponent();
-            if(Environment.OSVersion.Version.Major <= 7)
-            {
-                ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol =   SecurityProtocolType.Tls
-                                                       | SecurityProtocolType.Tls11
-                                                       | SecurityProtocolType.Tls12
-                                                       | SecurityProtocolType.Ssl3;
-                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
-                {
-                    if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None)
-                    {
-                        return true;
-                    }
-
-                    var request = sender as HttpWebRequest;
-                    if (request != null)
-                    {
-                        return TrustedHosts.Contains(request.RequestUri.Host);
-                    }
-
-                    return false;
-                };
-            }
+            
             string currentDir = Directory.GetCurrentDirectory();
 
             var config = new NLog.Config.LoggingConfiguration();
@@ -86,6 +64,31 @@ namespace Byster.Views
                 BysterLogger.Log("Fatal:Необработанное исключение", e.Exception.Message, e.Exception.StackTrace);
                 e.Handled = true;
             };
+            Byster.Models.Utilities.BysterLogger.Log("Версия Windows", Environment.OSVersion.Version.Major);
+            if (Environment.OSVersion.Version.Major <= 7)
+            {
+                
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                                                       | SecurityProtocolType.Tls11
+                                                       | SecurityProtocolType.Tls12
+                                                       | SecurityProtocolType.Ssl3;
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
+                {
+                    if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None)
+                    {
+                        return true;
+                    }
+
+                    var request = sender as HttpWebRequest;
+                    if (request != null)
+                    {
+                        return TrustedHosts.Contains(request.RequestUri.Host);
+                    }
+
+                    return false;
+                };
+            }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -104,10 +107,10 @@ namespace Byster.Views
                 BackgroundImageDownloader.Init();
                 if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
                 if (File.Exists("update.bat")) File.Delete("update.bat");
-
+                Log("Удаление остаточных файлов");
                 string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-
+                Log("Проверка оьновлений");
                 var response = App.Rest.Get(new RestRequest("launcher/check_updates"));
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
@@ -121,11 +124,14 @@ namespace Byster.Views
 
                 if (onlineVersion != version)
                 {
+                    
+                    Log($"Обновление от версии {version} до {onlineVersion}");
                     Thread thread = new Thread(() => { updateApp(onlineVersion); });
                     thread.Start();
                 }
                 else
                 {
+                    Log("Обновления не найдены");
                     string login = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", null);
                     string password = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", null);
                     if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))
@@ -244,6 +250,7 @@ namespace Byster.Views
 
         private void updateApp(string versionToUpdate)
         {
+            Log("Получение новой версии");
             RestClient client = new RestClient("https://api.byster.ru/");
             var response = client.Get(new RestRequest("launcher/download"));
             if (response.StatusCode != HttpStatusCode.OK)
@@ -252,6 +259,7 @@ namespace Byster.Views
                 closeApp();
                 return;
             }
+            Log("Обновление");
             File.WriteAllBytes("BysterUpdate.exe", response.RawBytes);
             File.WriteAllLines("update.bat", new List<string>(){
                     "taskkill /IM \"Byster.exe\" /F",
@@ -260,6 +268,7 @@ namespace Byster.Views
                     "rename BysterUpdate.exe Byster.exe",
                     "Byster.exe",
                 });
+            Log("Перезапуск...");
             Process process = new Process();
             process.StartInfo.FileName = "update.bat";
             process.StartInfo.CreateNoWindow = true;

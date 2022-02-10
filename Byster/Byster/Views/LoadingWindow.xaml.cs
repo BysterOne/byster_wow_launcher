@@ -94,6 +94,8 @@ namespace Byster.Views
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            Log("Open LoadingWindow");
+
             rotateProgressTransform.CenterX = this.ActualWidth / 2;
             rotateProgressTransform.CenterY = this.ActualHeight / 2;
             rotateProgressTransform.BeginAnimation(RotateTransform.AngleProperty, new DoubleAnimation()
@@ -103,9 +105,13 @@ namespace Byster.Views
                 RepeatBehavior = RepeatBehavior.Forever,
             });
 
+            Log("Запускаем поток");
+
             Task.Run(() =>
             {
+                Log("Запустили поток");
                 BackgroundImageDownloader.Init();
+                Log("Запустили BackgroundImageDownloader");
                 if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
                 if (File.Exists("update.bat")) File.Delete("update.bat");
                 Log("Удаление остаточных файлов");
@@ -139,16 +145,23 @@ namespace Byster.Views
                     {
                         string passwordHash = password;
                         string sessionId;
-                        if (TryAuth(login, passwordHash, out sessionId))
+                        int status_code = TryAuth(login, passwordHash, out sessionId);
+
+                        switch (status_code)
                         {
-                            StartMainWindow(login, sessionId);
-                            return;
+                            case 200:
+                                StartMainWindow(login, sessionId);
+                                return;
+
+                            case 401:
+                            case 404:
+                                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", "");
+                                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "");
+                                break;
                         }
-                        else
-                        {
-                            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", "");
-                            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "");
-                        }
+
+                        Dispatcher.Invoke(() => Close());
+                        return;
                     }
                     startApp();
                 }
@@ -186,20 +199,22 @@ namespace Byster.Views
             //}));
         }
 
-        private bool TryAuth(string login, string passwordHash, out string sessionId)
+        private int TryAuth(string login, string passwordHash, out string sessionId)
         {
             if (string.IsNullOrEmpty(login))
             {
                 MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
-                return false;
+                return 404;
             }
+
             if (string.IsNullOrEmpty(passwordHash))
             {
-                MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Введите пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
-                return false;
+                return 404;
             }
+
             var response = App.Rest.Post<AuthResponse>(new RestRequest("launcher/login", Method.POST).AddJsonBody(new AuthRequest()
             {
                 login = login,
@@ -210,11 +225,13 @@ namespace Byster.Views
             {
                 MessageBox.Show(response.Data.error, "Ошибка Byster", MessageBoxButton.OK, MessageBoxImage.Error);
                 sessionId = null;
-                return false;
+                return (int)response.StatusCode;
             }
+
             App.Rest.Authenticator = new BysterAuthenticator(response.Data.session);
             sessionId = response.Data.session;
-            return true;
+
+            return 200;
         }
 
 

@@ -28,6 +28,8 @@ namespace Byster.Models.Services
                 bonuses = value;
                 OnPropertyChanged("Bonuses");
                 OnPropertyChanged("ResultSum");
+                OnPropertyChanged("IsPaymentSystemRequired");
+                OnPropertyChanged("IsPaymentSystemNotRequired");
             }
         }
 
@@ -40,6 +42,8 @@ namespace Byster.Models.Services
                 sum = value;
                 OnPropertyChanged("Sum");
                 OnPropertyChanged("ResultSum");
+                OnPropertyChanged("IsPaymentSystemRequired");
+                OnPropertyChanged("IsPaymentSystemNotRequired");
             }
         }
 
@@ -63,6 +67,23 @@ namespace Byster.Models.Services
                 return Sum - Bonuses;
             }
         }
+        public Visibility IsPaymentSystemRequired
+        {
+            get
+            {
+                return ResultSum > 0 ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+        public Visibility IsPaymentSystemNotRequired
+        {
+            get
+            {
+                return ResultSum == 0 ? Visibility.Visible : Visibility.Collapsed;
+            }
+        }
+
+
         public RestService RestService { get; set; }
         public ObservableCollection<ShopProductInfoViewModel> AllProducts { get; set; }
 
@@ -133,8 +154,6 @@ namespace Byster.Models.Services
                     BuyCartByBonusesFailAction?.Invoke();
                 }
             }
-            
-
         }
 
         public void TestProduct(int id)

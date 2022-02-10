@@ -240,7 +240,7 @@ namespace Byster.Views
                     PaymentSystemSelectorWindow selectorWindow = new PaymentSystemSelectorWindow(Shop.GetAllPaymentSystemsList(), this, cart);
                     bool res = false;
                     res = selectorWindow.ShowModalDialog();
-                    if (selectorWindow.SystemId == -1) return false;
+                    if (selectorWindow.SystemId == -1 && Shop.ResultSum > 0) return false;
                     if (res)  Shop.SelectedPaymentSystemId = selectorWindow.SystemId;
                     return res;
                 },

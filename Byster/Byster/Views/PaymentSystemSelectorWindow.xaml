@@ -4,6 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
+        xmlns:views="clr-namespace:Byster.Views"
         mc:Ignorable="d"
         Title="PaymentSystem" Height="350" Width="600"
         ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen" WindowStyle="None"
@@ -11,7 +12,14 @@
         AllowsTransparency="True"
         Icon="/byster.ico">
     <Window.Resources>
-        <ResourceDictionary Source="/Views/Styles.xaml"/>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary Source="/Views/Styles.xaml"/>
+                <ResourceDictionary>
+                    <views:FromSumToBonuses x:Key="FromSumToBonusesConverter"/>
+                </ResourceDictionary>
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
     </Window.Resources>
     <Border Background="{StaticResource BackgroundPaymentWindow}"
             BorderBrush="{StaticResource BorderProductItemColor}"
@@ -32,7 +40,8 @@
                     <TextBlock Grid.Row="0" Style="{DynamicResource infoTextBlockStyle}" Text="Выберите способ оплаты" FontSize="20"/>
                     
                     <Grid Grid.Row="1">
-                        <ComboBox Margin="0, 10" Grid.Row="1" Style="{DynamicResource darkCombobStyle}" x:Name="systemSelector" DisplayMemberPath="Name"/>
+                        <ComboBox Visibility="{Binding MainViewModel.Shop.IsPaymentSystemRequired}" Margin="0, 10" Style="{DynamicResource darkCombobStyle}" x:Name="systemSelector" DisplayMemberPath="Name"/>
+                        <TextBox IsEnabled="False" Visibility="{Binding MainViewModel.Shop.IsPaymentSystemNotRequired}" Margin="0, 10" Style="{DynamicResource tbStyle}"  Text="Выбор способа оплаты не требуется" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Grid>
                     <Grid Grid.Row="2">
                         <ListBox x:Name="productList" Style="{DynamicResource cartProductsView}" ItemsSource="{Binding MainViewModel.Shop.AllProducts}"/>
@@ -61,7 +70,7 @@
                                     </StackPanel>
                                 </Grid>
                                 <Grid Margin="0, 10">
-                                    <Slider Style="{StaticResource bonusSliderReworked}" Maximum="{Binding Path=MainViewModel.UserInfo.BonusBalance}" Value="{Binding Path=MainViewModel.Shop.Bonuses}"/>
+                                    <Slider Style="{StaticResource bonusSliderReworked}"  Maximum="{Binding Path=MainViewModel.Shop.Sum, Converter={StaticResource FromSumToBonusesConverter}}" Value="{Binding Path=MainViewModel.Shop.Bonuses}"/>
                                 </Grid>
                                 <Grid Margin="0, 10">
                                     <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="Оплата бонусами:"/>

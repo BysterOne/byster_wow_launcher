@@ -67,7 +67,8 @@ namespace Byster.Views
                     SettingsViewModel.SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.TEST);
                     break;
                 default:
-                case "master":                    SettingsViewModel.SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.MASTER);
+                case "master":                    
+                    SettingsViewModel.SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.MASTER);
                     break;
             }
             SettingsViewModel.SelectedLoadType = SettingsViewModel.MainViewModel.UserInfo.LoadTypes.Find(loadtype => loadtype.Value == SettingsViewModel.MainViewModel.UserInfo.LoadType);

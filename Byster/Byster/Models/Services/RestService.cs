@@ -79,12 +79,26 @@ namespace Byster.Models.Services
                     amount = product.Item2,
                 });
             }
-            var response = client.Post<RestBuyResponse>(new RestRequest("shop/buy").AddJsonBody(new RestBuyRequest()
+            IRestResponse<RestBuyResponse> response;
+            if(cart.Bonuses >= cart.Sum)
             {
-                bonuses = cart.Bonuses,
-                payment_system_id = cart.PaymentSystemId,
-                items = products,
-            }));
+                response = client.Post<RestBuyResponse>(new RestRequest("shop/buy").AddJsonBody(new RestBuyRequest()
+                {
+                    bonuses = cart.Bonuses,
+                    items = products,
+                    payment_system_id = 0,
+                }));
+            }
+            else
+            {
+                response = client.Post<RestBuyResponse>(new RestRequest("shop/buy").AddJsonBody(new RestBuyRequest()
+                {
+                    bonuses = cart.Bonuses,
+                    payment_system_id = cart.PaymentSystemId,
+                    items = products,
+                }));
+            }
+            
             if (checkHTTPStatusCode(response.StatusCode)) return (false, null);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {

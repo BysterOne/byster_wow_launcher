@@ -54,6 +54,7 @@ namespace Byster.Views
             }
             else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
             {
+                loadTypeText.Visibility = Visibility.Collapsed;
                 loadTypeSelector.Visibility = Visibility.Collapsed;
                 rotationSettingsBtn.Visibility = Visibility.Collapsed;
                 this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;

@@ -65,7 +65,7 @@
             <StackPanel>
                 <TextBlock Text="Выбор ветки ротации" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox x:Name="branchSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.BranchChoices}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedBranch, Mode=TwoWay}"/>
-                <TextBlock Text="Выбор типа загрузки" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
+                <TextBlock x:Name="loadTypeText" Text="Выбор типа загрузки" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox x:Name="loadTypeSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.LoadTypes}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedLoadType, Mode=TwoWay}"/>
                 <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="admin.byster.ru" Command="{Binding OpenAccountPageCommand}"/>
                 <Button x:Name="rotationSettingsBtn" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="Меню выбора ротаций" Command="{Binding OpenRotationSettingsWindow}"/>

@@ -151,11 +151,31 @@ namespace Byster.Models.Services
             while(!IsReadyToSyncronization) { }
             DeveloperRotations = new List<DeveloperRotation>();
             //Task.Run(() => UpdateData());
-            InitializationCompleted?.Invoke(); 
+            readRotationFile();
+            InitializationCompleted?.Invoke();
             StatusCode = DeveloperRotationStatusCodes.IDLE;
         }
 
         Semaphore semaphore = new Semaphore(3, 3);
+
+        private void readRotationFile()
+        {
+            if (!File.Exists(rotationConfigurationFilePath)) File.Create(rotationConfigurationFilePath).Close();
+            string rawRotationsConf = File.ReadAllText(rotationConfigurationFilePath);
+            Dictionary<string, bool> devRotationsdict = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotationsConf);
+            if (devRotationsdict != null)
+            {
+                foreach (var key in devRotationsdict.Keys)
+                {
+                    DeveloperRotations.Add(new DeveloperRotation()
+                    {
+                        IsEnabled = devRotationsdict[key],
+                        Path = key,
+                    });
+                }
+            }
+        }
+
 
         public void UpdateData()
         {
@@ -170,20 +190,8 @@ namespace Byster.Models.Services
             int counterTrigger = 0;
             StatusCode = DeveloperRotationStatusCodes.CHECKING;
 
-            if (!File.Exists(rotationConfigurationFilePath)) File.Create(rotationConfigurationFilePath).Close();
-            string rawRotationsConf = File.ReadAllText(rotationConfigurationFilePath);
-            Dictionary<string, bool> devRotationsdict = JsonConvert.DeserializeObject<Dictionary<string, bool>>(rawRotationsConf);
-            if (devRotationsdict != null)
-            {
-                foreach(var key in devRotationsdict.Keys)
-                {
-                    DeveloperRotations.Add(new DeveloperRotation()
-                    {
-                        IsEnabled = devRotationsdict[key],
-                        Path = key,
-                    });
-                }
-            }
+            readRotationFile();
+            
             StatusCode = DeveloperRotationStatusCodes.SYNCRONIZATION;
             SyncronizationStarted?.Invoke();
             var devRotations = RestService.ExecuteDeveloperRotationRequest();
@@ -513,10 +521,12 @@ namespace Byster.Models.Services
                 OnPropertyChanged("StatusCodeText");
             };
             core.Initialize();
+            IsInitialized = true;
         }
 
         public void UpdateData()
         {
+            if (!IsInitialized) return;
             core.UpdateData();
         }
 
@@ -527,6 +537,7 @@ namespace Byster.Models.Services
                                 string spec,
                                 string roletype)
         {
+            if(!IsInitialized) return false;
             return core.AddRotation(name,
                             description,
                             type,

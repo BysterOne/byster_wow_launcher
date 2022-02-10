@@ -314,6 +314,17 @@ namespace Byster.Views
             {
                 DeveloperRotations.Initialize(dispatcher);
             }
+            else
+            {
+                UserInfo.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == "UserType")
+                    {
+                        if (UserInfo.UserType == BranchType.DEVELOPER && !DeveloperRotations.IsInitialized)
+                            DeveloperRotations.Initialize(dispatcher);
+                    }
+                };
+            }
             UpdateData();
             checkRotations();
             InitializationCompleted?.Invoke();

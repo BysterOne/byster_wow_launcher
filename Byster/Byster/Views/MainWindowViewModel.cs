@@ -246,7 +246,7 @@ namespace Byster.Views
                 },
                 BuyCartSuccessAction = (string str) =>
                 {
-                    LinkPresenterWindow infoWindow = new LinkPresenterWindow("", str);
+                    LinkPresenterWindow infoWindow = new LinkPresenterWindow(this, Shop.GetAllPaymentSystemsList().Where(_system => _system.Id == Shop.SelectedPaymentSystemId).FirstOrDefault(), str);
                     infoWindow.ShowModalDialog();
                     Shop.ClearCart();
                 },

@@ -19,6 +19,8 @@ using ZXing;
 using ZXing.Common;
 using System.IO;
 using System.Diagnostics;
+using Byster.Models.BysterModels;
+
 
 namespace Byster.Views
 {
@@ -28,12 +30,14 @@ namespace Byster.Views
     public partial class LinkPresenterWindow : Window
     {
         private string linkToPay;
-        public LinkPresenterWindow(string title, string link)
+        public LinkPresenterWindow(MainWindowViewModel mainViewModel, PaymentSystem paymentSystem, string link)
         {
             InitializeComponent();
-            this.Title = title;
-            titleTextBlock.Text = title;
+            this.Title = "Оплата";
+            titleTextBlock.Text = $"{paymentSystem?.Name ?? "Не указано"} - {mainViewModel.Shop.ResultSum} {mainViewModel.UserInfo.Currency}";
             linkToPay = link;
+            infoTextBlock.Text = paymentSystem?.Description ?? "";
+
             QRCodeWriter writer = new QRCodeWriter();
             BitMatrix bitMatrix = writer.encode(link, BarcodeFormat.QR_CODE, 300, 300);
             Bitmap bitmap = new Bitmap(300, 300);
@@ -70,15 +74,17 @@ namespace Byster.Views
             this.DialogResult = true;
         }
 
-        private void linkHyperLink_Click(object sender, RoutedEventArgs e)
-        {
-            Process.Start(linkToPay);
-        }
+        
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             base.OnMouseLeftButtonDown(e);
             this.DragMove();
+        }
+
+        private void linkBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Process.Start(linkToPay);
         }
     }
 }

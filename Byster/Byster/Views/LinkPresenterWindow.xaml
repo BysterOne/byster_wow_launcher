@@ -18,24 +18,20 @@
             BorderThickness="1">
         <Grid Margin="12">
             <Grid.RowDefinitions>
-                <RowDefinition Height="15"/>
+                <RowDefinition Height="20"/>
                 <RowDefinition/>
                 <RowDefinition Height="40"/>
                 <RowDefinition Height="37"/>
             </Grid.RowDefinitions>
-            <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource titleTextBlockStyle}" FontSize="15"/>
+            <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource titleTextBlockStyle}" FontSize="15" Margin="0" TextAlignment="Center"/>
             <Image x:Name="linkImagePresenter" Grid.Row="1" Width="300" Height="300"/>
             <TextBlock Grid.Row="2" x:Name="infoTextBlock" TextWrapping="Wrap"  Style="{StaticResource infoTextBlockStyle}" Margin="0, 4"
                        HorizontalAlignment="Center"
                        VerticalAlignment="Center">
-            <Hyperlink Foreground="{DynamicResource FontUIColor}"
-                       x:Name="linkHyperLink"
-                       Click="linkHyperLink_Click">
-                Ссылка на оплату
-            </Hyperlink>
             </TextBlock>
             <Grid Grid.Row="3">
-                <Button Style="{StaticResource bStyle}" Content="ОК" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Right" IsDefault="True" x:Name="okBtn" Click="okBtn_Click"/>
+                <Button Style="{StaticResource transparentButtonStyle}" Content="ОК" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Right" IsDefault="True" x:Name="okBtn" Click="okBtn_Click"/>
+                <Button Style="{StaticResource bStyle}" Content="Ссылка на оплату" Width="150" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsDefault="True" x:Name="linkBtn" Click="linkBtn_Click"/>
             </Grid>
         </Grid>
     </Border>

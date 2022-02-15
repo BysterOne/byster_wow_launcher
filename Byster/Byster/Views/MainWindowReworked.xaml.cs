@@ -180,6 +180,8 @@ namespace Byster.Views
                         return "Инжект...";
                     case InjectInfoStatusCode.INJECTED_OK:
                         return "Инжект завершён, перейдите в игру.";
+                    case InjectInfoStatusCode.DIRECTX_NOT_INSTALLED:
+                        return "Отсутствует DirectX";
                 }
             }
             return "---";

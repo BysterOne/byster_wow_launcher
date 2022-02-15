@@ -203,6 +203,7 @@
     <Compile Include="Models\Services\UserInfoService.cs" />
     <Compile Include="Models\Utilities\BackgroundImageDownloader.cs" />
     <Compile Include="Models\Utilities\Converters.cs" />
+    <Compile Include="Models\Utilities\DLLSearcher.cs" />
     <Compile Include="Models\Utilities\IEnumerableExtensions.cs" />
     <Compile Include="Models\Utilities\Injector.cs" />
     <Compile Include="Models\Utilities\HashCalc.cs" />

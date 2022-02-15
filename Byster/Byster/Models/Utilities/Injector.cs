@@ -190,6 +190,7 @@ namespace Byster.Models.Utilities
 
         static public void AddProcessToInject(InjectInfo injectingProcessInfo)
         {
+            if (injectingProcessInfo.InjectInfoStatusCode != InjectInfoStatusCode.INACTIVE) return;
             if (injectingProcessInfo.ProcessId == 0)
             {
                 InjectQueueUpdated.Invoke(injectingProcessInfo, InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED);
@@ -298,5 +299,6 @@ namespace Byster.Models.Utilities
         INJECTED_OK = 4,
 
         ERROR       = 5,
+        DIRECTX_NOT_INSTALLED = 6,
     }
 }

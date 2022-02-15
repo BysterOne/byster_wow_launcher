@@ -37,7 +37,6 @@ namespace Byster.Views
             titleTextBlock.Text = $"{paymentSystem?.Name ?? "Не указано"} - {mainViewModel.Shop.ResultSum} {mainViewModel.UserInfo.Currency}";
             linkToPay = link;
             infoTextBlock.Text = paymentSystem?.Description ?? "";
-
             QRCodeWriter writer = new QRCodeWriter();
             BitMatrix bitMatrix = writer.encode(link, BarcodeFormat.QR_CODE, 300, 300);
             Bitmap bitmap = new Bitmap(300, 300);
@@ -85,6 +84,13 @@ namespace Byster.Views
         private void linkBtn_Click(object sender, RoutedEventArgs e)
         {
             Process.Start(linkToPay);
+        }
+        private void infoTextBlock_SizeChanged(object sender, SizeChangedEventArgs e)
+        {
+            if (infoTextBlock.IsVisible)
+            {
+                this.Height = 20 + 300 + infoTextBlock.ActualHeight + 37 + 44;
+            }
         }
     }
 }

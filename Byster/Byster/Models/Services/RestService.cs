@@ -136,7 +136,7 @@ namespace Byster.Models.Services
                 return (null, null, 0, null, null);
             }
             Log("Обновлены данные пользователя");
-            return (response.Data.username, response.Data.referral_code, Convert.ToInt32(response.Data.balance), response.Data.currency, response.Data.encryption);
+            return (response.Data.username, response.Data.referral_code, Convert.ToInt32(Math.Floor(response.Data.balance)), response.Data.currency, response.Data.encryption);
         }
 
         public bool? GetEncryptStatus()

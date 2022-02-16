@@ -18,7 +18,8 @@ namespace Byster.Models.Services
     {
         private RestClient client;
         public string LastError { get; set; }
-
+        public event Action MultipleConnectionErrorsDetected;
+        private int connectionErrorCounter = 0;
         public RestService(RestClient _client)
         {
             if(_client == null)
@@ -325,8 +326,17 @@ namespace Byster.Models.Services
             {
                 LastError = "Ошибка соединения с сервером";
                 Log("Сервер недоступен", statusCode.ToString());
+                if(++connectionErrorCounter >= 3)
+                {
+                    MultipleConnectionErrorsDetected?.Invoke();
+                }
+                return true;
             }
-            return restrictedCodes.Contains(statusCode);
+            else
+            {
+                connectionErrorCounter = 0;
+                return false;
+            }
         }
     }
 }

@@ -51,6 +51,15 @@ namespace Byster.Views
             {
                 updatingDataActionGrid.Visibility = Visibility.Collapsed;
             };
+            ViewModel.MultipleConnectionErrorsDetected += () =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    var window = new InfoWindow("Ошибка подключения", "Более 3 ошибок подключения к серверу. Попробуйте открыть лаунчер позже...");
+                    window.ShowDialog();
+                    Close();
+                });
+            };
             InitializeComponent();
             this.DataContext = ViewModel;
             FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance;

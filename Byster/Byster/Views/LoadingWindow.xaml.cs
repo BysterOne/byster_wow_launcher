@@ -24,6 +24,8 @@ using Byster.Models.RestModels;
 using Newtonsoft.Json;
 using NLog;
 using static Byster.Models.Utilities.BysterLogger;
+using Byster.Localizations.Tools;
+
 namespace Byster.Views
 {
     /// <summary>

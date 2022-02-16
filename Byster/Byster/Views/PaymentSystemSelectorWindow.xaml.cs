@@ -33,6 +33,7 @@ namespace Byster.Views
         {
             InitializeComponent();
             systemSelector.ItemsSource = systems;
+            systemSelector.SelectedIndex = 0;
             this.DataContext = new PaymentWindowViewModel()
             {
                 MainViewModel = mainWindowViewModel,

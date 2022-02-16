@@ -12,7 +12,7 @@ using Byster.Models.ViewModels;
 using System.Windows;
 using System.Windows.Threading;
 using RestSharp;
-
+using Byster.Views;
 namespace Byster.Models.Services
 {
     public class SessionService : INotifyPropertyChanged, IDisposable
@@ -46,6 +46,16 @@ namespace Byster.Models.Services
             searcher.OnWowFounded += searcherWowFound;
             searcher.OnWowClosed += searcherWowClosed;
             searcher.OnFirstWowFound += searcherFirstWowFound;
+            searcher.OnDirectXNotFound += searcherDirectXNotInstalled;
+        }
+
+
+        private void searcherDirectXNotInstalled()
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var window = new DirectXNavigateWindow("Ошибка", "DirectX не обнаружен. Для запуска Byster необходимо установить DirectX.");
+            });
         }
 
         private bool searcherFirstWowFound(WoW p)

@@ -13,6 +13,7 @@ using Byster.Models.BysterModels;
 using Byster.Models.Services;
 using Byster.Models.Utilities;
 using Byster.Models.ViewModels;
+using Byster.Localizations.Tools;
 using System.Windows;
 using System.Windows.Threading;
 
@@ -32,7 +33,7 @@ namespace Byster.Views
     }
     public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
     {
-
+        public LocalizationDataForViewModels LocalizationData { get; set; } = new LocalizationDataForViewModels();
         public ObservableCollection<Visibility> PageVisibilities { get; set; } = new ObservableCollection<Visibility>()
         {
             Visibility.Visible,
@@ -64,6 +65,8 @@ namespace Byster.Views
 
         public event Action InitializationStarted;
         public event Action InitializationCompleted;
+
+        public event Action MultipleConnectionErrorsDetected;
         public ActiveRotationsService ActiveRotations { get; set; }
         public ShopService Shop { get; set; }
         public UserInfoService UserInfo { get; set; }
@@ -71,6 +74,7 @@ namespace Byster.Views
         public SessionService SessionService { get; set; }
 
         private SessionViewModel selectedSession;
+
 
         public DeveloperRotationService DeveloperRotations { get; set; }
         public SessionViewModel SelectedSession
@@ -204,6 +208,10 @@ namespace Byster.Views
         {
             BysterWindowExtensions.Model = this;
             restService = new RestService(client);
+            restService.MultipleConnectionErrorsDetected += () =>
+            {
+                MultipleConnectionErrorsDetected?.Invoke();
+            };
             UserInfo = new UserInfoService(restService)
             {
                 SessionId = sessionId,

@@ -55,7 +55,6 @@ namespace Byster.Models.Utilities
             return base.GetHashCode();
         }
     }
-
     public enum Classes
     {
         UNDEFINED = -1,
@@ -95,7 +94,8 @@ namespace Byster.Models.Utilities
         public event ProcessDelegate OnWowClosed;
         public event ProcessDelegate OnWowChanged;
         public event ProcessDelegate OnFirstWowFound;
-
+        public event Action OnDirectXNotFound;
+        private bool isDirectXNotInstalledDetected = false;
 
         Timer TimerWatcher;
 
@@ -172,6 +172,11 @@ namespace Byster.Models.Utilities
                 w.RealmName = _(ref updated, w.RealmName, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79B9E, 30)));
                 w.RealmServer = _(ref updated, w.RealmServer, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0x879B9E, 30)));
                 w.IsDirectXInstalled = _(ref updated, w.IsDirectXInstalled, DLLSearcher.FindModuleInProcess((uint)w.Process.Id, "d3d9.dll"));
+                if(!isDirectXNotInstalledDetected && !w.IsDirectXInstalled)
+                {
+                    isDirectXNotInstalledDetected = true;
+                    OnDirectXNotFound?.Invoke();
+                }
                 if (w.WorldLoaded)
                 {
                     w.Name = _(ref updated, w.Name, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79D18, 30)));

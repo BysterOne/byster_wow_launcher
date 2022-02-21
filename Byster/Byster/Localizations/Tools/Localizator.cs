@@ -90,6 +90,9 @@ namespace Byster.Localizations.Tools
         }
     }
 
+    public static class LocalizatorConverter : I
+
+
     public class LocalizationInfo
     {
         public string Language { get; set; }

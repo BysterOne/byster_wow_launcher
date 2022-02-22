@@ -20,7 +20,7 @@ using ZXing.Common;
 using System.IO;
 using System.Diagnostics;
 using Byster.Models.BysterModels;
-
+using Byster.Localizations.Tools;
 
 namespace Byster.Views
 {
@@ -33,8 +33,10 @@ namespace Byster.Views
         public LinkPresenterWindow(MainWindowViewModel mainViewModel, PaymentSystem paymentSystem, string link)
         {
             InitializeComponent();
-            this.Title = "Оплата";
-            titleTextBlock.Text = $"{paymentSystem?.Name ?? "Не указано"} - {mainViewModel.Shop.ResultSum} {mainViewModel.UserInfo.Currency}";
+            this.Title = Localizator.GetLocalizationResourceByKey("Payment");
+            okBtn.Content = Localizator.GetLocalizationResourceByKey("OK").Value;
+            linkBtn.Content = Localizator.GetLocalizationResourceByKey("LinkToPay").Value;
+            titleTextBlock.Text = $"{paymentSystem?.Name ?? Localizator.GetLocalizationResourceByKey("Undefined").Value} - {mainViewModel.Shop.ResultSum} {mainViewModel.UserInfo.Currency}";
             linkToPay = link;
             infoTextBlock.Text = paymentSystem?.Description ?? "";
             QRCodeWriter writer = new QRCodeWriter();

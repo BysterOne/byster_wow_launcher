@@ -16,6 +16,7 @@ using System.Windows.Shapes;
 using RestSharp;
 using Byster.Models.RestModels;
 using Byster.Models.Utilities;
+using Byster.Localizations.Tools;
 
 namespace Byster.Views
 {
@@ -27,6 +28,14 @@ namespace Byster.Views
         public LoginOrRegistrationWindow()
         {
             InitializeComponent();
+            registerBtn.Content = Localizator.GetLocalizationResourceByKey("Register").Value;
+            loginBtn.Content = Localizator.GetLocalizationResourceByKey("Login").Value;
+            loginBox.Tag = Localizator.GetLocalizationResourceByKey("Username").Value;
+            passwordBox.Tag = Localizator.GetLocalizationResourceByKey("Password").Value;
+            newLoginBox.Tag = Localizator.GetLocalizationResourceByKey("NewLogin").Value;
+            newPasswordBox.Tag = Localizator.GetLocalizationResourceByKey("NewPassword").Value;
+            newPasswordConfirmBox.Tag = Localizator.GetLocalizationResourceByKey("NewPasswordConfirm").Value;
+            referalBox.Tag = Localizator.GetLocalizationResourceByKey("ReferalCode").Value;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)

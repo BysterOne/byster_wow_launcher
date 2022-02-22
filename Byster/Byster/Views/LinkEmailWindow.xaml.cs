@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Byster.Localizations.Tools;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,10 @@ namespace Byster.Views
         {
             InitializeComponent();
             Model = model;
+            titleTextBlock.Text = Localizator.GetLocalizationResourceByKey("TitleEmail");
+            infoTextBlock.Text = Localizator.GetLocalizationResourceByKey("InfoEmail");
+            okBtn.Content = Localizator.GetLocalizationResourceByKey("OK").Value;
+            cancelBtn.Content = Localizator.GetLocalizationResourceByKey("Cancel").Value;
         }
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
@@ -36,20 +41,20 @@ namespace Byster.Views
                 email.ToLower().EndsWith(".net"))) ||
                     (email.Count(c => c == '@') != 1))
             {
-                var w = new InfoWindow("Ошибка", "Введённый текст не является E-Mail");
+                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error").Value, Localizator.GetLocalizationResourceByKey("ErrorEmail_1").Value);
                 w.ShowDialog();
                 return;
             }
             bool result = Model.MainViewModel.UserInfo.LinkEmail(email);
             if(result)
             {
-                var w = new InfoWindow("Успех", "E-Mail привязан");
+                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success").Value, Localizator.GetLocalizationResourceByKey("SuccessEmail").Value);
                 w.ShowDialog();
                 this.DialogResult = true;
             }
             else
             {
-                var w = new InfoWindow("Ошибка", "Ошибка привязки E-Mail");
+                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error").Value, Localizator.GetLocalizationResourceByKey("ErrorEmail_2").Value);
                 w.ShowDialog();
             }
 

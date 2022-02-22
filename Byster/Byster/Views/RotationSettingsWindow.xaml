@@ -3,7 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Byster.Views"
+        xmlns:local="clr-namespace:Byster.Views" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         xmlns:lb="clr-namespace:Byster.Models.Utilities"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
@@ -28,7 +28,7 @@
         </Border>
         
         <Grid Grid.Row="0">
-            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="Выбор ротаций" FontSize="20" Margin="20, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding LocalizationData.RotationSelect}" FontSize="20" Margin="20, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
         </Grid>
         <Grid Grid.Row="1">
             <Grid.RowDefinitions>
@@ -39,7 +39,7 @@
             </Grid.RowDefinitions>
             <Grid Grid.Row="0">
                 <StackPanel Margin="10, 0">
-                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="Поиск по локальным ротациям" Margin="0, 10"/>
+                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding LocalizationData.LocalRotationSearch}" Margin="0, 10"/>
                     <Grid>
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition/>
@@ -47,7 +47,7 @@
                         </Grid.ColumnDefinitions>
                         <TextBox x:Name="searchRequest" Style="{DynamicResource tbStyle}" Margin="0, 0, 20, 0" Grid.Column="0" Text="{Binding Path=DeveloperRotations.SearchRequest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
                         </TextBox>
-                        <Button IsDefault="True" Command="{Binding DeveloperRotations.SyncCommand}" x:Name="searchBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{DynamicResource transparentButtonStyle}" Content="Синхронизировать" Grid.Column="1"/>
+                        <Button IsDefault="True" Command="{Binding DeveloperRotations.SyncCommand}" x:Name="searchBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{DynamicResource transparentButtonStyle}" Content="{Binding LocalizationData.Sync.Value}" Grid.Column="1"/>
                     </Grid>
                 </StackPanel>
             </Grid>
@@ -92,8 +92,8 @@
                 </ListBox>
             </Grid>
             <Grid Grid.Row="2">
-                <Button Style="{DynamicResource transparentButtonStyle}" Content="Добавить" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Width="320" Command="{Binding DeveloperRotations.AddCommand}"/>
-                <Button Style="{DynamicResource transparentButtonStyle}" Content="Сохранить" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10" Width="320" Command="{Binding DeveloperRotations.SaveCommand}"/>
+                <Button Style="{DynamicResource transparentButtonStyle}" Content="{Binding LocalizationData.Add.Value}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Width="320" Command="{Binding DeveloperRotations.AddCommand}"/>
+                <Button Style="{DynamicResource transparentButtonStyle}" Content="{Binding LocalizationData.Save.Value}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10" Width="320" Command="{Binding DeveloperRotations.SaveCommand}"/>
             </Grid>
         </Grid>
         <Grid x:Name="backgroundGrid" Visibility="{Binding DeveloperRotations.IsReadyForUsing}" Background="#A0000000" Grid.RowSpan="3">

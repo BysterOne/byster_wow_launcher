@@ -119,12 +119,12 @@ namespace Byster.Views
                 Log("Удаление остаточных файлов");
                 string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 
-                Log("Проверка оьновлений");
+                Log("Проверка обновлений");
                 var response = App.Rest.Get(new RestRequest("launcher/check_updates"));
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}\nСообщние ошибки от сервера: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "Нет ответа от сервера"}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                        MessageBox.Show($"Error while connecting server\nResponse HTTP-Code: {(int)response.StatusCode}\nError message: {response.ErrorMessage}\nServer error message: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "No server answer"}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         closeApp();
                         return;
                     }
@@ -140,7 +140,7 @@ namespace Byster.Views
                 }
                 else
                 {
-                    Log("Обновления не найдены");
+                    Log("Обновления не найдены. Запуск приложения...");
                     string login = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", null);
                     string password = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", null);
                     if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))

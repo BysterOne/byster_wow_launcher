@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
-        xmlns:views="clr-namespace:Byster.Views"
+        xmlns:views="clr-namespace:Byster.Views" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         mc:Ignorable="d"
         Title="PaymentSystem" Height="350" Width="600"
         ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen" WindowStyle="None"
@@ -37,11 +37,11 @@
                         <RowDefinition Height="60"/>
                         <RowDefinition/>
                     </Grid.RowDefinitions>
-                    <TextBlock Grid.Row="0" Style="{DynamicResource infoTextBlockStyle}" Text="Выберите способ оплаты" FontSize="20"/>
+                    <TextBlock Grid.Row="0" Style="{DynamicResource infoTextBlockStyle}" Text="{Binding MainViewModel.LocalizationData.SelectPayment}" FontSize="20"/>
                     
                     <Grid Grid.Row="1">
                         <ComboBox Visibility="{Binding MainViewModel.Shop.IsPaymentSystemRequired}" Margin="0, 10" Style="{DynamicResource darkCombobStyle}" x:Name="systemSelector" DisplayMemberPath="Name"/>
-                        <TextBox IsEnabled="False" Visibility="{Binding MainViewModel.Shop.IsPaymentSystemNotRequired}" Margin="0, 10" Style="{DynamicResource tbStyle}"  Text="Выбор способа оплаты не требуется" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <TextBox IsEnabled="False" Visibility="{Binding MainViewModel.Shop.IsPaymentSystemNotRequired}" Margin="0, 10" Style="{DynamicResource tbStyle}"  Text="{Binding MainViewModel.LocalizationData.SelectPaymentNotRequired}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Grid>
                     <Grid Grid.Row="2">
                         <ListBox x:Name="productList" Style="{DynamicResource cartProductsView}" ItemsSource="{Binding MainViewModel.Shop.AllProducts}"/>
@@ -55,14 +55,14 @@
                     <RowDefinition Height="*"/>
                     <RowDefinition Height="60"/>
                 </Grid.RowDefinitions>
-                <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource infoTextBlockStyle}" Text="Расчёт" FontSize="20"/>
+                <TextBlock Grid.Row="0" x:Name="titleTextBlock" Style="{DynamicResource infoTextBlockStyle}" Text="{Binding MainViewModel.LocalizationData.Raschet}" FontSize="20"/>
                 <Grid Grid.Row="1">
                     <Grid Background="{StaticResource BackgroundFieldPaymentWindow}"
                           Margin="0, 10">
                         <Grid Margin="10">
                             <StackPanel>
                                 <Grid>
-                                    <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="Итого:"/>
+                                    <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding MainViewModel.LocalizationData.EndSum}"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Path=MainViewModel.Shop.Sum}"/>
                                         <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text=" "/>
@@ -73,7 +73,7 @@
                                     <Slider Style="{StaticResource bonusSliderReworked}"  Maximum="{Binding Path=MainViewModel.Shop.Sum, Converter={StaticResource FromSumToBonusesConverter}}" Value="{Binding Path=MainViewModel.Shop.Bonuses}"/>
                                 </Grid>
                                 <Grid Margin="0, 10">
-                                    <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="Оплата бонусами:"/>
+                                    <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding MainViewModel.LocalizationData.BonusPay}"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Path=MainViewModel.Shop.Bonuses}"/>
                                         <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text=" "/>
@@ -81,7 +81,7 @@
                                     </StackPanel>
                                 </Grid>
                                 <Grid>
-                                    <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="К оплате:"/>
+                                    <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding MainViewModel.LocalizationData.ToPaySum}"/>
                                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                         <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Path=MainViewModel.Shop.ResultSum}"/>
                                         <TextBlock FontSize="20" Style="{StaticResource infoTextBlockStyle}" Text=" "/>
@@ -92,7 +92,7 @@
                             <Grid VerticalAlignment="Bottom">
                                 <TextBlock FontSize="20" Style="{DynamicResource infoTextBlockStyle}" TextAlignment="Right">
                                         <Hyperlink Command="{Binding MainViewModel.Shop.ClearCartCommand}" Style="{StaticResource hlStyle}" Foreground="{DynamicResource HyperlinkPaymentWindowColor}" FontSize="10">
-                                            Очистить корзину
+                                            <TextBlock Text="{Binding MainViewModel.LocalizationData.ClearCart}"/>
                                         </Hyperlink>
                                 </TextBlock>
                             </Grid>
@@ -106,8 +106,8 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Style="{StaticResource transparentButtonStyle}" Content="Отмена" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn" Click="cancelBtn_Click"/>
-                        <Button Grid.Column="1" Style="{StaticResource bStyle}" Content="Продолжить" HorizontalAlignment="Stretch" Margin="8, 0, 0, 0" IsDefault="True" x:Name="okBtn" Click="okBtn_Click"/>
+                        <Button Grid.Column="0" Style="{StaticResource transparentButtonStyle}" Content="{Binding MainViewModel.LocalizationData.Cancel}" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn" Click="cancelBtn_Click"/>
+                        <Button Grid.Column="1" Style="{StaticResource bStyle}" Content="{Binding MainViewModel.LocalizationData.Continue}" HorizontalAlignment="Stretch" Margin="8, 0, 0, 0" IsDefault="True" x:Name="okBtn" Click="okBtn_Click"/>
                     </Grid>
                 </Grid>
             </Grid>

@@ -7,6 +7,7 @@ using System.IO;
 using Newtonsoft.Json;
 using System.Windows;
 using System.Globalization;
+using System.Windows.Data;
 
 namespace Byster.Localizations.Tools
 {
@@ -90,8 +91,18 @@ namespace Byster.Localizations.Tools
         }
     }
 
-    public static class LocalizatorConverter : I
+    public class LocalizationConverter : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return Localizator.GetLocalizationResourceByKey((string)parameter).ToString();
+        }
 
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
 
     public class LocalizationInfo
     {

@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         mc:Ignorable="d" Height="505" Width="330"
-        Title="Настройки"
+        Title="{Binding MainViewModel.LocalizationData.Settings}"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="Transparent"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
@@ -31,7 +31,7 @@
             <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Margin="5"/>
         </Button>
         <Grid Grid.Row="0" x:Name="nameGrid">
-            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="Настройки" FontSize="20" Margin="20, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding MainViewModel.LocalizationData.Settings}" FontSize="20" Margin="20, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
         </Grid>
         <Grid Grid.Row="1" Width="300" Height="190" x:Name="masterGrid">
             <Grid.ColumnDefinitions>
@@ -40,15 +40,15 @@
             </Grid.ColumnDefinitions>
             <Image Margin="2" RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Path=MainViewModel.UserInfo.UserImage}" VerticalAlignment="Center" HorizontalAlignment="Stretch" Stretch="Uniform" Grid.Column="0"/>
             <StackPanel Orientation="Vertical" VerticalAlignment="Center" HorizontalAlignment="Center" Grid.Column="1">
-                <Button x:Name="changePasswordButton" Style="{DynamicResource transparentButtonStyle}" Content="Сменить пароль" Command="{Binding ChangePwdCommand}"/>
-                <Button x:Name="linkEnailButton" Style="{DynamicResource transparentButtonStyle}" Content="Привязать почту" Margin="0, 4" Command="{Binding LinkEmailCommand}"/>
-                <Button x:Name="activateCouponButton" Style="{DynamicResource transparentButtonStyle}" Content="Активировать купон" Margin="0,0,0,4" Command="{Binding ActivateCouponCommand}"/>
+                <Button x:Name="changePasswordButton" Style="{DynamicResource transparentButtonStyle}" Content="{Binding MainViewModel.LocalizationData.ChangePassword}" Command="{Binding ChangePwdCommand}"/>
+                <Button x:Name="linkEnailButton" Style="{DynamicResource transparentButtonStyle}" Content="{Binding MainViewModel.LocalizationData.LinkEmail}" Margin="0, 4" Command="{Binding LinkEmailCommand}"/>
+                <Button x:Name="activateCouponButton" Style="{DynamicResource transparentButtonStyle}" Content="{Binding MainViewModel.LocalizationData.ActivateCoupon}" Margin="0,0,0,4" Command="{Binding ActivateCouponCommand}"/>
                 <CheckBox Style="{DynamicResource rightCheckboxStyle}"
                           FontSize="{DynamicResource FontUISize}"
                           FontFamily="{DynamicResource Roboto}"
                           x:Name="consoleSwitch"
                           Foreground="{DynamicResource FontOrangeColor}">
-                    <TextBlock Text="Показывать консоль"/>
+                    <TextBlock Text="{Binding MainViewModel.LocalizationData.ShowConsole}"/>
                 </CheckBox>
                 <CheckBox Style="{DynamicResource rightCheckboxStyle}"
                           FontSize="{DynamicResource FontUISize}"
@@ -57,18 +57,20 @@
                           IsChecked="{Binding MainViewModel.UserInfo.EncryptionWithAutoUpdate}"
                           IsEnabled="{Binding MainViewModel.UserInfo.IsEncryptinChangeAllowed}"
                           Foreground="{DynamicResource FontOrangeColor}">
-                    <TextBlock Text="Шифрование"/>
+                    <TextBlock Text="{Binding MainViewModel.LocalizationData.Encryption}"/>
                 </CheckBox>
             </StackPanel>
         </Grid>
         <Grid Grid.Row="2" Height="Auto" Margin="0, 10, 0, 0" x:Name="testElementGrid">
             <StackPanel>
-                <TextBlock Text="Выбор ветки ротации" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
+                <TextBlock Text="{Binding MainViewModel.LocalizationData.SelectRotationBranch}" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox x:Name="branchSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.BranchChoices}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedBranch, Mode=TwoWay}"/>
-                <TextBlock x:Name="loadTypeText" Text="Выбор типа загрузки" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
+                <TextBlock x:Name="loadTypeText" Text="{Binding MainViewModel.LocalizationData.SelectLoadtype}" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox x:Name="loadTypeSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.LoadTypes}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedLoadType, Mode=TwoWay}"/>
                 <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="admin.byster.ru" Command="{Binding OpenAccountPageCommand}"/>
-                <Button x:Name="rotationSettingsBtn" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="Меню выбора ротаций" Command="{Binding OpenRotationSettingsWindow}"/>
+                <Button x:Name="rotationSettingsBtn" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Command="{Binding OpenRotationSettingsWindow}">
+                    <TextBlock Text="{Binding MainViewModel.LocalizationData.MenuOfSelectingRotations}"/>
+                </Button>
             </StackPanel>
         </Grid>
     </Grid>

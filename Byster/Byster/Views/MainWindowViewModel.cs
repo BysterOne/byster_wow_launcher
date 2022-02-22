@@ -231,7 +231,7 @@ namespace Byster.Views
                 },
                 TestElementSuccessAction = () =>
                 {
-                    InfoWindow infoWindow = new InfoWindow("Успех", "Тестовая версия продукта успешно получена");
+                    InfoWindow infoWindow = new InfoWindow(LocalizationData.Success, "Тестовая версия продукта успешно получена");
                     infoWindow.ShowModalDialog();
                 },
                 TestElementFailAction = () =>
@@ -265,7 +265,7 @@ namespace Byster.Views
                 },
                 BuyCartByBonusesSuccessAction = () =>
                 {
-                    InfoWindow infoWindow = new InfoWindow("Успех", "Оплата бонусами прошла успешно");
+                    InfoWindow infoWindow = new InfoWindow(LocalizationData.Success, "Оплата бонусами прошла успешно");
                     infoWindow.ShowModalDialog();
                     Shop.ClearCart();
                 },

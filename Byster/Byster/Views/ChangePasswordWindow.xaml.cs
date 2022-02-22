@@ -13,6 +13,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using Byster.Models.Utilities;
 using Byster.Models.Services;
+using Byster.Localizations.Tools;
 
 namespace Byster.Views
 {
@@ -26,6 +27,11 @@ namespace Byster.Views
         {
             InitializeComponent();
             Model = model;
+            titleTextBlock.Text = Localizator.GetLocalizationResourceByKey("ChangePasswordTitle");
+            newPassrowdBox.Tag = Localizator.GetLocalizationResourceByKey("NewPassword");
+            newPassrowdBoxConfirm.Tag = Localizator.GetLocalizationResourceByKey("NewPasswordConfirmation");
+            okBtn.Content = Localizator.GetLocalizationResourceByKey("OK").Value;
+            cancelBtn.Content = Localizator.GetLocalizationResourceByKey("Cancel").Value;
         }
 
         private void cancelBtn_Click(object sender, RoutedEventArgs e)
@@ -44,7 +50,7 @@ namespace Byster.Views
             bool result = Model.MainViewModel.UserInfo.ChangePasssword(HashCalc.GetMD5Hash(newPassrowdBox.Password));
             if (result)
             {
-                var w = new InfoWindow("Успех", "Пароль изменён");
+                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success"), "Пароль изменён");
                 w.ShowDialog();
                 this.DialogResult = true;
             }

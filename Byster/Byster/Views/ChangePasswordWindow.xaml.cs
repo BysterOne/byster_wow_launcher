@@ -27,9 +27,10 @@ namespace Byster.Views
         {
             InitializeComponent();
             Model = model;
+            this.Title = Localizator.GetLocalizationResourceByKey("ChangePasswordTitle");
             titleTextBlock.Text = Localizator.GetLocalizationResourceByKey("ChangePasswordTitle");
-            newPassrowdBox.Tag = Localizator.GetLocalizationResourceByKey("NewPassword");
-            newPassrowdBoxConfirm.Tag = Localizator.GetLocalizationResourceByKey("NewPasswordConfirmation");
+            newPassrowdBox.Tag = Localizator.GetLocalizationResourceByKey("NewPassword").Value;
+            newPassrowdBoxConfirm.Tag = Localizator.GetLocalizationResourceByKey("NewPasswordConfirmation").Value;
             okBtn.Content = Localizator.GetLocalizationResourceByKey("OK").Value;
             cancelBtn.Content = Localizator.GetLocalizationResourceByKey("Cancel").Value;
         }
@@ -43,32 +44,36 @@ namespace Byster.Views
         {
             if (newPassrowdBox.Password != newPassrowdBoxConfirm.Password)
             {
-                var w = new InfoWindow("Ошибка", "Введённые пароли не совпадают");
+                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), Localizator.GetLocalizationResourceByKey("ChangePasswordErrorPwdNotMatched"));
                 w.ShowDialog();
                 return;
             }
             bool result = Model.MainViewModel.UserInfo.ChangePasssword(HashCalc.GetMD5Hash(newPassrowdBox.Password));
             if (result)
             {
-                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success"), "Пароль изменён");
+                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success"), Localizator.GetLocalizationResourceByKey("ChangePasswordSuccessMessage"));
                 w.ShowDialog();
                 this.DialogResult = true;
             }
             else
             {
-                var w = new InfoWindow("Ошибка", "Непредвиденная ошибка");
+                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), Localizator.GetLocalizationResourceByKey("UnexpectedError"));
                 w.ShowDialog();
             }
                 
         }
 
+        string newPwdTag = "";
+        string newPwdConfirmTag = "";
         private void newPassrowdBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            newPassrowdBox.Tag = newPassrowdBox.Password.Length > 0 ? "" : "Новый пароль";
+            if (!string.IsNullOrEmpty((string)newPassrowdBox.Tag)) newPwdTag = (string)newPassrowdBox.Tag;
+            newPassrowdBox.Tag = newPassrowdBox.Password.Length > 0 ? "" : newPwdTag;
         }
         private void newPassrowdBoxConfirm_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            newPassrowdBoxConfirm.Tag = newPassrowdBoxConfirm.Password.Length > 0 ? "" : "Подтверждение пароля";
+            if (!string.IsNullOrEmpty((string)newPassrowdBoxConfirm.Tag)) newPwdConfirmTag = (string)newPassrowdBoxConfirm.Tag;
+            newPassrowdBoxConfirm.Tag = newPassrowdBoxConfirm.Password.Length > 0 ? "" : newPwdConfirmTag;
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

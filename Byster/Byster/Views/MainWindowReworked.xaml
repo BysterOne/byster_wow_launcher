@@ -73,7 +73,7 @@
                              Command="{Binding SelectPageCommand}"
                              CommandParameter="0" Content="{Binding LocalizationData.Main.Value}"/>
                 <RadioButton Style="{DynamicResource tabButtonStyle}" Margin="10, 0" GroupName="pageSelector" x:Name="shopPageSelect" IsChecked="{Binding Path=PageVisibilities[1], Converter={StaticResource FromVisibilityToBoolConverter}, Mode=TwoWay}"
-                             Command="{Binding SelectPageCommand}" Content="{Binding LocalizationData.Shop.Value}"
+                             Command="{Binding SelectPageCommand}" Content="{Binding LocalizationData.ShopCapitalized.Value}"
                              CommandParameter="1"/>
             </StackPanel>
         </Grid>

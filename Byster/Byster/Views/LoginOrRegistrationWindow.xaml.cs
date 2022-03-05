@@ -34,7 +34,7 @@ namespace Byster.Views
             passwordBox.Tag = Localizator.GetLocalizationResourceByKey("Password").Value;
             newLoginBox.Tag = Localizator.GetLocalizationResourceByKey("NewLogin").Value;
             newPasswordBox.Tag = Localizator.GetLocalizationResourceByKey("NewPassword").Value;
-            newPasswordConfirmBox.Tag = Localizator.GetLocalizationResourceByKey("NewPasswordConfirm").Value;
+            newPasswordConfirmBox.Tag = Localizator.GetLocalizationResourceByKey("NewPasswordConfirmation").Value;
             referalBox.Tag = Localizator.GetLocalizationResourceByKey("ReferalCode").Value;
         }
 

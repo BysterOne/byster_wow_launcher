@@ -10,6 +10,7 @@ namespace Byster.Localizations.Tools
     {
         public LocalizationResource Main { get; set; }
         public LocalizationResource Shop { get; set; }
+        public LocalizationResource ShopCapitalized { get; set; }
         public LocalizationResource NoRotations { get; set; }
         public LocalizationResource AllAvailableRotations { get; set; }
         public LocalizationResource LoginToCharacter { get; set; }
@@ -37,6 +38,7 @@ namespace Byster.Localizations.Tools
         public LocalizationResource BonusPay { get; set; }
         public LocalizationResource SelectPayment { get; set; }
         public LocalizationResource SelectPaymentNotRequired { get; set; }
+        public LocalizationResource ClearCart { get; set; }
         public LocalizationResource Raschet { get; set; }
         public LocalizationResource Sync { get; set; }
         public LocalizationResource Save { get; set; }
@@ -52,9 +54,10 @@ namespace Byster.Localizations.Tools
         {
             Main = "Main";
             Shop = "Shop";
+            ShopCapitalized = "ShopCapitalized";
             NoRotations = "NoRotations";
             AllAvailableRotations = "AllAvailableRotations";
-            LoginToCharacter = "LoginToPerson";
+            LoginToCharacter = "LoginToCharacter";
             Start = "Start";
             WaitLoadingEnd = "WaitLoadingEnd";
             Classes = "Classes";
@@ -70,6 +73,26 @@ namespace Byster.Localizations.Tools
             SelectRotationBranch = "SelectRotationBranch";
             SelectLoadtype = "SelectLoadtype";
             MenuOfSelectingRotations = "MenuOfSelectingRotations";
+            Confirmation = "Confirmarion";
+            Error = "Error";
+            Continue = "Continue";
+            Cancel = "Cancel";
+            EndSum = "EndSum";
+            ToPaySum = "ToPaySum";
+            BonusPay = "BonusPay";
+            SelectPayment = "SelectPayment";
+            SelectPaymentNotRequired = "SelectPaymentNotRequired";
+            ClearCart = "ClearCart";
+            Raschet = "Raschet";
+            Sync = "Sync";
+            Save = "Save";
+            Add = "Add";
+            LocalRotationSearch = "LocalRotationSearch";
+            RotationSelect = "RotationSelect";
+            NameOfRotation = "NameOfRotation";
+            Description = "Description";
+            RotationCreate = "RotationCreate";
+            OK = "OK";
         }
     }
 }

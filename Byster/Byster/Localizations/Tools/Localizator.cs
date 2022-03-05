@@ -20,11 +20,12 @@ namespace Byster.Localizations.Tools
         private static Dictionary<string, string> localizationKeyAndFileAssociations = new Dictionary<string, string>()
         {
             {"ruRU", baseDirOfLocalizations + "Russian.json" },
+            {"enUS", baseDirOfLocalizations + "English.json" },
         };
         static Localizator()
         {
-            //string osLang = CultureInfo.CurrentUICulture.IetfLanguageTag + "-" + CultureInfo.CurrentUICulture.TwoLetterISOLanguageName;
-            LoadLocalization(LocalizationInfo.GetLocalizationInfoByLanguageCode("ruRU"));
+            string loadingLocalization = CultureInfo.CurrentCulture.TwoLetterISOLanguageName.ToLower() == "ru" ? "ruRU" : "enUS";
+            LoadLocalization(LocalizationInfo.GetLocalizationInfoByLanguageCode(loadingLocalization));
         }
 
         private static string getResourceOfLocalization(string langCode)
@@ -73,6 +74,7 @@ namespace Byster.Localizations.Tools
 
         public static LocalizationResource GetLocalizationResourceByKey(string key)
         {
+            Byster.Models.Utilities.BysterLogger.Log("Ключ локализации", key);
             var resource = LocalizedResources.Where(_resource => _resource.Key == key).FirstOrDefault();
             if(resource == null)
             {

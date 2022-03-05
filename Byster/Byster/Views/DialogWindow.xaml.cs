@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Byster.Localizations.Tools;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,8 @@ namespace Byster.Views
             this.Title = title;
             titleTextBlock.Text = title;
             infoTextBlock.Text = infoText;
+            okBtn.Content = Localizator.GetLocalizationResourceByKey("OK").Value;
+            cancelBtn.Content = Localizator.GetLocalizationResourceByKey("Cancel").Value;
         }
 
         private void cancelBtn_Click(object sender, RoutedEventArgs e)

@@ -21,6 +21,7 @@ using System.Net;
 using System.Globalization;
 using Byster.Models.Services;
 using System.ComponentModel;
+using Byster.Localizations.Tools;
 
 namespace Byster.Views
 {
@@ -55,7 +56,7 @@ namespace Byster.Views
             {
                 Dispatcher.Invoke(() =>
                 {
-                    var window = new InfoWindow("Ошибка подключения", "Более 3 ошибок подключения к серверу. Попробуйте открыть лаунчер позже...");
+                    var window = new InfoWindow(Localizator.GetLocalizationResourceByKey("ConnectionError"), Localizator.GetLocalizationResourceByKey("ConnectionErrorMessage"));
                     window.ShowDialog();
                     Close();
                 });

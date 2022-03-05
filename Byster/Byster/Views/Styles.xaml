@@ -4,8 +4,10 @@
                             xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
                             xmlns:lb="clr-namespace:Byster.Models.Utilities"
                             xmlns:converters="clr-namespace:Byster.Models.Utilities"
-                            xmlns:viewmodels="clr-namespace:Byster.Models.ViewModels">
+                            xmlns:viewmodels="clr-namespace:Byster.Models.ViewModels"
+                            xmlns:localization="clr-namespace:Byster.Localizations.Tools">
     <converters:WordEndAssociator x:Key="wordEndAssociatorConverter"/>
+    <localization:LocalizationConverter x:Key="localizationConverter"/>
     <!-- Стили UI -->
     <Style TargetType="TextBox" x:Key="tbStyle">
         <Style.Setters>
@@ -1334,7 +1336,7 @@
                                                         <StackPanel Orientation="Horizontal"
                                                                     HorizontalAlignment="Center">
                                                             <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding Path=Product.Rotations.Count}" x:Name="rotCount"/>
-                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding ElementName=rotCount, Path=Text, Converter={StaticResource wordEndAssociatorConverter}, ConverterParameter=ротац}"/>
+                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding ElementName=rotCount, Path=Text, Converter={StaticResource wordEndAssociatorConverter}, ConverterParameter=RotationsBase}"/>
                                                         </StackPanel>
                                                     </Grid>
                                                     <TextBlock Grid.Row="1" Text="{Binding Path=Product.Name}" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{DynamicResource infoTextBlockStyle}" TextWrapping="WrapWithOverflow" TextAlignment="Center"/>
@@ -1379,8 +1381,8 @@
                                                     
                                                     <Grid Grid.Row="1" Margin="10">
                                                         <Grid HorizontalAlignment="Stretch" x:Name="StartControls" Visibility="Collapsed">
-                                                            <Button Width="53" Style="{DynamicResource transparentButtonStyle}" x:Name="testBtn" Visibility="Collapsed" Content="Тест" Margin="0, 0, 10, 0" HorizontalAlignment="Left" Command="{Binding TestCommand}" CommandParameter="{Binding Path=Product.Id}"/>
-                                                            <Button Width="160" Style="{DynamicResource productButtonStyle}" x:Name="buyBtn" Content="В корзину" HorizontalAlignment="Right" Command="{Binding AddCommand}" CommandParameter="{Binding Path=Product.Id}"/>
+                                                            <Button Width="53" Style="{DynamicResource transparentButtonStyle}" x:Name="testBtn" Visibility="Collapsed" Content="{Binding Converter={StaticResource localizationConverter}, ConverterParameter=Test}" Margin="0, 0, 10, 0" HorizontalAlignment="Left" Command="{Binding TestCommand}" CommandParameter="{Binding Path=Product.Id}"/>
+                                                            <Button Width="160" Style="{DynamicResource productButtonStyle}" x:Name="buyBtn" Content="{Binding Converter={StaticResource localizationConverter}, ConverterParameter=ToCart}" HorizontalAlignment="Right" Command="{Binding AddCommand}" CommandParameter="{Binding Path=Product.Id}"/>
                                                         </Grid>
                                                         <Grid HorizontalAlignment="Stretch" x:Name="CountControls">
                                                             <Button Style="{DynamicResource uibStyle}" HorizontalAlignment="Left" Command="{Binding RemoveCommand}" CommandParameter="{Binding Path=Product.Id}">

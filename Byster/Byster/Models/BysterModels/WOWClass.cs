@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Byster.Localizations.Tools;
+
 
 namespace Byster.Models.BysterModels
 {
@@ -33,17 +35,17 @@ namespace Byster.Models.BysterModels
         {
             List<string> names = new List<string>()
             {
-                "ANY",
-                "Воин",
-                "Друид",
-                "Жрец",
-                "Маг",
-                "Охотник",
-                "Паладин",
-                "Разбойник",
-                "Рыцарь смерти",
-                "Чернокнижник",
-                "Шаман"
+                Localizator.GetLocalizationResourceByKey("ANYClass"),
+                Localizator.GetLocalizationResourceByKey("WarriorClass"),
+                Localizator.GetLocalizationResourceByKey("DruidClass"),
+                Localizator.GetLocalizationResourceByKey("PriestClass"),
+                Localizator.GetLocalizationResourceByKey("WizardClass"),
+                Localizator.GetLocalizationResourceByKey("HunterClass"),
+                Localizator.GetLocalizationResourceByKey("PaladinClass"),
+                Localizator.GetLocalizationResourceByKey("RobberClass"),
+                Localizator.GetLocalizationResourceByKey("DeathKnightClass"),
+                Localizator.GetLocalizationResourceByKey("WarlockClass"),
+                Localizator.GetLocalizationResourceByKey("ShamanClass")
             };
             List<string> uris = new List<string>()
             {

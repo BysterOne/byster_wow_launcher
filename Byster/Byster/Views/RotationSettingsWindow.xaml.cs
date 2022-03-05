@@ -18,6 +18,7 @@ using Newtonsoft.Json;
 using Byster.Models.ViewModels;
 using Microsoft.Win32;
 using Byster.Models.BysterModels;
+using Byster.Localizations.Tools;
 
 namespace Byster.Views
 {
@@ -37,12 +38,12 @@ namespace Byster.Views
             };
             model.DeveloperRotations.AddRotationSuccess = () =>
             {
-                var window = new InfoWindow("Успех", "Создание ротации успешно");
+                var window = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success"), Localizator.GetLocalizationResourceByKey("CreateRotationSuccessMessage"));
                 window.ShowDialog();
             };
             model.DeveloperRotations.AddRotationFail = () =>
             {
-                var window = new InfoWindow("Ошибка", "Ошибка при создании ротации\n" + model.LastError);
+                var window = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), Localizator.GetLocalizationResourceByKey("CreateRotationErrorMessage") + "\n" + model.LastError);
                 window.ShowDialog();
             };
             model.DeveloperRotations.CloseDel = () =>

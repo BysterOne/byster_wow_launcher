@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Byster.Localizations.Tools;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -25,6 +26,11 @@ namespace Byster.Views
         {
             InitializeComponent();
             Model = model;
+            titleTextBlock.Text = Localizator.GetLocalizationResourceByKey("ActivateCouponTitle").Value;
+            infoTextBlock.Text = Localizator.GetLocalizationResourceByKey("ActivateCouponInfo").Value;
+            okBtn.Content = Localizator.GetLocalizationResourceByKey("OK").Value;
+            cancelBtn.Content = Localizator.GetLocalizationResourceByKey("Cancel").Value;
+            couponCodeTextBox.Tag = Localizator.GetLocalizationResourceByKey("CouponCode").Value;
         }
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
@@ -35,13 +41,13 @@ namespace Byster.Views
             bool result = status == "success";
             if (result)
             {
-                var w = new InfoWindow("Успех", "Купон активирован");
+                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success"), Localizator.GetLocalizationResourceByKey("CouponActivateSuccessMessage").Value);
                 w.ShowDialog();
                 this.DialogResult = true;
             }
             else
             {
-                var w = new InfoWindow("Ошибка", $"Произошла ошибка активации купона\n{status}");
+                var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), $"{Localizator.GetLocalizationResourceByKey("CouponActivateErrorMessage")}\n{status}");
                 w.ShowDialog();
             }
 

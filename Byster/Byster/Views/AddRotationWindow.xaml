@@ -5,7 +5,7 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         mc:Ignorable="d" Height="505" Width="330"
-        Title="Добавление ротации для разработчика"
+        Title="{Binding LocalizationData.RotationCreateWindowTitle}"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="Transparent"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"

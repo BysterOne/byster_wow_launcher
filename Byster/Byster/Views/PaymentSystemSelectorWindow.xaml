@@ -41,7 +41,7 @@
                     
                     <Grid Grid.Row="1">
                         <ComboBox Visibility="{Binding MainViewModel.Shop.IsPaymentSystemRequired}" Margin="0, 10" Style="{DynamicResource darkCombobStyle}" x:Name="systemSelector" DisplayMemberPath="Name"/>
-                        <TextBox IsEnabled="False" Visibility="{Binding MainViewModel.Shop.IsPaymentSystemNotRequired}" Margin="0, 10" Style="{DynamicResource tbStyle}"  Text="{Binding MainViewModel.LocalizationData.SelectPaymentNotRequired}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                        <TextBox IsEnabled="False" Visibility="{Binding MainViewModel.Shop.IsPaymentSystemNotRequired}" Margin="0, 10" Style="{DynamicResource tbStyle}"  Text="{Binding MainViewModel.LocalizationData.SelectPaymentNotRequired.Value}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
                     </Grid>
                     <Grid Grid.Row="2">
                         <ListBox x:Name="productList" Style="{DynamicResource cartProductsView}" ItemsSource="{Binding MainViewModel.Shop.AllProducts}"/>
@@ -92,7 +92,7 @@
                             <Grid VerticalAlignment="Bottom">
                                 <TextBlock FontSize="20" Style="{DynamicResource infoTextBlockStyle}" TextAlignment="Right">
                                         <Hyperlink Command="{Binding MainViewModel.Shop.ClearCartCommand}" Style="{StaticResource hlStyle}" Foreground="{DynamicResource HyperlinkPaymentWindowColor}" FontSize="10">
-                                            <TextBlock Text="{Binding MainViewModel.LocalizationData.ClearCart}"/>
+                                            <TextBlock Text="{Binding MainViewModel.LocalizationData.ClearCart.Value}"/>
                                         </Hyperlink>
                                 </TextBlock>
                             </Grid>
@@ -106,8 +106,8 @@
                             <ColumnDefinition Width="Auto"/>
                             <ColumnDefinition Width="*"/>
                         </Grid.ColumnDefinitions>
-                        <Button Grid.Column="0" Style="{StaticResource transparentButtonStyle}" Content="{Binding MainViewModel.LocalizationData.Cancel}" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn" Click="cancelBtn_Click"/>
-                        <Button Grid.Column="1" Style="{StaticResource bStyle}" Content="{Binding MainViewModel.LocalizationData.Continue}" HorizontalAlignment="Stretch" Margin="8, 0, 0, 0" IsDefault="True" x:Name="okBtn" Click="okBtn_Click"/>
+                        <Button Grid.Column="0" Style="{StaticResource transparentButtonStyle}" Content="{Binding MainViewModel.LocalizationData.Cancel.Value}" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn" Click="cancelBtn_Click"/>
+                        <Button Grid.Column="1" Style="{StaticResource bStyle}" Content="{Binding MainViewModel.LocalizationData.Continue.Value}" HorizontalAlignment="Stretch" Margin="8, 0, 0, 0" IsDefault="True" x:Name="okBtn" Click="okBtn_Click"/>
                     </Grid>
                 </Grid>
             </Grid>

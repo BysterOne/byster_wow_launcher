@@ -224,19 +224,19 @@ namespace Byster.Views
             {
                 PreTestElementAction = () =>
                 {
-                    DialogWindow dialogWindow = new DialogWindow("Подтверждение", "Вы собираетесь взять Тест ротации на 2 часа. Тест выдается только 1 раз на 1 ротацию. Вы уверены, что хотите взять его сейчас?");
+                    DialogWindow dialogWindow = new DialogWindow(Localizator.GetLocalizationResourceByKey("Confirmation"), Localizator.GetLocalizationResourceByKey("TestDialogInfo"));
                     bool result = false;
                     result = dialogWindow.ShowModalDialog();
                     return result;
                 },
                 TestElementSuccessAction = () =>
                 {
-                    InfoWindow infoWindow = new InfoWindow(LocalizationData.Success, "Тестовая версия продукта успешно получена");
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success"), Localizator.GetLocalizationResourceByKey("TestSuccessMessage"));
                     infoWindow.ShowModalDialog();
                 },
                 TestElementFailAction = () =>
                 {
-                    InfoWindow infoWindow = new InfoWindow("Ошибка", $"Произошла ошибка при получении тестовой версии продукта\n{restService.LastError}");
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), $"{Localizator.GetLocalizationResourceByKey("TestErrorMessage")}\n{restService.LastError}");
                     infoWindow.ShowModalDialog();
                 },
                 CloseElementAction = () =>
@@ -260,18 +260,18 @@ namespace Byster.Views
                 },
                 BuyCartFailAction = () =>
                 {
-                    InfoWindow infoWindow = new InfoWindow("Ошибка", $"Произошла ошибка при покупке товара, попробуйте позже...\n{restService.LastError}");
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), $"{Localizator.GetLocalizationResourceByKey("BuyErrorMessage")}\n{restService.LastError}");
                     infoWindow.ShowModalDialog();
                 },
                 BuyCartByBonusesSuccessAction = () =>
                 {
-                    InfoWindow infoWindow = new InfoWindow(LocalizationData.Success, "Оплата бонусами прошла успешно");
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success"), Localizator.GetLocalizationResourceByKey("BuySuccessMessage"));
                     infoWindow.ShowModalDialog();
                     Shop.ClearCart();
                 },
                 BuyCartByBonusesFailAction = () =>
                 {
-                    InfoWindow infoWindow = new InfoWindow("Ошибка", $"Произошла ошибка при оплате бонусами\n{restService.LastError}");
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), $"{Localizator.GetLocalizationResourceByKey("BuyBonusesErrorMessage")}\n{restService.LastError}");
                     infoWindow.ShowModalDialog();
                 },
                 SessionId = sessionId,
@@ -311,7 +311,7 @@ namespace Byster.Views
 
         public void Initialize(Dispatcher dispatcher)
         {
-            StatusText = "Инициализация...";
+            StatusText = Localizator.GetLocalizationResourceByKey("Initialization");
             InitializationStarted?.Invoke();
             ActiveRotations.Initialize(dispatcher);
             Shop.Initialize(dispatcher);
@@ -451,7 +451,7 @@ namespace Byster.Views
         {
             Task.Run(() =>
             {
-                StatusText = "Обновление данных...";
+                StatusText = Localizator.GetLocalizationResourceByKey("UpdatingData");
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataStarted?.Invoke();
@@ -466,7 +466,7 @@ namespace Byster.Views
                 }
                 catch(Exception ex)
                 {
-                    MessageBox.Show(ex.Message + "\n" + ex.ToString(), "Ошибка при обновлении данных");
+                    MessageBox.Show(ex.Message + "\n" + ex.ToString(), "Error while updating data");
                 }
                 BackgroundImageDownloader.Resume();
                 App.Current.Dispatcher.Invoke(() =>

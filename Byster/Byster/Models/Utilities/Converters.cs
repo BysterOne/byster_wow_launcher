@@ -6,6 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Data;
+using Byster.Localizations.Tools;
 
 namespace Byster.Models.Utilities
 {
@@ -13,7 +14,8 @@ namespace Byster.Models.Utilities
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
         {
-            string startWord = " " + parameter.ToString();
+            string startWord;
+            startWord = " " + Localizator.GetLocalizationResourceByKey(parameter.ToString());
             int count = int.Parse(value.ToString());
             count = count % 21;
             if (count == 0)

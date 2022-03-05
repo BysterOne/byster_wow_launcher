@@ -48,7 +48,7 @@ namespace Byster.Models.BysterModels
         public ActiveRotation(RestRotationWOW response)
         {
             Id = response.rotation.id;
-            ExpiringTime = DateTime.Parse(response.expired_date).Year <= 2050 ? DateTime.Parse(response.expired_date).ToString("dd.MM.yyyy HH:mm") : "Навсегда";
+            ExpiringTime = DateTime.Parse(response.expired_date).Year <= 2050 ? DateTime.Parse(response.expired_date).ToString("dd.MM.yyyy HH:mm") : Localizations.Tools.Localizator.GetLocalizationResourceByKey("Forever").Value;
             RotationClass = ClassWOW.GetClassByEnumClass(ClassWOW.GetClassByName(response.rotation.klass));
             RoleOfRotation = RotationRole.GetRotationRoleByEnumRotationRole(RotationRole.GetRoleByName(response.rotation.role_type));
             SpecOfRotation = RotationSpecialization.GetRotationSpecializationByEnumRotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));

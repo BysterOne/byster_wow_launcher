@@ -205,14 +205,14 @@ namespace Byster.Views
         {
             if (string.IsNullOrEmpty(login))
             {
-                MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterLogin"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
                 return 404;
             }
 
             if (string.IsNullOrEmpty(passwordHash))
             {
-                MessageBox.Show("Введите пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterPassword"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
                 return 404;
             }
@@ -225,7 +225,7 @@ namespace Byster.Views
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                MessageBox.Show(response.Data.error, "Ошибка Byster", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(response.Data.error, Localizator.GetLocalizationResourceByKey("ErrorByster"), MessageBoxButton.OK, MessageBoxImage.Error);
                 sessionId = null;
                 return (int)response.StatusCode;
             }
@@ -275,7 +275,7 @@ namespace Byster.Views
             var response = client.Get(new RestRequest("launcher/download"));
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                MessageBox.Show($"Ошибка при соединении с сервером\nЗапрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}\nСообщние ошибки от сервера: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "Нет ответа от сервера"}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show($"Error while connecting server\nResponse HTTP-Code: {(int)response.StatusCode}\nError message: {response.ErrorMessage}\nServer error message: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "No Server answer"}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                 closeApp();
                 return;
             }

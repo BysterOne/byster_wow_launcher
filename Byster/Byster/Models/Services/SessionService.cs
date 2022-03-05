@@ -13,6 +13,8 @@ using System.Windows;
 using System.Windows.Threading;
 using RestSharp;
 using Byster.Views;
+using Byster.Localizations.Tools;
+
 namespace Byster.Models.Services
 {
     public class SessionService : INotifyPropertyChanged, IDisposable
@@ -54,7 +56,7 @@ namespace Byster.Models.Services
         {
             Dispatcher.Invoke(() =>
             {
-                var window = new DirectXNavigateWindow("Ошибка", "DirectX не обнаружен. Для запуска Byster необходимо установить DirectX.");
+                var window = new DirectXNavigateWindow(Localizator.GetLocalizationResourceByKey("Error"), Localizator.GetLocalizationResourceByKey("DirectXErrorMessage"));
             });
         }
 

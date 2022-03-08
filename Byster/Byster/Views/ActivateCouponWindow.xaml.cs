@@ -29,7 +29,7 @@ namespace Byster.Views
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
-            string couponCode = couponCodeTextBox.Text;
+            string couponCode = couponCodeTextBox.Text.Trim();
             if (string.IsNullOrEmpty(couponCode)) return;
             string status = Model.MainViewModel.Shop.ActivateCoupon(couponCode);
             bool result = status == "success";

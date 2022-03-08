@@ -176,7 +176,7 @@ namespace Byster.Models.Services
         }
 
 
-        public List<Branch> BranchChoices { get; set; };
+        public List<Branch> BranchChoices { get; set; }
         public List<LoadType> LoadTypes { get; set; } = Byster.Models.BysterModels.LoadType.AllLoadTypes.ToList();
 
         public void UpdateRemoteData()

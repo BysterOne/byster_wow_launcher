@@ -176,7 +176,7 @@ namespace Byster.Models.Services
         }
 
 
-        public List<Branch> BranchChoices { get; set; } = Byster.Models.BysterModels.Branch.AllBranches.ToList();
+        public List<Branch> BranchChoices { get; set; }
         public List<LoadType> LoadTypes { get; set; } = Byster.Models.BysterModels.LoadType.AllLoadTypes.ToList();
 
         public void UpdateRemoteData()
@@ -200,6 +200,7 @@ namespace Byster.Models.Services
                 if(Branch == "dev") SetBranch(new BysterModels.Branch(BranchType.MASTER));
                 SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
             }
+            BranchChoices = Byster.Models.BysterModels.Branch.AllBranches.Where(branch => branch.BranchType <= this.UserType).ToList();
         }
 
         public void UpdateData()

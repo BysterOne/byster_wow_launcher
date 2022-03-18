@@ -49,7 +49,10 @@ namespace Byster.Localizations.Tools
         public LocalizationResource Description { get; set; }
         public LocalizationResource RotationCreate { get; set; }
         public LocalizationResource OK { get; set; }
-
+        public LocalizationResource ToCart { get; set; }
+        public LocalizationResource Test { get; set; }
+        public LocalizationResource Localization { get; set; }
+        public LocalizationResource ReferalCode { get; set; }
         public LocalizationDataForViewModels()
         {
             Main = "Main";
@@ -93,6 +96,30 @@ namespace Byster.Localizations.Tools
             Description = "Description";
             RotationCreate = "RotationCreate";
             OK = "OK";
+            ToCart = "ToCart";
+            Test = "Test";
+            Localization = "Localization";
+            ReferalCode = "ReferalCode";
+        }
+
+        public LocalizationInfo LoadedLocalizationInfo
+        {
+            get
+            {
+                return Localizator.LoadedLocalizationInfo;
+            }
+            set
+            {
+                if(value.Id != Localizator.LoadedLocalizationInfo.Id)
+                    Localizator.ReloadLocalization(value.LanguageCode);
+            }
+        }
+        public LocalizationInfo[] Localizations
+        {
+            get
+            {
+                return LocalizationInfo.AllLocalizationInfos.ToArray(); 
+            }
         }
     }
 }

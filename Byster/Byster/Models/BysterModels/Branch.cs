@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
+using Byster.Localizations.Tools;
 
 namespace Byster.Models.BysterModels
 {
@@ -21,14 +22,14 @@ namespace Byster.Models.BysterModels
                 switch (branchType)
                 {
                     case BranchType.TEST:
-                        Name = "Тестировщик";
+                        Name = Localizator.GetLocalizationResourceByKey("TesterBranch");
                         break;
                     case BranchType.DEVELOPER:
-                        Name = "Разработчик";
+                        Name = Localizator.GetLocalizationResourceByKey("DeveloperBranch");
                         break;
                     default:
                     case BranchType.MASTER:
-                        Name = "Покупатель";
+                        Name = Localizator.GetLocalizationResourceByKey("MasterBranch");
                         break;
                 }
                 OnPropertyChanged("Name");
@@ -40,14 +41,14 @@ namespace Byster.Models.BysterModels
             switch (BranchType)
             {
                 case BranchType.TEST:
-                    Name = "Тестировщик";
+                    Name = Localizator.GetLocalizationResourceByKey("TesterBranch");
                     break;
                 case BranchType.DEVELOPER:
-                    Name = "Разработчик";
+                    Name = Localizator.GetLocalizationResourceByKey("DeveloperBranch");
                     break;
                 default:
                 case BranchType.MASTER:
-                    Name = "Покупатель";
+                    Name = Localizator.GetLocalizationResourceByKey("MasterBranch");
                     break;
             }
         }

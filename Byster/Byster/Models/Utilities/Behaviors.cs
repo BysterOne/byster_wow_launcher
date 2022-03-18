@@ -361,4 +361,24 @@ namespace Byster.Models.Utilities
             return children;
         }
     }
+
+    public class CopyToClipboardOnClick : Behavior<TextBox>
+    {
+        protected override void OnAttached()
+        {
+            base.OnAttached();
+            AssociatedObject.GotFocus += clickToCopyToClipboard;
+        }
+
+        protected override void OnDetaching()
+        {
+            base.OnDetaching();
+            AssociatedObject.GotFocus -= clickToCopyToClipboard;
+        }
+
+        private void clickToCopyToClipboard(object sender, RoutedEventArgs eventArgs)
+        {
+            Clipboard.SetDataObject(AssociatedObject.Text);
+        }
+    }
 }

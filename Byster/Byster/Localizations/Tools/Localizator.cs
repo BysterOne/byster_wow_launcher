@@ -8,6 +8,9 @@ using Newtonsoft.Json;
 using System.Windows;
 using System.Globalization;
 using System.Windows.Data;
+using System.Diagnostics;
+
+using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Localizations.Tools
 {
@@ -16,15 +19,31 @@ namespace Byster.Localizations.Tools
         public static LocalizationInfo LoadedLocalizationInfo { get; set; }
         public static List<LocalizationResource> LocalizedResources { get; set; } = new List<LocalizationResource>();
 
+        private static readonly string pathOfLocalizationConfigurationFile = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig\\localizationConf.json";
+
         private static string baseDirOfLocalizations = "pack://application:,,,/Localizations/LocalizationData/";
         private static Dictionary<string, string> localizationKeyAndFileAssociations = new Dictionary<string, string>()
         {
             {"ruRU", baseDirOfLocalizations + "Russian.json" },
             {"enUS", baseDirOfLocalizations + "English.json" },
         };
+
         static Localizator()
         {
-            string loadingLocalization = CultureInfo.CurrentCulture.TwoLetterISOLanguageName.ToLower() == "ru" ? "ruRU" : "enUS";
+            string loadingLocalization = "";
+            JsonLocalizationConfiguration conf = null;
+            if (File.Exists(pathOfLocalizationConfigurationFile) && ((conf = JsonConvert.DeserializeObject<JsonLocalizationConfiguration>(File.ReadAllText(pathOfLocalizationConfigurationFile)) ?? null) != null) && !string.IsNullOrEmpty(conf.Code))
+            {
+                loadingLocalization = conf.Code;
+            }
+            else
+            {
+                loadingLocalization = CultureInfo.CurrentCulture.TwoLetterISOLanguageName.ToLower() == "ru" ? "ruRU" : "enUS";
+                File.WriteAllText(pathOfLocalizationConfigurationFile, JsonConvert.SerializeObject(new JsonLocalizationConfiguration()
+                {
+                    Code = loadingLocalization,
+                }));
+            }
             LoadLocalization(LocalizationInfo.GetLocalizationInfoByLanguageCode(loadingLocalization));
         }
 
@@ -70,6 +89,30 @@ namespace Byster.Localizations.Tools
                     LocalizedResources.Where(resource => resource.Key == key).First().Value = jsonLocalization.LocalizationAssociations[key];
                 }   
             }
+        }
+
+        public static void ReloadLocalization(string code)
+        {
+            File.WriteAllText(pathOfLocalizationConfigurationFile, JsonConvert.SerializeObject(new JsonLocalizationConfiguration()
+            {
+                Code = code,
+            }));
+            File.WriteAllLines("changeLocalization.bat", new List<string>(){
+                    "taskkill /IM \"Byster.exe\" /F",
+                    "timeout /t 2 /NOBREAK",
+                    "Byster.exe"
+                });
+            Process process = new Process();
+            process.StartInfo.FileName = "changeLocalization.bat";
+            process.StartInfo.CreateNoWindow = true;
+            process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+            process.Start();
+            Log("Перезапуск...");
+            foreach(var window in App.Current.Windows)
+            {
+                (window as Window).Close();
+            }
+            App.Current.Shutdown();
         }
 
         public static LocalizationResource GetLocalizationResourceByKey(string key)
@@ -141,6 +184,11 @@ namespace Byster.Localizations.Tools
         {
             return AllLocalizationInfos.Where(localization => localization.Id == id).FirstOrDefault();
         }
+    }
+
+    public class JsonLocalizationConfiguration
+    {
+        public string Code { get; set; }
     }
 
 }

@@ -60,6 +60,71 @@
         </Style.Setters>
     </Style>
 
+    <Style TargetType="TextBox" x:Key="referalTbStyle">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
+            <Setter Property="Background" Value="{DynamicResource BackgroundUIColor}"/>
+            <Setter Property="Padding" Value="{DynamicResource PaddingUI}"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="TextBox">
+                        <Border x:Name="textboxBorder"
+                                            BorderBrush="{TemplateBinding Background}"
+                                            BorderThickness="{TemplateBinding BorderThickness}"
+                                            Background="{TemplateBinding Background}"
+                                            CornerRadius="{DynamicResource CornerUIRadius}"
+                                            Padding="0">
+                            <Grid>
+                                <TextBlock x:Name="placeholder"
+                                           Visibility="Visible"
+                                                       Background="Transparent"
+                                                       Foreground="{DynamicResource FontUIColor}"
+                                                       Text="{TemplateBinding Tag}"
+                                                       Padding="{TemplateBinding Padding}"
+                                                       FontSize="{TemplateBinding FontSize}"
+                                                       FontFamily="{TemplateBinding FontFamily}"/>
+                                <TextBlock x:Name="ContentHost"
+                                            Text="{TemplateBinding Text}"
+                                                 Background="Transparent"
+                                                 Padding="{TemplateBinding Padding}"
+                                                 FontFamily="{TemplateBinding FontFamily}"
+                                                 FontSize="{TemplateBinding FontSize}"
+                                                 Foreground="{TemplateBinding Foreground}"
+                                                Visibility="Hidden"/>
+                                <TextBlock x:Name="copyNote"
+                                            Background="Transparent"
+                                            Foreground="{DynamicResource FontUIColor}"
+                                           HorizontalAlignment="Right"
+                                           VerticalAlignment="Center"
+                                            Text="копировать"
+                                            TextDecorations="Underline"
+                                            Padding="{TemplateBinding Padding}"
+                                            FontSize="{TemplateBinding FontSize}"
+                                            FontFamily="{TemplateBinding FontFamily}"/>
+                            </Grid>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter TargetName="textboxBorder" Property="Background" Value="{DynamicResource BackgroundUIColorHover}"/>
+                                <Setter TargetName="placeholder" Property="Visibility" Value="Hidden"/>
+                                <Setter TargetName="ContentHost" Property="Visibility" Value="Visible"/>
+                            </Trigger>
+                            <Trigger Property="IsFocused" Value="True">
+                                <Setter TargetName="textboxBorder" Property="Background" Value="{DynamicResource BackgroundUIColorClicked}"/>
+                            </Trigger>
+                            <Trigger Property="Text" Value="">
+                                <Setter TargetName="placeholder" Property="Foreground" Value="{DynamicResource FontUIColor}"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style.Setters>
+    </Style>
+
     <Style TargetType="PasswordBox" x:Key="pbStyle">
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
@@ -1360,7 +1425,8 @@
                                                     <Grid x:Name="noninfinityDurationGrid" Grid.Row="0" Margin="10">
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Left">
                                                             <TextBlock Text="{Binding Path=Product.Duration}" Style="{DynamicResource infoTextBlockStyle}"/>
-                                                            <TextBlock Text=" дней" Style="{DynamicResource infoTextBlockStyle}"/>
+                                                            <TextBlock Text=" " Style="{DynamicResource infoTextBlockStyle}"/>
+                                                            <TextBlock Text="{Binding Converter={StaticResource localizationConverter}, ConverterParameter=Days}" Style="{DynamicResource infoTextBlockStyle}"/>
                                                         </StackPanel>
                                                         <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
                                                             <TextBlock Text="{Binding Path=Product.Price}" Style="{DynamicResource infoTextBlockStyle}"/>

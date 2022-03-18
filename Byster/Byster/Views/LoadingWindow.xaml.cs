@@ -116,6 +116,7 @@ namespace Byster.Views
                 Log("Запустили BackgroundImageDownloader");
                 if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
                 if (File.Exists("update.bat")) File.Delete("update.bat");
+                if (File.Exists("changeLocalization.bat")) File.Delete("changeLocalization.bat");
                 Log("Удаление остаточных файлов");
                 string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
 

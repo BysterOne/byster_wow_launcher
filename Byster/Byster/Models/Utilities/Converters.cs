@@ -20,19 +20,19 @@ namespace Byster.Models.Utilities
             count = count % 21;
             if (count == 0)
             {
-                startWord += "ий";
+                startWord += Localizator.GetLocalizationResourceByKey("WordEnd1");
             }
             else if (count == 1)
             {
-                startWord += "ия";
+                startWord += Localizator.GetLocalizationResourceByKey("WordEnd2");
             }
             else if (count >= 2 && count <= 4)
             {
-                startWord += "ии";
+                startWord += Localizator.GetLocalizationResourceByKey("WordEnd3");
             }
             else if (count >= 4 && count <= 20)
             {
-                startWord += "ий";
+                startWord += Localizator.GetLocalizationResourceByKey("WordEnd1");
             }
             return startWord;
         }

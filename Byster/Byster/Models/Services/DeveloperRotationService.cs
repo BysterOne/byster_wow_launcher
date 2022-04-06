@@ -13,9 +13,8 @@ using System.Diagnostics;
 using System.Windows.Forms;
 using Byster.Models.ViewModels;
 using System.ComponentModel;
-
-
 using static Byster.Models.Utilities.BysterLogger;
+using Byster.Localizations.Tools;
 
 namespace Byster.Models.Services
 {
@@ -134,11 +133,11 @@ namespace Byster.Models.Services
                     default:
                         return "";
                     case DeveloperRotationStatusCodes.SYNCRONIZATION:
-                        return "Синхронизация репозиториев";
+                        return Localizator.GetLocalizationResourceByKey("RepoSynchronization");
                     case DeveloperRotationStatusCodes.INITIALIZATION:
-                        return "Инициализация";
+                        return Localizator.GetLocalizationResourceByKey("Initialization");
                     case DeveloperRotationStatusCodes.CHECKING:
-                        return "Проверка обновлений";
+                        return Localizator.GetLocalizationResourceByKey("UpdateChecking");
                 }
             }
         }
@@ -505,7 +504,7 @@ namespace Byster.Models.Services
                 {
                     FolderBrowserDialog dialog = new FolderBrowserDialog();
                     dialog.ShowNewFolderButton = true;
-                    dialog.Description = "Выберите директорию для сохранения ротаций для разработчиков";
+                    dialog.Description = Localizator.GetLocalizationResourceByKey("SelectRepoForDevRotations").Value;
                     DialogResult dialogResult = DialogResult.None;
                     do
                     {
@@ -548,17 +547,17 @@ namespace Byster.Models.Services
 
         public List<DevClass> Classes { get; set; } = new List<DevClass>()
         {
-            new DevClass("ANY", "Все классы"),
-            new DevClass("DEATHKNIGHT", "Рыцарь смерти"),
-            new DevClass("DRUID", "Друид"),
-            new DevClass("HUNTER", "Охотник"),
-            new DevClass("MAGE", "Маг"),
-            new DevClass("PALADIN", "Паладин"),
-            new DevClass("PRIEST", "Жрец"),
-            new DevClass("ROGUE", "Разбойник"),
-            new DevClass("SHAMAN", "Шаман"),
-            new DevClass ("WARLOCK", "Чернокнижник"),
-            new DevClass("WARRIOR", "Воин"),
+            new DevClass("ANY", Localizator.GetLocalizationResourceByKey("AllClasses")),
+            new DevClass("DEATHKNIGHT", Localizator.GetLocalizationResourceByKey("DeathKnightClass")),
+            new DevClass("DRUID", Localizator.GetLocalizationResourceByKey("DruidClass")),
+            new DevClass("HUNTER", Localizator.GetLocalizationResourceByKey("HunterClass")),
+            new DevClass("MAGE", Localizator.GetLocalizationResourceByKey("WizardClass")),
+            new DevClass("PALADIN", Localizator.GetLocalizationResourceByKey("PaladinClass")),
+            new DevClass("PRIEST", Localizator.GetLocalizationResourceByKey("PriestClass")),
+            new DevClass("ROGUE", Localizator.GetLocalizationResourceByKey("RobberClass")),
+            new DevClass("SHAMAN", Localizator.GetLocalizationResourceByKey("ShamanClass")),
+            new DevClass ("WARLOCK", Localizator.GetLocalizationResourceByKey("WarlockClass")),
+            new DevClass("WARRIOR", Localizator.GetLocalizationResourceByKey("WarriorClass")),
         };
 
         public List<DevRotationType> Types { get; set; } = new List<DevRotationType>()
@@ -616,9 +615,9 @@ namespace Byster.Models.Services
         
         public List<DevRoleType> Roletypes { get; set; } = new List<DevRoleType>()
         {
-            new DevRoleType("DPS", "ДПС"),
-            new DevRoleType("HEAL", "Хилер"),
-            new DevRoleType("TANK", "Танк"),
+            new DevRoleType("DPS", "DPS"),
+            new DevRoleType("HEAL", "Heal"),
+            new DevRoleType("TANK", "Tank"),
         };
 
         private DevClass selectedClass;

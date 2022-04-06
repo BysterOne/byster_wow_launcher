@@ -35,7 +35,7 @@
         <Grid Grid.Row="0" x:Name="nameGrid">
             <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding MainViewModel.LocalizationData.Settings}" FontSize="20" Margin="20, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
         </Grid>
-        <Grid Grid.Row="1" Width="300" Height="290" x:Name="masterGrid">
+        <Grid Grid.Row="1" Width="300" Height="293" x:Name="masterGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="3*"/>

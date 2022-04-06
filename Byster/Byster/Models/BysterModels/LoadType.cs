@@ -14,7 +14,7 @@ namespace Byster.Models.BysterModels
         public string Name { get; set; }
 
         public static LoadType[] AllLoadTypes { get; set; } = new LoadType[] {
-            new LoadType(){ Name=Localizator.GetLocalizationResourceByKey("LocalLoadtype"), Value=1},
+            //new LoadType(){ Name=Localizator.GetLocalizationResourceByKey("LocalLoadtype"), Value=1},
             new LoadType(){ Name=Localizator.GetLocalizationResourceByKey("MixedLoadtype"), Value=2},
             new LoadType(){ Name=Localizator.GetLocalizationResourceByKey("ServerLoadtype"), Value=3},
         };

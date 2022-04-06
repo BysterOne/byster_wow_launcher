@@ -351,8 +351,8 @@
       <Link>.editorconfig</Link>
     </None>
     <None Include="app.manifest" />
-    <Resource Include="Localizations\LocalizationData\English.json" />
     <Resource Include="Localizations\LocalizationData\Russian.json" />
+    <Resource Include="Localizations\LocalizationData\English.json" />
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>

@@ -6,7 +6,7 @@
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:views="clr-namespace:Byster.Views" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
         mc:Ignorable="d"
-        Title="PaymentSystem" Height="350" Width="600"
+        Title="{Binding MainViewModel.LocalizationData.SelectPayment}" Height="350" Width="600"
         ResizeMode="NoResize" ShowInTaskbar="True" WindowStartupLocation="CenterScreen" WindowStyle="None"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"
         AllowsTransparency="True"

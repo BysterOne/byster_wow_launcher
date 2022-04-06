@@ -53,6 +53,9 @@ namespace Byster.Localizations.Tools
         public LocalizationResource Test { get; set; }
         public LocalizationResource Localization { get; set; }
         public LocalizationResource ReferalCode { get; set; }
+        public LocalizationResource Payment { get; set; }
+        public LocalizationResource RotationCreateWindowTitle { get; set; }
+
         public LocalizationDataForViewModels()
         {
             Main = "Main";
@@ -100,6 +103,8 @@ namespace Byster.Localizations.Tools
             Test = "Test";
             Localization = "Localization";
             ReferalCode = "ReferalCode";
+            Payment = "Payment";
+            RotationCreateWindowTitle = "RotationCreateWindowTitle";
         }
 
         public LocalizationInfo LoadedLocalizationInfo

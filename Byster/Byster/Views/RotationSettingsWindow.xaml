@@ -7,7 +7,7 @@
         xmlns:lb="clr-namespace:Byster.Models.Utilities"
         xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
         mc:Ignorable="d"
-        Title="Меню выбора ротаций" Height="560" Width="730"
+        Title="{Binding LocalizationData.MenuOfSelectingRotations}" Height="560" Width="730"
         WindowStyle="None" WindowStartupLocation="CenterScreen"
         ResizeMode="CanMinimize" Background="Transparent"
         MouseLeftButtonDown="Window_MouseLeftButtonDown"

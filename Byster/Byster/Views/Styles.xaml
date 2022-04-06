@@ -62,6 +62,8 @@
 
     <Style TargetType="TextBox" x:Key="referalTbStyle">
         <Style.Setters>
+            <Setter Property="IsInactiveSelectionHighlightEnabled" Value="False"/>
+            <Setter Property="IsReadOnly" Value="True"/>
             <Setter Property="Foreground" Value="{DynamicResource FontUIColor}"/>
             <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
             <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
@@ -86,20 +88,21 @@
                                                        Padding="{TemplateBinding Padding}"
                                                        FontSize="{TemplateBinding FontSize}"
                                                        FontFamily="{TemplateBinding FontFamily}"/>
-                                <TextBlock x:Name="ContentHost"
-                                            Text="{TemplateBinding Text}"
+                                <ScrollViewer x:Name="PART_ContentHost"
                                                  Background="Transparent"
+                                                 BorderBrush="Transparent"
                                                  Padding="{TemplateBinding Padding}"
                                                  FontFamily="{TemplateBinding FontFamily}"
                                                  FontSize="{TemplateBinding FontSize}"
                                                  Foreground="{TemplateBinding Foreground}"
-                                                Visibility="Hidden"/>
+                                                Visibility="Hidden"
+                                                Cursor="Arrow"/>
                                 <TextBlock x:Name="copyNote"
                                             Background="Transparent"
                                             Foreground="{DynamicResource FontUIColor}"
                                            HorizontalAlignment="Right"
                                            VerticalAlignment="Center"
-                                            Text="копировать"
+                                            Text="{Binding Converter={StaticResource localizationConverter}, ConverterParameter=Copy}"
                                             TextDecorations="Underline"
                                             Padding="{TemplateBinding Padding}"
                                             FontSize="{TemplateBinding FontSize}"
@@ -109,13 +112,17 @@
                         <ControlTemplate.Triggers>
                             <Trigger Property="IsMouseOver" Value="True">
                                 <Setter TargetName="textboxBorder" Property="Background" Value="{DynamicResource BackgroundUIColorHover}"/>
+                                <Setter Property="Cursor" Value="Arrow"/>
                                 <Setter TargetName="placeholder" Property="Visibility" Value="Hidden"/>
-                                <Setter TargetName="ContentHost" Property="Visibility" Value="Visible"/>
+                                <Setter TargetName="PART_ContentHost" Property="Visibility" Value="Visible"/>
                             </Trigger>
-                            <Trigger Property="IsFocused" Value="True">
+                            <Trigger Property="IsMouseCaptured" Value="True">
+                                <Setter Property="Cursor" Value="Arrow"/>
                                 <Setter TargetName="textboxBorder" Property="Background" Value="{DynamicResource BackgroundUIColorClicked}"/>
                             </Trigger>
                             <Trigger Property="Text" Value="">
+                                <Setter Property="Cursor" Value="Arrow"/>
+
                                 <Setter TargetName="placeholder" Property="Foreground" Value="{DynamicResource FontUIColor}"/>
                             </Trigger>
                         </ControlTemplate.Triggers>

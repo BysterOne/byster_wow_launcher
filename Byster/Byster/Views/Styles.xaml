@@ -565,7 +565,7 @@
                                        Stretch="Uniform"
                                        RenderOptions.BitmapScalingMode="HighQuality"/>
                                 <Grid Grid.Column="1" Margin="10">
-                                    <TextBlock Text="Активна до:"
+                                    <TextBlock Text="{Binding Converter={StaticResource localizationConverter}, ConverterParameter=AvailableUntil}"
                                                             VerticalAlignment="Bottom"
                                                             HorizontalAlignment="Left"
                                                Style="{DynamicResource orangeTextBlockStyle}"/>

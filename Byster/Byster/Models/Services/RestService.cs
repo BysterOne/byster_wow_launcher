@@ -11,6 +11,7 @@ using static Byster.Models.Utilities.BysterLogger;
 using Byster.Models.ViewModels;
 using Byster.Views;
 using Newtonsoft.Json;
+using System.Threading;
 
 namespace Byster.Models.Services
 {
@@ -20,6 +21,8 @@ namespace Byster.Models.Services
         public string LastError { get; set; }
         public event Action MultipleConnectionErrorsDetected;
         private int connectionErrorCounter = 0;
+        private Timer resetConnectionErrorAccidentCounterTimer;
+        private bool multipleConnectionErrorEventCalled = false;
         public RestService(RestClient _client)
         {
             if(_client == null)
@@ -27,6 +30,11 @@ namespace Byster.Models.Services
                 throw new ArgumentNullException(nameof(_client));
             }
             client = _client;
+            resetConnectionErrorAccidentCounterTimer = new Timer((obj) =>
+            {
+                resetConnectionErrorAccidentsCounter();
+            }, null, 0, 60000);
+
         }
 
         public IEnumerable<ActiveRotationViewModel> GetActiveRotationCollection()
@@ -282,7 +290,7 @@ namespace Byster.Models.Services
                 role_type = roletype,
             }));
             if (checkHTTPStatusCode(response.StatusCode)) return null;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (!string.IsNullOrEmpty(response.Data?.error))
             {
                 LastError = response.Data.error;
                 Log("Ошибка создания ротации разработчиков", LastError, " - ", response.ErrorMessage);
@@ -294,7 +302,7 @@ namespace Byster.Models.Services
         public bool ExecuteLinkEmailRequest(string email)
         {
             //var response = client.Post<>()
-            Log("ПРЕДУПРЕЖДЕНИЕ Использована нереализованная функция");
+            Log("ПРЕДУПРЕЖДЕНИЕ: Использована нереализованная функция");
             return true;
         }
 
@@ -314,27 +322,42 @@ namespace Byster.Models.Services
             return true;
         }
 
+        private void addConnectoinErrorAccident()
+        {
+            if (++connectionErrorCounter >= 3 && !multipleConnectionErrorEventCalled)
+            {
+                MultipleConnectionErrorsDetected?.Invoke();
+                multipleConnectionErrorEventCalled = true;
+            }
+        }
+
+        private void resetConnectionErrorAccidentsCounter()
+        {
+            connectionErrorCounter = 0;
+            multipleConnectionErrorEventCalled = false;
+        }
+
         private bool checkHTTPStatusCode(System.Net.HttpStatusCode statusCode)
         {
             System.Net.HttpStatusCode[] restrictedCodes = new System.Net.HttpStatusCode[]
             {
-                System.Net.HttpStatusCode.ExpectationFailed,
-                System.Net.HttpStatusCode.GatewayTimeout,
+                System.Net.HttpStatusCode.Forbidden,
                 System.Net.HttpStatusCode.BadGateway,
+                System.Net.HttpStatusCode.GatewayTimeout,
+                System.Net.HttpStatusCode.RequestTimeout,
+                System.Net.HttpStatusCode.HttpVersionNotSupported,
+                System.Net.HttpStatusCode.ServiceUnavailable,
             };
-            if(restrictedCodes.Contains(statusCode))
+            if(restrictedCodes.Contains(statusCode) || (int)statusCode == 0)
             {
                 LastError = "Ошибка соединения с сервером";
                 Log("Сервер недоступен", statusCode.ToString());
-                if(++connectionErrorCounter >= 3)
-                {
-                    MultipleConnectionErrorsDetected?.Invoke();
-                }
+                addConnectoinErrorAccident();
                 return true;
             }
             else
             {
-                connectionErrorCounter = 0;
+                //resetConnectionErrorAccidentsCounter();
                 return false;
             }
         }

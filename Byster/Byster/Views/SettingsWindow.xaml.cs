@@ -45,19 +45,19 @@ namespace Byster.Views
             {
                 this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
             }
-            else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.MASTER)
-            {
-                consoleSwitch.Visibility = Visibility.Collapsed;
-                testElementGrid.Visibility = Visibility.Collapsed;
-                encryptSwitch.Visibility = Visibility.Collapsed;
-                this.Height = masterGrid.Height + nameGrid.Height + 30;
-            }
             else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
             {
                 loadTypeText.Visibility = Visibility.Collapsed;
                 loadTypeSelector.Visibility = Visibility.Collapsed;
                 rotationSettingsBtn.Visibility = Visibility.Collapsed;
                 this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
+            }
+            else
+            {
+                consoleSwitch.Visibility = Visibility.Collapsed;
+                testElementGrid.Visibility = Visibility.Collapsed;
+                encryptSwitch.Visibility = Visibility.Collapsed;
+                this.Height = masterGrid.Height + nameGrid.Height + 30;
             }
             switch (viewModel.UserInfo.Branch.ToLower())
             {

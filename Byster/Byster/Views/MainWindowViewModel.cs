@@ -300,13 +300,35 @@ namespace Byster.Views
             };
             MediaControl.OpenAction = (uri) =>
             {
-                SourceOfMediaToOpen = uri;
-                IsMediaOpened = Visibility.Visible;
+                string ext = getExtension(uri);
+                string[] videoExtensions = new string[]
+                {
+                    "mp4",
+                    "avi",
+                    "mkv"
+                };
+                if(videoExtensions.Contains(ext))
+                {
+                    SourceOfMediaToOpen = "/Resources/Images/video-error.png";
+                    IsMediaOpened = Visibility.Visible;
+                }
+                else
+                {
+                    SourceOfMediaToOpen = uri;
+                    IsMediaOpened = Visibility.Visible;
+                }
             };
             DeveloperRotations = new DeveloperRotationService()
             {
                 RestService = restService,
             };
+        }
+
+        public static string getExtension(string uri)
+        {
+            string[] parts = uri.Split('.');
+            if (parts.Length < 2) return "";
+            return parts[parts.Length - 1].ToLower();
         }
 
         public void Initialize(Dispatcher dispatcher)

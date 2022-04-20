@@ -38,9 +38,14 @@
                     <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
                     <PasswordBox Style="{StaticResource pbStyle}" x:Name="passwordBox" Tag="Пароль" PasswordChanged="passwordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
                     <Button Style="{StaticResource bStyle}" Content="Авторизоваться" x:Name="loginBtn" Click="loginBtn_Click" Margin="{StaticResource marginUI}" IsDefault="True"/>
-                    <TextBlock Margin="{StaticResource marginUI}">
-                <Hyperlink x:Name="navigateToRegister" Style="{StaticResource hlStyle}" Click="navigateToRegister_Click">Зарегистрироваться?</Hyperlink>
-                    </TextBlock>
+                    <Grid>
+                        <TextBlock Margin="{StaticResource marginUI}">
+                            <Hyperlink x:Name="navigateToRegister" Style="{StaticResource hlStyle}" Click="navigateToRegister_Click"><TextBlock x:Name="navigateToRegisterTextBlock"/></Hyperlink>
+                        </TextBlock>
+                        <TextBlock Margin="{StaticResource marginUI}" HorizontalAlignment="Right">
+                            <Hyperlink x:Name="swapLanguageReg" Style="{StaticResource hlStyle}" Click="swapLanguage_Click"><TextBlock x:Name="swapLanguageTextBlockReg"/></Hyperlink>
+                        </TextBlock>
+                    </Grid>
                 </StackPanel>
             </Grid>
             <Grid x:Name="registerBlock">
@@ -48,7 +53,7 @@
                     <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
                     <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
                     <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
-                    <TextBlock Text="Откуда Вы узнали о Byster?" Style="{StaticResource infoTextBlockStyle}" Margin="0, 8,0,0"/>
+                    <TextBlock x:Name="regQuestionTextBlock" Text="Откуда Вы узнали о Byster?" Style="{StaticResource infoTextBlockStyle}" Margin="0, 8,0,0"/>
                     <ComboBox x:Name="registerChoicesComboBox" Margin="{StaticResource marginUI}" Style="{StaticResource combobStyle}"/>
                     <TextBox x:Name="referalBox" Tag="Реферал код" Margin="{StaticResource marginUI}" IsVisibleChanged="referalBox_IsVisibleChanged">
                         <TextBox.Style>
@@ -64,9 +69,14 @@
                         </TextBox.Style>
                     </TextBox>
                     <Button Style="{StaticResource bStyle}" x:Name="registerBtn" Content="Зарегистрироваться" Click="registerBtn_Click" Margin="{StaticResource marginUI}"/>
-                    <TextBlock Margin="{StaticResource marginUI}">
-                        <Hyperlink x:Name="navigateToAuth" Style="{StaticResource hlStyle}" Click="navigateToAuth_Click">Авторизоваться?</Hyperlink>
-                    </TextBlock>
+                    <Grid>
+                        <TextBlock Margin="{StaticResource marginUI}" HorizontalAlignment="Left">
+                        <Hyperlink x:Name="navigateToAuth" Style="{StaticResource hlStyle}" Click="navigateToAuth_Click"><TextBlock x:Name="navigateToAuthTextBlock"/></Hyperlink>
+                        </TextBlock>
+                        <TextBlock Margin="{StaticResource marginUI}" HorizontalAlignment="Right">
+                        <Hyperlink x:Name="swapLanguage" Style="{StaticResource hlStyle}" Click="swapLanguage_Click"><TextBlock x:Name="swapLanguageTextBlock"/></Hyperlink>
+                        </TextBlock>
+                    </Grid>
                 </StackPanel>
 
             </Grid>

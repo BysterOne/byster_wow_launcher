@@ -41,24 +41,7 @@ namespace Byster.Views
                 }
             };
             this.DataContext = SettingsViewModel;
-            if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.DEVELOPER)
-            {
-                this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
-            }
-            else if(SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
-            {
-                loadTypeText.Visibility = Visibility.Collapsed;
-                loadTypeSelector.Visibility = Visibility.Collapsed;
-                rotationSettingsBtn.Visibility = Visibility.Collapsed;
-                this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
-            }
-            else
-            {
-                consoleSwitch.Visibility = Visibility.Collapsed;
-                testElementGrid.Visibility = Visibility.Collapsed;
-                encryptSwitch.Visibility = Visibility.Collapsed;
-                this.Height = masterGrid.Height + nameGrid.Height + 30;
-            }
+            
             switch (viewModel.UserInfo.Branch.ToLower())
             {
                 case "dev":
@@ -90,6 +73,39 @@ namespace Byster.Views
             this.DragMove();
         }
 
+        private void Window_Loaded(object sender, RoutedEventArgs e)
+        {
+            if (SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.DEVELOPER)
+            {
+                loadTypeText.Visibility = Visibility.Visible;
+                loadTypeSelector.Visibility = Visibility.Visible;
+                rotationSettingsBtn.Visibility = Visibility.Visible;
+                consoleSwitch.Visibility = Visibility.Visible;
+                testElementGrid.Visibility = Visibility.Visible;
+                encryptSwitch.Visibility = Visibility.Visible;
+                this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
+            }
+            else if (SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
+            {
+                loadTypeText.Visibility = Visibility.Collapsed;
+                loadTypeSelector.Visibility = Visibility.Collapsed;
+                rotationSettingsBtn.Visibility = Visibility.Collapsed;
+                consoleSwitch.Visibility = Visibility.Visible;
+                testElementGrid.Visibility = Visibility.Visible;
+                encryptSwitch.Visibility = Visibility.Visible;
+                this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
+            }
+            else
+            {
+                consoleSwitch.Visibility = Visibility.Collapsed;
+                testElementGrid.Visibility = Visibility.Collapsed;
+                encryptSwitch.Visibility = Visibility.Collapsed;
+                loadTypeText.Visibility = Visibility.Collapsed;
+                loadTypeSelector.Visibility = Visibility.Collapsed;
+                rotationSettingsBtn.Visibility = Visibility.Collapsed;
+                this.Height = masterGrid.Height + nameGrid.Height + 30;
+            }
+        }
     }
     public class SettingsViewModel : INotifyPropertyChanged
     {

@@ -36,6 +36,11 @@ namespace Byster.Views
             newPasswordBox.Tag = Localizator.GetLocalizationResourceByKey("NewPassword").Value;
             newPasswordConfirmBox.Tag = Localizator.GetLocalizationResourceByKey("NewPasswordConfirmation").Value;
             referalBox.Tag = Localizator.GetLocalizationResourceByKey("ReferalCode").Value;
+            regQuestionTextBlock.Text = Localizator.GetLocalizationResourceByKey("RegistrationQuestion").Value;
+            swapLanguageTextBlock.Text = Localizator.GetLocalizationResourceByKey("SwapLanguage").Value;
+            navigateToAuthTextBlock.Text = Localizator.GetLocalizationResourceByKey("AuthorizationQ").Value;
+            swapLanguageTextBlockReg.Text = Localizator.GetLocalizationResourceByKey("SwapLanguage").Value;
+            navigateToRegisterTextBlock.Text = Localizator.GetLocalizationResourceByKey("RegistrationQ").Value;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -272,6 +277,11 @@ namespace Byster.Views
             {
                 this.Height = 500;
             }
+        }
+
+        private void swapLanguage_Click(object sender, RoutedEventArgs e)
+        {
+            Localizator.ReloadLocalization(Localizator.LoadedLocalizationInfo.LanguageCode == "ruRU" ? "enUS" : "ruRU");
         }
     }
 }

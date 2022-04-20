@@ -58,7 +58,10 @@ namespace Byster.Views
                 {
                     var window = new InfoWindow(Localizator.GetLocalizationResourceByKey("ConnectionError"), Localizator.GetLocalizationResourceByKey("ConnectionErrorMessage"));
                     window.ShowDialog();
-                    Close();
+                    foreach(var w in App.Current.Windows)
+                    {
+                        (w as Window).Close();
+                    }
                 });
             };
             InitializeComponent();

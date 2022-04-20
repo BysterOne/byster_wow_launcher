@@ -110,17 +110,19 @@ namespace Byster.Models.Services
             {
                 IEnumerable<ActiveRotationViewModel> products = null;
                 products = RestService.GetActiveRotationCollection();
-                Dispatcher.Invoke(() =>
+                if(products.ToArray().Length > 0)
                 {
-                    AllActiveRotations.Clear();
-                    foreach (var product in products)
+                    Dispatcher.Invoke(() =>
                     {
-                        AllActiveRotations.Add(product);
-                    }
-                    sortAllRotations();
-                    FilterRotations();
-                });
-                
+                        AllActiveRotations.Clear();
+                        foreach (var product in products)
+                        {
+                            AllActiveRotations.Add(product);
+                        }
+                        sortAllRotations();
+                        FilterRotations();
+                    });
+                }
             });
         }
 

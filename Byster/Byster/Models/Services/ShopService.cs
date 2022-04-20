@@ -209,16 +209,19 @@ namespace Byster.Models.Services
         {
             IEnumerable<ShopProductInfoViewModel> products = null;
             products = RestService.GetAllProductCollection();
-            Dispatcher.Invoke(() =>
+            if (products.ToArray().Length > 0)
             {
-                AllProducts.Clear();
-                foreach(var item in products)
+                Dispatcher.Invoke(() =>
                 {
-                    AllProducts.Add(item);
-                }
-                setElementsActions();
-                FilterProducts();
-            });
+                    AllProducts.Clear();
+                    foreach (var item in products)
+                    {
+                        AllProducts.Add(item);
+                    }
+                    setElementsActions();
+                    FilterProducts();
+                });
+            }
         }
 
         public string ActivateCoupon(string couponCode)

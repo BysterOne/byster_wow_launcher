@@ -83,7 +83,7 @@ namespace Byster.Views
                 consoleSwitch.Visibility = Visibility.Visible;
                 testElementGrid.Visibility = Visibility.Visible;
                 encryptSwitch.Visibility = Visibility.Visible;
-                this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
+                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + testElementGrid.ActualHeight + 40;
             }
             else if (SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
             {
@@ -93,7 +93,7 @@ namespace Byster.Views
                 consoleSwitch.Visibility = Visibility.Visible;
                 testElementGrid.Visibility = Visibility.Visible;
                 encryptSwitch.Visibility = Visibility.Visible;
-                this.Height = masterGrid.Height + nameGrid.Height + testElementGrid.Height + 30;
+                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + testElementGrid.ActualHeight + 40;
             }
             else
             {
@@ -103,7 +103,7 @@ namespace Byster.Views
                 loadTypeText.Visibility = Visibility.Collapsed;
                 loadTypeSelector.Visibility = Visibility.Collapsed;
                 rotationSettingsBtn.Visibility = Visibility.Collapsed;
-                this.Height = masterGrid.Height + nameGrid.Height + 30;
+                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + 40;
             }
         }
     }

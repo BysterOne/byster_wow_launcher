@@ -311,6 +311,8 @@ namespace Byster.Views
                 {
                     SourceOfMediaToOpen = "/Resources/Images/video-error.png";
                     IsMediaOpened = Visibility.Visible;
+                    RedirectToBrowserWindow redirectWindow = new RedirectToBrowserWindow(Localizator.GetLocalizationResourceByKey("Error").Value, Localizator.GetLocalizationResourceByKey("OpenMediaErrorMessage").Value, uri);
+                    redirectWindow.ShowDialog();
                 }
                 else
                 {

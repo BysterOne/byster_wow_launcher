@@ -216,7 +216,7 @@
         <Grid Background="#A0000000" x:Name="mediaOpenedGrid" Grid.RowSpan="3" Visibility="{Binding IsMediaOpened}">
             <controls:MediaPresenterControl x:Name="playerControl" Player="{Binding ElementName=mediaElement}"/>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60">
-                <Image Visibility="Visible" x:Name="mediaElement"  Source="{Binding SourceOfMediaToOpen, Mode=TwoWay}" Height="400">
+                <Image Visibility="Visible" x:Name="mediaElement"  Source="{Binding SourceOfMediaToOpen, Mode=TwoWay}" Height="550">
                 </Image>
             </StackPanel>
             <Button Style="{StaticResource uibStyle}" Command="{Binding CloseMediaCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">

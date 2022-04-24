@@ -10,7 +10,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using System.Reflection;
 using System.Net;
 using System.IO;
@@ -76,6 +75,7 @@ namespace Byster.Views
                                                        | SecurityProtocolType.Tls11
                                                        | SecurityProtocolType.Tls12
                                                        | SecurityProtocolType.Ssl3;
+                Log("Сеть", "Разрешены сертификаты типов: TLS, TLS1.1, TLS1.2, SSL3");
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
                 {
                     if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None)
@@ -91,12 +91,13 @@ namespace Byster.Views
 
                     return false;
                 };
+                Log("Сеть", "Отключена проверка сертификатов для хостов: api.byster.ru, s3.byster.ru");
             }
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Log("Open LoadingWindow");
+            Log("Открытие LoadingWindow");
 
             rotateProgressTransform.CenterX = this.ActualWidth / 2;
             rotateProgressTransform.CenterY = this.ActualHeight / 2;
@@ -180,26 +181,6 @@ namespace Byster.Views
                 Close();
                 mainWindow.Initialize();
             });
-            //Dispatcher.Invoke(() =>
-            //{
-            //    App.Current.ShutdownMode = ShutdownMode.OnExplicitShutdown;
-            //});
-            //Thread newThread = new Thread(new ThreadStart(() =>
-            //{
-            //    var mainWindow = new MainWindowReworked(login, sessionId);
-            //    mainWindow.Show();
-            //    System.Windows.Threading.Dispatcher.Run();
-            //    mainWindow.Initialize();
-            //    App.Current.ShutdownMode = ShutdownMode.OnLastWindowClose;
-            //}));
-            //newThread.IsBackground = true;
-            //newThread.SetApartmentState(ApartmentState.STA);
-            //newThread.Start();
-            //Dispatcher.BeginInvoke(new Action(() =>
-            //{
-            //    Close();
-            //    Dispatcher.InvokeShutdown();
-            //}));
         }
 
         private int TryAuth(string login, string passwordHash, out string sessionId)
@@ -256,10 +237,16 @@ namespace Byster.Views
         {
             App.Current.Dispatcher.Invoke(() =>
             {
-                App.Current.MainWindow = new LoginOrRegistrationWindow();
-                App.Current.MainWindow.Show();
-                while(!App.Current.MainWindow.IsLoaded) { }
-                Close();
+                try
+                {
+                    App.Current.MainWindow = new LoginOrRegistrationWindow();
+                    App.Current.MainWindow.Show();
+                    while (!App.Current.MainWindow.IsLoaded) { }
+                }
+                finally
+                {
+                    Close();
+                }
             });
         }
 
@@ -283,11 +270,11 @@ namespace Byster.Views
             Log("Обновление");
             File.WriteAllBytes("BysterUpdate.exe", response.RawBytes);
             File.WriteAllLines("update.bat", new List<string>(){
-                    "taskkill /IM \"Byster.exe\" /F",
+                    $"taskkill /IM \"{ Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe\" /F",
                     "timeout /t 2 /NOBREAK",
-                    "del /f Byster.exe",
-                    "rename BysterUpdate.exe Byster.exe",
-                    "Byster.exe",
+                    $"del /f { Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe",
+                    $"rename BysterUpdate.exe { Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe",
+                    $"{ Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe",
                 });
             Log("Перезапуск...");
             Process process = new Process();

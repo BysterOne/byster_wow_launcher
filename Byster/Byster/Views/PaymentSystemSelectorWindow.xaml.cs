@@ -67,8 +67,6 @@ namespace Byster.Views
 
     public class PaymentWindowViewModel : INotifyPropertyChanged
     {
-        private RelayCommand clearCommand;
-
         private MainWindowViewModel mainViewModel;
         public MainWindowViewModel MainViewModel
         {

@@ -12,6 +12,12 @@ namespace Byster.Models.RestModels
         public RegisterRequestNoReferal() { }
     }
 
+    public class RegisterRequestNoRegisterSource : AuthRequest
+    {
+        public string referal { get; set; }
+        public RegisterRequestNoRegisterSource() { }
+    }
+
     public class RegisterRequestReferal : RegisterRequestNoReferal
     {
         public string referal { get; set; }

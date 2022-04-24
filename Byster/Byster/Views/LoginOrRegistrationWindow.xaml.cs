@@ -12,11 +12,13 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using RestSharp;
 using Byster.Models.RestModels;
 using Byster.Models.Utilities;
 using Byster.Localizations.Tools;
+using System.Reflection;
+using System.IO;
+using System.Diagnostics;
 
 namespace Byster.Views
 {
@@ -25,6 +27,10 @@ namespace Byster.Views
     /// </summary>
     public partial class LoginOrRegistrationWindow : Window
     {
+
+        private bool useAutoReferal = false;
+        private string autoReferal = "";
+        private int autoRegisterSource = 0;
         public LoginOrRegistrationWindow()
         {
             InitializeComponent();
@@ -45,6 +51,9 @@ namespace Byster.Views
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            authBlock.Visibility = Visibility.Collapsed;
+            setHeight();
+
             string login = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", null);
             string password = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", null);
 
@@ -64,18 +73,71 @@ namespace Byster.Views
                 }
             }
             autoAuthPresenterGrid.Visibility = Visibility.Collapsed;
-            var response = App.Rest.Post<List<RegisterChoice>>(new RestRequest("launcher/register_choices"));
-            if (response.StatusCode == HttpStatusCode.OK)
+
+            if(checkFileNameServer(out autoReferal, out autoRegisterSource))
             {
-                List<RegisterChoice> registerChoices = response.Data;
-                registerChoicesComboBox.ItemsSource = registerChoices;
-                registerChoicesComboBox.DisplayMemberPath = "selection";
-                registerChoicesComboBox.SelectedIndex = 1;
+                regQuestionTextBlock.Visibility = Visibility.Collapsed;
+                registerChoicesComboBox.Visibility = Visibility.Collapsed;
+                referalBox.Visibility = Visibility.Collapsed;
+                setHeight();
+                useAutoReferal = true;
             }
             else
             {
-                MessageBox.Show($"Запрос завершился с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка HTTP", MessageBoxButton.OK, MessageBoxImage.Error);
+                if (checkFileNameLocal())
+                {
+                    var response = App.Rest.Post<List<RegisterChoice>>(new RestRequest("launcher/register_choices"));
+                    if (response.StatusCode == HttpStatusCode.OK)
+                    {
+                        List<RegisterChoice> registerChoices = response.Data;
+                        registerChoicesComboBox.ItemsSource = registerChoices;
+                        registerChoicesComboBox.DisplayMemberPath = "selection";
+                        registerChoicesComboBox.SelectedIndex = 1;
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Запрос завершился с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка HTTP", MessageBoxButton.OK, MessageBoxImage.Error);
+                        Close();
+                    }
+                }
+                else
+                {
+                    MessageBox.Show("Ошибка проверки названия файла сервером. Просим не переименовывать файл до прохождения регистрации/авторизации", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    Close();
+                }
             }
+        }
+
+        private void setHeight()
+        {
+            double h = 0;
+            if(registerBlock.IsVisible)
+            {
+                if(registerChoicesComboBox.IsVisible)
+                {
+                    if(referalBox.IsVisible)
+                    {
+                        h = 543.0;
+                    }
+                    else
+                    {
+                        h = 490.0;
+                    }
+                }
+                else
+                {
+                    h = 412.0;
+                }
+            }
+            else if(authBlock.IsVisible)
+            {
+                h = 360.0;
+            }
+            else
+            {
+                h = 500.0;
+            }
+            this.Height = h;
         }
 
         private bool TryAuth(string login, string passwordHash, out string sessionId)
@@ -109,7 +171,7 @@ namespace Byster.Views
             return true;
         }
 
-        private bool TryRegister(string login, string passwordHash, string referal, int idOfRegisterChoice, out string sessionId)
+        private bool TryRegister(string login, string passwordHash, string referal, int? idOfRegisterChoice, out string sessionId)
         {
             if (string.IsNullOrEmpty(login))
             {
@@ -130,12 +192,17 @@ namespace Byster.Views
                 return false;
             }
 
-            var response = (referal != "") ? App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestReferal()
+            var response = !string.IsNullOrEmpty(referal) ? (idOfRegisterChoice != null) ? App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestReferal()
             {
                 login = login,
                 password = passwordHash,
                 referal = referal,
                 register_source = idOfRegisterChoice.ToString(),
+            })) : App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestNoRegisterSource()
+            {
+                login = login,
+                password = passwordHash,
+                referal = referal,
             })) : App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestNoReferal()
             {
                 login = login,
@@ -153,7 +220,7 @@ namespace Byster.Views
                 }
                 else
                 {
-                    MessageBox.Show($"Запрос завершён с кодом:{(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Запрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}\nСообщение ошибки от сервера: {response.Data.error ?? "-"}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     sessionId = null;
                     return false;
                 }
@@ -190,15 +257,7 @@ namespace Byster.Views
         {
             authBlock.Visibility = Visibility.Collapsed;
             registerBlock.Visibility = Visibility.Visible;
-            if((registerChoicesComboBox.SelectedItem as RegisterChoice).need_referral_code)
-            {
-                this.Height = 543;
-
-            }
-            else
-            {
-                this.Height = 500;
-            }
+            setHeight();
             loginBtn.IsDefault = false;
             registerBtn.IsDefault = true;
         }
@@ -206,7 +265,7 @@ namespace Byster.Views
         {
             authBlock.Visibility = Visibility.Visible;
             registerBlock.Visibility = Visibility.Collapsed;
-            this.Height = 360;
+            setHeight();
             loginBtn.IsDefault = true;
             registerBtn.IsDefault = false;
         }
@@ -231,8 +290,18 @@ namespace Byster.Views
             string newLoginText = newLoginBox.Text;
             string newPasswordText = newPasswordBox.Password;
             string newPasswordConfirmText = newPasswordConfirmBox.Password;
-            string referal = referalBox.Text;
-            int idOfRegisterChoice = (registerChoicesComboBox.SelectedItem as RegisterChoice).id;
+            string referal = "";
+            int? idOfRegisterChoice = null;
+            if (useAutoReferal)
+            {
+                referal = autoReferal;
+                idOfRegisterChoice = autoRegisterSource;
+            }
+            else
+            {
+                idOfRegisterChoice = (registerChoicesComboBox.SelectedItem as RegisterChoice).id;
+                referal = (registerChoicesComboBox.SelectedItem as RegisterChoice).need_referral_code ? referalBox.Text : "";
+            }
 
             if(newPasswordText != newPasswordConfirmText)
             {
@@ -253,35 +322,70 @@ namespace Byster.Views
 
         private void passwordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (passwordBox.Password == "") passwordBox.Tag = "Пароль"; else passwordBox.Tag = "";
+            if (passwordBox.Password == "") passwordBox.Tag = Localizator.GetLocalizationResourceByKey("Password").Value; else passwordBox.Tag = "";
         }
 
         private void newPasswordBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (newPasswordBox.Password == "") newPasswordBox.Tag = "Пароль"; else newPasswordBox.Tag = "";
+            if (newPasswordBox.Password == "") newPasswordBox.Tag = Localizator.GetLocalizationResourceByKey("NewPassword").Value; else newPasswordBox.Tag = "";
         }
 
         private void newPasswordConfirmBox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            if (newPasswordConfirmBox.Password == "") newPasswordConfirmBox.Tag = "Подтвердите пароль"; else newPasswordConfirmBox.Tag = "";
+            if (newPasswordConfirmBox.Password == "") newPasswordConfirmBox.Tag = Localizator.GetLocalizationResourceByKey("NewPasswordConfirmation").Value; else newPasswordConfirmBox.Tag = "";
         }
 
         private void referalBox_IsVisibleChanged(object sender, DependencyPropertyChangedEventArgs e)
         {
             if (!registerBlock.IsVisible) return;
-            if(referalBox.IsVisible)
-            {
-                this.Height = 543;
-            }
-            else
-            {
-                this.Height = 500;
-            }
+            setHeight();
         }
 
         private void swapLanguage_Click(object sender, RoutedEventArgs e)
         {
             Localizator.ReloadLocalization(Localizator.LoadedLocalizationInfo.LanguageCode == "ruRU" ? "enUS" : "ruRU");
         }
+
+        private bool checkFileNameLocal()
+        {
+            string filename = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
+            if (filename.ToLower().Contains("byster")) return true;
+            return false;
+        }
+
+        private bool checkFileNameServer(out string calculatedReferal, out int calculatedRegisterSource)
+        {
+            string filename = Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
+            var response = App.Rest.Post<FilenameCheckResponse>(new RestRequest("launcher/get_referal_source").AddJsonBody(new FilenameCheckRequest()
+            {
+                filename = filename,
+            }));
+            HttpStatusCode[] restrictedCodes = new HttpStatusCode[]
+            {
+                HttpStatusCode.BadRequest,
+                HttpStatusCode.Forbidden,
+                HttpStatusCode.BadGateway,
+                HttpStatusCode.GatewayTimeout,
+                (HttpStatusCode)0,
+            };
+            if(restrictedCodes.Contains(response.StatusCode))
+            {
+                calculatedReferal = "";
+                calculatedRegisterSource = 0;
+                return false;
+            }
+            if(!string.IsNullOrEmpty(response.Data.error))
+            {
+                calculatedReferal = "";
+                calculatedRegisterSource = -1;
+                return false;
+            }
+            else
+            {
+                calculatedRegisterSource = response.Data.register_source;
+                calculatedReferal = response.Data.referal;
+                return true;
+            }
+        }        
     }
 }

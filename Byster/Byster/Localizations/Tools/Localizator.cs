@@ -11,6 +11,7 @@ using System.Windows.Data;
 using System.Diagnostics;
 
 using static Byster.Models.Utilities.BysterLogger;
+using System.Reflection;
 
 namespace Byster.Localizations.Tools
 {
@@ -98,9 +99,9 @@ namespace Byster.Localizations.Tools
                 Code = code,
             }));
             File.WriteAllLines("changeLocalization.bat", new List<string>(){
-                    "taskkill /IM \"Byster.exe\" /F",
+                    $"taskkill /IM \"{ Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe\" /F",
                     "timeout /t 2 /NOBREAK",
-                    "Byster.exe"
+                    $"{ Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe"
                 });
             Process process = new Process();
             process.StartInfo.FileName = "changeLocalization.bat";

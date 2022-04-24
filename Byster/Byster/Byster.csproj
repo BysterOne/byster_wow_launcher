@@ -179,6 +179,7 @@
     <Compile Include="Models\RestModels\Auth.cs" />
     <Compile Include="Models\RestModels\BaseResponse.cs" />
     <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
+    <Compile Include="Models\RestModels\FilenameCheck.cs" />
     <Compile Include="Models\RestModels\LinkEmailRequest.cs" />
     <Compile Include="Models\RestModels\Register.cs" />
     <Compile Include="Models\RestModels\RestAction.cs" />

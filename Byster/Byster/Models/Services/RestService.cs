@@ -326,8 +326,8 @@ namespace Byster.Models.Services
         {
             if (++connectionErrorCounter >= 3 && !multipleConnectionErrorEventCalled)
             {
-                MultipleConnectionErrorsDetected?.Invoke();
                 multipleConnectionErrorEventCalled = true;
+                MultipleConnectionErrorsDetected?.Invoke();
             }
         }
 

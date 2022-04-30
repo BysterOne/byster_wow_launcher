@@ -61,7 +61,7 @@ namespace Byster.Views
             {
                 string passwordHash = password;
                 string sessionId;
-                if (TryAuth(login, passwordHash, out sessionId))
+                if (tryAuth(login, passwordHash, out sessionId))
                 {
                     StartMainWindow(login, sessionId);
                     return;
@@ -140,7 +140,7 @@ namespace Byster.Views
             this.Height = h;
         }
 
-        private bool TryAuth(string login, string passwordHash, out string sessionId)
+        private bool tryAuth(string login, string passwordHash, out string sessionId)
         {
             if(string.IsNullOrEmpty(login))
             {
@@ -150,7 +150,7 @@ namespace Byster.Views
             }
             if(string.IsNullOrEmpty(passwordHash))
             {
-                MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Введите пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
                 return false;
             }
@@ -171,7 +171,7 @@ namespace Byster.Views
             return true;
         }
 
-        private bool TryRegister(string login, string passwordHash, string referal, int? idOfRegisterChoice, out string sessionId)
+        private bool tryRegister(string login, string passwordHash, string referal, int? idOfRegisterChoice, out string sessionId)
         {
             if (string.IsNullOrEmpty(login))
             {
@@ -181,7 +181,7 @@ namespace Byster.Views
             }
             if (string.IsNullOrEmpty(passwordHash))
             {
-                MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show("Введите пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
                 return false;
             }
@@ -276,7 +276,7 @@ namespace Byster.Views
             string passwordText = passwordBox.Password;
             string passwordHash = HashCalc.GetMD5Hash(passwordText);
             string sessionId;
-            if(TryAuth(loginText, passwordHash, out sessionId))
+            if(tryAuth(loginText, passwordHash, out sessionId))
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", loginText);
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", passwordHash);
@@ -309,9 +309,14 @@ namespace Byster.Views
                 return;
             }
 
+            if(string.IsNullOrEmpty(newPasswordText))
+            {
+                MessageBox.Show("Введите пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            }
+
             string newPasswordHash = HashCalc.GetMD5Hash(newPasswordText);
             string sessionId;
-            if(TryRegister(newLoginText, newPasswordHash, referal, idOfRegisterChoice, out sessionId))
+            if(tryRegister(newLoginText, newPasswordHash, referal, idOfRegisterChoice, out sessionId))
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", newLoginText);
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", newPasswordHash);

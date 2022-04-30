@@ -12,7 +12,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Collections.ObjectModel;
-using Byster.Models.LocalRotationModels;
 using System.IO;
 using Newtonsoft.Json;
 using Byster.Models.ViewModels;

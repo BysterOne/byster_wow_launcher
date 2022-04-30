@@ -39,37 +39,22 @@ namespace Byster.Views
             InitializeComponent();
             
             string currentDir = Directory.GetCurrentDirectory();
-
-            var config = new NLog.Config.LoggingConfiguration();
-
-            // Targets where to log to: File and Console
-            var logfile = new NLog.Targets.FileTarget("logfile") {
-                FileName = "${specialfolder:folder=ApplicationData:cached=true}/BysterConfig/Byster.log",
-                Layout = "[${longdate}] ${message}${exception:format=ToString}",
-                KeepFileOpen = true,
-                Encoding = Encoding.UTF8,
-                CreateDirs = true,
-                ArchiveFileName = "${specialfolder:folder=ApplicationData:cached=true}/BysterConfig/BysterLogsArchive/${longdate}-BysterLogs.zip",
-                EnableArchiveFileCompression = true,
-                ArchiveOldFileOnStartupAboveSize = 5000,
-            };
-            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
-
-            // Rules for mapping loggers to targets            
-            config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
-            config.AddRule(LogLevel.Info, LogLevel.Fatal, logfile);
-
-            // Apply config           
-            NLog.LogManager.Configuration = config;
+            
+            // Запуск логирования
+            BysterLogger.Init();
+            
+            //Обработчик исключений диспетчера
             App.Current.DispatcherUnhandledException += (sender, e) =>
             {
-                BysterLogger.Log("Fatal:Необработанное исключение", e.Exception.Message, e.Exception.StackTrace);
+                Log("Fatal:Необработанное исключение", e.Exception.Message, e.Exception.StackTrace);
                 e.Handled = true;
             };
-            Byster.Models.Utilities.BysterLogger.Log("Версия Windows", Environment.OSVersion.Version.Major);
+
+            Log("Подготовка к запуску");
+            Log("Версия Windows", Environment.OSVersion.Version.Major);
             if (Environment.OSVersion.Version.Major <= 7)
             {
-                
+                Log("Применение настроек для версий Windows <7");
                 ServicePointManager.Expect100Continue = true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
                                                        | SecurityProtocolType.Tls11
@@ -82,23 +67,21 @@ namespace Byster.Views
                     {
                         return true;
                     }
-
                     var request = sender as HttpWebRequest;
                     if (request != null)
                     {
                         return TrustedHosts.Contains(request.RequestUri.Host);
                     }
-
                     return false;
                 };
                 Log("Сеть", "Отключена проверка сертификатов для хостов: api.byster.ru, s3.byster.ru");
             }
+            Log("Подготовка завершена, запуск...");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Log("Открытие LoadingWindow");
-
+            Log("Запуск окна LoadingWindow");
             rotateProgressTransform.CenterX = this.ActualWidth / 2;
             rotateProgressTransform.CenterY = this.ActualHeight / 2;
             rotateProgressTransform.BeginAnimation(RotateTransform.AngleProperty, new DoubleAnimation()
@@ -108,31 +91,32 @@ namespace Byster.Views
                 RepeatBehavior = RepeatBehavior.Forever,
             });
 
-            Log("Запускаем поток");
+            Log("Запуск потока");
 
             Task.Run(() =>
             {
-                Log("Запустили поток");
+                Log("Запущен поток");
+                Log("Запуск BackgroundImageDownloader");
                 BackgroundImageDownloader.Init();
-                Log("Запустили BackgroundImageDownloader");
+                Log("Запущен BackgroundImageDownloader");
+                Log("Удаление остаточных файлов");
                 if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
                 if (File.Exists("update.bat")) File.Delete("update.bat");
                 if (File.Exists("changeLocalization.bat")) File.Delete("changeLocalization.bat");
-                Log("Удаление остаточных файлов");
-                string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
-
+                Log("Удаление остаточных файлов завершено");
                 Log("Проверка обновлений");
+                string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 var response = App.Rest.Get(new RestRequest("launcher/check_updates"));
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
+                        Log("Ошибка соединения с сервером", "HTTP-Code: " + response.StatusCode.ToString());
                         MessageBox.Show($"Error while connecting server\nResponse HTTP-Code: {(int)response.StatusCode}\nError message: {response.ErrorMessage}\nServer error message: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "No server answer"}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         closeApp();
                         return;
                     }
                 }
                 string onlineVersion = Encoding.UTF8.GetString(response.RawBytes);
-
                 if (onlineVersion != version)
                 {
                     
@@ -142,19 +126,19 @@ namespace Byster.Views
                 }
                 else
                 {
-                    Log("Обновления не найдены. Запуск приложения...");
+                    Log("Обновления не найдены. Запуск основного приложения");
                     string login = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", null);
                     string password = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", null);
                     if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))
                     {
                         string passwordHash = password;
                         string sessionId;
-                        int status_code = TryAuth(login, passwordHash, out sessionId);
-
+                        Log("Попытка авторизации");
+                        int status_code = tryAuth(login, passwordHash, out sessionId);
                         switch (status_code)
                         {
                             case 200:
-                                StartMainWindow(login, sessionId);
+                                ShowMainWindow(login, sessionId);
                                 return;
 
                             case 401:
@@ -167,12 +151,12 @@ namespace Byster.Views
                         Dispatcher.Invoke(() => Close());
                         return;
                     }
-                    startApp();
+                    ShowLoginWindow();
                 }
             });
         }
 
-        public void StartMainWindow(string login, string sessionId)
+        public void ShowMainWindow(string login, string sessionId)
         {
             Dispatcher.Invoke(() =>
             {
@@ -183,7 +167,7 @@ namespace Byster.Views
             });
         }
 
-        private int TryAuth(string login, string passwordHash, out string sessionId)
+        private int tryAuth(string login, string passwordHash, out string sessionId)
         {
             if (string.IsNullOrEmpty(login))
             {
@@ -233,7 +217,7 @@ namespace Byster.Views
                 }
             });
         }
-        private void startApp()
+        private void ShowLoginWindow()
         {
             App.Current.Dispatcher.Invoke(() =>
             {

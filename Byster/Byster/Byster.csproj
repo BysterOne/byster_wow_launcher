@@ -175,7 +175,6 @@
     <Compile Include="Models\BysterModels\WOWClass.cs" />
     <Compile Include="Models\BysterModels\WOWSession.cs" />
     <Compile Include="Models\BysterModels\ShopProductInfo.cs" />
-    <Compile Include="Models\LocalRotationModels\LocalRotation.cs" />
     <Compile Include="Models\RestModels\Auth.cs" />
     <Compile Include="Models\RestModels\BaseResponse.cs" />
     <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
@@ -216,7 +215,6 @@
     <Compile Include="Models\Utilities\BysterLogger.cs" />
     <Compile Include="Models\Utilities\Behaviors.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />
-    <Compile Include="Models\Utilities\EventHandlers.cs" />
     <Compile Include="Models\ViewModels\MediaControl.cs" />
     <Compile Include="Models\ViewModels\ProductinfoViewModel.cs" />
     <Compile Include="Models\ViewModels\RelayCommand.cs" />

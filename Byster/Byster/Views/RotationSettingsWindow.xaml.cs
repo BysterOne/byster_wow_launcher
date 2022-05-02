@@ -30,6 +30,7 @@ namespace Byster.Views
         {
             InitializeComponent();
             this.DataContext = model;
+            
             model.DeveloperRotations.PreAddRotationAction = () =>
             {
                 var window = new AddRotationWindow(model);
@@ -51,6 +52,9 @@ namespace Byster.Views
                 {
                     Close();
                 });
+            };
+            model.DeveloperRotations.SyncronizationCompleted += () =>
+            {
             };
         }
 

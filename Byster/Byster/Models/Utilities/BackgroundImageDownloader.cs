@@ -52,10 +52,6 @@ namespace Byster.Models.Utilities
             while(true)
             {
                 SuspendMutex.WaitOne();
-                //suspendToken.mutex.WaitOne();
-                //suspendToken.AcceptSuspend();
-                //if(!suspendToken.GetSuspendStatus())
-                //{
                     if (ItemsToDownload.Count > 0)
                     {
                         try
@@ -77,7 +73,6 @@ namespace Byster.Models.Utilities
                         }
                     }
                 SuspendMutex.ReleaseMutex();
-                //}
                 Thread.Sleep(100);
             }
         }
@@ -150,8 +145,10 @@ namespace Byster.Models.Utilities
             return creatingItem;
         }
 
+        private static bool isAnyOpertationsDenied = false;
         public static void Suspend()
         {
+            isAnyOpertationsDenied = true;
             SuspendMutex.WaitOne();
         }
 

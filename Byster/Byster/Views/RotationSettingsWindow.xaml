@@ -52,44 +52,62 @@
                 </StackPanel>
             </Grid>
             <Grid Grid.Row="1">
-                <ListBox x:Name="rotationListBox" Margin="10, 0" ItemsSource="{Binding Path=DeveloperRotations.DeveloperRotations}">
-                    <ListBox.ItemsPanel>
+                <ListView Margin="5, 10" x:Name="rotationList" ItemsSource="{Binding DeveloperRotations.DeveloperRotations, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ListView.Style>
+                        <Style TargetType="ListView">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListView">
+                                        <Border Background="Transparent" BorderBrush="Transparent">
+                                            <ScrollViewer Style="{StaticResource scrollViewerSmallStyle}">
+                                                <ItemsPresenter/>
+                                            </ScrollViewer>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.Style>
+                    <ListView.ItemsPanel>
                         <ItemsPanelTemplate>
                             <StackPanel Orientation="Vertical"/>
                         </ItemsPanelTemplate>
-                    </ListBox.ItemsPanel>
-                    <ListBox.Template>
-                        <ControlTemplate TargetType="ListBox">
-                            <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}">
-                                <ItemsPresenter/>
-                            </ScrollViewer>
-                        </ControlTemplate>
-                    </ListBox.Template>
-                    <ListBox.ItemContainerStyle>
-                        <Style TargetType="ListBoxItem">
+                    </ListView.ItemsPanel>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
                             <Setter Property="Template">
                                 <Setter.Value>
                                     <ControlTemplate TargetType="ListBoxItem">
-                                        <Border BorderBrush="{DynamicResource FontUIColor}"
-                                                BorderThickness="0, 0, 0, 1"
-                                                Background="Transparent"
-                                                Margin="5"
-                                                Visibility="{Binding Path=IsShowInCollection}">
-                                            <Grid MaxWidth="680">
+                                        <Border BorderBrush="{StaticResource FontInfoColor}" BorderThickness="1" CornerRadius="1.5" Margin="3" Visibility="{Binding IsShowInCollection}">
+                                            <Grid Margin="5" MaxWidth="700">
                                                 <Grid.ColumnDefinitions>
-                                                    <ColumnDefinition/>
+                                                    <ColumnDefinition Width="30"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="110"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox IsChecked="{Binding Path=IsEnabled}" Style="{DynamicResource checkboxStyle}" VerticalAlignment="Center" HorizontalAlignment="Left">
-                                                    <TextBlock Text="{Binding Path=DisplayedPath}" Style="{DynamicResource infoTextBlockStyle}" Margin="10, 0"/>
-                                                </CheckBox>
+                                                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource checkboxStyle}" IsChecked="{Binding IsEnabled}" IsEnabled="{Binding IsEnabledChangingIsEnabled}" Grid.Column="0"/>
+                                                <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Text="{Binding RotationTypeOfRotation.Name}" Grid.Column="1"/>
+                                                <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Text="{Binding ClassOfRotation.Name}" Grid.Column="2"/>
+                                                <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Name}" Grid.Column="3"/>
+                                                <Grid Grid.Column="4">
+                                                    <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Visibility="{Binding ActiveVisibility}"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Button Style="{StaticResource transparentButtonStyle}" Content="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=DataContext.LocalizationData.Sync}" Command="{Binding SyncCommand}" Visibility="{Binding IdleVisibility}"/>
+                                                        <Button Style="{StaticResource transparentButtonStyle}" Command="{Binding OpenRepoCommand}" Visibility="{Binding IdleVisibility}" Margin="2,0,0,0">
+                                                            <Image Source="/Resources/Images/folder.png" Stretch="Uniform" Width="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Grid>
                                             </Grid>
                                         </Border>
                                     </ControlTemplate>
                                 </Setter.Value>
                             </Setter>
                         </Style>
-                    </ListBox.ItemContainerStyle>
-                </ListBox>
+                    </ListView.ItemContainerStyle>
+                </ListView>
             </Grid>
             <Grid Grid.Row="2">
                 <Button Style="{DynamicResource transparentButtonStyle}" Content="{Binding LocalizationData.Add.Value}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Width="320" Command="{Binding DeveloperRotations.AddCommand}"/>

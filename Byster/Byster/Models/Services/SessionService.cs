@@ -48,16 +48,10 @@ namespace Byster.Models.Services
             searcher.OnWowFounded += searcherWowFound;
             searcher.OnWowClosed += searcherWowClosed;
             searcher.OnFirstWowFound += searcherFirstWowFound;
-            searcher.OnDirectXNotFound += searcherDirectXNotInstalled;
-        }
-
-
-        private void searcherDirectXNotInstalled()
-        {
-            Dispatcher.Invoke(() =>
+            searcher.OnDirectXNotFound += () =>
             {
-                var window = new DirectXNavigateWindow(Localizator.GetLocalizationResourceByKey("Error"), Localizator.GetLocalizationResourceByKey("DirectXErrorMessage"));
-            });
+
+            };
         }
 
         private bool searcherFirstWowFound(WoW p)

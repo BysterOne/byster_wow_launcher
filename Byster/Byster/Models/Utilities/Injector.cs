@@ -299,6 +299,5 @@ namespace Byster.Models.Utilities
         INJECTED_OK = 4,
 
         ERROR       = 5,
-        DIRECTX_NOT_INSTALLED = 6,
     }
 }

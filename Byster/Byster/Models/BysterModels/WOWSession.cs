@@ -23,10 +23,6 @@ namespace Byster.Models.BysterModels
                 if(property == "WowApp")
                 {
                     InjectInfo.ProcessId = (uint)WowApp.Process.Id;
-                    if(InjectInfo.InjectInfoStatusCode == InjectInfoStatusCode.INACTIVE && !WowApp.IsDirectXInstalled)
-                    {
-                        InjectInfo.InjectInfoStatusCode = InjectInfoStatusCode.DIRECTX_NOT_INSTALLED;
-                    }
                 }
             }
         }

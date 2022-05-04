@@ -52,19 +52,20 @@
                 <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
                 <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
                 <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
-                <TextBox x:Name="referalBox" Tag="Реферал код" Margin="{StaticResource marginUI}" IsVisibleChanged="referalBox_IsVisibleChanged">
-                    <TextBox.Style>
-                        <Style TargetType="TextBox" BasedOn="{StaticResource tbStyle}">
-                            <Style.Triggers>
-                                <DataTrigger Binding="{Binding ElementName=registerChoicesComboBox, Path=SelectedItem.need_referral_code}" Value="false">
-                                    <Setter Property="Visibility" Value="Collapsed"/>
-                                    <Setter Property="Text" Value=""/>
-                                    <Setter Property="Background" Value="{DynamicResource BackgroundUIColorHover}"/>
-                                </DataTrigger>
-                            </Style.Triggers>
-                        </Style>
-                    </TextBox.Style>
-                </TextBox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="25"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="referalBox" Grid.Column="0" Tag="Реферал код" Margin="{StaticResource marginUI}" IsVisibleChanged="referalBox_IsVisibleChanged">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource tbStyle}"></Style>
+                        </TextBox.Style>
+                    </TextBox>
+                    <TextBlock Style="{StaticResource infoTextBlockStyle}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" x:Name="tooltipReferal">
+                        ?
+                    </TextBlock>
+                </Grid>
                 <Button Style="{StaticResource bStyle}" x:Name="registerBtn" Content="Зарегистрироваться" Click="registerBtn_Click" Margin="{StaticResource marginUI}" IsDefault="True"/>
                 <Grid>
                     <TextBlock Margin="{StaticResource marginUI}" HorizontalAlignment="Left">

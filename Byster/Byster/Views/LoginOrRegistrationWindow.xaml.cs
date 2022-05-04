@@ -46,6 +46,7 @@ namespace Byster.Views
             navigateToAuthTextBlock.Text = Localizator.GetLocalizationResourceByKey("AuthorizationQ").Value;
             swapLanguageTextBlockReg.Text = Localizator.GetLocalizationResourceByKey("SwapLanguage").Value;
             navigateToRegisterTextBlock.Text = Localizator.GetLocalizationResourceByKey("RegistrationQ").Value;
+            tooltipReferal.ToolTip = Localizator.GetLocalizationResourceByKey("ReferalTip").Value;
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
@@ -76,6 +77,7 @@ namespace Byster.Views
             if(checkFileNameServer(out autoReferal, out autoRegisterSource))
             {
                 referalBox.Visibility = Visibility.Collapsed;
+                tooltipReferal.Visibility = Visibility.Collapsed;
                 setHeight();
                 useAutoReferal = true;
             }
@@ -83,7 +85,7 @@ namespace Byster.Views
             {
                 if (!checkFileNameLocal())
                 {
-                    MessageBox.Show("Ошибка проверки названия файла сервером. Просим не переименовывать файл до прохождения регистрации/авторизации", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(Localizator.GetLocalizationResourceByKey("FileCheckErrorMessage"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                     Close();
                 }
             }
@@ -94,7 +96,14 @@ namespace Byster.Views
             double h = 0;
             if(registerBlock.IsVisible)
             {
-                h = 465.0;
+                if(referalBox.IsVisible)
+                {
+                    h = 465.0;
+                }
+                else
+                {
+                    h = 415.0;
+                }
             }
             else if(authBlock.IsVisible)
             {
@@ -111,13 +120,13 @@ namespace Byster.Views
         {
             if(string.IsNullOrEmpty(login))
             {
-                MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterLogin"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
                 return false;
             }
             if(string.IsNullOrEmpty(passwordHash))
             {
-                MessageBox.Show("Введите пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterPassword"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
                 return false;
             }
@@ -129,7 +138,7 @@ namespace Byster.Views
 
             if(response.StatusCode != HttpStatusCode.OK)
             {
-                MessageBox.Show(response.Data.error, "Ошибка Byster", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(response.Data.error, Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                 sessionId = null;
                 return false;
             }
@@ -142,13 +151,13 @@ namespace Byster.Views
         {
             if (string.IsNullOrEmpty(login))
             {
-                MessageBox.Show("Введите логин", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterLogin"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
                 return false;
             }
             if (string.IsNullOrEmpty(passwordHash))
             {
-                MessageBox.Show("Введите пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
+                MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterPassword"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
                 return false;
             }
@@ -179,13 +188,13 @@ namespace Byster.Views
             {
                 if(!string.IsNullOrEmpty(response.Data.error))
                 {
-                    MessageBox.Show(response.Data.error, "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show(response.Data.error, Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                     sessionId = null;
                     return false;
                 }
                 else
                 {
-                    MessageBox.Show($"Запрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}\nСообщение ошибки от сервера: {response.Data.error ?? "-"}", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    MessageBox.Show($"Запрос завершён с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}\nСообщение ошибки от сервера: {response.Data.error ?? "-"}", Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                     sessionId = null;
                     return false;
                 }
@@ -270,13 +279,13 @@ namespace Byster.Views
 
             if(newPasswordText != newPasswordConfirmText)
             {
-                MessageBox.Show("Введённые пароли не совпадают", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Localizator.GetLocalizationResourceByKey("ChangePasswordErrorPwdNotMatched"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
             if(string.IsNullOrEmpty(newPasswordText))
             {
-                MessageBox.Show("Введите пароль", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterPassword"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             string newPasswordHash = HashCalc.GetMD5Hash(newPasswordText);

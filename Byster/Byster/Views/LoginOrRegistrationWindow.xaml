@@ -52,8 +52,6 @@
                 <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
                 <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
                 <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
-                <TextBlock x:Name="regQuestionTextBlock" Text="Откуда Вы узнали о Byster?" Style="{StaticResource infoTextBlockStyle}" Margin="0, 8,0,0"/>
-                <ComboBox x:Name="registerChoicesComboBox" Margin="{StaticResource marginUI}" Style="{StaticResource combobStyle}"/>
                 <TextBox x:Name="referalBox" Tag="Реферал код" Margin="{StaticResource marginUI}" IsVisibleChanged="referalBox_IsVisibleChanged">
                     <TextBox.Style>
                         <Style TargetType="TextBox" BasedOn="{StaticResource tbStyle}">

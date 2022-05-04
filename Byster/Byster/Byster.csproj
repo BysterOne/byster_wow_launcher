@@ -235,9 +235,6 @@
     <Compile Include="Views\RedirectToBrowserWindow.xaml.cs">
       <DependentUpon>RedirectToBrowserWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Views\DirectXNavigateWindow.xaml.cs">
-      <DependentUpon>DirectXNavigateWindow.xaml</DependentUpon>
-    </Compile>
     <Compile Include="Views\InfoWindow.xaml.cs">
       <DependentUpon>InfoWindow.xaml</DependentUpon>
     </Compile>
@@ -285,10 +282,6 @@
     <Page Include="Views\RedirectToBrowserWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
-    </Page>
-    <Page Include="Views\DirectXNavigateWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\InfoWindow.xaml">
       <SubType>Designer</SubType>

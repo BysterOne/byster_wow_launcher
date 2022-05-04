@@ -6,6 +6,11 @@ using System.Threading.Tasks;
 
 namespace Byster.Models.RestModels
 {
+
+    public class RegisterRequestNoReferalNoRegisterSource : AuthRequest
+    {
+        public RegisterRequestNoReferalNoRegisterSource() { }
+    }
     public class RegisterRequestNoReferal : AuthRequest
     {
         public string register_source { get; set; }

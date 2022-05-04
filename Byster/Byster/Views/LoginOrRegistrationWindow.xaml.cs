@@ -42,7 +42,6 @@ namespace Byster.Views
             newPasswordBox.Tag = Localizator.GetLocalizationResourceByKey("NewPassword").Value;
             newPasswordConfirmBox.Tag = Localizator.GetLocalizationResourceByKey("NewPasswordConfirmation").Value;
             referalBox.Tag = Localizator.GetLocalizationResourceByKey("ReferalCode").Value;
-            regQuestionTextBlock.Text = Localizator.GetLocalizationResourceByKey("RegistrationQuestion").Value;
             swapLanguageTextBlock.Text = Localizator.GetLocalizationResourceByKey("SwapLanguage").Value;
             navigateToAuthTextBlock.Text = Localizator.GetLocalizationResourceByKey("AuthorizationQ").Value;
             swapLanguageTextBlockReg.Text = Localizator.GetLocalizationResourceByKey("SwapLanguage").Value;
@@ -76,31 +75,13 @@ namespace Byster.Views
 
             if(checkFileNameServer(out autoReferal, out autoRegisterSource))
             {
-                regQuestionTextBlock.Visibility = Visibility.Collapsed;
-                registerChoicesComboBox.Visibility = Visibility.Collapsed;
                 referalBox.Visibility = Visibility.Collapsed;
                 setHeight();
                 useAutoReferal = true;
             }
             else
             {
-                if (checkFileNameLocal())
-                {
-                    var response = App.Rest.Post<List<RegisterChoice>>(new RestRequest("launcher/register_choices"));
-                    if (response.StatusCode == HttpStatusCode.OK)
-                    {
-                        List<RegisterChoice> registerChoices = response.Data;
-                        registerChoicesComboBox.ItemsSource = registerChoices;
-                        registerChoicesComboBox.DisplayMemberPath = "selection";
-                        registerChoicesComboBox.SelectedIndex = 1;
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Запрос завершился с кодом: {(int)response.StatusCode}\nСообщение ошибки: {response.ErrorMessage}", "Ошибка HTTP", MessageBoxButton.OK, MessageBoxImage.Error);
-                        Close();
-                    }
-                }
-                else
+                if (!checkFileNameLocal())
                 {
                     MessageBox.Show("Ошибка проверки названия файла сервером. Просим не переименовывать файл до прохождения регистрации/авторизации", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                     Close();
@@ -113,21 +94,7 @@ namespace Byster.Views
             double h = 0;
             if(registerBlock.IsVisible)
             {
-                if(registerChoicesComboBox.IsVisible)
-                {
-                    if(referalBox.IsVisible)
-                    {
-                        h = 543.0;
-                    }
-                    else
-                    {
-                        h = 490.0;
-                    }
-                }
-                else
-                {
-                    h = 412.0;
-                }
+                h = 465.0;
             }
             else if(authBlock.IsVisible)
             {
@@ -185,29 +152,27 @@ namespace Byster.Views
                 sessionId = null;
                 return false;
             }
-            if(idOfRegisterChoice == 0)
-            {
-                MessageBox.Show("Укажите, откуда Вы о нас узнали", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Information);
-                sessionId = null;
-                return false;
-            }
 
-            var response = !string.IsNullOrEmpty(referal) ? (idOfRegisterChoice != null) ? App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestReferal()
+            var response = string.IsNullOrEmpty(referal) ? (idOfRegisterChoice == null) ? App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestNoReferalNoRegisterSource()
             {
                 login = login,
                 password = passwordHash,
-                referal = referal,
-                register_source = idOfRegisterChoice.ToString(),
-            })) : App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestNoRegisterSource()
-            {
-                login = login,
-                password = passwordHash,
-                referal = referal,
             })) : App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestNoReferal()
             {
                 login = login,
                 password = passwordHash,
                 register_source = idOfRegisterChoice.ToString(),
+            })) : (idOfRegisterChoice == null) ? App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestNoRegisterSource()
+            {
+                login = login,
+                password = passwordHash,
+                referal = referal,
+            })) : App.Rest.Post<RegisterResponse>(new RestRequest("launcher/registration", Method.POST).AddJsonBody(new RegisterRequestReferal()
+            {
+                login = login,
+                password = passwordHash,
+                register_source = idOfRegisterChoice.ToString(),
+                referal = referal,
             }));
 
             if (response.StatusCode != HttpStatusCode.OK)
@@ -299,8 +264,8 @@ namespace Byster.Views
             }
             else
             {
-                idOfRegisterChoice = (registerChoicesComboBox.SelectedItem as RegisterChoice).id;
-                referal = (registerChoicesComboBox.SelectedItem as RegisterChoice).need_referral_code ? referalBox.Text : "";
+                idOfRegisterChoice = null;
+                referal = referalBox.Text;
             }
 
             if(newPasswordText != newPasswordConfirmText)

@@ -26,6 +26,10 @@ namespace Byster.Models.Utilities
 
         //private static SuspendToken suspendToken = new SuspendToken();
         public static Mutex SuspendMutex { get; set; } = new Mutex();
+
+        private static Mutex blockCollectionsMutex { get; set; } = new Mutex();
+        private static Mutex blockQueueMutex { get; set; } = new Mutex();
+
         public static void Init()
         {
             ItemsToDownload = new Queue<ImageItem>();
@@ -34,7 +38,6 @@ namespace Byster.Models.Utilities
             if (!Directory.Exists(ImageRootPath)) Directory.CreateDirectory(ImageRootPath);
 
             readImageDirectory();
-
 
             downloadingThread = new Thread(threadMethod);
             downloadingThread.IsBackground = true;
@@ -107,14 +110,18 @@ namespace Byster.Models.Utilities
                 }
                 else
                 {
+                    blockCollectionsMutex.WaitOne();
                     ImageItem imageItem = DownloadedItems.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + getExtensionOfNetworkSource(networkPath)));
+                    blockCollectionsMutex.ReleaseMutex();
                     if (imageItem != null)
                     {
                         return imageItem;
                     }
                     else
                     {
+                        blockQueueMutex.WaitOne();
                         imageItem = ItemsToDownload.FirstOrDefault((item) => item.PathOfLocalSource.Split('\\').Contains(HashCalc.GetMD5Hash(networkPath) + getExtensionOfNetworkSource(networkPath)));
+                        blockQueueMutex.ReleaseMutex();
                         if (imageItem != null)
                         {
                             return imageItem;
@@ -141,7 +148,9 @@ namespace Byster.Models.Utilities
                 PathOfLocalSource = newLocalPath,
                 IsDownLoaded = false,
             };
+            blockQueueMutex.WaitOne();
             ItemsToDownload.Enqueue(creatingItem);
+            blockQueueMutex.ReleaseMutex();
             return creatingItem;
         }
 
@@ -241,10 +250,7 @@ namespace Byster.Models.Utilities
             if (isSuspendRequestCreated || isSuspended) return;
             isSuspendRequestCreated = true;
             mutex.ReleaseMutex();
-            while (!isSuspended)
-            {
-               
-            }
+            while (!isSuspended) { }
             return;
         }
 

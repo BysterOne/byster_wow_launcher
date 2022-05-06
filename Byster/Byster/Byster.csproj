@@ -74,8 +74,7 @@
     <OutputPath>bin\x64\123\</OutputPath>
   </PropertyGroup>
   <PropertyGroup>
-    <StartupObject>
-    </StartupObject>
+    <StartupObject>Byster.App</StartupObject>
   </PropertyGroup>
   <PropertyGroup>
     <SignManifests>false</SignManifests>

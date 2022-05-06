@@ -21,8 +21,11 @@ namespace Byster.Models.Services
 
     public class DeveloperRotation : INotifyPropertyChanged
     {
+        private static int enumeratorIds = 0;
+        public int Id { get; private set; } = enumeratorIds++;
+
         private string rootPath;
-        private string gitUrl;
+        public string gitUrl { get; private set;  }
 
         private Visibility isShowInCollection = Visibility.Visible;
         private DevClass classOfRotation;
@@ -127,6 +130,18 @@ namespace Byster.Models.Services
             }
         }
 
+        public string PathToClone
+        {
+            get
+            {
+                if (string.IsNullOrEmpty(rootPath) ||
+                    string.IsNullOrEmpty(rotationTypeOfRotation?.Name ?? null) ||
+                    string.IsNullOrEmpty(classOfRotation?.Value ?? null) ||
+                    string.IsNullOrEmpty(Name)) return "";
+                return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}";
+            }
+        }
+
         public string TocPath
         {
             get
@@ -135,14 +150,20 @@ namespace Byster.Models.Services
                     string.IsNullOrEmpty(rotationTypeOfRotation?.Name ?? null) ||
                     string.IsNullOrEmpty(classOfRotation?.Value ?? null) ||
                     string.IsNullOrEmpty(Name)) return "";
-                if (File.Exists($"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name}\\{name}\\{name}.toc"))
-                    return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name}\\{name}\\{name}.toc";
+                if (File.Exists($"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name}\\{name}.toc"))
+                    return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name}\\{name}.toc";
+                else if (Directory.Exists(Path + $"\\.git"))
+                {
+                    string[] names = DeveloperRotationCore.GetAllFilesWithSpecifiedExtension(Path, ".toc");
+                    if (names.Length > 0)
+                        return names[0];
+                }
                 return "";
             }
         }
         public bool IsEnabledChangingIsEnabled
         {
-            get => File.Exists(TocPath);
+            get => string.IsNullOrEmpty(TocPath) ? false : File.Exists(TocPath);
         }
         public Visibility IdleVisibility
         {
@@ -208,6 +229,20 @@ namespace Byster.Models.Services
             Status = prevCode;
         }
 
+        public void WaitSync()
+        {
+            if(Status == DeveloperRotationStatusCode.IDLE)
+            {
+                Status = DeveloperRotationStatusCode.WAITING_SYNC;
+            }
+        }
+        public void StopWaitSync()
+        {
+            if(Status == DeveloperRotationStatusCode.WAITING_SYNC)
+            {
+                Status = DeveloperRotationStatusCode.IDLE;
+            }
+        }
         public void Sync()
         {
             if (string.IsNullOrEmpty(Path)) return;
@@ -247,29 +282,38 @@ namespace Byster.Models.Services
                 }
                 else
                 {
-                    Status = DeveloperRotationStatusCode.CLONING;
-                    Process gitCloneProcess = Process.Start(new ProcessStartInfo()
+                    if (!string.IsNullOrEmpty(PathToClone))
                     {
-                        FileName = "git",
-                        WorkingDirectory = Path,
-                        Arguments = $"clone --remote-submodules --recursive --branch=dev {gitUrl}",
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                    });
-                    gitCloneProcess.WaitForExit();
-                    if (gitCloneProcess.ExitCode != 0)
-                    {
-                        Log($"Ошибка создания репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
-                        Status = DeveloperRotationStatusCode.ERROR_SYNC;
-                        Thread.Sleep(5000);
+                        Status = DeveloperRotationStatusCode.CLONING;
+                        Process gitCloneProcess = Process.Start(new ProcessStartInfo()
+                        {
+                            FileName = "git",
+                            WorkingDirectory = PathToClone,
+                            Arguments = $"clone --remote-submodules --recursive --branch=dev {gitUrl}",
+                            CreateNoWindow = true,
+                            UseShellExecute = false,
+                            WindowStyle = ProcessWindowStyle.Hidden,
+                        });
+                        gitCloneProcess.WaitForExit();
+                        if (gitCloneProcess.ExitCode != 0)
+                        {
+                            Log($"Ошибка создания репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
+                            Status = DeveloperRotationStatusCode.ERROR_SYNC;
+                            Thread.Sleep(5000);
+                        }
+                        else
+                        {
+                            Log($"Репозиторй создан и синхронизирован успешно {Path}");
+                            Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
+                            Thread.Sleep(5000);
+                            OnPropertyChanged("IsEnabledChangingIsEnabled");
+                        }
                     }
                     else
                     {
-                        Log($"Репозиторй создан и синхронизирован успешно {Path}");
-                        Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
+                        Log($"Ошибка создания репозитория", $"Отсутствует путь для клонирования репозитория");
+                        Status = DeveloperRotationStatusCode.ERROR_SYNC;
                         Thread.Sleep(5000);
-                        OnPropertyChanged("IsEnabledChangingIsEnabled");
                     }
                 }
             }
@@ -279,6 +323,12 @@ namespace Byster.Models.Services
             }
             syncSemaphore?.Release();
         }
+
+        public bool checkGitUrl(string url)
+        {
+            return url == gitUrl;
+        }
+
         private RelayCommand syncCommand;
         public RelayCommand SyncCommand
         {
@@ -303,7 +353,7 @@ namespace Byster.Models.Services
                         UseShellExecute = false,
                         CreateNoWindow = false,
                         FileName = "explorer.exe",
-                        Arguments = $"\"{Path}\"",
+                        Arguments = Directory.Exists(Path) ? $"\"{Path}\"" : $"\"{PathToClone}\"",
                         WindowStyle = ProcessWindowStyle.Normal,
                     });
                 }));
@@ -385,7 +435,26 @@ namespace Byster.Models.Services
             StatusCode = DeveloperRotationStatusCodes.IDLE;
         }
 
-        Semaphore semaphore = new Semaphore(3, 3);
+
+        private Semaphore autoSyncSemaphore = new Semaphore(3, 3);
+        private Thread startAutoSyncThread;
+        private void startRotationSync(IEnumerable<DeveloperRotation> developerRotations)
+        {
+            foreach(var developerRotation in developerRotations)
+            {
+                developerRotation.WaitSync();
+            }
+            foreach (var developerRotation in developerRotations)
+            {
+                autoSyncSemaphore.WaitOne();
+                Task.Run(() =>
+                {
+                    developerRotation.Sync();
+                    autoSyncSemaphore.Release();
+                });
+            }
+        }
+        private Semaphore semaphore = new Semaphore(3, 3);
 
         public void UpdateData()
         {
@@ -393,36 +462,64 @@ namespace Byster.Models.Services
             {
                 return;
             }
+            startAutoSyncThread?.Abort();
             Dictionary<string, bool> rotationDict;
             if (File.Exists(rotationConfigurationFilePath))
                 rotationDict = JsonConvert.DeserializeObject<Dictionary<string, bool>>(File.ReadAllText(rotationConfigurationFilePath));
             else
                 rotationDict = new Dictionary<string, bool>();
-            DeveloperRotations.Clear();
             StatusCode = DeveloperRotationStatusCodes.CHECKING;
 
             StatusCode = DeveloperRotationStatusCodes.SYNCRONIZATION;
             SyncronizationStarted?.Invoke();
+            List<DeveloperRotation> rotationsToAutoSync = new List<DeveloperRotation>();
             var devRotations = RestService.ExecuteDeveloperRotationRequest();
             foreach (var devRotation in devRotations)
             {
-                DeveloperRotation rotation = new DeveloperRotation(devRotation.git_ssh_url, BaseDirectory, semaphore)
+                if(DeveloperRotations.Where(rot => rot.gitUrl == devRotation.git_ssh_url).Count() == 0)
                 {
-                    ClassOfRotation = Classes.Where(_c => _c.Value.ToLower() == devRotation.klass.ToLower()).FirstOrDefault(),
-                    RoleTypeOfRotation = null,
-                    RotationTypeOfRotation = Types.Where(_rt => _rt.Name.ToLower() == devRotation.type.ToLower()).FirstOrDefault(),
-                    Name = devRotation.name,
-                };
-                rotation.IsEnabled = rotationDict.ContainsKey(rotation.TocPath) ? rotationDict[rotation.TocPath] : false;
-                rotation.CheckDirs();
-                DeveloperRotations.Add(rotation);
+                    DeveloperRotation rotation = new DeveloperRotation(devRotation.git_ssh_url, BaseDirectory, semaphore)
+                    {
+                        ClassOfRotation = Classes.Where(_c => _c.Value.ToLower() == devRotation.klass.ToLower()).FirstOrDefault(),
+                        RoleTypeOfRotation = null,
+                        RotationTypeOfRotation = Types.Where(_rt => _rt.Name.ToLower() == devRotation.type.ToLower()).FirstOrDefault(),
+                        Name = devRotation.name,
+                    };
+                    rotation.IsEnabled = rotationDict.ContainsKey(rotation.TocPath) ? rotationDict[rotation.TocPath] : false;
+                    rotation.CheckDirs();
+                    DeveloperRotations.Add(rotation);
+                    if(string.IsNullOrEmpty(rotation.TocPath))
+                    {
+                        rotationsToAutoSync.Add(rotation);
+                    }
+                }
+                else
+                {
+                    DeveloperRotation rotation = DeveloperRotations.Where(rot => rot.gitUrl == devRotation.git_ssh_url).FirstOrDefault();
+                    rotation.StopWaitSync();
+                    rotation.ClassOfRotation = Classes.Where(_c => _c.Value.ToLower() == devRotation.klass.ToLower()).FirstOrDefault();
+                    rotation.RoleTypeOfRotation = null;
+                    rotation.RotationTypeOfRotation = Types.Where(_rt => _rt.Name.ToLower() == devRotation.type.ToLower()).FirstOrDefault();
+                    rotation.Name = devRotation.name;
+                    if (string.IsNullOrEmpty(rotation.TocPath))
+                    {
+                        rotationsToAutoSync.Add(rotation);
+                    }
+                }
             }
-            DeveloperRotations = DeveloperRotations.OrderByDescending(_c => _c.IsEnabled).ToList();
+            DeveloperRotations.RemoveAll(rotation => devRotations.Where(dr => dr.git_ssh_url == rotation.gitUrl).Count() == 0);
+            DeveloperRotations = DeveloperRotations.OrderByDescending(_c => _c.IsEnabledChangingIsEnabled).OrderByDescending(_c => _c.IsEnabled).ToList();
             StatusCode = DeveloperRotationStatusCodes.IDLE;
+            startAutoSyncThread = new Thread(() => { startRotationSync(rotationsToAutoSync); })
+            {
+                Name = "Auto Sync Of Dev Rotations",
+                IsBackground = true,
+            };
+            startAutoSyncThread.Start();
             SyncronizationCompleted?.Invoke();
         }
 
-        private string[] getAllFilesWithSpecifiedExtension(string dirPath, string extension)
+        public static string[] GetAllFilesWithSpecifiedExtension(string dirPath, string extension)
         {
             List<string> files = new List<string>();
             foreach (var filePath in Directory.GetFiles(dirPath))
@@ -432,7 +529,7 @@ namespace Byster.Models.Services
             }
             foreach (var directoryPath in Directory.GetDirectories(dirPath))
             {
-                files = files.Union(getAllFilesWithSpecifiedExtension(directoryPath, extension)).ToList();
+                files = files.Union(GetAllFilesWithSpecifiedExtension(directoryPath, extension)).ToList();
             }
             return files.ToArray();
         }

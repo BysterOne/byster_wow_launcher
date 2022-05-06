@@ -154,10 +154,8 @@ namespace Byster.Models.Utilities
             return creatingItem;
         }
 
-        private static bool isAnyOpertationsDenied = false;
         public static void Suspend()
         {
-            isAnyOpertationsDenied = true;
             SuspendMutex.WaitOne();
         }
 

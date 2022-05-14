@@ -126,7 +126,7 @@ namespace Byster.Models.Services
                     string.IsNullOrEmpty(rotationTypeOfRotation?.Name ?? null) ||
                     string.IsNullOrEmpty(classOfRotation?.Value ?? null) ||
                     string.IsNullOrEmpty(Name)) return "";
-                return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name}";
+                return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name.ToLower().Replace(' ', '-')}";
             }
         }
 
@@ -150,8 +150,8 @@ namespace Byster.Models.Services
                     string.IsNullOrEmpty(rotationTypeOfRotation?.Name ?? null) ||
                     string.IsNullOrEmpty(classOfRotation?.Value ?? null) ||
                     string.IsNullOrEmpty(Name)) return "";
-                if (File.Exists($"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name}\\{name}.toc"))
-                    return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name}\\{name}.toc";
+                if (File.Exists($"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name.ToLower().Replace(' ', '-')}\\{name}.toc"))
+                    return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name.ToLower().Replace(' ', '-')}\\{name}.toc";
                 else if (Directory.Exists(Path + $"\\.git"))
                 {
                     string[] names = DeveloperRotationCore.GetAllFilesWithSpecifiedExtension(Path, ".toc");
@@ -223,7 +223,7 @@ namespace Byster.Models.Services
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
             path += $"\\{classOfRotation.Value}";
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            path += $"\\{name}";
+            path += $"\\{name.ToLower().Replace(' ', '-')}";
             if (!Directory.Exists(path)) Directory.CreateDirectory(path);
             path += "\\";
             Status = prevCode;

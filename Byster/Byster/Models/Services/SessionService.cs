@@ -110,6 +110,8 @@ namespace Byster.Models.Services
         public void StartInjecting(int pid)
         {
             var injectingSession = Sessions.First((session) => session.WowApp.Process.Id == pid);
+            if (injectingSession.InjectInfo.ProcessId != injectingSession.WowApp.Process.Id && injectingSession.InjectInfo.InjectInfoStatusCode == InjectInfoStatusCode.INACTIVE)
+                injectingSession.InjectInfo.ProcessId = (uint)injectingSession.WowApp.Process.Id;
             Injector.AddProcessToInject(injectingSession.InjectInfo);
         }
 

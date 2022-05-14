@@ -486,6 +486,19 @@
         </Style.Setters>
     </Style>
 
+    <Style TargetType="TextBox" x:Key="infoReadOnlyTextBoxStyle">
+        <Style.Setters>
+            <Setter Property="Foreground" Value="{DynamicResource FontInfoColor}"/>
+            <Setter Property="FontFamily" Value="{DynamicResource Roboto}"/>
+            <Setter Property="FontSize" Value="{DynamicResource FontUISize}"/>
+            <Setter Property="Background" Value="Transparent"/>
+            <Setter Property="IsReadOnly" Value="True"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="TextWrapping" Value="Wrap"/>
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+        </Style.Setters>
+    </Style>
+
     <Style TargetType="TextBlock" x:Key="titleTextBlockStyle">
         <Style.Setters>
             <Setter Property="Foreground" Value="{DynamicResource FontTitleColor}"/>
@@ -1152,9 +1165,10 @@
                                                     <RowDefinition Height="80"/>
                                                 </Grid.RowDefinitions>
                                                 <ScrollViewer Grid.Row="0" Style="{DynamicResource scrollViewerSmallStyle}">
-                                                    <TextBlock Text="{Binding Path=Description}"
+                                                    <TextBox Text="{Binding Path=Description}"
                                                                 Grid.Row="0"
-                                                                Style="{DynamicResource infoTextBlockStyle}"/>
+                                                                Style="{DynamicResource infoReadOnlyTextBoxStyle}"
+                                                               ClipToBounds="True"/>
                                                 </ScrollViewer>
                                                 <Grid Grid.Row="1">
                                                     <ListBox ItemsSource="{Binding Medias}" Style="{DynamicResource mediaViewBox}"/>
@@ -1501,7 +1515,7 @@
                                                         </StackPanel>
                                                         <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}"
                                                                 Grid.Row="1" Margin="0, 10">
-                                                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" TextWrapping="Wrap" Text="{Binding Path=Product.Description}"/>
+                                                            <TextBox Style="{DynamicResource infoReadOnlyTextBoxStyle}" ClipToBounds="True" TextWrapping="Wrap" Text="{Binding Path=Product.Description}"/>
                                                         </ScrollViewer>
                                                         <ListBox Style="{DynamicResource mediaViewBox}" ItemsSource="{Binding Path=Product.Medias}" Grid.Row="2"/>
                                                     </Grid>

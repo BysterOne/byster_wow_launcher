@@ -36,4 +36,4 @@ deploy:
   - 'python -m pip install requests'
   - 'python upload_release.py --dll "%DLL_NAME%" --sha "%CI_COMMIT_SHA%" --gitlab "%GITLAB_USER_LOGIN%" --token "%GITLAB_TOKEN%" --url "%UPLOAD_URL%" --branch "%CI_COMMIT_BRANCH%" --assembly "%ASSEMBLY_INFO%"'
   only:
-    - master
+    - tags

@@ -94,7 +94,7 @@ def main():
     branch = args.branch
     assembly_file = args.assembly
 
-    with open(f"./{assembly_file}", 'r') as f:
+    with open(f"./{assembly_file}", 'r', encoding="utf8") as f:
         assembly_info = f.read()
         version = re.search(r'AssemblyFileVersion\("([0-9\.]+)"\)', assembly_info).group(1)
 

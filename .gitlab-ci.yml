@@ -1,0 +1,39 @@
+variables:
+  Solution: Byster/Byster.sln
+  MSBUILD_CONCURRENCY: 4
+  VSWHERE_PATH: '%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe'
+  DLL_NAME: Byster/Byster/bin/Release/Byster.exe
+  UPLOAD_URL: 'https://api.byster.ru/launcher/push_launcher_ci'
+  ASSEMBLY_INFO: 'Byster/Byster/Properties/AssemblyInfo.cs'
+
+.before_msbuild: &enter_vsdevshell
+  before_script:
+    - "echo off"
+    - 'call "C:\Program Files (x86)\Microsoft Visual Studio\2019\Community\Common7\Tools\VsDevCmd.bat"'
+
+stages:
+  - build
+  - deploy
+
+build:
+  <<: *enter_vsdevshell
+  stage: build
+  artifacts:
+     paths:
+       - Byster/Byster/bin/Release/*.exe
+     expire_in: 1 hour
+  script:
+  - echo building...
+  - 'msbuild.exe "%Solution%" /t:build /p:Configuration=Release;Platform="Any CPU"'
+
+
+deploy:
+  stage: deploy
+  dependencies: 
+    - build
+  script:
+  - echo deploying...
+  - 'python -m pip install requests'
+  - 'python upload_release.py --dll "%DLL_NAME%" --sha "%CI_COMMIT_SHA%" --gitlab "%GITLAB_USER_LOGIN%" --token "%GITLAB_TOKEN%" --url "%UPLOAD_URL%" --branch "%CI_COMMIT_BRANCH%" --assembly "%ASSEMBLY_INFO%"'
+  only:
+    - master

@@ -46,7 +46,7 @@ namespace Byster.Views
             //Обработчик исключений диспетчера
             App.Current.DispatcherUnhandledException += (sender, e) =>
             {
-                Log("Fatal:Необработанное исключение", e.Exception.Message, e.Exception.StackTrace);
+                Log("Fatal:Необработанное исключение", e.Exception.Message, e.Exception.StackTrace, e.Exception.InnerException?.StackTrace ?? "[]");
                 e.Handled = true;
             };
 

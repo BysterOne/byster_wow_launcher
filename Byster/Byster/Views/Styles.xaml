@@ -1354,10 +1354,10 @@
                             <RowDefinition/>
                         </Grid.RowDefinitions>
                         <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Left" VerticalAlignment="Center" Margin="2">
-                            <Image Source="/Resources/Images/volume-down.png" Stretch="Uniform" VerticalAlignment="Center"/>
+                            <Image Source="/Resources/Images/volume-down.png" Stretch="Uniform" VerticalAlignment="Center" Height="18"/>
                         </StackPanel>
                         <StackPanel Orientation="Horizontal" Grid.Row="0" HorizontalAlignment="Right" VerticalAlignment="Center" Margin="2">
-                            <Image Source="/Resources/Images/volume-up.png" Stretch="Uniform" VerticalAlignment="Center"/>
+                            <Image Source="/Resources/Images/volume-up.png" Stretch="Uniform" VerticalAlignment="Center" Height="18"/>
                         </StackPanel>
                         <Track x:Name="PART_Track" Grid.Row="1">
                             <Track.DecreaseRepeatButton>

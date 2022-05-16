@@ -10,8 +10,10 @@ namespace Byster.Models.RestModels
     {
         public int id { get; set; }
         public string name { get; set; }
+        public string name_en { get; set; }
         public string image_url { get; set; }
         public string description { get; set; }
+        public string description_en { get; set; }
         public double price { get; set; }
         public string currency { get; set; }
         public int duration { get; set; }

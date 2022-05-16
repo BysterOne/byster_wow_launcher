@@ -213,13 +213,19 @@
 
         <Grid Background="#A0000000" x:Name="modalWindowOpenedGrid" Grid.RowSpan="3" Visibility="{Binding IsModalWindowOpened}">
         </Grid>
-        <Grid Background="#A0000000" x:Name="mediaOpenedGrid" Grid.RowSpan="3" Visibility="{Binding IsMediaOpened}">
-            <controls:MediaPresenterControl x:Name="playerControl" Player="{Binding ElementName=mediaElement}"/>
+        <Grid Background="#A0000000" x:Name="mediaOpenedGrid" Grid.RowSpan="3" Visibility="{Binding ElementName=mediaPresenterControl, Path=MediaPresenterVisibility}">
+            <controls:MediaPresenterControl x:Name="mediaPresenterControl" VideoPlayer="{Binding ElementName=videoPlayer}" ImagePlayer="{Binding ElementName=imagePlayer}" ControlsPanel="{Binding ElementName=controlPanel}"/>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60">
-                <Image Visibility="Visible" x:Name="mediaElement"  Source="{Binding SourceOfMediaToOpen, Mode=TwoWay}" Height="550">
-                </Image>
+                <MediaElement Height="500" x:Name="videoPlayer"/>
+                <Image Height="500" x:Name="imagePlayer"/>
+                <StackPanel Orientation="Horizontal" x:Name="controlPanel" Height="100">
+                    <Button Content="Play" x:Name="playBtn" Command="{Binding ElementName=mediaPresenterControl, Path=PlayVideoCommand}"/>
+                    <Button Content="Pause" x:Name="pauseBtn" Command="{Binding ElementName=mediaPresenterControl, Path=PauseVideoCommand}"/>
+                    <Slider Visibility="{Binding ElementName=mediaPresenterControl, Path=PositionControlVisibility}" Minimum="0" Maximum="{Binding ElementName=videoPlayer, Path=Clock.Timeline.Duration.TimeSpan.Ticks}" Value="{Binding ElementName=mediaPresenterControl, Path=VideoPosition}" Width="300"/>
+                    <Slider Minimum="0" Maximum="1" Value="{Binding ElementName=videoPlayer, Path=Volume}" Width="200"/>
+                </StackPanel>
             </StackPanel>
-            <Button Style="{StaticResource uibStyle}" Command="{Binding CloseMediaCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
+            <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=CloseVideoCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
                 <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
         </Grid>

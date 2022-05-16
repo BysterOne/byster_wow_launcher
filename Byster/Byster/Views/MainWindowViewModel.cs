@@ -298,28 +298,28 @@ namespace Byster.Views
                     Injector.Branch = UserInfo.Branch;
                 };
             };
-            MediaControl.OpenAction = (uri) =>
-            {
-                string ext = getExtension(uri);
-                string[] videoExtensions = new string[]
-                {
-                    "mp4",
-                    "avi",
-                    "mkv"
-                };
-                if(videoExtensions.Contains(ext))
-                {
-                    SourceOfMediaToOpen = "/Resources/Images/video-error.png";
-                    IsMediaOpened = Visibility.Visible;
-                    RedirectToBrowserWindow redirectWindow = new RedirectToBrowserWindow(Localizator.GetLocalizationResourceByKey("Error").Value, Localizator.GetLocalizationResourceByKey("OpenMediaErrorMessage").Value, uri);
-                    redirectWindow.ShowDialog();
-                }
-                else
-                {
-                    SourceOfMediaToOpen = uri;
-                    IsMediaOpened = Visibility.Visible;
-                }
-            };
+            //MediaControl.OpenAction = (uri) =>
+            //{
+            //    //string ext = getExtension(uri);
+            //    //string[] videoExtensions = new string[]
+            //    //{
+            //    //    "mp4",
+            //    //    "avi",
+            //    //    "mkv"
+            //    //};
+            //    //if(videoExtensions.Contains(ext))
+            //    //{
+            //    //    SourceOfMediaToOpen = "/Resources/Images/video-error.png";
+            //    //    IsMediaOpened = Visibility.Visible;
+            //    //    RedirectToBrowserWindow redirectWindow = new RedirectToBrowserWindow(Localizator.GetLocalizationResourceByKey("Error").Value, Localizator.GetLocalizationResourceByKey("OpenMediaErrorMessage").Value, uri);
+            //    //    redirectWindow.ShowDialog();
+            //    //}
+            //    //else
+            //    //{
+            //    //    SourceOfMediaToOpen = uri;
+            //    //    IsMediaOpened = Visibility.Visible;
+            //    //}
+            //};
             DeveloperRotations = new DeveloperRotationService()
             {
                 RestService = restService,

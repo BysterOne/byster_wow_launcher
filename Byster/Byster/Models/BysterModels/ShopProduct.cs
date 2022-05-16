@@ -7,6 +7,7 @@ using Byster.Models.RestModels;
 using Byster.Models.BysterModels;
 using Byster.Models.Utilities;
 using System.ComponentModel;
+using Byster.Localizations.Tools;
 
 namespace Byster.Models.BysterModels
 {
@@ -36,7 +37,7 @@ namespace Byster.Models.BysterModels
         public ShopProduct(RestShopProduct RestShopProduct)
         {
             Id = RestShopProduct.id;
-            Name = RestShopProduct.name;
+            Name = Localizator.LoadedLocalizationInfo.Language == "Русский" ? RestShopProduct.name : RestShopProduct.name_en;
             Price = RestShopProduct.price;
             Currency = RestShopProduct.currency;
             Duration = RestShopProduct.duration;
@@ -51,9 +52,19 @@ namespace Byster.Models.BysterModels
                 Rotations.Add(new ShopRotation(restRotation));
             }
             IsPack = Rotations.Count > 1;
-            Description = string.IsNullOrEmpty(RestShopProduct.description) ? Rotations[0].Description : RestShopProduct.description;
+            if(Localizator.LoadedLocalizationInfo.Language == "Русский")
+                Description = string.IsNullOrEmpty(RestShopProduct.description) ? Rotations[0].Description : RestShopProduct.description;
+            else
+                Description = string.IsNullOrEmpty(RestShopProduct.description_en) ? Rotations[0].Description : RestShopProduct.description_en;
             IsTestable = RestShopProduct.can_test;
 
+            if(Rotations.Count == 1)
+            {
+                foreach(var media in Rotations[0].Medias)
+                {
+                    Medias.Add(media);
+                }
+            }
 
             if (!string.IsNullOrEmpty(RestShopProduct.image_url))
             {

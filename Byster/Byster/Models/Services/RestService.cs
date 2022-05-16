@@ -8,6 +8,7 @@ using RestSharp;
 using System.Collections.ObjectModel;
 using Byster.Models.BysterModels;
 using static Byster.Models.Utilities.BysterLogger;
+using Byster.Localizations.Tools;
 using Byster.Models.ViewModels;
 using Byster.Views;
 using Newtonsoft.Json;
@@ -197,8 +198,8 @@ namespace Byster.Models.Services
                 result.Add(new PaymentSystem()
                 {
                     Id = item.id,
-                    Name = item.name,
-                    Description = item.description,
+                    Name = Localizator.LoadedLocalizationInfo.Language == "Русский" ? item.name : item.name_en,
+                    Description = Localizator.LoadedLocalizationInfo.Language == "Русский" ? item.description : item.description_en,
                 });
             }
             Log("Получены данные платёжных систем");

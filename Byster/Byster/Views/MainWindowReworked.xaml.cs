@@ -22,6 +22,7 @@ using System.Globalization;
 using Byster.Models.Services;
 using System.ComponentModel;
 using Byster.Localizations.Tools;
+using Byster.Models.ViewModels;
 
 namespace Byster.Views
 {
@@ -65,6 +66,10 @@ namespace Byster.Views
                 });
             };
             InitializeComponent();
+            MediaControl.OpenAction = (url) =>
+            {
+                mediaPresenterControl.PlayMedia(url);
+            };
             this.DataContext = ViewModel;
             FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance;
             ViewModel.UserInfo.PropertyChanged += (o, e) => { FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance; };

@@ -7,6 +7,7 @@ using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using Byster.Models.RestModels;
 using Byster.Models.BysterModels;
+using Byster.Localizations.Tools;
 
 namespace Byster.Models.BysterModels
 {
@@ -53,7 +54,7 @@ namespace Byster.Models.BysterModels
             RoleOfRotation = RotationRole.GetRotationRoleByEnumRotationRole(RotationRole.GetRoleByName(response.rotation.role_type));
             SpecOfRotation = RotationSpecialization.GetRotationSpecializationByEnumRotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));
             Type = RotationType.GetRotationTypeByRotationTypes(RotationType.GetTypeByName(response.rotation.type));
-            Name = response.rotation.name;
+            Name = Localizator.LoadedLocalizationInfo.Language == "Русский" ? response.rotation.name : response.rotation.name_en;
 
             Medias = new List<Media>();
             foreach (var restMedia in response.rotation.media)
@@ -95,7 +96,7 @@ namespace Byster.Models.BysterModels
             Type = RotationType.GetRotationTypeByRotationTypes(RotationType.GetTypeByName(rotation.type));
             Name = rotation.name;
 
-            Description = rotation.description;
+            Description = Localizator.LoadedLocalizationInfo.Language == "Русский" ? rotation.description : rotation.description_en;
             Medias = new List<Media>();
             foreach (var restMedia in rotation.media)
             {

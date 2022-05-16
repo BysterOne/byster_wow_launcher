@@ -10,11 +10,13 @@ namespace Byster.Models.RestModels
     {
         public int id { get; set; }
         public string name { get; set; }
+        public string name_en { get; set; }
         public string type { get; set; }
         public string klass { get; set; }
         public string specialization { get; set; }
         public string role_type { get; set; }
         public string description { get; set; }
+        public string description_en { get; set; }
         public List<RestMediaPart> media { get; set; }
         public RestRotationPart() { }
     }

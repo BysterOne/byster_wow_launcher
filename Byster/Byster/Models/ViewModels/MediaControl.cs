@@ -11,6 +11,9 @@ using System.Windows.Controls;
 using System.Reflection;
 using Byster.Models.Utilities;
 using Byster.Models.BysterModels;
+using System.Runtime.CompilerServices;
+using System.IO;
+using System.Windows.Media.Imaging;
 
 namespace Byster.Models.ViewModels
 {
@@ -66,67 +69,262 @@ namespace Byster.Models.ViewModels
 
 
 
-    public class MediaPresenterControl : Control
+    public class MediaPresenterControl : Control, INotifyPropertyChanged
     {
-        public static readonly DependencyProperty ControlVisibilityProperty;
-        public static readonly DependencyProperty PlayerProperty;
+        private static readonly string[] videoExtens = { ".mp4", ".avi", ".mkv" };
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName]string property = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
+        public static readonly DependencyProperty ControlsPanelProperty;
+        public static readonly DependencyProperty VideoPlayerProperty;
+        public static readonly DependencyProperty ImagePlayerProperty;
+        public static readonly DependencyProperty MediaPresenterVisibilityProperty;
+        public static readonly DependencyProperty VideoPositionProperty;
+        public static readonly DependencyProperty VideoDurationProperty;
+        public static readonly DependencyProperty PositionControlVisibilityProperty;
         static MediaPresenterControl()
         {
-            PlayerProperty = DependencyProperty.Register("Player", typeof(MediaElement), typeof(MediaPresenterControl), new PropertyMetadata()
+            VideoPlayerProperty = DependencyProperty.Register("VideoPlayer", typeof(MediaElement), typeof(MediaPresenterControl), new PropertyMetadata()
             {
                 DefaultValue = null,
-                PropertyChangedCallback = propertyChangedCallback,
+                PropertyChangedCallback = videoplayerpropertyChangedCallback,
             });
 
-            ControlVisibilityProperty = DependencyProperty.Register("ControlVisibility", typeof(Visibility), typeof(MediaPresenterControl), new PropertyMetadata()
+            ImagePlayerProperty = DependencyProperty.Register("ImagePlayer", typeof(Image), typeof(MediaPresenterControl), new PropertyMetadata()
             {
-                DefaultValue = Visibility.Visible,
+                DefaultValue = null,
+                PropertyChangedCallback = imageplayerpropertyChangedCallback,
+            });
+
+            ControlsPanelProperty = DependencyProperty.Register("ControlsPanel", typeof(StackPanel), typeof(MediaPresenterControl), new PropertyMetadata()
+            {
+                DefaultValue = null,
+            });
+
+            MediaPresenterVisibilityProperty = DependencyProperty.Register("MediaPresenterVisibility", typeof(Visibility), typeof(MediaPresenterControl), new PropertyMetadata()
+            {
+                DefaultValue = Visibility.Collapsed,
+            });
+
+            VideoPositionProperty = DependencyProperty.Register("VideoPosition", typeof(double), typeof(MediaPresenterControl), new PropertyMetadata()
+            {
+                DefaultValue = 0.0,
+                PropertyChangedCallback = videopositionpropertyChangedCallback,
+            });
+
+            VideoDurationProperty = DependencyProperty.Register("VideoDuration", typeof(double), typeof(MediaPresenterControl), new PropertyMetadata()
+            {
+                DefaultValue = 0.0,
+            });
+            PositionControlVisibilityProperty = DependencyProperty.Register("PositionControlVisibility", typeof(Visibility), typeof(MediaPresenterControl), new PropertyMetadata()
+            {
+                DefaultValue = Visibility.Hidden,
             });
         }
 
-        private static void propertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        public MediaPresenterControl() : base()
+        {
+            PropertyChanged += sourceChangedCallback;
+        }
+
+        private void sourceChangedCallback(object sender, PropertyChangedEventArgs e)
+        {
+            
+        }
+
+        public void PlayMedia(string url)
+        {
+            MediaPresenterVisibility = Visibility.Visible;
+            string ext = Path.GetExtension(url);
+            if(videoExtens.Contains(ext))
+            {
+                url = url.Replace("https", "http");
+                Source = url;
+                VideoPlayer.Visibility = Visibility.Visible;
+                ImagePlayer.Visibility = Visibility.Collapsed;
+                ControlsPanel.Visibility = Visibility.Visible;
+
+                VideoPlayer.Source = new Uri(url);
+                VideoPlayer.Position = new TimeSpan(0,0,0);
+                VideoPlayer.Play();
+            }
+            else
+            {
+                Source = url;
+                VideoPlayer.Visibility = Visibility.Collapsed;
+                ImagePlayer.Visibility = Visibility.Visible;
+                ControlsPanel.Visibility = Visibility.Collapsed;
+
+                ImagePlayer.Source = new BitmapImage()
+                {
+                    UriSource = new Uri(url),
+                };
+            }
+        }
+
+        private RelayCommand playVideoCommand;
+        public RelayCommand PlayVideoCommand
+        {
+            get => playVideoCommand ?? (playVideoCommand = new RelayCommand(() =>
+            {
+                if(VideoPlayer.Visibility == Visibility.Visible)
+                {
+                    VideoPlayer.Play();
+                }
+            }));
+        }
+
+        private RelayCommand pauseVideoCommand;
+        public RelayCommand PauseVideoCommand
+        {
+            get => pauseVideoCommand ?? (pauseVideoCommand = new RelayCommand(() =>
+            {
+                if (VideoPlayer.Visibility == Visibility.Visible)
+                {
+                    VideoPlayer.Pause();
+                }
+            }));
+        }
+
+        private RelayCommand closeVideoCommand;
+        public RelayCommand CloseVideoCommand
+        {
+            get => closeVideoCommand ?? (closeVideoCommand = new RelayCommand(() =>
+            {
+                if (VideoPlayer.Visibility == Visibility.Visible) VideoPlayer.Stop();
+                MediaPresenterVisibility = Visibility.Collapsed;
+            }));
+        }
+
+        private static void videoplayerpropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.OldValue == e.NewValue || e.NewValue == null) return;
             MediaPresenterControl mediaPresenterControl = (MediaPresenterControl)sender;
             MediaElement mediaElement = (MediaElement)e.NewValue;
-            Binding.AddSourceUpdatedHandler(mediaElement, (mediaElementSender, sce) =>
+            mediaElement.LoadedBehavior = MediaState.Manual;
+            mediaElement.Visibility = Visibility.Collapsed;
+            mediaElement.BufferingStarted += (s, es) =>
             {
-                if (sce.Property != MediaElement.SourceProperty) return;
-                try
-                {
-                    string source = mediaElement.Source.AbsolutePath;
-                    mediaPresenterControl.ControlVisibility = source.EndsWith(".mp4") ? Visibility.Visible : Visibility.Collapsed;
-                }
-                catch
-                {
-                    mediaPresenterControl.ControlVisibility = Visibility.Collapsed;
-                }
-                mediaElement.Play();
-            });
-            if(e.OldValue != null) { }
+                mediaPresenterControl.PositionControlVisibility = Visibility.Hidden;
+            };
+            mediaElement.BufferingEnded += (s, es) =>
+            {
+                mediaPresenterControl.PositionControlVisibility = Visibility.Visible;
+                mediaPresenterControl.VideoDuration = mediaElement.NaturalDuration.TimeSpan.Ticks;
+                mediaPresenterControl.VideoPosition = 0;
+            };
         }
 
-        public MediaElement Player
+        private static void imageplayerpropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue == e.NewValue || e.NewValue == null) return;
+            MediaPresenterControl mediaPresenterControl = (MediaPresenterControl)sender;
+            Image imageElement = (Image)e.NewValue;
+            imageElement.Visibility = Visibility.Collapsed;
+        }
+
+        private static void videopositionpropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
+        {
+            if (e.OldValue == e.NewValue || e.NewValue == null) return;
+            MediaPresenterControl mediaPresenterControl = (MediaPresenterControl)sender;
+            if(mediaPresenterControl.VideoPlayer == null) return;
+            if(mediaPresenterControl.VideoPlayer.Visibility != Visibility.Visible) return;
+            mediaPresenterControl.VideoPlayer.Position = new TimeSpan(Convert.ToInt64(e.NewValue));
+        }
+
+        public MediaElement VideoPlayer
         {
             get
             {
-                return (MediaElement)GetValue(PlayerProperty);
+                return (MediaElement)GetValue(VideoPlayerProperty);
             }
             set
             {
-                SetValue(PlayerProperty, value);
+                SetValue(VideoPlayerProperty, value);
             }
         }
 
-        public Visibility ControlVisibility
+        public Image ImagePlayer
         {
             get
             {
-                return (Visibility)GetValue(ControlVisibilityProperty);
+                return (Image)GetValue(ImagePlayerProperty);
             }
             set
             {
-                SetValue(ControlVisibilityProperty, value);
+                SetValue(ImagePlayerProperty, value);
+            }
+        }
+
+        public StackPanel ControlsPanel
+        {
+            get
+            {
+                return (StackPanel)GetValue(ControlsPanelProperty);
+            }
+            set
+            {
+                SetValue(ControlsPanelProperty, value);
+            }
+        }
+        public Visibility MediaPresenterVisibility
+        {
+            get
+            {
+                return (Visibility)GetValue(MediaPresenterVisibilityProperty);
+            }
+            set
+            {
+                SetValue(MediaPresenterVisibilityProperty, value);
+            }
+        }
+
+        public double VideoPosition
+        {
+            get
+            {
+                return (double)GetValue(VideoPositionProperty);
+            }
+            set
+            {
+                SetValue(VideoPositionProperty, value);
+            }
+        }
+        public double VideoDuration
+        {
+            get
+            {
+                return (double)GetValue(VideoDurationProperty);
+            }
+            set
+            {
+                SetValue(VideoDurationProperty, value);
+            }
+        }
+
+        public Visibility PositionControlVisibility
+        {
+            get
+            {
+                return (Visibility)GetValue(PositionControlVisibilityProperty);
+            }
+            set
+            {
+                SetValue (PositionControlVisibilityProperty, value);
+            }
+        }
+
+        private string source;
+        public string Source
+        {
+            get => source;
+            set
+            {
+                source = value;
+                OnPropertyChanged("Source");
             }
         }
     }

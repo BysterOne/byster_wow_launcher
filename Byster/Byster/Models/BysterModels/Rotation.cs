@@ -54,7 +54,7 @@ namespace Byster.Models.BysterModels
             RoleOfRotation = RotationRole.GetRotationRoleByEnumRotationRole(RotationRole.GetRoleByName(response.rotation.role_type));
             SpecOfRotation = RotationSpecialization.GetRotationSpecializationByEnumRotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));
             Type = RotationType.GetRotationTypeByRotationTypes(RotationType.GetTypeByName(response.rotation.type));
-            Name = Localizator.LoadedLocalizationInfo.Language == "Русский" ? response.rotation.name : response.rotation.name_en;
+            Name = response.rotation.name;
 
             Medias = new List<Media>();
             foreach (var restMedia in response.rotation.media)

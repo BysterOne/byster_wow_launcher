@@ -158,12 +158,7 @@ namespace Byster.Models.ViewModels
                 VideoPlayer.Visibility = Visibility.Collapsed;
                 ImagePlayer.Visibility = Visibility.Visible;
                 ControlsPanel.Visibility = Visibility.Collapsed;
-                BitmapImage img = new BitmapImage()
-                {
-                    UriSource = new Uri(url),
-                };
-                ImagePlayer.Source = img;
-                MessageBox.Show("");
+                ImagePlayer.Source = new BitmapImage(new Uri(url));
             }
         }
 

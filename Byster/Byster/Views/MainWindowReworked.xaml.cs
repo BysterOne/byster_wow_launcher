@@ -189,15 +189,15 @@ namespace Byster.Views
                 {
                     default:
                     case InjectInfoStatusCode.INACTIVE:
-                        return "Инжект инактивен...";
+                        return Localizator.GetLocalizationResourceByKey("InjectInactive").Value;
                     case InjectInfoStatusCode.ENEQUEUED:
-                        return "Ожидание в очереди для инжекта...";
+                        return Localizator.GetLocalizationResourceByKey("InjectEnqueued").Value;
                     case InjectInfoStatusCode.DOWNLOADING:
-                        return "Скачивание ядра....";
+                        return Localizator.GetLocalizationResourceByKey("InjectDownloadingCore").Value;
                     case InjectInfoStatusCode.INJECTING:
-                        return "Инжект...";
+                        return Localizator.GetLocalizationResourceByKey("InjectActive").Value;
                     case InjectInfoStatusCode.INJECTED_OK:
-                        return "Инжект завершён, перейдите в игру.";
+                        return Localizator.GetLocalizationResourceByKey("InjectOK").Value;
                 }
             }
             return "---";

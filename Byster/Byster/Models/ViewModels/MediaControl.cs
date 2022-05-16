@@ -14,6 +14,7 @@ using Byster.Models.BysterModels;
 using System.Runtime.CompilerServices;
 using System.IO;
 using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace Byster.Models.ViewModels
 {
@@ -139,7 +140,7 @@ namespace Byster.Models.ViewModels
         {
             MediaPresenterVisibility = Visibility.Visible;
             string ext = Path.GetExtension(url);
-            if(videoExtens.Contains(ext))
+            if (videoExtens.Contains(ext))
             {
                 url = url.Replace("https", "http");
                 Source = url;
@@ -148,7 +149,7 @@ namespace Byster.Models.ViewModels
                 ControlsPanel.Visibility = Visibility.Visible;
 
                 VideoPlayer.Source = new Uri(url);
-                VideoPlayer.Position = new TimeSpan(0,0,0);
+                VideoPlayer.Position = new TimeSpan(0, 0, 0);
                 VideoPlayer.Play();
             }
             else
@@ -157,12 +158,37 @@ namespace Byster.Models.ViewModels
                 VideoPlayer.Visibility = Visibility.Collapsed;
                 ImagePlayer.Visibility = Visibility.Visible;
                 ControlsPanel.Visibility = Visibility.Collapsed;
-
-                ImagePlayer.Source = new BitmapImage()
+                BitmapImage img = new BitmapImage()
                 {
                     UriSource = new Uri(url),
                 };
+                ImagePlayer.Source = img;
+                MessageBox.Show("");
             }
+        }
+
+        private RelayCommand forwardVideoCommand;
+        public RelayCommand ForwardVideoCommand
+        {
+            get => forwardVideoCommand ?? (forwardVideoCommand = new RelayCommand(() =>
+            {
+                if (VideoPlayer.Visibility == Visibility.Visible)
+                {
+                    VideoPlayer.Position = VideoPlayer.Position.Add(new TimeSpan(0, 0, 10));
+                }
+            }));
+        }
+
+        private RelayCommand backwardVideoCommand;
+        public RelayCommand BackwardVideoCommand
+        {
+            get => backwardVideoCommand ?? (backwardVideoCommand = new RelayCommand(() =>
+            {
+                if (VideoPlayer.Visibility == Visibility.Visible)
+                {
+                    VideoPlayer.Position = VideoPlayer.Position.Subtract(new TimeSpan(0, 0, 10));
+                }
+            }));
         }
 
         private RelayCommand playVideoCommand;
@@ -194,7 +220,7 @@ namespace Byster.Models.ViewModels
         {
             get => closeVideoCommand ?? (closeVideoCommand = new RelayCommand(() =>
             {
-                if (VideoPlayer.Visibility == Visibility.Visible) VideoPlayer.Stop();
+                if (VideoPlayer.Visibility == Visibility.Visible) VideoPlayer.Close();
                 MediaPresenterVisibility = Visibility.Collapsed;
             }));
         }
@@ -206,16 +232,6 @@ namespace Byster.Models.ViewModels
             MediaElement mediaElement = (MediaElement)e.NewValue;
             mediaElement.LoadedBehavior = MediaState.Manual;
             mediaElement.Visibility = Visibility.Collapsed;
-            mediaElement.BufferingStarted += (s, es) =>
-            {
-                mediaPresenterControl.PositionControlVisibility = Visibility.Hidden;
-            };
-            mediaElement.BufferingEnded += (s, es) =>
-            {
-                mediaPresenterControl.PositionControlVisibility = Visibility.Visible;
-                mediaPresenterControl.VideoDuration = mediaElement.NaturalDuration.TimeSpan.Ticks;
-                mediaPresenterControl.VideoPosition = 0;
-            };
         }
 
         private static void imageplayerpropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)

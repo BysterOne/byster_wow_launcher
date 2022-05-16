@@ -218,12 +218,24 @@
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60">
                 <MediaElement Height="500" x:Name="videoPlayer"/>
                 <Image Height="500" x:Name="imagePlayer"/>
-                <StackPanel Orientation="Horizontal" x:Name="controlPanel" Height="100">
-                    <Button Content="Play" x:Name="playBtn" Command="{Binding ElementName=mediaPresenterControl, Path=PlayVideoCommand}"/>
-                    <Button Content="Pause" x:Name="pauseBtn" Command="{Binding ElementName=mediaPresenterControl, Path=PauseVideoCommand}"/>
-                    <Slider Visibility="{Binding ElementName=mediaPresenterControl, Path=PositionControlVisibility}" Minimum="0" Maximum="{Binding ElementName=videoPlayer, Path=Clock.Timeline.Duration.TimeSpan.Ticks}" Value="{Binding ElementName=mediaPresenterControl, Path=VideoPosition}" Width="300"/>
-                    <Slider Minimum="0" Maximum="1" Value="{Binding ElementName=videoPlayer, Path=Volume}" Width="200"/>
-                </StackPanel>
+            </StackPanel>
+            <StackPanel Orientation="Horizontal" x:Name="controlPanel" Height="42" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,8">
+                <Button x:Name="backwardBtn" Command="{Binding ElementName=mediaPresenterControl, Path=BackwardVideoCommand}" Style="{DynamicResource transparentButtonStyle}" Height="40" Width="55" Margin="3,0">
+                    <Path Data="M 0 9 L 18 0 L 18 7 L 32 0 L 32 18 L 18 11 L 18 18 Z" Fill="{StaticResource FontInfoColor}"/>
+                </Button>
+                <Button x:Name="playBtn" Command="{Binding ElementName=mediaPresenterControl, Path=PlayVideoCommand}" Style="{DynamicResource transparentButtonStyle}" Height="40" Width="40" Margin="3,0">
+                    <Path Data="M 0 0 L 18 9 L 0 18 Z" Stroke="{StaticResource FontInfoColor}" Fill="{DynamicResource FontInfoColor}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+                </Button>
+                <Button x:Name="pauseBtn" Command="{Binding ElementName=mediaPresenterControl, Path=PauseVideoCommand}" Style="{DynamicResource transparentButtonStyle}" Height="40" Width="40" Margin="3,0">
+                    <StackPanel Orientation="Horizontal">
+                        <Path Data="M 0 0 L 6 0 L 6 18 L 0 18 Z" Fill="{StaticResource FontInfoColor}" Margin="0,0,6,0"/>
+                        <Path Data="M 0 0 L 6 0 L 6 18 L 0 18 Z" Fill="{StaticResource FontInfoColor}"/>
+                    </StackPanel>
+                </Button>
+                <Button x:Name="forwardBtn" Command="{Binding ElementName=mediaPresenterControl, Path=ForwardVideoCommand}" Style="{DynamicResource transparentButtonStyle}" Height="40" Width="55" Margin="3,0">
+                    <Path Data="M 0 0 L 14 7 L 14 0 L 32 9 L 14 18 L 14 11 L 0 18 Z" Fill="{StaticResource FontInfoColor}"/>
+                </Button>
+                <Slider Value="{Binding ElementName=videoPlayer, Path=Volume}" Width="200" Style="{DynamicResource volumeSlider}"/>
             </StackPanel>
             <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=CloseVideoCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
                 <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>

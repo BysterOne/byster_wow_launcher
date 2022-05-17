@@ -19,6 +19,8 @@ namespace Byster.Models.BysterModels
         }
 
         public ImageItem ImageItem { get; set; }
+        public Media PreviousMedia { get; set; } = null;
+        public Media NextMedia { get; set; } = null;
 
         private string uri;
         public string Uri
@@ -44,8 +46,13 @@ namespace Byster.Models.BysterModels
             return (MediaTypes)names.IndexOf(name.ToLower());
         }
 
-        public Media(string uri, MediaTypes type)
+        public Media(string uri, MediaTypes type, Media prevMedia = null)
         {
+            if(prevMedia != null)
+            {
+                prevMedia.NextMedia = this;
+                PreviousMedia = prevMedia;
+            }
             ImageItem = BackgroundImageDownloader.GetImageItemByNetworkPath(uri);
             ImageItem.PropertyChanged += ImageItemChanged;
             Uri = ImageItem.PathOfCurrentLocalSource;

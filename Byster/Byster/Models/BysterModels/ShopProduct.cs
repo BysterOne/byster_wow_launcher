@@ -41,10 +41,13 @@ namespace Byster.Models.BysterModels
             Price = RestShopProduct.price;
             Currency = RestShopProduct.currency;
             Duration = RestShopProduct.duration;
+            Media prevMedia = null;
             Medias = new List<Media>();
             foreach(var restMedia in RestShopProduct.media)
             {
-                Medias.Add(new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type)));
+                Media currentMedia = new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type), prevMedia);
+                Medias.Add(currentMedia);
+                prevMedia = currentMedia;
             }
             Rotations = new List<ShopRotation>();
             foreach(var restRotation in RestShopProduct.rotations)

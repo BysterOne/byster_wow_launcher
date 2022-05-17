@@ -57,9 +57,12 @@ namespace Byster.Models.BysterModels
             Name = response.rotation.name;
 
             Medias = new List<Media>();
+            Media prevMedia = null;
             foreach (var restMedia in response.rotation.media)
             {
-                Medias.Add(new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type)));
+                Media currentMedia = new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type), prevMedia);
+                Medias.Add(currentMedia);
+                prevMedia = currentMedia;
             }
 
             ImageUri =
@@ -97,10 +100,13 @@ namespace Byster.Models.BysterModels
             Name = rotation.name;
 
             Description = Localizator.LoadedLocalizationInfo.Language == "Русский" ? rotation.description : rotation.description_en;
+            Media prevMedia = null;
             Medias = new List<Media>();
             foreach (var restMedia in rotation.media)
             {
-                Medias.Add(new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type)));
+                Media currentMedia = new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type), prevMedia);
+                Medias.Add(currentMedia);
+                prevMedia = currentMedia;
             }
 
             ImageUri =

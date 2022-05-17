@@ -321,13 +321,13 @@ namespace Byster.Models.Utilities
                 {
                     From = startOffsetX,
                     To = newOffsetX,
-                    Duration = new Duration(new TimeSpan(0, 0, 0, 0, 300)),
+                    Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200)),
                 });
                 scrollViewer.BeginAnimation(AnimatedOffsets.AnimatedVerticalOffsetProperty, new DoubleAnimation()
                 {
                     From = startOffsetY,
                     To = newOffsetY,
-                    Duration = new Duration(new TimeSpan(0, 0, 0, 0, 300)),
+                    Duration = new Duration(new TimeSpan(0, 0, 0, 0, 200)),
                 });
                 //listbox.ScrollIntoView(listbox.Items[listbox.SelectedIndex + 1]);
             }

@@ -476,26 +476,22 @@ namespace Byster.Views
             Task.Run(() =>
             {
                 StatusText = Localizator.GetLocalizationResourceByKey("UpdatingData");
+                BackgroundImageDownloader.Suspend();
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataStarted?.Invoke();
                 });
-                BackgroundImageDownloader.Suspend();
-                try
-                {
-                    UserInfo.UpdateRemoteData();
-                    ActiveRotations.UpdateData();
-                    Shop.UpdateData();
-                    syncData();
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show(ex.Message + "\n" + ex.ToString(), "Error while updating data");
-                }
-                BackgroundImageDownloader.Resume();
+                UserInfo.UpdateRemoteData();
+                ActiveRotations.UpdateData();
+                Shop.UpdateData();
+                syncData();
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataCompleted?.Invoke();
+                });
+                Task.Run(() =>
+                {
+                    BackgroundImageDownloader.Resume();
                 });
             });
             

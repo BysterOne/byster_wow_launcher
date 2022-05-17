@@ -237,7 +237,13 @@
                 </Button>
                 <Slider Value="{Binding ElementName=videoPlayer, Path=Volume}" Width="100" Style="{DynamicResource volumeSlider}" Margin="30,0,0,0"/>
             </StackPanel>
-            <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=CloseVideoCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
+            <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=PrevMediaCommand}" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="50">
+                <Path Data="M 0 15 L 30 0 L 30 30 Z" Fill="{StaticResource FontInfoColor}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
+            <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=NextMediaCommand}" VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="50">
+                <Path Data="M 0 0 L 30 15 L 0 30 Z" Fill="{StaticResource FontInfoColor}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
+            <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=CloseVideoCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50" IsCancel="True">
                 <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
         </Grid>

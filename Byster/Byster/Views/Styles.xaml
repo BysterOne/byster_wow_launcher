@@ -1191,20 +1191,20 @@
 
                                             <VisualStateGroup x:Name="SelectionStates">
                                                 <VisualState x:Name="Selected">
-                                                    <Storyboard Duration="0:0:0.5">
+                                                    <Storyboard Duration="0:0:0.25">
                                                         <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                         To="350"
                                                                         BeginTime="0:0:0"
-                                                                        Duration="0:0:0.5"
+                                                                        Duration="0:0:0.25"
                                                                         Storyboard.TargetName="itemGrid"/>
                                                     </Storyboard>
                                                 </VisualState>
                                                 <VisualState x:Name="Unselected">
-                                                    <Storyboard Duration="0:0:0.5">
+                                                    <Storyboard Duration="0:0:0.25">
                                                         <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                         To="80"
                                                                         BeginTime="0:0:0"
-                                                                        Duration="0:0:0.5"
+                                                                        Duration="0:0:0.25"
                                                                             Storyboard.TargetName="itemGrid"/>
                                                     </Storyboard>
                                                 </VisualState>
@@ -1608,30 +1608,30 @@
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="SelectionStates">
                                             <VisualState x:Name="Selected">
-                                                <Storyboard Duration="0:0:0.5">
+                                                <Storyboard Duration="0:0:0.25">
                                                     <DoubleAnimation Storyboard.TargetProperty="Width"
                                                          From="{TemplateBinding ActualWidth}"
                                                          To="588"
                                                          BeginTime="0:0:0"
-                                                                     Duration="0:0:0.5"/>
+                                                                     Duration="0:0:0.25"/>
                                                     <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                      BeginTime="0:0:0"
-                                                                     Duration="0:0:0.25"
+                                                                     Duration="0:0:0.1"
                                                                      To="0"
                                                                      Storyboard.TargetName="singleProductShortInfoGrid"/>
                                                 </Storyboard>
                                             </VisualState>
                                             <VisualState x:Name="Unselected">
-                                                <Storyboard Duration="0:0:0.5">
+                                                <Storyboard Duration="0:0:0.25">
 
                                                     <DoubleAnimation Storyboard.TargetProperty="Width"
                                                          From="{TemplateBinding ActualWidth}"
                                                          To="180"
                                                          BeginTime="0:0:0"
-                                                                     Duration="0:0:0.5"/>
+                                                                     Duration="0:0:0.25"/>
                                                     <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                      BeginTime="0:0:0"
-                                                                     Duration="0:0:0.5"
+                                                                     Duration="0:0:0.25"
                                                                      To="30"
                                                                      Storyboard.TargetName="singleProductShortInfoGrid"/>
                                                 </Storyboard>

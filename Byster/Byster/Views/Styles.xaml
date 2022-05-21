@@ -1262,7 +1262,7 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
-                                <CheckBox IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Mode=TwoWay}"
+                                <CheckBox IsChecked="{Binding Path=DataContext.IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Mode=TwoWay}"
                                           FontFamily="{DynamicResource Roboto}"
                                           Foreground="{DynamicResource FontInfoColor}"
                                           FontSize="{DynamicResource FontUISize}"
@@ -1583,10 +1583,13 @@
                                                             <TextBlock x:Name="productSpecializationName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" TextAlignment="Right"
                                                                    Margin="0"/>
                                                         </StackPanel>
-                                                        <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}"
-                                                                Grid.Row="1" Margin="0, 10">
-                                                            <TextBox Style="{DynamicResource infoReadOnlyTextBoxStyle}" ClipToBounds="True" TextWrapping="Wrap" Text="{Binding Path=Product.Description}"/>
-                                                        </ScrollViewer>
+                                                        <Grid Grid.Row="1" Margin="10">
+                                                            <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}"
+                                                                 Margin="0, 0">
+                                                                <TextBox Style="{DynamicResource infoReadOnlyTextBoxStyle}" ClipToBounds="True" TextWrapping="Wrap" Text="{Binding Path=Product.Description}"/>
+                                                            </ScrollViewer>
+                                                        </Grid>
+                                                        
                                                         <ListBox Style="{DynamicResource mediaViewBox}" ItemsSource="{Binding Path=Product.Medias}" Grid.Row="2"/>
                                                     </Grid>
                                                     <Grid x:Name="multipleProductExpanderGrid" Visibility="Visible">

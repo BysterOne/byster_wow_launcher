@@ -161,8 +161,8 @@
             </Grid.RowDefinitions>
             <Grid x:Name="sideShopPanel" Grid.Column="0">
                 <StackPanel Orientation="Vertical">
-                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterClassListBox" Tag="{Binding LocalizationData.Classes}" ItemsSource="{Binding Path=Shop.AllClasses}" DisplayMemberPath="Name" SelectionChanged="filterClassListBox_SelectionChanged"/>
-                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterTypeListBox" Tag="{Binding LocalizationData.Types}" ItemsSource="{Binding Path=Shop.AllTypes}" SelectionChanged="filterTypeListBox_SelectionChanged"/>
+                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterClassListBox" Tag="{Binding LocalizationData.Classes}" ItemsSource="{Binding Path=Shop.FilterOptions.FilterClasses}" DisplayMemberPath="FilterValue.Name"/>
+                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterTypeListBox" Tag="{Binding LocalizationData.Types}" ItemsSource="{Binding Path=Shop.FilterOptions.FilterTypes}" DisplayMemberPath="FilterValue"/>
                 </StackPanel>
             </Grid>
             <Grid x:Name="contentShopPanel" Grid.Column="1">

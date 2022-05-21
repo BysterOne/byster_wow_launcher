@@ -13,12 +13,17 @@ using System.IO;
 using Byster.Models.RestModels;
 using System.Windows;
 using static Byster.Models.Utilities.BysterLogger;
+using Microsoft.Win32;
+
 namespace Byster.Models.Utilities
 {
     public class Injector
     {
-        private static string FullLibPath = Path.GetTempPath() + "Byster\\Core";
-
+        private static string FullLibPath
+        {
+            get => Path.Combine(Path.GetTempPath(), coreFolderName);
+        }
+        private static string coreFolderName;
         public static string Branch { get; set; } = "master";
         public static RestClient Rest { get; set; }
 
@@ -138,6 +143,14 @@ namespace Byster.Models.Utilities
 
         public static void Init()
         {
+            string _valueName = HashCalc.GetMD5Hash(Environment.MachineName);
+            coreFolderName = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", _valueName, "") as string;
+            if (string.IsNullOrWhiteSpace(coreFolderName))
+            {
+                Random random = new Random();
+                string newFolderName = HashCalc.GetRandomString(random.Next(30) + 15);
+                Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", _valueName, (coreFolderName = newFolderName));
+            }
             injectQueue = new Queue<InjectInfo>();
             injectionThread = new Thread(new ThreadStart(ThreadMethod));
             injectionThread.Start();
@@ -218,11 +231,15 @@ namespace Byster.Models.Utilities
                         InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB);
                         continue;
                     }
-                    int i = 0;
-                    while (File.Exists(FullLibPath + i + ".dll")) i++;
-                    File.WriteAllBytes(FullLibPath + i + ".dll", response.RawBytes);
+                    string dllPath = "";
+                    do
+                    {
+                        dllPath = Path.Combine(FullLibPath, $"{HashCalc.GetRandomString(25)}.dll");
+                    }
+                    while (File.Exists(dllPath));
+                    File.WriteAllBytes(dllPath, response.RawBytes);
                     InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.INJECTION_STARTED);
-                    bool injectionResult = Inject(injectingProcess.ProcessId, FullLibPath + i + ".dll");
+                    bool injectionResult = Inject(injectingProcess.ProcessId, dllPath);
                     if (injectionResult)
                     {
                         InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.INJECTED_OK);

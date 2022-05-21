@@ -432,16 +432,16 @@ namespace Byster.Views
             {
                 return shopCommand ?? (shopCommand = new RelayCommand(() =>
                 {
-                    
-                    Shop.FilterOptions = new Filter()
+                    foreach(var item in Shop.FilterOptions.FilterClasses)
                     {
-                        FilterClasses = new ObservableCollection<FilterClass>()
-                        {
-                            new FilterClass(ActiveRotations.FilterClass),
-                        },
-                        FilterTypes = new ObservableCollection<string>()
-                        {},
-                    };
+                        item.IsSelected = false;
+                    }
+                    var selectedClass = Shop.FilterOptions.FilterClasses.Where(_ifi => _ifi.FilterValue.EnumClass == SelectedSession.SessionClass.EnumWOWClass).FirstOrDefault();
+                    if(selectedClass != null) selectedClass.IsSelected = true;
+                    foreach (var item in Shop.FilterOptions.FilterTypes)
+                    {
+                        item.IsSelected = false;
+                    }
                     selectPage(1);
                 }));
             }

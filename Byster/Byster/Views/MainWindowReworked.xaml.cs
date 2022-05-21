@@ -99,31 +99,31 @@ namespace Byster.Views
             Injector.Close();
         }
 
-        private void filterClassListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            foreach (var removingElement in e.RemovedItems)
-            {
-                ViewModel.Shop.FilterOptions.FilterClasses.Remove(removingElement as FilterClass);
-            }
-            foreach (var addingElement in e.AddedItems)
-            {
-                ViewModel.Shop.FilterOptions.FilterClasses.Add(addingElement as FilterClass);
-            }
-            ViewModel.Shop.FilterProducts();
-        }
+        //private void filterClassListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    foreach (var removingElement in e.RemovedItems)
+        //    {
+        //        ViewModel.Shop.FilterOptions.FilterClasses.Remove(removingElement as FilterClass);
+        //    }
+        //    foreach (var addingElement in e.AddedItems)
+        //    {
+        //        ViewModel.Shop.FilterOptions.FilterClasses.Add(addingElement as FilterClass);
+        //    }
+        //    ViewModel.Shop.FilterProducts();
+        //}
 
-        private void filterTypeListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            foreach(var removingElement in e.RemovedItems)
-            {
-                ViewModel.Shop.FilterOptions.FilterTypes.Remove(removingElement as string);
-            }
-            foreach(var addingElement in e.AddedItems)
-            {
-                ViewModel.Shop.FilterOptions.FilterTypes.Add(addingElement as string);
-            }
-            ViewModel.Shop.FilterProducts();
-        }
+        //private void filterTypeListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    foreach(var removingElement in e.RemovedItems)
+        //    {
+        //        ViewModel.Shop.FilterOptions.FilterTypes.Remove(removingElement as string);
+        //    }
+        //    foreach(var addingElement in e.AddedItems)
+        //    {
+        //        ViewModel.Shop.FilterOptions.FilterTypes.Add(addingElement as string);
+        //    }
+        //    ViewModel.Shop.FilterProducts();
+        //}
 
         protected override void OnClosing(CancelEventArgs e)
         {

@@ -23,15 +23,16 @@ namespace Byster.Models.Utilities
         public static List<ImageItem> DownloadedItems { get; set; }
 
         private static Thread downloadingThread;
+        public static Mutex SuspendMutex { get; set; }
 
-        //private static SuspendToken suspendToken = new SuspendToken();
-        public static Mutex SuspendMutex { get; set; } = new Mutex();
-
-        private static Mutex blockCollectionsMutex { get; set; } = new Mutex();
-        private static Mutex blockQueueMutex { get; set; } = new Mutex();
+        private static Mutex blockCollectionsMutex { get; set; }
+        private static Mutex blockQueueMutex { get; set; }
 
         public static void Init()
         {
+            SuspendMutex = new Mutex();
+            blockCollectionsMutex = new Mutex();
+            blockQueueMutex = new Mutex();
             ItemsToDownload = new Queue<ImageItem>();
             DownloadedItems = new List<ImageItem>();
 
@@ -54,7 +55,9 @@ namespace Byster.Models.Utilities
         {
             while(true)
             {
-                SuspendMutex.WaitOne();
+                try
+                {
+                    SuspendMutex.WaitOne();
                     if (ItemsToDownload.Count > 0)
                     {
                         try
@@ -75,8 +78,14 @@ namespace Byster.Models.Utilities
                             Log("Ошибка при скачивании", ex.Message, " - ", ex.ToString());
                         }
                     }
-                SuspendMutex.ReleaseMutex();
-                Thread.Sleep(100);
+                    SuspendMutex.ReleaseMutex();
+                    Thread.Sleep(100);
+                }
+                catch(Exception ex)
+                {
+                    Log("ImageDownloader", "Mutex error", ex.Message, ex.StackTrace);
+                }
+                    
             }
         }
 
@@ -234,46 +243,6 @@ namespace Byster.Models.Utilities
         public ImageItem()
         {
             IsDownLoaded = false;
-        }
-    }
-
-    class SuspendToken
-    {
-        Mutex mutex = new Mutex();
-        bool isSuspendRequestCreated = false;
-        bool isSuspended = false;
-        public void RequestSuspend()
-        {
-            mutex.WaitOne();
-            if (isSuspendRequestCreated || isSuspended) return;
-            isSuspendRequestCreated = true;
-            mutex.ReleaseMutex();
-            while (!isSuspended) { }
-            return;
-        }
-
-        public bool GetSuspendRequestStatus()
-        {
-            return isSuspendRequestCreated;
-        }
-
-        public bool GetSuspendStatus()
-        {
-            return isSuspended;
-        }
-
-        public void AcceptSuspend()
-        {
-            if(isSuspendRequestCreated)
-            {
-                isSuspendRequestCreated = false;
-                isSuspended = true;
-            }
-        }
-
-        public void Resume()
-        {
-            if(isSuspended) isSuspended = false;
         }
     }
 }

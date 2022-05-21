@@ -180,7 +180,7 @@ namespace Byster.Models.Services
             return;
         }
 
-        public IEnumerable<PaymentSystem> GetAllPaymentSystemList()
+        public IEnumerable<PaymentSystem> GetAllPaymentSystem()
         {
             bool isTesterOrDeveloper = !(GetUserType() == BranchType.MASTER);
             var response = client.Get<List<RestPaymentSystem>>(new RestRequest("shop/payment_systems"));

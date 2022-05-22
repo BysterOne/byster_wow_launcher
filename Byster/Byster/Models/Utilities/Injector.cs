@@ -156,6 +156,16 @@ namespace Byster.Models.Utilities
             injectionThread.Start();
             Branch = "master";
             if (!Directory.Exists(FullLibPath)) Directory.CreateDirectory(FullLibPath);
+            foreach(var file in Directory.GetFiles(FullLibPath))
+            {
+                try
+                {
+                    File.Delete(file);
+                }
+                catch
+                {
+                }
+            }
             InjectQueueUpdated += baseInjectQueueChangedHandler;
         }
 

@@ -155,12 +155,13 @@ namespace Byster.Models.Utilities
             injectionThread = new Thread(new ThreadStart(ThreadMethod));
             injectionThread.Start();
             Branch = "master";
+            if (Directory.Exists(Path.Combine(Path.GetTempPath(), "Byster"))) Directory.Delete(Path.Combine(Path.GetTempPath(), "Byster"), true);
             if (!Directory.Exists(FullLibPath)) Directory.CreateDirectory(FullLibPath);
             foreach(var file in Directory.GetFiles(FullLibPath))
             {
                 try
                 {
-                    File.Delete(file);
+                    File.Delete(Path.Combine(FullLibPath, file));
                 }
                 catch
                 {

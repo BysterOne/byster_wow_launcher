@@ -30,7 +30,7 @@ namespace Byster.Models.BysterModels
             {
                 uri = value;
                 OnPropertyChanged("Uri");
-                Log($"Получен новый Uri: {value}");
+                //LogInfo("MediaItem", $"Получен новый Uri: {value}");
             }
         }
         public MediaTypes Type { get; set; }

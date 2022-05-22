@@ -42,7 +42,7 @@ namespace Byster.Models.Utilities
 
             downloadingThread = new Thread(threadMethod);
             downloadingThread.IsBackground = true;
-            downloadingThread.Name = "Downloader Of Images";
+            downloadingThread.Name = "Image Downloader";
             downloadingThread.Start();
         }
 
@@ -63,7 +63,7 @@ namespace Byster.Models.Utilities
                         try
                         {
                             var downloadingItem = ItemsToDownload.Dequeue();
-                            Log("Попытка скачивания", "Url", downloadingItem.PathOfNetworkSource);
+                            LogInfo("ImageDownloader", "Попытка скачивания", "Url:", downloadingItem.PathOfNetworkSource);
                             WebClient client = new WebClient();
                             byte[] buffer = client.DownloadData(downloadingItem.PathOfNetworkSource);
                             File.WriteAllBytes(downloadingItem.PathOfLocalSource, buffer);
@@ -71,11 +71,11 @@ namespace Byster.Models.Utilities
                             downloadingItem.PathOfCurrentLocalSource = downloadingItem.PathOfLocalSource;
                             DownloadedItems.Add(downloadingItem);
                             client.Dispose();
-                            Log("Скачан файл изображения", "Путь:", downloadingItem.PathOfCurrentLocalSource, "Url:", downloadingItem.PathOfNetworkSource);
+                            LogInfo("ImageDownloader", "Скачан файл изображения", "Путь:", downloadingItem.PathOfCurrentLocalSource, " Url:", downloadingItem.PathOfNetworkSource);
                         }
                         catch (Exception ex)
                         {
-                            Log("Ошибка при скачивании", ex.Message, " - ", ex.ToString());
+                            LogWarn("ImageDownloader", "Ошибка при скачивании", ex.Message, " - ", ex.ToString());
                         }
                     }
                     SuspendMutex.ReleaseMutex();
@@ -83,7 +83,7 @@ namespace Byster.Models.Utilities
                 }
                 catch(Exception ex)
                 {
-                    Log("ImageDownloader", "Mutex error", ex.Message, ex.StackTrace);
+                    LogError("ImageDownloader", "Mutex ошибка", ex.Message, ex.StackTrace);
                 }
                     
             }

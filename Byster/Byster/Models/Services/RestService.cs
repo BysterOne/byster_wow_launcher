@@ -45,7 +45,7 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "No Error Received";
-                Log("Ошибка получения данных с сервера - ", response.Data, " - ", response.ErrorMessage);
+                LogError("Rest Service", "Ошибка получения данных с сервера - ", response.Data, " - ", response.ErrorMessage);
                 return null;
             }
             List<RestRotationWOW> responseRotations = response.Data;
@@ -54,7 +54,7 @@ namespace Byster.Models.Services
             {
                 res.Add(new ActiveRotationViewModel(restRotation));
             }
-            Log("Обновлены данные активных ротаций");
+            LogInfo("Rest Service", "Обновлены данные активных ротаций");
             return res;
         }
 
@@ -65,7 +65,7 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = JsonConvert.DeserializeObject<BaseResponse>(response?.Content ?? "")?.error ?? "No Error Received";
-                Log("Ошибка получения данных с сервера - ", response.Data, " - ", response.ErrorMessage);
+                LogError("Rest Service", "Ошибка получения данных с сервера - ", response.Data, " - ", response.ErrorMessage);
                 return null;
             }
             List<RestShopProduct> responseProducts = response.Data;
@@ -74,7 +74,7 @@ namespace Byster.Models.Services
             {
                 res.Add(new ShopProductInfoViewModel(new ShopProduct(product)));
             }
-            Log("Обновлены данные списка продуктов магазина");
+            LogInfo("Rest Service", "Обновлены данные списка продуктов магазина");
             return res;
         }
         
@@ -113,10 +113,10 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
-                Log("Ошибка при выполнении запроса покупки - ", response.Data?.error ?? "Нет ответа сервера", " - ", response.ErrorMessage);
+                LogError("Rest Service", "Ошибка при выполнении запроса покупки - ", response.Data?.error ?? "Нет ответа сервера", " - ", response.ErrorMessage);
                 return (false, null);
             }
-            Log("Выполнен запрос на покупку продукта - ", response.Data.payment_url);
+            LogInfo("Rest Service", "Выполнен запрос на покупку продукта - ", response.Data.payment_url);
             return (true, response.Data.payment_url);
         }
         public bool ExecuteTestRequest(int id)
@@ -129,7 +129,7 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
-                Log("Ошибка при выполнении запроса на тест - ", response.Data.error, " - ", response.ErrorMessage);
+                LogError("Rest Service", "Ошибка при выполнении запроса на тест - ", response.Data.error, " - ", response.ErrorMessage);
                 return false;
             }
             return true;
@@ -142,10 +142,10 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
-                Log("Ошибка обновления данных пользователя - ", response.Data.error, " - ", response.ErrorMessage);
+                LogError("Ошибка обновления данных пользователя - ", response.Data.error, " - ", response.ErrorMessage);
                 return (null, null, 0, null, null);
             }
-            Log("Обновлены данные пользователя");
+            LogInfo("Rest Service", "Обновлены данные пользователя");
             return (response.Data.username, response.Data.referral_code, Convert.ToInt32(Math.Floor(response.Data.balance)), response.Data.currency, response.Data.encryption);
         }
 
@@ -156,10 +156,10 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
-                Log("Ошибка получения статуса encryption пользователя - ", response.Data.error, " - ", response.ErrorMessage);
+                LogError("Rest Service", "Ошибка получения статуса encryption пользователя - ", response.Data.error, " - ", response.ErrorMessage);
                 return null;
             }
-            Log("Получен статус encryption");
+            LogInfo("Rest Service", "Получен статус encryption");
             return response.Data.encryption;
         }
 
@@ -173,10 +173,10 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK || !string.IsNullOrEmpty(response.Data.error))
             {
                 LastError = response.Data.error;
-                Log("Ошибка установки статуса encryption пользователя - ", response.Data.error, " - ", response.ErrorMessage);
+                LogError("Rest Service", "Ошибка установки статуса encryption пользователя - ", response.Data.error, " - ", response.ErrorMessage);
                 return;
             }
-            Log("Установлен новый encryption");
+            LogInfo("Rest Service", "Установлен новый encryption");
             return;
         }
 
@@ -188,7 +188,7 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = JsonConvert.DeserializeObject<BaseResponse>(string.IsNullOrEmpty(response?.Content ?? "") ? "" : response.Content)?.error ?? "No Error Received";
-                Log("Ошибка получения списка платёжных систем", response?.Content ?? "{Ошибка преобразования}", " - ", response?.ErrorMessage ?? "{Ошибка преобразования}");
+                LogError("Rest Service", "Ошибка получения списка платёжных систем", response?.Content ?? "{Ошибка преобразования}", " - ", response?.ErrorMessage ?? "{Ошибка преобразования}");
                 return null;
             }
             List<PaymentSystem> result = new List<PaymentSystem>();
@@ -202,7 +202,7 @@ namespace Byster.Models.Services
                     Description = Localizator.LoadedLocalizationInfo.Language == "Русский" ? item.description : item.description_en,
                 });
             }
-            Log("Получены данные платёжных систем");
+            LogInfo("Rest Service", "Получены данные платёжных систем");
             return result;
         }
         List<string> updatedActionIds = new List<string>();
@@ -214,7 +214,7 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = JsonConvert.DeserializeObject<BaseResponse>(string.IsNullOrEmpty(response?.Content ?? "") ? "" : response.Content)?.error ?? "No Error Received";
-                Log("Ошибка обновления данных", response.Content.ToString(), " - ", response.ErrorMessage);
+                LogError("Rest Service", "Ошибка обновления данных", response.Content.ToString(), " - ", response.ErrorMessage);
                 return false;
             }
             bool res = false;
@@ -237,7 +237,7 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
-                Log("Ошибка получения данных пользователя", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
+                LogError("Rest Service", "Ошибка получения данных пользователя", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
                 return BranchType.UNKNOWN;
             }
             return response.Data.dev ? BranchType.DEVELOPER :
@@ -255,10 +255,10 @@ namespace Byster.Models.Services
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
-                Log("Ошибка изменения пароля", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
+                LogError("Rest Service", "Ошибка изменения пароля", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
                 return false;
             }
-            Log("Пароль изменён");
+            LogInfo("Rest Service", "Пароль изменён");
             return true;
         }
 
@@ -268,7 +268,7 @@ namespace Byster.Models.Services
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = JsonConvert.DeserializeObject<BaseResponse>(response.Content).error;
-                Log("Ошибка получения данных ротаций для разработчиков", LastError, " - ", response.ErrorMessage);
+                LogError("Rest Service", "Ошибка получения данных ротаций для разработчиков", LastError, " - ", response.ErrorMessage);
                 return null;
             }
             return response.Data;
@@ -294,7 +294,7 @@ namespace Byster.Models.Services
             if (!string.IsNullOrEmpty(response.Data?.error))
             {
                 LastError = response.Data.error;
-                Log("Ошибка создания ротации разработчиков", LastError, " - ", response.ErrorMessage);
+                LogError("Rest Service", "Ошибка создания ротации разработчиков", LastError, " - ", response.ErrorMessage);
                 return null;
             }
             return response.Data;
@@ -303,7 +303,7 @@ namespace Byster.Models.Services
         public bool ExecuteLinkEmailRequest(string email)
         {
             //var response = client.Post<>()
-            Log("ПРЕДУПРЕЖДЕНИЕ: Использована нереализованная функция");
+            LogWarn("Rest Service", "ПРЕДУПРЕЖДЕНИЕ: Использована нереализованная функция");
             return true;
         }
 
@@ -317,7 +317,7 @@ namespace Byster.Models.Services
             if(response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
-                Log("Ошибка активации купона", response.Data.error);
+                LogError("Rest Service", "Ошибка активации купона", response.Data.error);
                 return false;
             }
             return true;
@@ -352,7 +352,7 @@ namespace Byster.Models.Services
             if(restrictedCodes.Contains(statusCode) || (int)statusCode == 0)
             {
                 LastError = "Ошибка соединения с сервером";
-                Log("Сервер недоступен", statusCode.ToString());
+                LogError("Rest Service", "Сервер недоступен", statusCode.ToString());
                 addConnectoinErrorAccident();
                 return true;
             }

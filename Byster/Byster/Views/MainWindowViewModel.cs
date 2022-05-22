@@ -468,7 +468,6 @@ namespace Byster.Views
 
         private void syncData()
         {
-
         }
 
         public void UpdateData()

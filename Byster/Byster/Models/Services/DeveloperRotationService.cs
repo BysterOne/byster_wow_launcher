@@ -268,13 +268,13 @@ namespace Byster.Models.Services
                     gitCloneProcess.WaitForExit();
                     if (gitCloneProcess.ExitCode != 0)
                     {
-                        Log($"Ошибка синхронизациии репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
+                        LogWarn("Developer Rotation Service", $"Ошибка синхронизациии репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
                         Status = DeveloperRotationStatusCode.ERROR_SYNC;
                         Thread.Sleep(5000);
                     }
                     else
                     {
-                        Log($"Репозиторй синхронизирован успешно {Path}");
+                        LogInfo("Developer Rotation Service", $"Репозиторй синхронизирован успешно {Path}");
                         Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
                         Thread.Sleep(5000);
                         OnPropertyChanged("IsEnabledChangingIsEnabled");
@@ -297,13 +297,13 @@ namespace Byster.Models.Services
                         gitCloneProcess.WaitForExit();
                         if (gitCloneProcess.ExitCode != 0)
                         {
-                            Log($"Ошибка создания репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
+                            LogWarn("Developer Rotation Service", $"Ошибка создания репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
                             Status = DeveloperRotationStatusCode.ERROR_SYNC;
                             Thread.Sleep(5000);
                         }
                         else
                         {
-                            Log($"Репозиторй создан и синхронизирован успешно {Path}");
+                            LogInfo("Developer Rotation Service", $"Репозиторй создан и синхронизирован успешно {Path}");
                             Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
                             Thread.Sleep(5000);
                             OnPropertyChanged("IsEnabledChangingIsEnabled");
@@ -311,7 +311,7 @@ namespace Byster.Models.Services
                     }
                     else
                     {
-                        Log($"Ошибка создания репозитория", $"Отсутствует путь для клонирования репозитория");
+                        LogWarn("Developer Rotation Service", $"Ошибка создания репозитория", $"Отсутствует путь для клонирования репозитория");
                         Status = DeveloperRotationStatusCode.ERROR_SYNC;
                         Thread.Sleep(5000);
                     }
@@ -751,7 +751,7 @@ namespace Byster.Models.Services
             };
             core.EmptyConfigurationRead += () =>
             {
-                Log("Конфигурация не найдена. Установка нового пути для сохранения");
+                LogInfo("Developer Rotation Service", "Конфигурация не найдена. Установка нового пути для сохранения");
                 Dispatcher.Invoke(() =>
                 {
                     FolderBrowserDialog dialog = new FolderBrowserDialog();

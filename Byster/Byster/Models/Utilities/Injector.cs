@@ -170,7 +170,7 @@ namespace Byster.Models.Utilities
             {
                 default:
                 case InjectorStatusCode.INJECTED_OK:
-                    Log("Инжект завершён");
+                    LogInfo("Injector", "Инжект завершён");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTED_OK;
                     Task taskToDelete = new Task(() =>
                     {
@@ -183,19 +183,19 @@ namespace Byster.Models.Utilities
                 case InjectorStatusCode.ERROR_WHILE_INJECTING:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_FOUND:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED:
-                    Log("Ошибка инжекта", "Статус-код:", injectorStatusCode.ToString(), $"ID Инжекта: {changedElement.InjectInfoId}");
+                    LogWarn("Injector", "Ошибка инжекта", "Статус-код:", injectorStatusCode.ToString(), $"ID Инжекта: {changedElement.InjectInfoId}");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
                     break;
                 case InjectorStatusCode.ADDED_OK:
-                    Log("Добавлен инжект в очередь", $"ID Инжекта: {changedElement.InjectInfoId}");
+                    LogInfo("Injector", "Добавлен инжект в очередь", $"ID Инжекта: {changedElement.InjectInfoId}");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.ENEQUEUED;
                     break;
                 case InjectorStatusCode.LIBRARY_DOWNLOADING_STARTED:
-                    Log("Скачивание библиотеки начато", $"ID Инжекта: {changedElement.InjectInfoId}");
+                    LogInfo("Injector", "Скачивание библиотеки начато", $"ID Инжекта: {changedElement.InjectInfoId}");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.DOWNLOADING;
                     break;
                 case InjectorStatusCode.INJECTION_STARTED:
-                    Log("Запуск инжекта", $"ID Инжекта: {changedElement.InjectInfoId}");
+                    LogInfo("Injector", "Запуск инжекта", $"ID Инжекта: {changedElement.InjectInfoId}");
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTING;
                     break;
             }

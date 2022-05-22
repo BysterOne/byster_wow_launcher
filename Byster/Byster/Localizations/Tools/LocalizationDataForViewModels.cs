@@ -79,7 +79,7 @@ namespace Byster.Localizations.Tools
             SelectRotationBranch = "SelectRotationBranch";
             SelectLoadtype = "SelectLoadtype";
             MenuOfSelectingRotations = "MenuOfSelectingRotations";
-            Confirmation = "Confirmarion";
+            Confirmation = "Confirmation";
             Error = "Error";
             Continue = "Continue";
             Cancel = "Cancel";

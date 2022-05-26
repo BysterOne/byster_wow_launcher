@@ -100,7 +100,7 @@ namespace Byster.Views
                 BackgroundImageDownloader.Init();
                 LogInfo("Common", "Запущен BackgroundImageDownloader");
                 LogInfo("Common", "Удаление остаточных файлов");
-                if (File.Exists("BysterUpdate.exe")) try { File.Delete("BysterUpdate.exe"); } catch { LogWarn("Common", "Ошибка удаления BysterUpdate.exe"); } catch { LogError("Common", "Ошибка удаления changeLocalization.bat"); }
+                if (File.Exists("BysterUpdate.exe")) try { File.Delete("BysterUpdate.exe"); } catch { LogWarn("Common", "Ошибка удаления BysterUpdate.exe"); }
                 if (File.Exists("update.bat")) try { File.Delete("update.bat"); } catch { LogWarn("Common", "Ошибка удаления update.bat"); }
                 if (File.Exists("changeLocalization.bat")) try { File.Delete("changeLocalization.bat"); } catch { LogWarn("Common", "Ошибка удаления changeLocalization.bat"); }
                 string qrCodesPath = Path.Combine(Path.GetTempPath(), "BysterQRCodes");

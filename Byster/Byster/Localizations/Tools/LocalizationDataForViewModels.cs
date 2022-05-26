@@ -55,9 +55,11 @@ namespace Byster.Localizations.Tools
         public LocalizationResource ReferalCode { get; set; }
         public LocalizationResource Payment { get; set; }
         public LocalizationResource RotationCreateWindowTitle { get; set; }
+        public LocalizationResource Sandbox { get; set; }
 
         public LocalizationDataForViewModels()
         {
+            Sandbox = "Sandbox";
             Main = "Main";
             Shop = "Shop";
             ShopCapitalized = "ShopCapitalized";
@@ -89,7 +91,6 @@ namespace Byster.Localizations.Tools
             SelectPayment = "SelectPayment";
             SelectPaymentNotRequired = "SelectPaymentNotRequired";
             ClearCart = "ClearCart";
-            Raschet = "Raschet";
             Sync = "Sync";
             Save = "Save";
             Add = "Add";
@@ -115,7 +116,7 @@ namespace Byster.Localizations.Tools
             }
             set
             {
-                if(value.Id != Localizator.LoadedLocalizationInfo.Id)
+                if (value.Id != Localizator.LoadedLocalizationInfo.Id)
                     Localizator.ReloadLocalization(value.LanguageCode);
             }
         }
@@ -123,7 +124,7 @@ namespace Byster.Localizations.Tools
         {
             get
             {
-                return LocalizationInfo.AllLocalizationInfos.ToArray(); 
+                return LocalizationInfo.AllLocalizationInfos.ToArray();
             }
         }
     }

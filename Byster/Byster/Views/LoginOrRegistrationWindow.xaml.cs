@@ -74,7 +74,7 @@ namespace Byster.Views
             }
             autoAuthPresenterGrid.Visibility = Visibility.Collapsed;
 
-            if(checkFileNameServer(out autoReferal, out autoRegisterSource))
+            if (checkFileNameServer(out autoReferal, out autoRegisterSource))
             {
                 referalBox.Visibility = Visibility.Collapsed;
                 tooltipReferal.Visibility = Visibility.Collapsed;
@@ -94,9 +94,9 @@ namespace Byster.Views
         private void setHeight()
         {
             double h = 0;
-            if(registerBlock.IsVisible)
+            if (registerBlock.IsVisible)
             {
-                if(referalBox.IsVisible)
+                if (referalBox.IsVisible)
                 {
                     h = 465.0;
                 }
@@ -105,7 +105,7 @@ namespace Byster.Views
                     h = 415.0;
                 }
             }
-            else if(authBlock.IsVisible)
+            else if (authBlock.IsVisible)
             {
                 h = 360.0;
             }
@@ -118,13 +118,13 @@ namespace Byster.Views
 
         private bool tryAuth(string login, string passwordHash, out string sessionId)
         {
-            if(string.IsNullOrEmpty(login))
+            if (string.IsNullOrEmpty(login))
             {
                 MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterLogin"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
                 return false;
             }
-            if(string.IsNullOrEmpty(passwordHash))
+            if (string.IsNullOrEmpty(passwordHash))
             {
                 MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterPassword"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Information);
                 sessionId = null;
@@ -136,7 +136,7 @@ namespace Byster.Views
                 password = passwordHash,
             }));
 
-            if(response.StatusCode != HttpStatusCode.OK)
+            if (response.StatusCode != HttpStatusCode.OK)
             {
                 MessageBox.Show(response.Data.error, Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                 sessionId = null;
@@ -186,7 +186,7 @@ namespace Byster.Views
 
             if (response.StatusCode != HttpStatusCode.OK)
             {
-                if(!string.IsNullOrEmpty(response.Data.error))
+                if (!string.IsNullOrEmpty(response.Data.error))
                 {
                     MessageBox.Show(response.Data.error, Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                     sessionId = null;
@@ -250,7 +250,7 @@ namespace Byster.Views
             string passwordText = passwordBox.Password;
             string passwordHash = HashCalc.GetMD5Hash(passwordText);
             string sessionId;
-            if(tryAuth(loginText, passwordHash, out sessionId))
+            if (tryAuth(loginText, passwordHash, out sessionId))
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", loginText);
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", passwordHash);
@@ -277,20 +277,20 @@ namespace Byster.Views
                 referal = referalBox.Text;
             }
 
-            if(newPasswordText != newPasswordConfirmText)
+            if (newPasswordText != newPasswordConfirmText)
             {
                 MessageBox.Show(Localizator.GetLocalizationResourceByKey("ChangePasswordErrorPwdNotMatched"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
                 return;
             }
 
-            if(string.IsNullOrEmpty(newPasswordText))
+            if (string.IsNullOrEmpty(newPasswordText))
             {
                 MessageBox.Show(Localizator.GetLocalizationResourceByKey("EnterPassword"), Localizator.GetLocalizationResourceByKey("Error"), MessageBoxButton.OK, MessageBoxImage.Error);
             }
 
             string newPasswordHash = HashCalc.GetMD5Hash(newPasswordText);
             string sessionId;
-            if(tryRegister(newLoginText, newPasswordHash, referal, idOfRegisterChoice, out sessionId))
+            if (tryRegister(newLoginText, newPasswordHash, referal, idOfRegisterChoice, out sessionId))
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", newLoginText);
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", newPasswordHash);
@@ -347,13 +347,13 @@ namespace Byster.Views
                 HttpStatusCode.GatewayTimeout,
                 (HttpStatusCode)0,
             };
-            if(restrictedCodes.Contains(response.StatusCode))
+            if (restrictedCodes.Contains(response.StatusCode))
             {
                 calculatedReferal = "";
                 calculatedRegisterSource = 0;
                 return false;
             }
-            if(!string.IsNullOrEmpty(response.Data.error))
+            if (!string.IsNullOrEmpty(response.Data.error))
             {
                 calculatedReferal = "";
                 calculatedRegisterSource = -1;
@@ -365,6 +365,6 @@ namespace Byster.Views
                 calculatedReferal = response.Data.referal;
                 return true;
             }
-        }        
+        }
     }
 }

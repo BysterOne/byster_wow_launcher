@@ -11,6 +11,7 @@ using Byster.Models.ViewModels;
 using System.Windows.Threading;
 using System.Threading;
 using System.Windows;
+using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Models.Services
 {
@@ -123,7 +124,7 @@ namespace Byster.Models.Services
             bool status;
             string link;
             (status, link) = RestService.ExecuteBuyRequest(cart);
-            if(ResultSum > 0)
+            if (ResultSum > 0)
             {
                 if (status && !string.IsNullOrEmpty(link))
                 {
@@ -136,7 +137,7 @@ namespace Byster.Models.Services
             }
             else
             {
-                if(status)
+                if (status)
                 {
                     BuyCartByBonusesSuccessAction?.Invoke();
                 }
@@ -159,7 +160,7 @@ namespace Byster.Models.Services
             {
                 TestElementFailAction?.Invoke();
             }
-            
+
         }
         public void CloseElement()
         {
@@ -167,7 +168,7 @@ namespace Byster.Models.Services
         }
         public void ClearCart()
         {
-            foreach(var product in AllProducts)
+            foreach (var product in AllProducts)
             {
                 product.RemoveAll();
             }
@@ -198,6 +199,7 @@ namespace Byster.Models.Services
 
         public void UpdateData()
         {
+            LogInfo("ShopService", "Обновление данных магазина...");
             IEnumerable<ShopProductInfoViewModel> products = null;
             products = RestService.GetAllProductCollection();
             if (products.ToArray().Length > 0)
@@ -221,15 +223,16 @@ namespace Byster.Models.Services
                     FilterProducts();
                 });
             }
+            LogInfo("ShopService", "Обновление данных магазина завершено");
         }
 
         public string ActivateCoupon(string couponCode)
         {
-           return RestService.ExecuteCouponRequest(couponCode) ? "success" : RestService.LastError;
+            return RestService.ExecuteCouponRequest(couponCode) ? "success" : RestService.LastError;
         }
         private void setElementsActions()
         {
-            foreach(var product in AllProducts)
+            foreach (var product in AllProducts)
             {
                 product.CloseDel = new Action(() => { CloseElement(); });
                 product.TestDel = new Action<object>((obj) => { TestProduct(Convert.ToInt32(obj)); });
@@ -262,10 +265,10 @@ namespace Byster.Models.Services
         private Cart createCartProductCollection()
         {
             double sum = 0;
-            List<(int, int)> cartProducts = new List<(int, int)> ();
+            List<(int, int)> cartProducts = new List<(int, int)>();
             foreach (var product in AllProducts)
             {
-                if(product.Count > 0)
+                if (product.Count > 0)
                 {
                     cartProducts.Add((product.Product.Id, product.Count));
                     sum += product.Product.Price * product.Count;
@@ -314,7 +317,7 @@ namespace Byster.Models.Services
             {
                 Sum = 0;
             });
-            
+
         }
 
         public void Initialize(Dispatcher dispatcher)
@@ -347,7 +350,7 @@ namespace Byster.Models.Services
                 return closeProduct ??
                     (closeProduct = new RelayCommand((obj) =>
                     {
-                        if(Convert.ToBoolean(obj))
+                        if (Convert.ToBoolean(obj))
                         {
                             CloseElement();
                         }
@@ -356,7 +359,7 @@ namespace Byster.Models.Services
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
@@ -376,7 +379,7 @@ namespace Byster.Models.Services
         {
             var filter = new Filter();
             filter.FilterClasses = FilterItemWowClass.GetAllFilterItems();
-            foreach(var item in filter.FilterClasses)
+            foreach (var item in filter.FilterClasses)
             {
                 item.PropertyChanged += (s, e) => filter.OnFilterChanged();
             }
@@ -403,12 +406,12 @@ namespace Byster.Models.Services
             return true;
         }
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
     }
-    
+
     public class FilterClass
     {
         public string Name { get; set; }
@@ -430,7 +433,7 @@ namespace Byster.Models.Services
         }
     }
 
-    public class FilterItemWowClass: IFilterItem<FilterClass>
+    public class FilterItemWowClass : IFilterItem<FilterClass>
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string property = "")
@@ -451,7 +454,7 @@ namespace Byster.Models.Services
         public static ObservableCollection<IFilterItem<FilterClass>> GetAllFilterItems()
         {
             var res = new ObservableCollection<IFilterItem<FilterClass>>();
-            foreach(var item in FilterClass.GetAllClasses())
+            foreach (var item in FilterClass.GetAllClasses())
             {
                 res.Add(new FilterItemWowClass()
                 {

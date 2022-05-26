@@ -44,9 +44,9 @@ namespace Byster.Models.Utilities
 
         public override bool Equals(object obj)
         {
-            if(obj == null) return false;
-            if(!(obj is WoW)) return false;
-            if((obj as WoW) != this) return false;
+            if (obj == null) return false;
+            if (!(obj is WoW)) return false;
+            if ((obj as WoW) != this) return false;
             return true;
         }
 
@@ -80,7 +80,7 @@ namespace Byster.Models.Utilities
             Title = title;
 
             TimerWatcher = new Timer(new TimerCallback(TimerTick), null, 0, 1000);
-            
+
         }
 
         public void Dispose()

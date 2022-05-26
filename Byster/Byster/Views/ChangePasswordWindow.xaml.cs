@@ -60,7 +60,7 @@ namespace Byster.Views
                 var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), Localizator.GetLocalizationResourceByKey("UnexpectedError"));
                 w.ShowDialog();
             }
-                
+
         }
 
         string newPwdTag = "";

@@ -53,7 +53,7 @@ namespace Byster.Models.Utilities
 
         private static void threadMethod()
         {
-            while(true)
+            while (true)
             {
                 try
                 {
@@ -62,14 +62,18 @@ namespace Byster.Models.Utilities
                     {
                         try
                         {
+                            blockQueueMutex.WaitOne();
                             var downloadingItem = ItemsToDownload.Dequeue();
+                            blockQueueMutex.ReleaseMutex();
                             LogInfo("ImageDownloader", "Попытка скачивания", "Url:", downloadingItem.PathOfNetworkSource);
                             WebClient client = new WebClient();
                             byte[] buffer = client.DownloadData(downloadingItem.PathOfNetworkSource);
                             File.WriteAllBytes(downloadingItem.PathOfLocalSource, buffer);
                             downloadingItem.IsDownLoaded = true;
                             downloadingItem.PathOfCurrentLocalSource = downloadingItem.PathOfLocalSource;
+                            blockCollectionsMutex.WaitOne();
                             DownloadedItems.Add(downloadingItem);
+                            blockCollectionsMutex.ReleaseMutex();
                             client.Dispose();
                             LogInfo("ImageDownloader", "Скачан файл изображения", "Путь:", downloadingItem.PathOfCurrentLocalSource, " Url:", downloadingItem.PathOfNetworkSource);
                         }
@@ -81,18 +85,21 @@ namespace Byster.Models.Utilities
                     SuspendMutex.ReleaseMutex();
                     Thread.Sleep(100);
                 }
-                catch(Exception ex)
+                catch (Exception ex)
                 {
                     LogError("ImageDownloader", "Mutex ошибка", ex.Message, ex.StackTrace);
                 }
-                    
+                finally
+                {
+                }
+
             }
         }
 
         private static void readImageDirectory()
         {
             List<string> files = Directory.GetFiles(ImageRootPath).ToList();
-            foreach(string file in files)
+            foreach (string file in files)
             {
                 DownloadedItems.Add(new ImageItem()
                 {
@@ -105,9 +112,9 @@ namespace Byster.Models.Utilities
 
         public static ImageItem GetImageItemByNetworkPath(string networkPath)
         {
-            if(!string.IsNullOrEmpty(networkPath))
+            if (!string.IsNullOrEmpty(networkPath))
             {
-                if(getExtensionOfNetworkSource(networkPath) == ".mp4")
+                if (getExtensionOfNetworkSource(networkPath) == ".mp4")
                 {
                     ImageItem imageItem = new ImageItem()
                     {
@@ -149,7 +156,6 @@ namespace Byster.Models.Utilities
         {
             if (string.IsNullOrEmpty(pathToImage)) return null;
             string newLocalPath = ImageRootPath + HashCalc.GetMD5Hash(pathToImage) + getExtensionOfNetworkSource(pathToImage);
-            //File.Create(newLocalPath).Close();
             ImageItem creatingItem = new ImageItem()
             {
                 PathOfNetworkSource = pathToImage,
@@ -175,11 +181,11 @@ namespace Byster.Models.Utilities
 
         private static string getExtensionOfNetworkSource(string netPath)
         {
-            if(!string.IsNullOrEmpty(netPath))
+            if (!string.IsNullOrEmpty(netPath))
             {
                 string ext = ".";
                 string[] parts = netPath.Split('.');
-                if(parts.Last().Length <= 3 && parts.Last().Length > 0)
+                if (parts.Last().Length <= 3 && parts.Last().Length > 0)
                 {
                     ext += parts.Last();
                     return ext;

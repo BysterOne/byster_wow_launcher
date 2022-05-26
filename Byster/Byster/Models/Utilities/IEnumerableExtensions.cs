@@ -11,9 +11,9 @@ namespace Byster.Models.Utilities
     {
         public static ObservableCollection<T> ToObservableCollection<T>(this IEnumerable<T> ie)
         {
-            if(ie == null) return null;
+            if (ie == null) return null;
             ObservableCollection<T> collection = new ObservableCollection<T>();
-            foreach(T item in ie)
+            foreach (T item in ie)
             {
                 collection.Add(item);
             }

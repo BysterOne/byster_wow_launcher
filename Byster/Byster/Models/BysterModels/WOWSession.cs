@@ -20,7 +20,7 @@ namespace Byster.Models.BysterModels
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
-                if(property == "WowApp")
+                if (property == "WowApp")
                 {
                     InjectInfo.ProcessId = (uint)WowApp.Process.Id;
                 }
@@ -117,7 +117,7 @@ namespace Byster.Models.BysterModels
                 {Classes.DRUID, WOWClasses.Druid },
                 {Classes.DEATHKNIGHT, WOWClasses.DeathKnight }
             };
-            if(!classDict.ContainsKey(sessionClass))
+            if (!classDict.ContainsKey(sessionClass))
             {
                 return WOWClasses.ANY;
             }

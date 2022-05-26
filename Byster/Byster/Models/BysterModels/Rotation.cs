@@ -55,34 +55,12 @@ namespace Byster.Models.BysterModels
             SpecOfRotation = RotationSpecialization.GetRotationSpecializationByEnumRotationSpecialization(RotationSpecialization.GetSpecByName(response.rotation.specialization));
             Type = RotationType.GetRotationTypeByRotationTypes(RotationType.GetTypeByName(response.rotation.type));
             Name = response.rotation.name;
-
-            Medias = new List<Media>();
-            Media prevMedia = null;
-            foreach (var restMedia in response.rotation.media)
-            {
-                Media currentMedia = new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type), prevMedia);
-                Medias.Add(currentMedia);
-                prevMedia = currentMedia;
-            }
-
+            Medias = null;
             ImageUri =
                 SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
-                Medias.Count > 0 ? Medias[0].Uri :
                 Type.Name.ToLower() == "bot" ? "/Resources/Images/bot-icon-default.png" :
                 Type.Name.ToLower() == "utility" ? "/Resources/Images/utility-icon-default.png" :
-                                                                                            "/Resources/Images/utility-icon-default.png";
-            if (SpecOfRotation.EnumRotationSpecialization == RotationSpecializations.NULL && Medias.Count > 0)
-            {
-                Medias[0].PropertyChanged += (object obj, PropertyChangedEventArgs e) =>
-                {
-                    ImageUri =
-                    SpecOfRotation.EnumRotationSpecialization != RotationSpecializations.NULL ? SpecOfRotation.ImageUri :
-                    Medias.Count > 0 ? Medias[0].Uri :
-                    Type.Name.ToLower() == "bot" ? "/Resources/Images/bot-icon-default.png" :
-                    Type.Name.ToLower() == "utility" ? "/Resources/Images/utility-icon-default.png" :
-                                                                                                "/Resources/Images/utility-icon-default.png";
-                };
-            }
+                "/Resources/Images/utility-icon-default.png";
         }
     }
 

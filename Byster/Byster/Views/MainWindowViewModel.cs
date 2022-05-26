@@ -16,6 +16,7 @@ using Byster.Models.ViewModels;
 using Byster.Localizations.Tools;
 using System.Windows;
 using System.Windows.Threading;
+using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Views
 {
@@ -112,7 +113,7 @@ namespace Byster.Views
         {
             get
             {
-                if(SelectedSession == null || !SelectedSession.WowApp.WorldLoaded)
+                if (SelectedSession == null || !SelectedSession.WowApp.WorldLoaded)
                 {
                     return Visibility.Collapsed;
                 }
@@ -126,7 +127,7 @@ namespace Byster.Views
         {
             get
             {
-                if(SelectedSession == null)
+                if (SelectedSession == null)
                 {
                     return Visibility.Visible;
                 }
@@ -140,7 +141,7 @@ namespace Byster.Views
         {
             get
             {
-                if(SelectedSession?.WowApp?.WorldLoaded ?? true)
+                if (SelectedSession?.WowApp?.WorldLoaded ?? true)
                 {
                     return Visibility.Collapsed;
                 }
@@ -249,7 +250,7 @@ namespace Byster.Views
                     bool res = false;
                     res = selectorWindow.ShowModalDialog();
                     if (selectorWindow.SystemId == -1 && Shop.ResultSum > 0) return false;
-                    if (res)  Shop.SelectedPaymentSystemId = selectorWindow.SystemId;
+                    if (res) Shop.SelectedPaymentSystemId = selectorWindow.SystemId;
                     return res;
                 },
                 BuyCartSuccessAction = (string str) =>
@@ -342,7 +343,7 @@ namespace Byster.Views
             UserInfo.Initialize(dispatcher);
             ActionService.Initialize(dispatcher);
             SessionService.Initialize(dispatcher);
-            if(UserInfo.UserType == BranchType.DEVELOPER)
+            if (UserInfo.UserType == BranchType.DEVELOPER)
             {
                 DeveloperRotations.Initialize(dispatcher);
             }
@@ -432,12 +433,12 @@ namespace Byster.Views
             {
                 return shopCommand ?? (shopCommand = new RelayCommand(() =>
                 {
-                    foreach(var item in Shop.FilterOptions.FilterClasses)
+                    foreach (var item in Shop.FilterOptions.FilterClasses)
                     {
                         item.IsSelected = false;
                     }
                     var selectedClass = Shop.FilterOptions.FilterClasses.Where(_ifi => _ifi.FilterValue.EnumClass == SelectedSession.SessionClass.EnumWOWClass).FirstOrDefault();
-                    if(selectedClass != null) selectedClass.IsSelected = true;
+                    if (selectedClass != null) selectedClass.IsSelected = true;
                     foreach (var item in Shop.FilterOptions.FilterTypes)
                     {
                         item.IsSelected = false;
@@ -469,13 +470,17 @@ namespace Byster.Views
         private void syncData()
         {
         }
-
+        bool isUpdating = false;
         public void UpdateData()
         {
+            if(isUpdating) return;
+            isUpdating = true;
             Task.Run(() =>
             {
                 StatusText = Localizator.GetLocalizationResourceByKey("UpdatingData");
+                LogInfo("Common", "Приостановка работы Background Image Downloader...");
                 BackgroundImageDownloader.Suspend();
+                LogInfo("Common", "Обновление данных...");
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataStarted?.Invoke();
@@ -488,12 +493,12 @@ namespace Byster.Views
                 {
                     UpdateDataCompleted?.Invoke();
                 });
-                Task.Run(() =>
-                {
-                    BackgroundImageDownloader.Resume();
-                });
+                LogInfo("Common", "Обновление данных завершено");
+                BackgroundImageDownloader.Resume();
+                LogInfo("Common", "Возобновление работы Background Image Downloader");
+                isUpdating = false;
             });
-            
+
         }
 
         public void Dispose()
@@ -506,7 +511,7 @@ namespace Byster.Views
         public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-            if(property == "SelectedSession")
+            if (property == "SelectedSession")
             {
                 checkRotations();
             }

@@ -65,7 +65,7 @@ namespace Byster.Models.ViewModels
             {
                 return openCommand ?? (openCommand = new RelayCommand(() =>
                 {
-                   OpenAction?.Invoke(SourceMedia);
+                    OpenAction?.Invoke(SourceMedia);
                 }));
             }
         }
@@ -79,7 +79,7 @@ namespace Byster.Models.ViewModels
     {
         private static readonly string[] videoExtens = { ".mp4", ".avi", ".mkv" };
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
@@ -138,7 +138,7 @@ namespace Byster.Models.ViewModels
 
         private void sourceChangedCallback(object sender, PropertyChangedEventArgs e)
         {
-            
+
         }
 
         public void PlayMedia(Media media)
@@ -148,9 +148,9 @@ namespace Byster.Models.ViewModels
             VideoPlayer.Visibility = Visibility.Collapsed;
             ImagePlayer.Visibility = Visibility.Collapsed;
             ControlsPanel.Visibility = Visibility.Collapsed;
-            
+
             string url;
-            if(Path.GetFileName(media.ImageItem.PathOfCurrentLocalSource).ToLower().Contains("placeholder"))
+            if (Path.GetFileName(media.ImageItem.PathOfCurrentLocalSource).ToLower().Contains("placeholder"))
             {
                 url = media.ImageItem.PathOfNetworkSource;
             }
@@ -210,7 +210,7 @@ namespace Byster.Models.ViewModels
         {
             get => playVideoCommand ?? (playVideoCommand = new RelayCommand(() =>
             {
-                if(VideoPlayer.Visibility == Visibility.Visible)
+                if (VideoPlayer.Visibility == Visibility.Visible)
                 {
                     VideoPlayer.Play();
                 }
@@ -285,8 +285,8 @@ namespace Byster.Models.ViewModels
         {
             if (e.OldValue == e.NewValue || e.NewValue == null) return;
             MediaPresenterControl mediaPresenterControl = (MediaPresenterControl)sender;
-            if(mediaPresenterControl.VideoPlayer == null) return;
-            if(mediaPresenterControl.VideoPlayer.Visibility != Visibility.Visible) return;
+            if (mediaPresenterControl.VideoPlayer == null) return;
+            if (mediaPresenterControl.VideoPlayer.Visibility != Visibility.Visible) return;
             mediaPresenterControl.VideoPlayer.Position = new TimeSpan(Convert.ToInt64(e.NewValue));
         }
 
@@ -368,7 +368,7 @@ namespace Byster.Models.ViewModels
             }
             set
             {
-                SetValue (PositionControlVisibilityProperty, value);
+                SetValue(PositionControlVisibilityProperty, value);
             }
         }
 

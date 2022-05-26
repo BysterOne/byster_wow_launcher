@@ -39,7 +39,7 @@ namespace Byster.Models.Services
 
         public void FilterRotations()
         {
-            foreach(var rotation in AllActiveRotations)
+            foreach (var rotation in AllActiveRotations)
             {
                 if (rotation.RotationClass.EnumWOWClass == FilterClass ||
                     rotation.RotationClass.EnumWOWClass == WOWClasses.ANY ||
@@ -57,7 +57,7 @@ namespace Byster.Models.Services
         private void sortAllRotations()
         {
             int count = 0;
-            for(int i = count; i < AllActiveRotations.Count; i++)
+            for (int i = count; i < AllActiveRotations.Count; i++)
             {
                 if (AllActiveRotations[i].Type.Name.ToLower() == "pvp")
                 {
@@ -110,7 +110,7 @@ namespace Byster.Models.Services
             {
                 IEnumerable<ActiveRotationViewModel> products = null;
                 products = RestService.GetActiveRotationCollection();
-                if(products.ToArray().Length > 0)
+                if (products.ToArray().Length > 0)
                 {
                     Dispatcher.Invoke(() =>
                     {
@@ -127,7 +127,7 @@ namespace Byster.Models.Services
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
             FilterRotations();
@@ -136,7 +136,7 @@ namespace Byster.Models.Services
         public ActiveRotationsService(RestService service)
         {
             AllActiveRotations = new ObservableCollection<ActiveRotationViewModel>();
-            if(service == null)
+            if (service == null)
             {
                 throw new ArgumentNullException(nameof(service));
             }

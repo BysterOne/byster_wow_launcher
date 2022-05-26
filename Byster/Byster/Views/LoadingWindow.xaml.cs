@@ -37,12 +37,12 @@ namespace Byster.Views
         public LoadingWindow()
         {
             InitializeComponent();
-            
+
             string currentDir = Directory.GetCurrentDirectory();
-            
+
             // Запуск логирования
             BysterLogger.Init();
-            
+
             //Обработчик исключений диспетчера
             App.Current.DispatcherUnhandledException += (sender, e) =>
             {
@@ -103,6 +103,18 @@ namespace Byster.Views
                 if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
                 if (File.Exists("update.bat")) File.Delete("update.bat");
                 if (File.Exists("changeLocalization.bat")) File.Delete("changeLocalization.bat");
+                string qrCodesPath = Path.Combine(Path.GetTempPath(), "BysterQRCodes");
+                foreach(var file in Directory.GetFiles(qrCodesPath))
+                {
+                    try
+                    {
+                        File.Delete(Path.Combine(qrCodesPath, file));
+                    }
+                    catch
+                    {
+                        LogWarn("Common", "Ошибка удаления QR Code", "Path: ", file);
+                    }
+                }
                 LogInfo("Common", "Удаление остаточных файлов завершено");
                 LogInfo("Common", "Проверка обновлений");
                 string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
@@ -119,7 +131,7 @@ namespace Byster.Views
                 string onlineVersion = Encoding.UTF8.GetString(response.RawBytes);
                 if (onlineVersion != version)
                 {
-                    
+
                     LogInfo("Common", $"Обновление от версии {version} до {onlineVersion}");
                     Thread thread = new Thread(() => { updateApp(onlineVersion); });
                     thread.Start();

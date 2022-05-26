@@ -14,7 +14,7 @@ namespace Byster.Models.BysterModels
         static ClassWOW()
         {
             AllClasses = new List<ClassWOW>();
-            for(int i = 0; i < 11; i++)
+            for (int i = 0; i < 11; i++)
             {
                 AllClasses.Add(new ClassWOW((WOWClasses)i));
             }
@@ -27,7 +27,7 @@ namespace Byster.Models.BysterModels
         public string ImageUri { get; private set; }
         public string NameOfClass { get; private set; }
         public WOWClasses EnumWOWClass { get; private set; }
-        
+
 
         public ClassWOW() { }
 
@@ -84,7 +84,7 @@ namespace Byster.Models.BysterModels
                 "SHAMAN"
             };
 
-            if(string.IsNullOrEmpty(className))
+            if (string.IsNullOrEmpty(className))
             {
                 return WOWClasses.ANY;
             }

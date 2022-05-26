@@ -14,155 +14,6 @@ using System.Windows.Data;
 
 namespace Byster.Models.Utilities
 {
-
-    //public class ScrollToViewAfterSelectionBehavior : Behavior<ListBox>
-    //{
-    //    protected override void OnAttached()
-    //    {
-    //        base.OnAttached();
-    //        AssociatedObject.Loaded += ItemLoaded;
-    //        AssociatedObject.Unloaded += ItemUnloaded;
-    //    }
-
-    //    protected override void OnDetaching()
-    //    {
-    //        base.OnDetaching();
-    //        AssociatedObject.Loaded -= ItemLoaded;
-    //        ItemUnloaded(AssociatedObject, new RoutedEventArgs());
-    //        AssociatedObject.Unloaded -= ItemUnloaded;
-    //    }
-    //    protected override void OnChanged()
-    //    {
-    //        base.OnChanged();
-    //        foreach(var item in AssociatedObject.Items)
-    //        {
-    //            var listboxitem = (ListBoxItem)AssociatedObject.ItemContainerGenerator.ContainerFromItem(item);
-    //            if (listboxitem == null) continue;
-    //            var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
-    //            if(storyboard == null) continue;
-    //            storyboard.Completed -= SelectionCompleted; 
-    //            storyboard.Completed += SelectionCompleted;
-    //        }
-    //    }
-
-    //    private void ItemUnloaded(object sender, RoutedEventArgs e)
-    //    {
-    //        AssociatedObject.Unloaded -= ItemUnloaded;
-    //        foreach (var item in AssociatedObject.Items)
-    //        {
-    //            var listboxitem = (ListBoxItem)AssociatedObject.ItemContainerGenerator.ContainerFromItem(item);
-    //            if (listboxitem == null) continue;
-    //            var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
-    //            if (storyboard == null) continue;
-    //            storyboard.Completed -= SelectionCompleted;
-    //        }
-    //    }
-
-    //    private void ItemLoaded(object sender, RoutedEventArgs e)
-    //    {
-    //        AssociatedObject.Loaded -= ItemLoaded;
-    //        for (int i = 0; i < AssociatedObject.Items.Count; i++)
-    //        {
-    //            var item = AssociatedObject.ItemContainerGenerator.ContainerFromIndex(i);
-    //            if(item == null) continue;
-    //            var listboxitem = item as ListBoxItem;
-    //            if (listboxitem == null) continue;
-    //            var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
-    //            if (storyboard == null) continue;
-    //            storyboard.Completed += SelectionCompleted;
-    //        }
-    //        var incc = AssociatedObject.ItemsSource as INotifyCollectionChanged;
-    //        if(incc != null)
-    //            incc.CollectionChanged += incc_CollectionChanged;
-    //    }
-
-    //    private void incc_CollectionChanged(object sender, NotifyCollectionChangedEventArgs e)
-    //    {
-    //        if(e.Action != NotifyCollectionChangedAction.Add) return;
-    //        foreach (var col_item in e.NewItems)
-    //        {
-    //            var item = AssociatedObject.ItemContainerGenerator.ContainerFromItem(col_item);
-    //            if (item == null) continue;
-    //            var listboxitem = item as ListBoxItem;
-    //            if (listboxitem == null) continue;
-    //            if(listboxitem.IsLoaded)
-    //            {
-    //                if (listboxitem.IsVisible)
-    //                {
-    //                    var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
-    //                    if (storyboard != null)
-    //                        storyboard.Completed += SelectionCompleted;
-    //                }
-    //                listboxitem.IsVisibleChanged += (o, args) =>
-    //                {
-    //                    if (!Convert.ToBoolean(args.NewValue)) return;
-    //                    var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
-    //                    if (storyboard == null) return;
-    //                    storyboard.Completed -= SelectionCompleted;
-    //                    storyboard.Completed += SelectionCompleted;
-    //                };
-    //            }
-    //            else
-    //            {
-    //                listboxitem.Loaded += (o, args) =>
-    //                {
-    //                    if (listboxitem.IsVisible)
-    //                    {
-    //                        var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
-    //                        if (storyboard != null)
-    //                            storyboard.Completed += SelectionCompleted;
-    //                    }
-    //                    listboxitem.IsVisibleChanged += (_o, _args) =>
-    //                    {
-    //                        if (!Convert.ToBoolean(_args.NewValue)) return;
-    //                        var storyboard = getStoryboardOfSelectedStateOfListBox(listboxitem);
-    //                        if (storyboard == null) return;
-    //                        storyboard.Completed -= SelectionCompleted;
-    //                        storyboard.Completed += SelectionCompleted;
-    //                    };
-    //                };
-    //            }
-    //        }
-    //    }
-
-    //    private void SelectionCompleted(object sender, EventArgs e)
-    //    {
-    //        var listbox = AssociatedObject;
-    //        listbox.ScrollIntoView(listbox.SelectedItem);
-    //    }
-
-    //    private Storyboard getStoryboardOfSelectedStateOfListBox(ListBoxItem listboxitem)
-    //    {
-    //        VisualState selectedState = null;
-    //        VisualStateGroup selectionGroup = null;
-    //        var element = (Border)listboxitem.Template.FindName("borderItem", listboxitem);
-    //        if(element == null) return null;
-    //        var groups = VisualStateManager.GetVisualStateGroups(element);
-    //        foreach (var group in groups)
-    //        {
-    //            var gr = group as VisualStateGroup;
-    //            if (gr.Name == "SelectionStates")
-    //            {
-    //                selectionGroup = gr;
-    //                break;
-    //            }
-    //        }
-    //        if (selectionGroup == null) return null;
-    //        var states = selectionGroup.States;
-    //        foreach (var state in states)
-    //        {
-    //            var st = state as VisualState;
-    //            if (st.Name == "Selected")
-    //            {
-    //                selectedState = st;
-    //                break;
-    //            }
-    //        }
-    //        if (selectedState == null) return null;
-    //        return selectedState.Storyboard;
-    //    }
-    //}
-
     public class AnimatedOffsets : DependencyObject
     {
         public static readonly DependencyProperty AnimatedHorizontalOffsetProperty = DependencyProperty.RegisterAttached("AnimatedHorizontalOffset", typeof(double), typeof(ScrollViewer), new PropertyMetadata()
@@ -174,7 +25,6 @@ namespace Byster.Models.Utilities
                 if (args.NewValue == null) return;
                 if (dp == null || !(dp is ScrollViewer)) return;
                 (dp as ScrollViewer).ScrollToHorizontalOffset((double)args.NewValue);
-                //dp.SetValue(ScrollViewer.HorizontalOffsetProperty, args.NewValue);
             },
         });
         public static readonly DependencyProperty AnimatedVerticalOffsetProperty = DependencyProperty.RegisterAttached("AnimatedVerticalOffset", typeof(double), typeof(ScrollViewer), new PropertyMetadata()
@@ -186,14 +36,30 @@ namespace Byster.Models.Utilities
                 if (args.NewValue == null) return;
                 if (dp == null || !(dp is ScrollViewer)) return;
                 (dp as ScrollViewer).ScrollToVerticalOffset((double)args.NewValue);
-                //dp.SetValue(ScrollViewer.HorizontalOffsetProperty, args.NewValue);
             },
         });
+
+        public static double GetAnimatedHorizontalOffset(DependencyObject dp)
+        {
+            return (double)dp.GetValue(AnimatedHorizontalOffsetProperty);
+        }
+        public static double GetAnimatedVerticalOffset(DependencyObject dp)
+        {
+            return (double)dp.GetValue(AnimatedVerticalOffsetProperty);
+        }
+        public static void SetAnimatedHorizontalOffset(DependencyObject dp, object value)
+        {
+            dp.SetValue(AnimatedHorizontalOffsetProperty, value);
+        }
+        public static void SetAnimatedVerticalOffset(DependencyObject dp, object value)
+        {
+            dp.SetValue(AnimatedVerticalOffsetProperty, value);
+        }
     }
 
     public class ScrollToViewAfterSelectionBehavior : Behavior<ListBox>
     {
-        
+
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -305,13 +171,13 @@ namespace Byster.Models.Utilities
         private void SelectionCompleted(object sender, EventArgs e)
         {
             var listbox = AssociatedObject;
-            if(listbox.SelectedItem == null) return;
-            if(listbox.SelectedIndex + 1 < listbox.Items.Count)
+            if (listbox.SelectedItem == null) return;
+            if (listbox.SelectedIndex + 1 < listbox.Items.Count)
             {
                 ScrollViewer scrollViewer = getFirstChildOfType<ScrollViewer>(listbox);
                 if (scrollViewer == null) return;
                 UIElement ancestorPanel = getFirstChildOfType<WrapPanel>(scrollViewer);
-                var itemPoint = (listbox.ItemContainerGenerator.ContainerFromIndex(listbox.SelectedIndex) as UIElement).TranslatePoint(new Point(0,0), ancestorPanel);
+                var itemPoint = (listbox.ItemContainerGenerator.ContainerFromIndex(listbox.SelectedIndex) as UIElement).TranslatePoint(new Point(0, 0), ancestorPanel);
                 double startOffsetX = scrollViewer.HorizontalOffset;
                 double startOffsetY = scrollViewer.VerticalOffset;
                 double newOffsetX = itemPoint.X;
@@ -337,13 +203,13 @@ namespace Byster.Models.Utilities
             }
         }
 
-        private T getFirstChildOfType<T>(DependencyObject ancestorDO) where T: DependencyObject
+        private T getFirstChildOfType<T>(DependencyObject ancestorDO) where T : DependencyObject
         {
             int childCount = VisualTreeHelper.GetChildrenCount(ancestorDO);
-            for(int i = 0; i < childCount; i++)
+            for (int i = 0; i < childCount; i++)
             {
                 DependencyObject _do = VisualTreeHelper.GetChild(ancestorDO, i);
-                if(_do is T)
+                if (_do is T)
                 {
                     return _do as T;
                 }
@@ -390,14 +256,14 @@ namespace Byster.Models.Utilities
         protected override void OnAttached()
         {
             base.OnAttached();
-            if(AssociatedObject == null) return;
+            if (AssociatedObject == null) return;
             AssociatedObject.PreviewMouseWheel += mouseWheelCallback;
         }
 
         private void mouseWheelCallback(object sender, System.Windows.Input.MouseWheelEventArgs e)
         {
             IEnumerable<ScrollViewer> scrollviewers = getAllVisualElementsByType<ScrollViewer>(AssociatedObject);
-            foreach(var scrolviewer in scrollviewers)
+            foreach (var scrolviewer in scrollviewers)
             {
                 if (scrolviewer.IsMouseOver) return;
             }
@@ -416,10 +282,10 @@ namespace Byster.Models.Utilities
             List<T> children = new List<T>();
             if (dependencyObject == null) return null;
 
-            for(int i = 0; i < VisualTreeHelper.GetChildrenCount(dependencyObject); i++)
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(dependencyObject); i++)
             {
                 var rawChild = VisualTreeHelper.GetChild(dependencyObject, i);
-                if(rawChild is T)
+                if (rawChild is T)
                 {
                     children.Add((T)rawChild);
                 }

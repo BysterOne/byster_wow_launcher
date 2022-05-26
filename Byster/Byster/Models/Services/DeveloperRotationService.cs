@@ -15,365 +15,10 @@ using Byster.Models.ViewModels;
 using System.ComponentModel;
 using static Byster.Models.Utilities.BysterLogger;
 using Byster.Localizations.Tools;
+using Byster.Models.BysterModels;
 
 namespace Byster.Models.Services
 {
-
-    public class DeveloperRotation : INotifyPropertyChanged
-    {
-        private static int enumeratorIds = 0;
-        public int Id { get; private set; } = enumeratorIds++;
-
-        private string rootPath;
-        public string gitUrl { get; private set;  }
-
-        private Visibility isShowInCollection = Visibility.Visible;
-        private DevClass classOfRotation;
-        private DevRoleType roleTypeOfRotation;
-        private DevSpecialization specializationOfRotation;
-        private DevRotationType rotationTypeOfRotation;
-        private string name;
-        private bool isEnabled;
-
-        private DeveloperRotationStatusCode status = DeveloperRotationStatusCode.IDLE;
-        private Semaphore syncSemaphore;
-
-        public DeveloperRotationStatusCode Status
-        {
-            get => status;
-            set
-            {
-                status = value;
-                OnPropertyChanged("Status");
-                OnPropertyChanged("StatusText");
-                OnPropertyChanged("IdleVisibility");
-                OnPropertyChanged("ActiveVisibility");
-            }
-        }
-
-        public bool IsEnabled
-        {
-            get => isEnabled;
-            set
-            {
-                isEnabled = value;
-                OnPropertyChanged("IsEnabled");
-            }
-        }
-
-        public Visibility IsShowInCollection
-        {
-            get => isShowInCollection;
-            set
-            {
-                isShowInCollection = value;
-                OnPropertyChanged("IsShowInCollection");
-            }
-        }
-
-        public DevClass ClassOfRotation
-        {
-            get => classOfRotation;
-            set
-            {
-                classOfRotation = value;
-                OnPropertyChanged("ClassOfRotation");
-            }
-        }
-        public DevRoleType RoleTypeOfRotation
-        {
-            get => roleTypeOfRotation;
-            set
-            {
-                roleTypeOfRotation = value;
-                OnPropertyChanged("RoleTypeOfRotation");
-            }
-        }
-
-        public DevRotationType RotationTypeOfRotation
-        {
-            get => rotationTypeOfRotation;
-            set
-            {
-                rotationTypeOfRotation = value;
-                OnPropertyChanged("RotationTypeOfRotation");
-            }
-        }
-        public DevSpecialization SpecializationOfRotation
-        {
-            get => specializationOfRotation;
-            set
-            {
-                specializationOfRotation = value;
-                OnPropertyChanged("SpecializationOfRotation");
-            }
-        }
-
-        public string Name
-        {
-            get => name;
-            set
-            {
-                name = value;
-                OnPropertyChanged("Name");
-            }
-        }
-        public string Path
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(rootPath) ||
-                    string.IsNullOrEmpty(rotationTypeOfRotation?.Name ?? null) ||
-                    string.IsNullOrEmpty(classOfRotation?.Value ?? null) ||
-                    string.IsNullOrEmpty(Name)) return "";
-                return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name.ToLower().Replace(' ', '-')}";
-            }
-        }
-
-        public string PathToClone
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(rootPath) ||
-                    string.IsNullOrEmpty(rotationTypeOfRotation?.Name ?? null) ||
-                    string.IsNullOrEmpty(classOfRotation?.Value ?? null) ||
-                    string.IsNullOrEmpty(Name)) return "";
-                return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}";
-            }
-        }
-
-        public string TocPath
-        {
-            get
-            {
-                if (string.IsNullOrEmpty(rootPath) ||
-                    string.IsNullOrEmpty(rotationTypeOfRotation?.Name ?? null) ||
-                    string.IsNullOrEmpty(classOfRotation?.Value ?? null) ||
-                    string.IsNullOrEmpty(Name)) return "";
-                if (File.Exists($"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name.ToLower().Replace(' ', '-')}\\{name}.toc"))
-                    return $"{rootPath}\\{rotationTypeOfRotation.Name}\\{classOfRotation.Value}\\{name.ToLower().Replace(' ', '-')}\\{name}.toc";
-                else if (Directory.Exists(Path + $"\\.git"))
-                {
-                    string[] names = DeveloperRotationCore.GetAllFilesWithSpecifiedExtension(Path, ".toc");
-                    if (names.Length > 0)
-                        return names[0];
-                }
-                return "";
-            }
-        }
-        public bool IsEnabledChangingIsEnabled
-        {
-            get => string.IsNullOrEmpty(TocPath) ? false : File.Exists(TocPath);
-        }
-        public Visibility IdleVisibility
-        {
-            get => Status == DeveloperRotationStatusCode.IDLE ? Visibility.Visible : Visibility.Hidden;
-        }
-        public Visibility ActiveVisibility
-        {
-            get => Status != DeveloperRotationStatusCode.IDLE ? Visibility.Visible : Visibility.Hidden;
-        }
-        public string StatusText
-        {
-            get
-            {
-                switch (Status)
-                {
-                    default:
-                    case DeveloperRotationStatusCode.IDLE:
-                        return "";
-                    case DeveloperRotationStatusCode.PREPARING_TO_SYNC:
-                        return Localizator.GetLocalizationResourceByKey("PreparingToSync").Value;
-                    case DeveloperRotationStatusCode.WAITING_SYNC:
-                        return Localizator.GetLocalizationResourceByKey("WaitingSync").Value;
-                    case DeveloperRotationStatusCode.CHECKING_DIRS:
-                        return Localizator.GetLocalizationResourceByKey("CheckingDirs").Value;
-                    case DeveloperRotationStatusCode.GIT_STARTING:
-                        return Localizator.GetLocalizationResourceByKey("GitStart").Value;
-                    case DeveloperRotationStatusCode.CLONING:
-                        return "Cloning";
-                    case DeveloperRotationStatusCode.PULLING:
-                        return "Pulling";
-                    case DeveloperRotationStatusCode.ERROR_SYNC:
-                        return Localizator.GetLocalizationResourceByKey("Error").Value;
-                    case DeveloperRotationStatusCode.SUCCESS_SYNC:
-                        return Localizator.GetLocalizationResourceByKey("Success").Value;
-
-                }
-            }
-        }
-        public DeveloperRotation(string gitUrl, string rootPath, Semaphore sem)
-        {
-            this.gitUrl = gitUrl;
-            this.rootPath = rootPath;
-            syncSemaphore = sem;
-        }
-
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string property = "")
-        {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-        }
-
-        public void CheckDirs()
-        {
-            DeveloperRotationStatusCode prevCode = Status;
-            Status = DeveloperRotationStatusCode.CHECKING_DIRS;
-            string path = $"{rootPath}\\{rotationTypeOfRotation?.Name}";
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            path += $"\\{classOfRotation.Value}";
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            path += $"\\{name.ToLower().Replace(' ', '-')}";
-            if (!Directory.Exists(path)) Directory.CreateDirectory(path);
-            path += "\\";
-            Status = prevCode;
-        }
-
-        public void WaitSync()
-        {
-            if(Status == DeveloperRotationStatusCode.IDLE)
-            {
-                Status = DeveloperRotationStatusCode.WAITING_SYNC;
-            }
-        }
-        public void StopWaitSync()
-        {
-            if(Status == DeveloperRotationStatusCode.WAITING_SYNC)
-            {
-                Status = DeveloperRotationStatusCode.IDLE;
-            }
-        }
-        public void Sync()
-        {
-            if (string.IsNullOrEmpty(Path)) return;
-            Status = DeveloperRotationStatusCode.WAITING_SYNC;
-            syncSemaphore?.WaitOne();
-            try
-            {
-                Status = DeveloperRotationStatusCode.PREPARING_TO_SYNC;
-                CheckDirs();
-                Status = DeveloperRotationStatusCode.GIT_STARTING;
-                if (File.Exists(TocPath))
-                {
-                    Status = DeveloperRotationStatusCode.PULLING;
-                    Process gitCloneProcess = Process.Start(new ProcessStartInfo()
-                    {
-                        FileName = "git",
-                        WorkingDirectory = Path + $"\\{name}",
-                        Arguments = $"pull origin dev",
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                    });
-                    gitCloneProcess.WaitForExit();
-                    if (gitCloneProcess.ExitCode != 0)
-                    {
-                        LogWarn("Developer Rotation Service", $"Ошибка синхронизациии репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
-                        Status = DeveloperRotationStatusCode.ERROR_SYNC;
-                        Thread.Sleep(5000);
-                    }
-                    else
-                    {
-                        LogInfo("Developer Rotation Service", $"Репозиторй синхронизирован успешно {Path}");
-                        Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
-                        Thread.Sleep(5000);
-                        OnPropertyChanged("IsEnabledChangingIsEnabled");
-                    }
-                }
-                else
-                {
-                    if (!string.IsNullOrEmpty(PathToClone))
-                    {
-                        Status = DeveloperRotationStatusCode.CLONING;
-                        Process gitCloneProcess = Process.Start(new ProcessStartInfo()
-                        {
-                            FileName = "git",
-                            WorkingDirectory = PathToClone,
-                            Arguments = $"clone --remote-submodules --recursive --branch=dev {gitUrl}",
-                            CreateNoWindow = true,
-                            UseShellExecute = false,
-                            WindowStyle = ProcessWindowStyle.Hidden,
-                        });
-                        gitCloneProcess.WaitForExit();
-                        if (gitCloneProcess.ExitCode != 0)
-                        {
-                            LogWarn("Developer Rotation Service", $"Ошибка создания репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
-                            Status = DeveloperRotationStatusCode.ERROR_SYNC;
-                            Thread.Sleep(5000);
-                        }
-                        else
-                        {
-                            LogInfo("Developer Rotation Service", $"Репозиторй создан и синхронизирован успешно {Path}");
-                            Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
-                            Thread.Sleep(5000);
-                            OnPropertyChanged("IsEnabledChangingIsEnabled");
-                        }
-                    }
-                    else
-                    {
-                        LogWarn("Developer Rotation Service", $"Ошибка создания репозитория", $"Отсутствует путь для клонирования репозитория");
-                        Status = DeveloperRotationStatusCode.ERROR_SYNC;
-                        Thread.Sleep(5000);
-                    }
-                }
-            }
-            finally
-            {
-                Status = DeveloperRotationStatusCode.IDLE;
-            }
-            syncSemaphore?.Release();
-        }
-
-        public bool checkGitUrl(string url)
-        {
-            return url == gitUrl;
-        }
-
-        private RelayCommand syncCommand;
-        public RelayCommand SyncCommand
-        {
-            get
-            {
-                return syncCommand ?? (syncCommand = new RelayCommand(() =>
-                {
-                    Task.Run(() => Sync());
-                }));
-            }
-        }
-        private RelayCommand openRepoCommand;
-        public RelayCommand OpenRepoCommand
-        {
-            get
-            {
-                return openRepoCommand ?? (openRepoCommand = new RelayCommand(() =>
-                {
-                    if (string.IsNullOrEmpty(Path)) return;
-                    Process.Start(new ProcessStartInfo()
-                    {
-                        UseShellExecute = false,
-                        CreateNoWindow = false,
-                        FileName = "explorer.exe",
-                        Arguments = Directory.Exists(Path) ? $"\"{Path}\"" : $"\"{PathToClone}\"",
-                        WindowStyle = ProcessWindowStyle.Normal,
-                    });
-                }));
-            }
-        }
-    }
-
-    public enum DeveloperRotationStatusCode
-    {
-        IDLE = 0,
-        WAITING_SYNC = 6,
-        PREPARING_TO_SYNC = 5,
-        CHECKING_DIRS = 1,
-        GIT_STARTING = 2,
-        PULLING = 3,
-        CLONING = 4,
-        ERROR_SYNC = 7,
-        SUCCESS_SYNC = 8,
-    }
-
     public class DeveloperRotationCore
     {
         private readonly string internalConfigurationFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig\\launcherConfiguration.json";
@@ -387,12 +32,11 @@ namespace Byster.Models.Services
         public event Action InitializationCompleted;
         public event Action SyncronizationStarted;
         public event Action SyncronizationCompleted;
-
         public event Action StatusCodeChanged;
 
         public List<DeveloperRotation> DeveloperRotations { get; set; }
-
         public RestService RestService { get; set; }
+
         private DeveloperRotationStatusCodes statusCode = DeveloperRotationStatusCodes.IDLE;
         public DeveloperRotationStatusCodes StatusCode
         {
@@ -435,12 +79,11 @@ namespace Byster.Models.Services
             StatusCode = DeveloperRotationStatusCodes.IDLE;
         }
 
-
         private Semaphore autoSyncSemaphore = new Semaphore(3, 3);
         private Thread startAutoSyncThread;
         private void startRotationSync(IEnumerable<DeveloperRotation> developerRotations)
         {
-            foreach(var developerRotation in developerRotations)
+            foreach (var developerRotation in developerRotations)
             {
                 developerRotation.WaitSync();
             }
@@ -476,7 +119,7 @@ namespace Byster.Models.Services
             var devRotations = RestService.ExecuteDeveloperRotationRequest();
             foreach (var devRotation in devRotations)
             {
-                if(DeveloperRotations.Where(rot => rot.gitUrl == devRotation.git_ssh_url).Count() == 0)
+                if (DeveloperRotations.Where(rot => rot.gitUrl == devRotation.git_ssh_url).Count() == 0)
                 {
                     DeveloperRotation rotation = new DeveloperRotation(devRotation.git_ssh_url, BaseDirectory, semaphore)
                     {
@@ -488,7 +131,7 @@ namespace Byster.Models.Services
                     rotation.IsEnabled = rotationDict.ContainsKey(rotation.TocPath) ? rotationDict[rotation.TocPath] : false;
                     rotation.CheckDirs();
                     DeveloperRotations.Add(rotation);
-                    if(string.IsNullOrEmpty(rotation.TocPath))
+                    if (string.IsNullOrEmpty(rotation.TocPath))
                     {
                         rotationsToAutoSync.Add(rotation);
                     }
@@ -693,8 +336,6 @@ namespace Byster.Models.Services
         CHECKING = 3,
     }
 
-
-
     public class DeveloperRotationService : IService, INotifyPropertyChanged
     {
 
@@ -740,7 +381,7 @@ namespace Byster.Models.Services
             {
                 core.DeveloperRotations = value;
             }
-            
+
         }
         public void Initialize(Dispatcher dispatcher)
         {
@@ -1026,10 +667,10 @@ namespace Byster.Models.Services
                     }
                 }
             }
-    
+
         }
 
-    
+
 
         public List<DevClass> Classes
         {
@@ -1059,48 +700,7 @@ namespace Byster.Models.Services
 
 
     }
-    public class DevSpecialization
-    {
-        public string Value { get; set; }
-        public string Name { get; set; }
-        public DevSpecialization(string val, string name)
-        {
-            Name = name;
-            Value = val;
-        }
-    }
-    public class DevRotationType
-    {
-        public int Value { get; set; }
-        public string Name { get; set; }
-        public DevRotationType(int val, string name)
-        {
-            Name = name;
-            Value = val;
-        }
-    }
 
-    public class DevRoleType
-    {
-        public string Value { get; set; }
-        public string Name { get; set; }
-        public DevRoleType(string val, string name)
-        {
-            Name = name;
-            Value = val;
-        }
-    }
-
-    public class DevClass
-    {
-        public string Value { get; set; }
-        public string Name { get; set; }
-        public DevClass(string val, string name)
-        {
-            Name = name;
-            Value = val;
-        }
-    }
     public class JsonConfiguration
     {
         public string baseDir { get; set; }

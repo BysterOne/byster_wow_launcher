@@ -52,7 +52,7 @@ namespace Byster.Localizations.Tools
 
         private static string getResourceOfLocalization(string langCode)
         {
-            if(localizationCodeAndFileAssociations.ContainsKey(langCode)) return localizationCodeAndFileAssociations[langCode];
+            if (localizationCodeAndFileAssociations.ContainsKey(langCode)) return localizationCodeAndFileAssociations[langCode];
             return null;
         }
 
@@ -61,7 +61,7 @@ namespace Byster.Localizations.Tools
             Stream stream = Application.GetResourceStream(new Uri(resourcePath)).Stream;
             StringBuilder builder = new StringBuilder();
             byte[] buffer = new byte[128];
-            while(stream.Position < stream.Length)
+            while (stream.Position < stream.Length)
             {
                 int len = stream.Read(buffer, 0, buffer.Length);
                 builder.Append(Encoding.UTF8.GetString(buffer, 0, len));
@@ -74,9 +74,9 @@ namespace Byster.Localizations.Tools
             LogInfo("Localizator", "Загрузка локализации...", "Lang:", info.Language);
             if (info == null) return;
             var file = getResourceOfLocalization(info.LanguageCode);
-            if(file == null) return;
+            if (file == null) return;
             var jsonLocalization = JsonConvert.DeserializeObject<JsonLocalization>(readResource(file));
-            if(jsonLocalization == null) return;
+            if (jsonLocalization == null) return;
             LoadedLocalizationInfo = info;
             foreach (var key in jsonLocalization.LocalizationAssociations.Keys)
             {
@@ -91,7 +91,7 @@ namespace Byster.Localizations.Tools
                 else
                 {
                     LocalizedResources.Where(resource => resource.Key == key).First().Value = jsonLocalization.LocalizationAssociations[key];
-                }   
+                }
             }
             LogInfo("Localizator", "Загрузка конфигурации завершена");
         }
@@ -114,7 +114,7 @@ namespace Byster.Localizations.Tools
             process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
             process.Start();
             LogInfo("Common", "Перезапуск...");
-            foreach(var window in App.Current.Windows)
+            foreach (var window in App.Current.Windows)
             {
                 (window as Window).Close();
             }
@@ -124,7 +124,7 @@ namespace Byster.Localizations.Tools
         public static LocalizationResource GetLocalizationResourceByKey(string key)
         {
             var resource = LocalizedResources.Where(_resource => _resource.Key == key).FirstOrDefault();
-            if(resource == null)
+            if (resource == null)
             {
                 LogInfo("Localizator", "Ключ локализации", key);
                 LocalizationResource resourceToAdd = new LocalizationResource()

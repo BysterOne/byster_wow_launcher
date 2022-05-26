@@ -29,7 +29,7 @@ namespace Byster.Models.Services
             {
                 Dispatcher?.Invoke(() =>
                 {
-                    if(UpdateAction != null)
+                    if (UpdateAction != null)
                         UpdateAction();
                 });
                 LogInfo("Action Service", "Получен запрос на обновление данных");

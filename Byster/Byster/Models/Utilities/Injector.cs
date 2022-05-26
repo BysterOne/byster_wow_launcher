@@ -19,6 +19,8 @@ namespace Byster.Models.Utilities
 {
     public class Injector
     {
+        public static event Action PreInjection;
+        public static event Action PostInjection;
         private static string FullLibPath
         {
             get => Path.Combine(Path.GetTempPath(), coreFolderName);
@@ -139,7 +141,7 @@ namespace Byster.Models.Utilities
 
         private static Thread injectionThread;
 
-        
+
 
         public static void Init()
         {
@@ -157,7 +159,7 @@ namespace Byster.Models.Utilities
             Branch = "master";
             if (Directory.Exists(Path.Combine(Path.GetTempPath(), "Byster"))) Directory.Delete(Path.Combine(Path.GetTempPath(), "Byster"), true);
             if (!Directory.Exists(FullLibPath)) Directory.CreateDirectory(FullLibPath);
-            foreach(var file in Directory.GetFiles(FullLibPath))
+            foreach (var file in Directory.GetFiles(FullLibPath))
             {
                 try
                 {
@@ -177,7 +179,7 @@ namespace Byster.Models.Utilities
 
         private static void baseInjectQueueChangedHandler(InjectInfo changedElement, InjectorStatusCode injectorStatusCode)
         {
-            switch(injectorStatusCode)
+            switch (injectorStatusCode)
             {
                 default:
                 case InjectorStatusCode.INJECTED_OK:
@@ -237,7 +239,7 @@ namespace Byster.Models.Utilities
                     {
                         branch = Branch,
                     }));
-                    if(response.StatusCode != HttpStatusCode.OK)
+                    if (response.StatusCode != HttpStatusCode.OK)
                     {
                         InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB);
                         continue;
@@ -250,7 +252,9 @@ namespace Byster.Models.Utilities
                     while (File.Exists(dllPath));
                     File.WriteAllBytes(dllPath, response.RawBytes);
                     InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.INJECTION_STARTED);
+                    PreInjection?.Invoke();
                     bool injectionResult = Inject(injectingProcess.ProcessId, dllPath);
+                    PostInjection?.Invoke();
                     if (injectionResult)
                     {
                         InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.INJECTED_OK);
@@ -300,32 +304,30 @@ namespace Byster.Models.Utilities
                 OnPropertyChanged("ProcessId");
             }
         }
-
-
     }
 
     public enum InjectorStatusCode
     {
-        INJECTED_OK                 = 0,
-        ERROR_WHILE_INJECTING       = 1,
+        INJECTED_OK = 0,
+        ERROR_WHILE_INJECTING = 1,
         ERROR_WHILE_DOWNLOADING_LIB = 2,
-        
-        ADDED_OK                    = 3,
-        ERROR_PROCESS_NOT_FOUND     = 4,
-        ERROR_PROCESS_NOT_DECLARED  = 5,
+
+        ADDED_OK = 3,
+        ERROR_PROCESS_NOT_FOUND = 4,
+        ERROR_PROCESS_NOT_DECLARED = 5,
 
         LIBRARY_DOWNLOADING_STARTED = 6,
-        INJECTION_STARTED           = 7,
+        INJECTION_STARTED = 7,
     }
 
     public enum InjectInfoStatusCode
     {
-        INACTIVE    = 0,
-        ENEQUEUED   = 1,
+        INACTIVE = 0,
+        ENEQUEUED = 1,
         DOWNLOADING = 2,
-        INJECTING   = 3,
+        INJECTING = 3,
         INJECTED_OK = 4,
 
-        ERROR       = 5,
+        ERROR = 5,
     }
 }

@@ -64,7 +64,8 @@ namespace Byster.Models.ViewModels
             }
         }
         private RelayCommand addCommand;
-        public RelayCommand AddCommand {
+        public RelayCommand AddCommand
+        {
             get
             {
                 return addCommand ?? (addCommand = new RelayCommand((obj) =>

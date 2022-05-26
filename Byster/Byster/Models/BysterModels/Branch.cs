@@ -38,19 +38,6 @@ namespace Byster.Models.BysterModels
         public Branch(BranchType type)
         {
             BranchType = type;
-            switch (BranchType)
-            {
-                case BranchType.TEST:
-                    Name = Localizator.GetLocalizationResourceByKey("TesterBranch");
-                    break;
-                case BranchType.DEVELOPER:
-                    Name = Localizator.GetLocalizationResourceByKey("DeveloperBranch");
-                    break;
-                default:
-                case BranchType.MASTER:
-                    Name = Localizator.GetLocalizationResourceByKey("MasterBranch");
-                    break;
-            }
         }
         public static Branch[] AllBranches { get; set; } =
             new Branch[]
@@ -69,8 +56,8 @@ namespace Byster.Models.BysterModels
     public enum BranchType
     {
         DEVELOPER = 3,
-        TEST      = 2,
-        MASTER    = 1,
-        UNKNOWN   = -1,
+        TEST = 2,
+        MASTER = 1,
+        UNKNOWN = -1,
     }
 }

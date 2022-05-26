@@ -46,7 +46,7 @@ namespace Byster.Views
                 return;
             }
             bool result = Model.MainViewModel.UserInfo.LinkEmail(email);
-            if(result)
+            if (result)
             {
                 var w = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success").Value, Localizator.GetLocalizationResourceByKey("SuccessEmail").Value);
                 w.ShowDialog();

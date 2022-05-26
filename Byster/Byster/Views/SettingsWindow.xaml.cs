@@ -41,7 +41,7 @@ namespace Byster.Views
                 }
             };
             this.DataContext = SettingsViewModel;
-            
+
             switch (viewModel.UserInfo.Branch.ToLower())
             {
                 case "dev":
@@ -51,12 +51,13 @@ namespace Byster.Views
                     SettingsViewModel.SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.TEST);
                     break;
                 default:
-                case "master":                    
+                case "master":
                     SettingsViewModel.SelectedBranch = Branch.AllBranches.First((branch) => branch.BranchType == BranchType.MASTER);
                     break;
             }
             SettingsViewModel.SelectedLoadType = SettingsViewModel.MainViewModel.UserInfo.LoadTypes.Find(loadtype => loadtype.Value == SettingsViewModel.MainViewModel.UserInfo.LoadType);
             consoleSwitch.IsChecked = SettingsViewModel.MainViewModel.UserInfo.Console == 1;
+            SettingsViewModel.SelectedSandboxStatus = SettingsViewModel.MainViewModel.UserInfo.SandboxStatus;
         }
 
         private void closeBtn_Click(object sender, RoutedEventArgs e)
@@ -64,6 +65,7 @@ namespace Byster.Views
             SettingsViewModel.MainViewModel.UserInfo.SetBranch(SettingsViewModel.SelectedBranch);
             SettingsViewModel.MainViewModel.UserInfo.SetConsole(consoleSwitch.IsChecked ?? false);
             SettingsViewModel.MainViewModel.UserInfo.SetLoadType(SettingsViewModel.SelectedLoadType);
+            SettingsViewModel.MainViewModel.UserInfo.SetSandboxStatus(SettingsViewModel.SelectedSandboxStatus);
             this.Close();
         }
 
@@ -178,6 +180,7 @@ namespace Byster.Views
 
         public Branch SelectedBranch { get; set; }
         public LoadType SelectedLoadType { get; set; }
+        public SandboxStatus SelectedSandboxStatus { get; set; }
 
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string property = "")

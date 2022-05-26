@@ -1006,6 +1006,7 @@
     </Style>
 
     <Style TargetType="{x:Type ListBox}" x:Key="mediaViewBox">
+        <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
@@ -1076,7 +1077,7 @@
                             <ControlTemplate TargetType="ListBoxItem">
                                 <Grid Cursor="Hand">
                                     <viewmodels:MediaControl MediaElement="{Binding ElementName=mediaImage}" x:Name="mediaControl"/>
-                                    <Image x:Name="mediaImage" Margin="5, 0" RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Path=Uri}"/>
+                                    <Image x:Name="mediaImage" Margin="5, 0" RenderOptions.BitmapScalingMode="Fant" Source="{Binding Path=Uri}"/>
                                     <Grid Visibility="Collapsed" x:Name="waterPlayButton" VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <Path Data="M 0 0 L 0 16 L 16 8 Z" Fill="{DynamicResource MediaPlayButtonColor}"/>
                                     </Grid>
@@ -1432,7 +1433,7 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <WrapPanel Background="Transparent"/>
+                    <WrapPanel Background="Transparent" Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>

@@ -26,7 +26,7 @@ namespace Byster.Models.Services
         private bool multipleConnectionErrorEventCalled = false;
         public RestService(RestClient _client)
         {
-            if(_client == null)
+            if (_client == null)
             {
                 throw new ArgumentNullException(nameof(_client));
             }
@@ -50,7 +50,7 @@ namespace Byster.Models.Services
             }
             List<RestRotationWOW> responseRotations = response.Data;
             List<ActiveRotationViewModel> res = new List<ActiveRotationViewModel>();
-            foreach(var restRotation in responseRotations)
+            foreach (var restRotation in responseRotations)
             {
                 res.Add(new ActiveRotationViewModel(restRotation));
             }
@@ -70,14 +70,14 @@ namespace Byster.Models.Services
             }
             List<RestShopProduct> responseProducts = response.Data;
             List<ShopProductInfoViewModel> res = new List<ShopProductInfoViewModel>();
-            foreach(var product in responseProducts)
+            foreach (var product in responseProducts)
             {
                 res.Add(new ShopProductInfoViewModel(new ShopProduct(product)));
             }
             LogInfo("Rest Service", "Обновлены данные списка продуктов магазина");
             return res;
         }
-        
+
         public (bool, string) ExecuteBuyRequest(Cart cart)
         {
             List<RestBuyProduct> products = new List<RestBuyProduct>();
@@ -90,7 +90,7 @@ namespace Byster.Models.Services
                 });
             }
             IRestResponse<RestBuyResponse> response;
-            if(cart.Bonuses >= cart.Sum)
+            if (cart.Bonuses >= cart.Sum)
             {
                 response = client.Post<RestBuyResponse>(new RestRequest("shop/buy").AddJsonBody(new RestBuyRequest()
                 {
@@ -108,7 +108,7 @@ namespace Byster.Models.Services
                     items = products,
                 }));
             }
-            
+
             if (checkHTTPStatusCode(response.StatusCode)) return (false, null);
             if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
@@ -135,7 +135,7 @@ namespace Byster.Models.Services
             return true;
         }
 
-        public (string ,string, int, string, bool?) GetUserInfo()
+        public (string, string, int, string, bool?) GetUserInfo()
         {
             var response = client.Post<RestUserInfoResponse>(new RestRequest("launcher/info"));
             if (checkHTTPStatusCode(response.StatusCode)) return (null, null, 0, null, null);
@@ -192,7 +192,7 @@ namespace Byster.Models.Services
                 return null;
             }
             List<PaymentSystem> result = new List<PaymentSystem>();
-            foreach(var item in response.Data)
+            foreach (var item in response.Data)
             {
                 if (item.name.ToLower().Contains("тест") && !isTesterOrDeveloper) continue;
                 result.Add(new PaymentSystem()
@@ -219,9 +219,9 @@ namespace Byster.Models.Services
             }
             bool res = false;
             List<RestAction> actions = response.Data;
-            foreach(var action in actions)
+            foreach (var action in actions)
             {
-                if(!updatedActionIds.Contains(action.action_id) && action.session == sessionId && (action.action_type == 1 || action.action_type == 11))
+                if (!updatedActionIds.Contains(action.action_id) && action.session == sessionId && (action.action_type == 1 || action.action_type == 11))
                 {
                     updatedActionIds.Add(action.action_id);
                     res = true;
@@ -265,7 +265,7 @@ namespace Byster.Models.Services
         public List<RestDeveloperRotation> ExecuteDeveloperRotationRequest()
         {
             var response = client.Post<List<RestDeveloperRotation>>(new RestRequest("launcher/git_pull"));
-            if(response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = JsonConvert.DeserializeObject<BaseResponse>(response.Content).error;
                 LogError("Rest Service", "Ошибка получения данных ротаций для разработчиков", LastError, " - ", response.ErrorMessage);
@@ -314,7 +314,7 @@ namespace Byster.Models.Services
                 coupon_code = couponCode,
             }));
             if (checkHTTPStatusCode(response.StatusCode)) return false;
-            if(response.StatusCode != System.Net.HttpStatusCode.OK)
+            if (response.StatusCode != System.Net.HttpStatusCode.OK)
             {
                 LastError = response.Data.error;
                 LogError("Rest Service", "Ошибка активации купона", response.Data.error);
@@ -349,7 +349,7 @@ namespace Byster.Models.Services
                 System.Net.HttpStatusCode.HttpVersionNotSupported,
                 System.Net.HttpStatusCode.ServiceUnavailable,
             };
-            if(restrictedCodes.Contains(statusCode) || (int)statusCode == 0)
+            if (restrictedCodes.Contains(statusCode) || (int)statusCode == 0)
             {
                 LastError = "Ошибка соединения с сервером";
                 LogError("Rest Service", "Сервер недоступен", statusCode.ToString());

@@ -9,6 +9,6 @@ namespace Byster.Models.ViewModels
 {
     public class SessionViewModel : SessionWOW
     {
-        
+
     }
 }

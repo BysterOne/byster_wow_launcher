@@ -166,12 +166,13 @@
     <Compile Include="Localizations\Tools\LocalizationDataForViewModels.cs" />
     <Compile Include="Localizations\Tools\LocalizationResource.cs" />
     <Compile Include="Localizations\Tools\Localizator.cs" />
-    <Compile Include="Localizations\Tools\Translator.cs" />
     <Compile Include="Models\BysterModels\Branch.cs" />
     <Compile Include="Models\BysterModels\Cart.cs" />
+    <Compile Include="Models\BysterModels\DeveloperRotation.cs" />
     <Compile Include="Models\BysterModels\LoadType.cs" />
     <Compile Include="Models\BysterModels\PaymentSystem.cs" />
     <Compile Include="Models\BysterModels\Rotation.cs" />
+    <Compile Include="Models\BysterModels\SandboxStatus.cs" />
     <Compile Include="Models\BysterModels\WOWClass.cs" />
     <Compile Include="Models\BysterModels\WOWSession.cs" />
     <Compile Include="Models\BysterModels\ShopProductInfo.cs" />
@@ -215,8 +216,8 @@
     <Compile Include="Models\Utilities\BysterLogger.cs" />
     <Compile Include="Models\Utilities\Behaviors.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />
-    <Compile Include="Models\ViewModels\MediaControl.cs" />
-    <Compile Include="Models\ViewModels\ProductinfoViewModel.cs" />
+    <Compile Include="Controls\MediaControl.cs" />
+    <Compile Include="Models\ViewModels\ShopProductInfoViewModel.cs" />
     <Compile Include="Models\ViewModels\RelayCommand.cs" />
     <Compile Include="Models\ViewModels\RotationViewModel.cs" />
     <Compile Include="Models\ViewModels\SessionViewModel.cs" />

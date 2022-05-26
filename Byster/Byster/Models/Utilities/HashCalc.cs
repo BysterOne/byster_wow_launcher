@@ -22,7 +22,7 @@ namespace Byster.Models.Utilities
         {
             byte[] buffer = MD5.Create().ComputeHash(Encoding.UTF8.GetBytes(inputStr));
             StringBuilder builder = new StringBuilder();
-            for(int i = 0; i < buffer.Length; i++)
+            for (int i = 0; i < buffer.Length; i++)
             {
                 builder.Append(buffer[i].ToString("x2"));
             }
@@ -33,7 +33,7 @@ namespace Byster.Models.Utilities
         {
             StringBuilder sb = new StringBuilder();
             Random random = new Random();
-            for(int i = 0; i < length; i++)
+            for (int i = 0; i < length; i++)
             {
                 sb.Append(abc[random.Next(abc.Length)]);
             }

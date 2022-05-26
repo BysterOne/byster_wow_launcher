@@ -9,6 +9,8 @@ using System.Windows.Threading;
 using Byster.Models.BysterModels;
 using Microsoft.Win32;
 using System.IO;
+using static Byster.Models.Utilities.BysterLogger;
+using Byster.Models.Utilities;
 
 namespace Byster.Models.Services
 {
@@ -18,7 +20,7 @@ namespace Byster.Models.Services
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
-        
+
         private string username;
         private string password;
         private string referalCode;
@@ -29,18 +31,29 @@ namespace Byster.Models.Services
         private int loadType;
         private string currency;
         private bool encryption;
+        private SandboxStatus sandboxStatus;
+
+        public SandboxStatus SandboxStatus
+        {
+            get { return sandboxStatus; }
+            set
+            {
+                sandboxStatus = value;
+                OnPropertyChanged("SandboxStatus");
+            }
+        }
         public string Username
         {
             get { return username; }
             set
-        
+
             {
                 username = value;
                 OnPropertyChanged("Username");
             }
         }
         public string Password
-        { 
+        {
             get { return password; }
             set
             {
@@ -50,7 +63,7 @@ namespace Byster.Models.Services
         }
         public int BonusBalance
         {
-            get { return bonusBalance;}
+            get { return bonusBalance; }
             set
             {
                 bonusBalance = value;
@@ -115,7 +128,7 @@ namespace Byster.Models.Services
             get
             {
                 string root = "/Resources/Images/UserLogos/";
-                switch(UserType)
+                switch (UserType)
                 {
                     case BranchType.DEVELOPER:
                         return root + "DEV.png";
@@ -176,50 +189,38 @@ namespace Byster.Models.Services
         }
 
 
-        public List<Branch> BranchChoices { get; set; }
-        public List<LoadType> LoadTypes { get; set; } = Byster.Models.BysterModels.LoadType.AllLoadTypes.ToList();
+        public List<Branch> BranchChoices { get => BysterModels.Branch.AllBranches.Where(branch => branch.BranchType <= this.UserType).ToList(); }
+        public List<LoadType> LoadTypes { get => BysterModels.LoadType.AllLoadTypes.ToList(); }
+        public List<SandboxStatus> SandboxStatuses { get => SandboxStatus.SandboxStatuses; }
 
         public void UpdateRemoteData()
         {
             (string _usernane, string _referalcode, int _bonuses, string _currency, bool? _encryption) = RestService.GetUserInfo();
-            if (string.IsNullOrEmpty(_usernane) &&
+            if (string.IsNullOrEmpty(_usernane) ||
                string.IsNullOrEmpty(_referalcode))
             {
                 return;
             }
             (Username, ReferalCode, BonusBalance, Currency, Encryption) = (_usernane, _referalcode, _bonuses, _currency, _encryption ?? false);
             UserType = RestService.GetUserType();
-            if(UserType == BranchType.MASTER || UserType == BranchType.UNKNOWN)
-            {
-                SetBranch(new Branch(BranchType.MASTER));
-                SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
-                SetConsole(false);
-            }
-            else if(UserType == BranchType.TEST)
-            {
-                if(Branch == "dev") SetBranch(new BysterModels.Branch(BranchType.MASTER));
-                SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
-            }
-            BranchChoices = Byster.Models.BysterModels.Branch.AllBranches.Where(branch => branch.BranchType <= this.UserType).ToList();
         }
 
         public void UpdateData()
         {
-            UpdateRemoteData();
             Console = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", -1));
             if (Console == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (Console = 0));
-            
+
             Branch = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", "undefined") as string;
-            if(Branch == "undefined") Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", (Branch = "master"));
+            if (Branch == "undefined") Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", (Branch = "master"));
 
             LoadType = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", -1));
             if (LoadType == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", (LoadType = 3));
-            
-            Password = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", "undefined") as string;
+
             if (UserType == BranchType.TEST)
             {
-                BranchChoices.Remove(BranchChoices.FirstOrDefault(branch => branch.BranchType == BranchType.DEVELOPER));
             }
+            SandboxStatus = SandboxStatus.ReadServerTypeFromReg();
+            UpdateRemoteData();
         }
 
         public void UpdateEncryption()
@@ -255,23 +256,71 @@ namespace Byster.Models.Services
             LoadType = loadType.Value;
             Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", LoadType);
         }
-
+        public void SetSandboxStatus(SandboxStatus sandbox)
+        {
+            SandboxStatus = sandbox;
+            SandboxStatus.WriteServerTypeToReg(SandboxStatus);
+        }
         public UserInfoService(RestService service)
         {
+            LogInfo("User Info Service", "Создание сервиса");
             RestService = service;
+            PropertyChanged += (o, e) =>
+            {
+                if(e.PropertyName == "UserType")
+                {
+                    ValidateUserData();
+                }
+            };
+        }
+
+        public void ValidateUserData()
+        {
+            switch (UserType)
+            {
+                case BranchType.UNKNOWN:
+                    LogWarn("User Info Service", "UserType изменил значение на UNKNOWN");
+                    SetBranch(new Branch(BranchType.MASTER));
+                    SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
+                    SetConsole(false);
+                    SandboxStatus = SandboxStatus.SandboxStatuses.Where(_type => _type.RegistryValue == 0).First();
+                    SandboxStatus.WriteServerTypeToReg(SandboxStatus);
+                    break;
+                case BranchType.MASTER:
+                    SetBranch(new Branch(BranchType.MASTER));
+                    SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
+                    SetConsole(false);
+                    SandboxStatus = SandboxStatus.SandboxStatuses.Where(_type => _type.RegistryValue == 0).First();
+                    SandboxStatus.WriteServerTypeToReg(SandboxStatus);
+                    break;
+                case BranchType.TEST:
+                    if (Branch == "dev") SetBranch(new Branch(BranchType.MASTER));
+                    SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
+                    SandboxStatus = SandboxStatus.SandboxStatuses.Where(_type => _type.RegistryValue == 0).First();
+                    SandboxStatus.WriteServerTypeToReg(SandboxStatus);
+                    break;
+                case BranchType.DEVELOPER:
+                    break;
+            }
         }
 
         public void Initialize(Dispatcher dispatcher)
         {
+            LogInfo("User Info Service", "Запуск сервиса");
             Dispatcher = dispatcher;
-            IsInitialized = true;
             UpdateData();
+            Injector.PreInjection += () =>
+            {
+                ValidateUserData();
+            };
+            IsInitialized = true;
+            LogInfo("User Info Service", "Запуск сервиса завершён");
         }
 
         public bool ChangePasssword(string newPassswordHash)
         {
             bool result = RestService.ExecuteChangePasswordRequest(newPassswordHash);
-            if(result)
+            if (result)
             {
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", newPassswordHash);
                 return true;
@@ -288,7 +337,7 @@ namespace Byster.Models.Services
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }

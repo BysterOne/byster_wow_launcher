@@ -30,8 +30,8 @@ namespace Byster.Models.Utilities
                 EnableArchiveFileCompression = true,
                 ArchiveOldFileOnStartupAboveSize = 5000,
             };
-            //var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
-            //config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
+            var logconsole = new NLog.Targets.ConsoleTarget("logconsole");
+            config.AddRule(LogLevel.Info, LogLevel.Fatal, logconsole);
             config.AddRule(LogLevel.Trace, LogLevel.Fatal, logfile);
             config.AddRule(LogLevel.Warn, LogLevel.Fatal, logerrorfile);
             NLog.LogManager.Configuration = config;

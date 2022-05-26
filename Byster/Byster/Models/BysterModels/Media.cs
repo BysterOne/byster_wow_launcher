@@ -48,7 +48,7 @@ namespace Byster.Models.BysterModels
 
         public Media(string uri, MediaTypes type, Media prevMedia = null)
         {
-            if(prevMedia != null)
+            if (prevMedia != null)
             {
                 prevMedia.NextMedia = this;
                 PreviousMedia = prevMedia;

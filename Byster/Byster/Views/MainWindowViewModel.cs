@@ -213,14 +213,8 @@ namespace Byster.Views
             {
                 MultipleConnectionErrorsDetected?.Invoke();
             };
-            UserInfo = new UserInfoService(restService)
-            {
-                SessionId = sessionId,
-            };
-            ActiveRotations = new ActiveRotationsService(restService)
-            {
-                SessionId = sessionId,
-            };
+            UserInfo = new UserInfoService(restService);
+            ActiveRotations = new ActiveRotationsService(restService);
             Shop = new ShopService(restService)
             {
                 PreTestElementAction = () =>
@@ -275,11 +269,9 @@ namespace Byster.Views
                     InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), $"{Localizator.GetLocalizationResourceByKey("BuyBonusesErrorMessage")}\n{restService.LastError}");
                     infoWindow.ShowModalDialog();
                 },
-                SessionId = sessionId,
             };
             ActionService = new ActionService(restService, UpdateData)
             {
-                SessionId = sessionId,
             };
             SessionService = new SessionService(App.Rest)
             {
@@ -299,41 +291,11 @@ namespace Byster.Views
                     Injector.Branch = UserInfo.Branch;
                 };
             };
-            //MediaControl.OpenAction = (uri) =>
-            //{
-            //    //string ext = getExtension(uri);
-            //    //string[] videoExtensions = new string[]
-            //    //{
-            //    //    "mp4",
-            //    //    "avi",
-            //    //    "mkv"
-            //    //};
-            //    //if(videoExtensions.Contains(ext))
-            //    //{
-            //    //    SourceOfMediaToOpen = "/Resources/Images/video-error.png";
-            //    //    IsMediaOpened = Visibility.Visible;
-            //    //    RedirectToBrowserWindow redirectWindow = new RedirectToBrowserWindow(Localizator.GetLocalizationResourceByKey("Error").Value, Localizator.GetLocalizationResourceByKey("OpenMediaErrorMessage").Value, uri);
-            //    //    redirectWindow.ShowDialog();
-            //    //}
-            //    //else
-            //    //{
-            //    //    SourceOfMediaToOpen = uri;
-            //    //    IsMediaOpened = Visibility.Visible;
-            //    //}
-            //};
             DeveloperRotations = new DeveloperRotationService()
             {
                 RestService = restService,
             };
         }
-
-        public static string getExtension(string uri)
-        {
-            string[] parts = uri.Split('.');
-            if (parts.Length < 2) return "";
-            return parts[parts.Length - 1].ToLower();
-        }
-
         public void Initialize(Dispatcher dispatcher)
         {
             StatusText = Localizator.GetLocalizationResourceByKey("Initialization");

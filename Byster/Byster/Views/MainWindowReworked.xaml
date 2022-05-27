@@ -217,7 +217,7 @@
             <controls:MediaPresenterControl x:Name="mediaPresenterControl" VideoPlayer="{Binding ElementName=videoPlayer}" ImagePlayer="{Binding ElementName=imagePlayer}" ControlsPanel="{Binding ElementName=controlPanel}"/>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60">
                 <MediaElement Height="500" x:Name="videoPlayer"/>
-                <Image Height="500" x:Name="imagePlayer"/>
+                <Image Height="500" x:Name="imagePlayer" RenderOptions.BitmapScalingMode="HighQuality"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" x:Name="controlPanel" Height="42" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,8">
                 <Button x:Name="backwardBtn" Command="{Binding ElementName=mediaPresenterControl, Path=BackwardVideoCommand}" Style="{DynamicResource transparentButtonStyle}" Height="40" Width="55" Margin="3,0">

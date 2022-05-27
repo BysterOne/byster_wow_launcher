@@ -19,7 +19,7 @@ namespace Byster.Models.Services
     {
         public bool IsInitialized { get; set; } = false;
         public Dispatcher Dispatcher { get; set; }
-        public string SessionId { get; set; }
+
         private int bonuses = 0;
         public int Bonuses
         {
@@ -362,6 +362,11 @@ namespace Byster.Models.Services
         public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 

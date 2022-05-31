@@ -17,7 +17,7 @@ using Byster.Localizations.Tools;
 
 namespace Byster.Models.Services
 {
-    public class SessionService : INotifyPropertyChanged, IDisposable
+    public class SessionService : INotifyPropertyChanged
     {
         public bool IsInitialized { get; private set; } = false;
 
@@ -70,7 +70,7 @@ namespace Byster.Models.Services
                 WowDeletedAction?.Invoke(sessionToRemove);
                 Sessions.Remove(sessionToRemove);
             });
-            
+
             return true;
         }
 
@@ -122,7 +122,7 @@ namespace Byster.Models.Services
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }

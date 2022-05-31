@@ -11,6 +11,7 @@ using Byster.Models.ViewModels;
 using System.Windows.Threading;
 using System.Threading;
 using System.Windows;
+using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Models.Services
 {
@@ -18,7 +19,7 @@ namespace Byster.Models.Services
     {
         public bool IsInitialized { get; set; } = false;
         public Dispatcher Dispatcher { get; set; }
-        public string SessionId { get; set; }
+
         private int bonuses = 0;
         public int Bonuses
         {
@@ -113,15 +114,6 @@ namespace Byster.Models.Services
             }
         }
 
-        public ObservableCollection<FilterClass> AllClasses { get; set; } = FilterClass.GetAllClasses();
-        public ObservableCollection<string> AllTypes { get; set; } = new ObservableCollection<string>
-        {
-            "Bot",
-            "Utility",
-            "PvE",
-            "PvP"
-        };
-
         public void BuyCart()
         {
             Cart cart = createCartProductCollection();
@@ -132,7 +124,7 @@ namespace Byster.Models.Services
             bool status;
             string link;
             (status, link) = RestService.ExecuteBuyRequest(cart);
-            if(ResultSum > 0)
+            if (ResultSum > 0)
             {
                 if (status && !string.IsNullOrEmpty(link))
                 {
@@ -145,7 +137,7 @@ namespace Byster.Models.Services
             }
             else
             {
-                if(status)
+                if (status)
                 {
                     BuyCartByBonusesSuccessAction?.Invoke();
                 }
@@ -168,7 +160,7 @@ namespace Byster.Models.Services
             {
                 TestElementFailAction?.Invoke();
             }
-            
+
         }
         public void CloseElement()
         {
@@ -176,7 +168,7 @@ namespace Byster.Models.Services
         }
         public void ClearCart()
         {
-            foreach(var product in AllProducts)
+            foreach (var product in AllProducts)
             {
                 product.RemoveAll();
             }
@@ -207,30 +199,40 @@ namespace Byster.Models.Services
 
         public void UpdateData()
         {
+            LogInfo("ShopService", "Обновление данных магазина...");
             IEnumerable<ShopProductInfoViewModel> products = null;
             products = RestService.GetAllProductCollection();
             if (products.ToArray().Length > 0)
             {
                 Dispatcher.Invoke(() =>
                 {
-                    AllProducts.Clear();
+                    //AllProducts.Clear();
                     foreach (var item in products)
                     {
-                        AllProducts.Add(item);
+                        var existedProduct = AllProducts.Where(product => product.Product.Id == item.Product.Id).FirstOrDefault();
+                        if (existedProduct == null)
+                        {
+                            AllProducts.Add(item);
+                        }
+                        else
+                        {
+                            existedProduct = item;
+                        }
                     }
                     setElementsActions();
                     FilterProducts();
                 });
             }
+            LogInfo("ShopService", "Обновление данных магазина завершено");
         }
 
         public string ActivateCoupon(string couponCode)
         {
-           return RestService.ExecuteCouponRequest(couponCode) ? "success" : RestService.LastError;
+            return RestService.ExecuteCouponRequest(couponCode) ? "success" : RestService.LastError;
         }
         private void setElementsActions()
         {
-            foreach(var product in AllProducts)
+            foreach (var product in AllProducts)
             {
                 product.CloseDel = new Action(() => { CloseElement(); });
                 product.TestDel = new Action<object>((obj) => { TestProduct(Convert.ToInt32(obj)); });
@@ -244,7 +246,7 @@ namespace Byster.Models.Services
         {
             foreach (var product in AllProducts)
             {
-                if (checkProductByFilterOptions(product, FilterOptions))
+                if (FilterOptions.CheckItem(product))
                 {
                     product.IsShowingInShop = Visibility.Visible;
                 }
@@ -257,31 +259,16 @@ namespace Byster.Models.Services
 
         public List<PaymentSystem> GetAllPaymentSystemsList()
         {
-            return RestService.GetAllPaymentSystemList().ToList();
-        }
-
-
-        private bool checkProductByFilterOptions(ShopProductInfo product, Filter filterOptions)
-        {
-            foreach (var rotation in product.Product.Rotations)
-            {
-                if (filterOptions?.FilterTypes?.Count == 0 ||
-                    (filterOptions?.FilterTypes?.Any((ftype) => ftype.ToLower() == rotation.Type.Name.ToLower()) ?? false))
-                    if ((rotation.RotationClass.EnumWOWClass == WOWClasses.ANY ||
-                        filterOptions?.FilterClasses?.Count == 0 ||
-                        (filterOptions?.FilterClasses?.Any((fclass) => fclass.EnumClass == rotation.RotationClass.EnumWOWClass) ?? false)))
-                        return true;
-            }
-            return false;
+            return RestService.GetAllPaymentSystem().ToList();
         }
 
         private Cart createCartProductCollection()
         {
             double sum = 0;
-            List<(int, int)> cartProducts = new List<(int, int)> ();
+            List<(int, int)> cartProducts = new List<(int, int)>();
             foreach (var product in AllProducts)
             {
-                if(product.Count > 0)
+                if (product.Count > 0)
                 {
                     cartProducts.Add((product.Product.Id, product.Count));
                     sum += product.Product.Price * product.Count;
@@ -305,12 +292,14 @@ namespace Byster.Models.Services
         {
             RestService = restService;
             AllProducts = new ObservableCollection<ShopProductInfoViewModel>();
-            FilterOptions = new Filter()
+            FilterOptions = Filter.GetDefaultFilter();
+            FilterOptions.PropertyChanged += (s, e) =>
             {
-                FilterClasses = new ObservableCollection<FilterClass>()
-                { },
-                FilterTypes = new ObservableCollection<string>()
-                { },
+                FilterProducts();
+            };
+            FilterOptions.FilterChanged += () =>
+            {
+                FilterProducts();
             };
             AllProducts.CollectionChanged += new System.Collections.Specialized.NotifyCollectionChangedEventHandler((obj, e) =>
             {
@@ -328,7 +317,7 @@ namespace Byster.Models.Services
             {
                 Sum = 0;
             });
-            
+
         }
 
         public void Initialize(Dispatcher dispatcher)
@@ -361,7 +350,7 @@ namespace Byster.Models.Services
                 return closeProduct ??
                     (closeProduct = new RelayCommand((obj) =>
                     {
-                        if(Convert.ToBoolean(obj))
+                        if (Convert.ToBoolean(obj))
                         {
                             CloseElement();
                         }
@@ -370,24 +359,64 @@ namespace Byster.Models.Services
         }
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
+        public void Dispose()
+        {
+
         }
     }
 
     public class Filter : INotifyPropertyChanged
     {
-        public ObservableCollection<FilterClass> FilterClasses { get; set; }
-        public ObservableCollection<string> FilterTypes { get; set; }
-        
+        public event Action FilterChanged;
+        public void OnFilterChanged()
+        {
+            FilterChanged?.Invoke();
+        }
+        public ObservableCollection<IFilterItem<FilterClass>> FilterClasses { get; set; }
+        public ObservableCollection<IFilterItem<string>> FilterTypes { get; set; }
+
+        public static Filter GetDefaultFilter()
+        {
+            var filter = new Filter();
+            filter.FilterClasses = FilterItemWowClass.GetAllFilterItems();
+            foreach (var item in filter.FilterClasses)
+            {
+                item.PropertyChanged += (s, e) => filter.OnFilterChanged();
+            }
+            filter.FilterTypes = FilterItemString.GetAllFilterItems();
+            foreach (var item in filter.FilterTypes)
+            {
+                item.PropertyChanged += (s, e) => filter.OnFilterChanged();
+            }
+            return filter;
+        }
+
+
+        public bool CheckItem(object obj)
+        {
+            if (!(obj is ShopProductInfo)) return false;
+            var product = obj as ShopProductInfo;
+
+            var selectedFilterClasses = FilterClasses.Where(_ifi => _ifi.IsSelected).ToList();
+            var selectedFilterTypes = FilterTypes.Where(_ifi => _ifi.IsSelected).ToList();
+            if (selectedFilterTypes.Any(_ifi => _ifi.FilterValue.ToLower().Contains("bundle")) && !product.Product.IsPack) return false;
+            if (selectedFilterClasses.Count != 0 && !product.Product.Rotations.Any(_rot => _rot.RotationClass.EnumWOWClass == WOWClasses.ANY) && !selectedFilterClasses.Any(_ifi => product.Product.Rotations.Any(_rot => _rot.RotationClass.EnumWOWClass == _ifi.FilterValue.EnumClass))) return false;
+            if (selectedFilterTypes.Where(_ifi => !_ifi.FilterValue.ToLower().Contains("bundle")).Count() != 0 && !selectedFilterTypes.Any(_ifi => product.Product.Rotations.Any(_rot => _rot.Type.Name.ToLower() == _ifi.FilterValue.ToLower()))) return false;
+
+            return true;
+        }
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
     }
-    
+
     public class FilterClass
     {
         public string Name { get; set; }
@@ -398,14 +427,87 @@ namespace Byster.Models.Services
             Name = new ClassWOW(enClass).NameOfClass.Normalize();
             EnumClass = enClass;
         }
-        public static ObservableCollection<FilterClass> GetAllClasses()
+        public static List<FilterClass> GetAllClasses()
         {
-            ObservableCollection<FilterClass> res = new ObservableCollection<FilterClass>();
+            List<FilterClass> res = new List<FilterClass>();
             for (int i = 1; i < 11; i++)
             {
                 res.Add(new FilterClass((WOWClasses)i));
             }
             return res;
         }
+    }
+
+    public class FilterItemWowClass : IFilterItem<FilterClass>
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string property = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+        public FilterClass FilterValue { get; set; }
+        public bool isSelected;
+        public bool IsSelected
+        {
+            get => isSelected;
+            set
+            {
+                isSelected = value;
+                OnPropertyChanged("IsSelected");
+            }
+        }
+        public static ObservableCollection<IFilterItem<FilterClass>> GetAllFilterItems()
+        {
+            var res = new ObservableCollection<IFilterItem<FilterClass>>();
+            foreach (var item in FilterClass.GetAllClasses())
+            {
+                res.Add(new FilterItemWowClass()
+                {
+                    FilterValue = item,
+                    IsSelected = false,
+                });
+            }
+            return res;
+        }
+    }
+
+    public class FilterItemString : IFilterItem<string>
+    {
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged(string property = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+        public string FilterValue { get; set; }
+        public bool isSelected;
+        public bool IsSelected
+        {
+            get => isSelected;
+            set
+            {
+                isSelected = value;
+                OnPropertyChanged("IsSelected");
+            }
+        }
+        public static ObservableCollection<IFilterItem<string>> GetAllFilterItems()
+        {
+            var res = new ObservableCollection<IFilterItem<string>>();
+            string[] types = { "Bot", "Utility", "PvE", "PvP", "Bundle" };
+            foreach (var item in types)
+            {
+                res.Add(new FilterItemString()
+                {
+                    FilterValue = item,
+                    IsSelected = false,
+                });
+            }
+            return res;
+        }
+    }
+
+    public interface IFilterItem<T> : INotifyPropertyChanged
+    {
+        bool IsSelected { get; set; }
+        T FilterValue { get; set; }
     }
 }

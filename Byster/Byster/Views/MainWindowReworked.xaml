@@ -161,8 +161,8 @@
             </Grid.RowDefinitions>
             <Grid x:Name="sideShopPanel" Grid.Column="0">
                 <StackPanel Orientation="Vertical">
-                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterClassListBox" Tag="{Binding LocalizationData.Classes}" ItemsSource="{Binding Path=Shop.AllClasses}" DisplayMemberPath="Name" SelectionChanged="filterClassListBox_SelectionChanged"/>
-                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterTypeListBox" Tag="{Binding LocalizationData.Types}" ItemsSource="{Binding Path=Shop.AllTypes}" SelectionChanged="filterTypeListBox_SelectionChanged"/>
+                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterClassListBox" Tag="{Binding LocalizationData.Classes}" ItemsSource="{Binding Path=Shop.FilterOptions.FilterClasses}" DisplayMemberPath="FilterValue.Name"/>
+                    <ListBox Style="{DynamicResource filterViewStyle}" x:Name="filterTypeListBox" Tag="{Binding LocalizationData.Types}" ItemsSource="{Binding Path=Shop.FilterOptions.FilterTypes}" DisplayMemberPath="FilterValue"/>
                 </StackPanel>
             </Grid>
             <Grid x:Name="contentShopPanel" Grid.Column="1">
@@ -217,7 +217,7 @@
             <controls:MediaPresenterControl x:Name="mediaPresenterControl" VideoPlayer="{Binding ElementName=videoPlayer}" ImagePlayer="{Binding ElementName=imagePlayer}" ControlsPanel="{Binding ElementName=controlPanel}"/>
             <StackPanel Orientation="Vertical" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="60">
                 <MediaElement Height="500" x:Name="videoPlayer"/>
-                <Image Height="500" x:Name="imagePlayer"/>
+                <Image Height="500" x:Name="imagePlayer" RenderOptions.BitmapScalingMode="HighQuality"/>
             </StackPanel>
             <StackPanel Orientation="Horizontal" x:Name="controlPanel" Height="42" HorizontalAlignment="Center" VerticalAlignment="Bottom" Margin="0,0,0,8">
                 <Button x:Name="backwardBtn" Command="{Binding ElementName=mediaPresenterControl, Path=BackwardVideoCommand}" Style="{DynamicResource transparentButtonStyle}" Height="40" Width="55" Margin="3,0">
@@ -237,7 +237,13 @@
                 </Button>
                 <Slider Value="{Binding ElementName=videoPlayer, Path=Volume}" Width="100" Style="{DynamicResource volumeSlider}" Margin="30,0,0,0"/>
             </StackPanel>
-            <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=CloseVideoCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50">
+            <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=PrevMediaCommand}" VerticalAlignment="Stretch" HorizontalAlignment="Left" Width="50">
+                <Path Data="M 0 15 L 30 0 L 30 30 Z" Fill="{StaticResource FontInfoColor}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
+            <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=NextMediaCommand}" VerticalAlignment="Stretch" HorizontalAlignment="Right" Width="50">
+                <Path Data="M 0 0 L 30 15 L 0 30 Z" Fill="{StaticResource FontInfoColor}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+            </Button>
+            <Button Style="{StaticResource uibStyle}" Command="{Binding ElementName=mediaPresenterControl, Path=CloseVideoCommand}" VerticalAlignment="Top" HorizontalAlignment="Right" Width="50" Height="50" IsCancel="True">
                 <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Height="30" Width="30" VerticalAlignment="Center" HorizontalAlignment="Center"/>
             </Button>
         </Grid>

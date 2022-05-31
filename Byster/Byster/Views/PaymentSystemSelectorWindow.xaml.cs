@@ -48,13 +48,13 @@ namespace Byster.Views
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
-            if(systemSelector.SelectedItem != null || (DataContext as PaymentWindowViewModel).MainViewModel.Shop.ResultSum == 0)
+            if (systemSelector.SelectedItem != null || (DataContext as PaymentWindowViewModel).MainViewModel.Shop.ResultSum == 0)
                 this.DialogResult = true;
         }
 
         private void cancelBtn_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult= false;
+            this.DialogResult = false;
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

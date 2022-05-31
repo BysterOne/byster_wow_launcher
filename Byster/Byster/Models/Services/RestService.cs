@@ -13,6 +13,7 @@ using Byster.Models.ViewModels;
 using Byster.Views;
 using Newtonsoft.Json;
 using System.Threading;
+using System.Net;
 
 namespace Byster.Models.Services
 {
@@ -26,7 +27,7 @@ namespace Byster.Models.Services
         private bool multipleConnectionErrorEventCalled = false;
         public RestService(RestClient _client)
         {
-            if(_client == null)
+            if (_client == null)
             {
                 throw new ArgumentNullException(nameof(_client));
             }
@@ -41,43 +42,31 @@ namespace Byster.Models.Services
         public IEnumerable<ActiveRotationViewModel> GetActiveRotationCollection()
         {
             var response = client.Post<List<RestRotationWOW>>(new RestRequest("shop/my_subscriptions"));
-            if (checkHTTPStatusCode(response.StatusCode)) return null;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "No Error Received";
-                Log("Ошибка получения данных с сервера - ", response.Data, " - ", response.ErrorMessage);
-                return null;
-            }
+            if (!checkAndLogResponseToError(response, "Получение данных активных ротаций")) return null;
             List<RestRotationWOW> responseRotations = response.Data;
             List<ActiveRotationViewModel> res = new List<ActiveRotationViewModel>();
-            foreach(var restRotation in responseRotations)
+            foreach (var restRotation in responseRotations)
             {
                 res.Add(new ActiveRotationViewModel(restRotation));
             }
-            Log("Обновлены данные активных ротаций");
+            LogInfo("Rest Service", "Обновлены данные активных ротаций");
             return res;
         }
 
         public IEnumerable<ShopProductInfoViewModel> GetAllProductCollection()
         {
             var response = client.Post<List<RestShopProduct>>(new RestRequest("shop/product_list"));
-            if (checkHTTPStatusCode(response.StatusCode)) return null;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = JsonConvert.DeserializeObject<BaseResponse>(response?.Content ?? "")?.error ?? "No Error Received";
-                Log("Ошибка получения данных с сервера - ", response.Data, " - ", response.ErrorMessage);
-                return null;
-            }
+            if (!checkAndLogResponseToError(response, "Получение данных продуктов магазина")) return null;
             List<RestShopProduct> responseProducts = response.Data;
             List<ShopProductInfoViewModel> res = new List<ShopProductInfoViewModel>();
-            foreach(var product in responseProducts)
+            foreach (var product in responseProducts)
             {
                 res.Add(new ShopProductInfoViewModel(new ShopProduct(product)));
             }
-            Log("Обновлены данные списка продуктов магазина");
+            LogInfo("Rest Service", "Обновлены данные списка продуктов магазина");
             return res;
         }
-        
+
         public (bool, string) ExecuteBuyRequest(Cart cart)
         {
             List<RestBuyProduct> products = new List<RestBuyProduct>();
@@ -90,7 +79,7 @@ namespace Byster.Models.Services
                 });
             }
             IRestResponse<RestBuyResponse> response;
-            if(cart.Bonuses >= cart.Sum)
+            if (cart.Bonuses >= cart.Sum)
             {
                 response = client.Post<RestBuyResponse>(new RestRequest("shop/buy").AddJsonBody(new RestBuyRequest()
                 {
@@ -108,15 +97,8 @@ namespace Byster.Models.Services
                     items = products,
                 }));
             }
-            
-            if (checkHTTPStatusCode(response.StatusCode)) return (false, null);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = response.Data.error;
-                Log("Ошибка при выполнении запроса покупки - ", response.Data?.error ?? "Нет ответа сервера", " - ", response.ErrorMessage);
-                return (false, null);
-            }
-            Log("Выполнен запрос на покупку продукта - ", response.Data.payment_url);
+            if (!checkAndLogResponseToError(response, "Запрос на покупку")) return (false, null);
+            LogInfo("Rest Service", "Выполнен запрос на покупку продукта - ", response.Data.payment_url);
             return (true, response.Data.payment_url);
         }
         public bool ExecuteTestRequest(int id)
@@ -125,41 +107,23 @@ namespace Byster.Models.Services
             {
                 product_id = id,
             }));
-            if (checkHTTPStatusCode(response.StatusCode)) return false;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = response.Data.error;
-                Log("Ошибка при выполнении запроса на тест - ", response.Data.error, " - ", response.ErrorMessage);
-                return false;
-            }
+            if (!checkAndLogResponseToError(response, "Запрос на тест")) return false;
             return true;
         }
 
-        public (string ,string, int, string, bool?) GetUserInfo()
+        public (string, string, int, string, bool?) GetUserInfo()
         {
             var response = client.Post<RestUserInfoResponse>(new RestRequest("launcher/info"));
-            if (checkHTTPStatusCode(response.StatusCode)) return (null, null, 0, null, null);
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = response.Data.error;
-                Log("Ошибка обновления данных пользователя - ", response.Data.error, " - ", response.ErrorMessage);
-                return (null, null, 0, null, null);
-            }
-            Log("Обновлены данные пользователя");
+            if (!checkAndLogResponseToError(response, "Получение данных пользователя")) return (null, null, 0, null, null);
+             LogInfo("Rest Service", "Обновлены данные пользователя");
             return (response.Data.username, response.Data.referral_code, Convert.ToInt32(Math.Floor(response.Data.balance)), response.Data.currency, response.Data.encryption);
         }
 
         public bool? GetEncryptStatus()
         {
             var response = client.Get<RestUserInfoResponse>(new RestRequest("launcher/info"));
-            if (checkHTTPStatusCode(response.StatusCode)) return null;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = response.Data.error;
-                Log("Ошибка получения статуса encryption пользователя - ", response.Data.error, " - ", response.ErrorMessage);
-                return null;
-            }
-            Log("Получен статус encryption");
+            if (!checkAndLogResponseToError(response, "Получение данных encryption")) return null;
+            LogInfo("Rest Service", "Получен статус encryption");
             return response.Data.encryption;
         }
 
@@ -169,30 +133,18 @@ namespace Byster.Models.Services
             {
                 enable = newStatus,
             }));
-            if (checkHTTPStatusCode(response.StatusCode)) return;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK || !string.IsNullOrEmpty(response.Data.error))
-            {
-                LastError = response.Data.error;
-                Log("Ошибка установки статуса encryption пользователя - ", response.Data.error, " - ", response.ErrorMessage);
-                return;
-            }
-            Log("Установлен новый encryption");
+            if (!checkAndLogResponseToError(response, "Установка нового encryption")) return;
+            LogInfo("Rest Service", "Установлен новый encryption");
             return;
         }
 
-        public IEnumerable<PaymentSystem> GetAllPaymentSystemList()
+        public IEnumerable<PaymentSystem> GetAllPaymentSystem()
         {
             bool isTesterOrDeveloper = !(GetUserType() == BranchType.MASTER);
             var response = client.Get<List<RestPaymentSystem>>(new RestRequest("shop/payment_systems"));
-            if (checkHTTPStatusCode(response.StatusCode)) return null;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = JsonConvert.DeserializeObject<BaseResponse>(string.IsNullOrEmpty(response?.Content ?? "") ? "" : response.Content)?.error ?? "No Error Received";
-                Log("Ошибка получения списка платёжных систем", response?.Content ?? "{Ошибка преобразования}", " - ", response?.ErrorMessage ?? "{Ошибка преобразования}");
-                return null;
-            }
+            if (!checkAndLogResponseToError(response, "Получение списка платёжных систем")) return null;
             List<PaymentSystem> result = new List<PaymentSystem>();
-            foreach(var item in response.Data)
+            foreach (var item in response.Data)
             {
                 if (item.name.ToLower().Contains("тест") && !isTesterOrDeveloper) continue;
                 result.Add(new PaymentSystem()
@@ -202,7 +154,7 @@ namespace Byster.Models.Services
                     Description = Localizator.LoadedLocalizationInfo.Language == "Русский" ? item.description : item.description_en,
                 });
             }
-            Log("Получены данные платёжных систем");
+            LogInfo("Rest Service", "Получены данные платёжных систем");
             return result;
         }
         List<string> updatedActionIds = new List<string>();
@@ -210,18 +162,12 @@ namespace Byster.Models.Services
         public bool GetActionState(string sessionId)
         {
             var response = client.Get<List<RestAction>>(new RestRequest("launcher/ping"));
-            if (checkHTTPStatusCode(response.StatusCode)) return false;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = JsonConvert.DeserializeObject<BaseResponse>(string.IsNullOrEmpty(response?.Content ?? "") ? "" : response.Content)?.error ?? "No Error Received";
-                Log("Ошибка обновления данных", response.Content.ToString(), " - ", response.ErrorMessage);
-                return false;
-            }
-            bool res = false;
+            if (!checkAndLogResponseToError(response, "Проверка запросов на обновление данных")) return false;
+             bool res = false;
             List<RestAction> actions = response.Data;
-            foreach(var action in actions)
+            foreach (var action in actions)
             {
-                if(!updatedActionIds.Contains(action.action_id) && action.session == sessionId && (action.action_type == 1 || action.action_type == 11))
+                if (!updatedActionIds.Contains(action.action_id) && action.session == sessionId && (action.action_type == 1 || action.action_type == 11))
                 {
                     updatedActionIds.Add(action.action_id);
                     res = true;
@@ -233,13 +179,7 @@ namespace Byster.Models.Services
         public BranchType GetUserType()
         {
             var response = client.Get<RestBranchResponse>(new RestRequest("launcher/branch_choices"));
-            if (checkHTTPStatusCode(response.StatusCode)) return BranchType.UNKNOWN;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = response.Data.error;
-                Log("Ошибка получения данных пользователя", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
-                return BranchType.UNKNOWN;
-            }
+            if (!checkAndLogResponseToError(response, "Получение типа аккаунта")) return BranchType.UNKNOWN;
             return response.Data.dev ? BranchType.DEVELOPER :
                 response.Data.test ? BranchType.TEST :
                 response.Data.master ? BranchType.MASTER : BranchType.UNKNOWN;
@@ -251,26 +191,15 @@ namespace Byster.Models.Services
             {
                 new_password = newPwdHash,
             }));
-            if (checkHTTPStatusCode(response.StatusCode)) return false;
-            if (response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = response.Data.error;
-                Log("Ошибка изменения пароля", response.Data.error, " - ", response.ErrorMessage ?? "{Ошибка преобразования}");
-                return false;
-            }
-            Log("Пароль изменён");
+            if (!checkAndLogResponseToError(response, "Изменение пароля")) return false;
+            LogInfo("Rest Service", "Пароль изменён");
             return true;
         }
 
         public List<RestDeveloperRotation> ExecuteDeveloperRotationRequest()
         {
             var response = client.Post<List<RestDeveloperRotation>>(new RestRequest("launcher/git_pull"));
-            if(response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = JsonConvert.DeserializeObject<BaseResponse>(response.Content).error;
-                Log("Ошибка получения данных ротаций для разработчиков", LastError, " - ", response.ErrorMessage);
-                return null;
-            }
+            if (!checkAndLogResponseToError(response, "Получение данных ротаций разработчиков")) return null;
             return response.Data;
         }
 
@@ -290,20 +219,14 @@ namespace Byster.Models.Services
                 specialization = spec,
                 role_type = roletype,
             }));
-            if (checkHTTPStatusCode(response.StatusCode)) return null;
-            if (!string.IsNullOrEmpty(response.Data?.error))
-            {
-                LastError = response.Data.error;
-                Log("Ошибка создания ротации разработчиков", LastError, " - ", response.ErrorMessage);
-                return null;
-            }
+            if(!checkAndLogResponseToError(response, "Добавление ротации разработчика")) return null;
             return response.Data;
         }
 
         public bool ExecuteLinkEmailRequest(string email)
         {
-            //var response = client.Post<>()
-            Log("ПРЕДУПРЕЖДЕНИЕ: Использована нереализованная функция");
+            //var response = client.Post<>("launcher/link_email", new Rest);
+            LogWarn("Rest Service", "Использована нереализованная функция привязки почты");
             return true;
         }
 
@@ -313,13 +236,7 @@ namespace Byster.Models.Services
             {
                 coupon_code = couponCode,
             }));
-            if (checkHTTPStatusCode(response.StatusCode)) return false;
-            if(response.StatusCode != System.Net.HttpStatusCode.OK)
-            {
-                LastError = response.Data.error;
-                Log("Ошибка активации купона", response.Data.error);
-                return false;
-            }
+            if (!checkAndLogResponseToError(response, "Активация купона")) return false;
             return true;
         }
 
@@ -338,29 +255,95 @@ namespace Byster.Models.Services
             multipleConnectionErrorEventCalled = false;
         }
 
-        private bool checkHTTPStatusCode(System.Net.HttpStatusCode statusCode)
+        public bool ExecuteSpecifiedRequest<TRequest, TResponse>(string url, string operationName, TRequest requestObject, out TResponse responseObject) where TResponse : BaseResponse
         {
-            System.Net.HttpStatusCode[] restrictedCodes = new System.Net.HttpStatusCode[]
+            var rawResponse = client.Execute<TResponse>(new RestRequest(url).AddJsonBody(requestObject), Method.POST);
+            if(checkAndLogResponseToError(rawResponse, operationName))
             {
-                System.Net.HttpStatusCode.Forbidden,
-                System.Net.HttpStatusCode.BadGateway,
-                System.Net.HttpStatusCode.GatewayTimeout,
-                System.Net.HttpStatusCode.RequestTimeout,
-                System.Net.HttpStatusCode.HttpVersionNotSupported,
-                System.Net.HttpStatusCode.ServiceUnavailable,
-            };
-            if(restrictedCodes.Contains(statusCode) || (int)statusCode == 0)
-            {
-                LastError = "Ошибка соединения с сервером";
-                Log("Сервер недоступен", statusCode.ToString());
-                addConnectoinErrorAccident();
+                logSuccessOfOperation(operationName);
+                responseObject = rawResponse.Data;
                 return true;
             }
-            else
+            responseObject = null;
+            return false;
+
+        }
+        public bool ExecuteSpecifiedRequest<TRequest>(string url, string operationName, TRequest requestObject)
+        {
+            var rawResponse = client.Execute(new RestRequest(url).AddJsonBody(requestObject), Method.POST);
+            if (checkAndLogResponseToError(rawResponse, operationName))
             {
-                //resetConnectionErrorAccidentsCounter();
+                logSuccessOfOperation(operationName);
+                return true;
+            }
+            return false;
+        }
+
+        public bool ExecuteSpecifiedRequest<TResponse>(string url, string operationName, Method method, out TResponse responseObject) where TResponse : BaseResponse
+        {
+            var rawResponse = client.Execute<TResponse>(new RestRequest(url), method);
+            if (checkAndLogResponseToError(rawResponse, operationName))
+            {
+                logSuccessOfOperation(operationName);
+                responseObject = rawResponse.Data;
+                return true;
+            }
+            responseObject = null;
+            return false;
+        }
+
+        private void logSuccessOfOperation(string operationName)
+        {
+            LogInfo("Rest Service", $"Выполнена операция:{operationName}");
+        }
+        private bool checkAndLogResponseToError(IRestResponse response, string operationName)
+        {
+            if(!checkHTTPStatusCodeToServerTrouble(response.StatusCode)) return false;
+            if (string.IsNullOrWhiteSpace(response.Content))
+            {
+                LastError = "Получен пустой ответ от сервера";
+                LogError("Rest Service", $"Получен пустой ответ от сервера при выполнении: {operationName}");
                 return false;
             }
+            BaseResponse baseResponse;
+            try
+            {
+                baseResponse = JsonConvert.DeserializeObject<BaseResponse>(response.Content);
+            }
+            catch
+            {
+                baseResponse = null;
+            }
+            if(response.StatusCode != HttpStatusCode.OK
+                || baseResponse != null && !string.IsNullOrEmpty(baseResponse.error))
+            {
+                LastError = baseResponse?.error ?? "Сервер не передал сообщение ошибки";
+                LogError("Rest Service", $"Ошибка при выполнении: {operationName}", $"Сообщение ошибки: {LastError}");
+                return false;
+            }
+            return true;
+        }
+
+        private bool checkHTTPStatusCodeToServerTrouble(HttpStatusCode statusCode)
+        {
+            HttpStatusCode[] restrictedCodes = new HttpStatusCode[]
+            {
+                HttpStatusCode.Forbidden,
+                HttpStatusCode.BadGateway,
+                HttpStatusCode.GatewayTimeout,
+                HttpStatusCode.RequestTimeout,
+                HttpStatusCode.HttpVersionNotSupported,
+                HttpStatusCode.ServiceUnavailable,
+            };
+            if (restrictedCodes.Contains(statusCode) || (int)statusCode == 0)
+            {
+                LastError = "Ошибка соединения с сервером";
+                LogError("Rest Service", "Сервер недоступен", statusCode.ToString());
+                addConnectoinErrorAccident();
+                return false;
+            }
+            //resetConnectionErrorAccidentsCounter();
+            return true;
         }
     }
 }

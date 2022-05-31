@@ -21,13 +21,13 @@ namespace Byster.Models.ViewModels
     public class MediaControl : Control
     {
         public static readonly DependencyProperty MediaElementProperty;
-        public static Action<string> OpenAction;
+        public static Action<Media> OpenAction;
 
         static MediaControl()
         {
-            OpenAction = (uri) =>
+            OpenAction = (media) =>
             {
-                MessageBox.Show(uri, "Действие не определено");
+                MessageBox.Show(media.Uri, "Действие не определено");
             };
             MediaElementProperty = DependencyProperty.Register("MediaElement", typeof(Image), typeof(MediaControl), new PropertyMetadata()
             {
@@ -39,6 +39,11 @@ namespace Byster.Models.ViewModels
                     var mediaElement = e.NewValue as Image;
                 },
             });
+        }
+
+        public Media SourceMedia
+        {
+            get => (MediaElement?.DataContext ?? null) as Media;
         }
 
         public Image MediaElement
@@ -60,7 +65,7 @@ namespace Byster.Models.ViewModels
             {
                 return openCommand ?? (openCommand = new RelayCommand(() =>
                 {
-                   OpenAction?.Invoke((MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfCurrentLocalSource == "/Resources/Images/video-placeholder.png" ? (MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfNetworkSource : (MediaElement.DataContext as Byster.Models.BysterModels.Media).ImageItem.PathOfCurrentLocalSource);
+                    OpenAction?.Invoke(SourceMedia);
                 }));
             }
         }
@@ -74,7 +79,7 @@ namespace Byster.Models.ViewModels
     {
         private static readonly string[] videoExtens = { ".mp4", ".avi", ".mkv" };
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
@@ -133,17 +138,32 @@ namespace Byster.Models.ViewModels
 
         private void sourceChangedCallback(object sender, PropertyChangedEventArgs e)
         {
-            
+
         }
 
-        public void PlayMedia(string url)
+        public void PlayMedia(Media media)
         {
-            MediaPresenterVisibility = Visibility.Visible;
+            if (media == null) return;
+            if (VideoPlayer.Visibility == Visibility.Visible) VideoPlayer.Close();
+            VideoPlayer.Visibility = Visibility.Collapsed;
+            ImagePlayer.Visibility = Visibility.Collapsed;
+            ControlsPanel.Visibility = Visibility.Collapsed;
+
+            string url;
+            if (Path.GetFileName(media.ImageItem.PathOfCurrentLocalSource).ToLower().Contains("placeholder"))
+            {
+                url = media.ImageItem.PathOfNetworkSource;
+            }
+            else
+            {
+                url = media.ImageItem.PathOfCurrentLocalSource;
+            }
             string ext = Path.GetExtension(url);
+            Source = media;
+            MediaPresenterVisibility = Visibility.Visible;
             if (videoExtens.Contains(ext))
             {
                 url = url.Replace("https", "http");
-                Source = url;
                 VideoPlayer.Visibility = Visibility.Visible;
                 ImagePlayer.Visibility = Visibility.Collapsed;
                 ControlsPanel.Visibility = Visibility.Visible;
@@ -154,7 +174,6 @@ namespace Byster.Models.ViewModels
             }
             else
             {
-                Source = url;
                 VideoPlayer.Visibility = Visibility.Collapsed;
                 ImagePlayer.Visibility = Visibility.Visible;
                 ControlsPanel.Visibility = Visibility.Collapsed;
@@ -191,7 +210,7 @@ namespace Byster.Models.ViewModels
         {
             get => playVideoCommand ?? (playVideoCommand = new RelayCommand(() =>
             {
-                if(VideoPlayer.Visibility == Visibility.Visible)
+                if (VideoPlayer.Visibility == Visibility.Visible)
                 {
                     VideoPlayer.Play();
                 }
@@ -220,6 +239,31 @@ namespace Byster.Models.ViewModels
             }));
         }
 
+        private RelayCommand nextMediaCommand;
+        public RelayCommand NextMediaCommand
+        {
+            get => nextMediaCommand ?? (nextMediaCommand = new RelayCommand(() =>
+            {
+                PlayMedia(Source.NextMedia);
+            }, () =>
+            {
+                if ((Source?.NextMedia ?? null) == null) return false;
+                return true;
+            }));
+        }
+
+        private RelayCommand prevMediaCommand;
+        public RelayCommand PrevMediaCommand
+        {
+            get => prevMediaCommand ?? (prevMediaCommand = new RelayCommand(() =>
+            {
+                PlayMedia(Source.PreviousMedia);
+            }, () =>
+            {
+                if ((Source?.PreviousMedia ?? null) == null) return false;
+                return true;
+            }));
+        }
         private static void videoplayerpropertyChangedCallback(DependencyObject sender, DependencyPropertyChangedEventArgs e)
         {
             if (e.OldValue == e.NewValue || e.NewValue == null) return;
@@ -241,8 +285,8 @@ namespace Byster.Models.ViewModels
         {
             if (e.OldValue == e.NewValue || e.NewValue == null) return;
             MediaPresenterControl mediaPresenterControl = (MediaPresenterControl)sender;
-            if(mediaPresenterControl.VideoPlayer == null) return;
-            if(mediaPresenterControl.VideoPlayer.Visibility != Visibility.Visible) return;
+            if (mediaPresenterControl.VideoPlayer == null) return;
+            if (mediaPresenterControl.VideoPlayer.Visibility != Visibility.Visible) return;
             mediaPresenterControl.VideoPlayer.Position = new TimeSpan(Convert.ToInt64(e.NewValue));
         }
 
@@ -324,12 +368,12 @@ namespace Byster.Models.ViewModels
             }
             set
             {
-                SetValue (PositionControlVisibilityProperty, value);
+                SetValue(PositionControlVisibilityProperty, value);
             }
         }
 
-        private string source;
-        public string Source
+        private Media source;
+        public Media Source
         {
             get => source;
             set

@@ -41,12 +41,12 @@ namespace Byster.Localizations.Tools
         }
         public override string ToString()
         {
-            return this?.Value ?? ""; 
+            return this?.Value ?? "";
         }
 
 
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }

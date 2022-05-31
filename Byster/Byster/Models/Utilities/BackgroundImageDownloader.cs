@@ -23,15 +23,16 @@ namespace Byster.Models.Utilities
         public static List<ImageItem> DownloadedItems { get; set; }
 
         private static Thread downloadingThread;
+        public static Mutex SuspendMutex { get; set; }
 
-        //private static SuspendToken suspendToken = new SuspendToken();
-        public static Mutex SuspendMutex { get; set; } = new Mutex();
-
-        private static Mutex blockCollectionsMutex { get; set; } = new Mutex();
-        private static Mutex blockQueueMutex { get; set; } = new Mutex();
+        private static Mutex blockCollectionsMutex { get; set; }
+        private static Mutex blockQueueMutex { get; set; }
 
         public static void Init()
         {
+            SuspendMutex = new Mutex();
+            blockCollectionsMutex = new Mutex();
+            blockQueueMutex = new Mutex();
             ItemsToDownload = new Queue<ImageItem>();
             DownloadedItems = new List<ImageItem>();
 
@@ -41,7 +42,7 @@ namespace Byster.Models.Utilities
 
             downloadingThread = new Thread(threadMethod);
             downloadingThread.IsBackground = true;
-            downloadingThread.Name = "Downloader Of Images";
+            downloadingThread.Name = "Image Downloader";
             downloadingThread.Start();
         }
 
@@ -52,38 +53,53 @@ namespace Byster.Models.Utilities
 
         private static void threadMethod()
         {
-            while(true)
+            while (true)
             {
-                SuspendMutex.WaitOne();
+                try
+                {
+                    SuspendMutex.WaitOne();
                     if (ItemsToDownload.Count > 0)
                     {
                         try
                         {
+                            blockQueueMutex.WaitOne();
                             var downloadingItem = ItemsToDownload.Dequeue();
-                            Log("Попытка скачивания", "Url", downloadingItem.PathOfNetworkSource);
+                            blockQueueMutex.ReleaseMutex();
+                            LogInfo("ImageDownloader", "Попытка скачивания", "Url:", downloadingItem.PathOfNetworkSource);
                             WebClient client = new WebClient();
                             byte[] buffer = client.DownloadData(downloadingItem.PathOfNetworkSource);
                             File.WriteAllBytes(downloadingItem.PathOfLocalSource, buffer);
                             downloadingItem.IsDownLoaded = true;
                             downloadingItem.PathOfCurrentLocalSource = downloadingItem.PathOfLocalSource;
+                            blockCollectionsMutex.WaitOne();
                             DownloadedItems.Add(downloadingItem);
+                            blockCollectionsMutex.ReleaseMutex();
                             client.Dispose();
-                            Log("Скачан файл изображения", "Путь:", downloadingItem.PathOfCurrentLocalSource, "Url:", downloadingItem.PathOfNetworkSource);
+                            LogInfo("ImageDownloader", "Скачан файл изображения", "Путь:", downloadingItem.PathOfCurrentLocalSource, " Url:", downloadingItem.PathOfNetworkSource);
                         }
                         catch (Exception ex)
                         {
-                            Log("Ошибка при скачивании", ex.Message, " - ", ex.ToString());
+                            LogWarn("ImageDownloader", "Ошибка при скачивании", ex.Message, " - ", ex.ToString());
                         }
                     }
-                SuspendMutex.ReleaseMutex();
-                Thread.Sleep(100);
+                    SuspendMutex.ReleaseMutex();
+                    Thread.Sleep(100);
+                }
+                catch (Exception ex)
+                {
+                    LogError("ImageDownloader", "Mutex ошибка", ex.Message, ex.StackTrace);
+                }
+                finally
+                {
+                }
+
             }
         }
 
         private static void readImageDirectory()
         {
             List<string> files = Directory.GetFiles(ImageRootPath).ToList();
-            foreach(string file in files)
+            foreach (string file in files)
             {
                 DownloadedItems.Add(new ImageItem()
                 {
@@ -96,9 +112,9 @@ namespace Byster.Models.Utilities
 
         public static ImageItem GetImageItemByNetworkPath(string networkPath)
         {
-            if(!string.IsNullOrEmpty(networkPath))
+            if (!string.IsNullOrEmpty(networkPath))
             {
-                if(getExtensionOfNetworkSource(networkPath) == ".mp4")
+                if (getExtensionOfNetworkSource(networkPath) == ".mp4")
                 {
                     ImageItem imageItem = new ImageItem()
                     {
@@ -140,7 +156,6 @@ namespace Byster.Models.Utilities
         {
             if (string.IsNullOrEmpty(pathToImage)) return null;
             string newLocalPath = ImageRootPath + HashCalc.GetMD5Hash(pathToImage) + getExtensionOfNetworkSource(pathToImage);
-            //File.Create(newLocalPath).Close();
             ImageItem creatingItem = new ImageItem()
             {
                 PathOfNetworkSource = pathToImage,
@@ -166,11 +181,11 @@ namespace Byster.Models.Utilities
 
         private static string getExtensionOfNetworkSource(string netPath)
         {
-            if(!string.IsNullOrEmpty(netPath))
+            if (!string.IsNullOrEmpty(netPath))
             {
                 string ext = ".";
                 string[] parts = netPath.Split('.');
-                if(parts.Last().Length <= 3 && parts.Last().Length > 0)
+                if (parts.Last().Length <= 3 && parts.Last().Length > 0)
                 {
                     ext += parts.Last();
                     return ext;
@@ -234,46 +249,6 @@ namespace Byster.Models.Utilities
         public ImageItem()
         {
             IsDownLoaded = false;
-        }
-    }
-
-    class SuspendToken
-    {
-        Mutex mutex = new Mutex();
-        bool isSuspendRequestCreated = false;
-        bool isSuspended = false;
-        public void RequestSuspend()
-        {
-            mutex.WaitOne();
-            if (isSuspendRequestCreated || isSuspended) return;
-            isSuspendRequestCreated = true;
-            mutex.ReleaseMutex();
-            while (!isSuspended) { }
-            return;
-        }
-
-        public bool GetSuspendRequestStatus()
-        {
-            return isSuspendRequestCreated;
-        }
-
-        public bool GetSuspendStatus()
-        {
-            return isSuspended;
-        }
-
-        public void AcceptSuspend()
-        {
-            if(isSuspendRequestCreated)
-            {
-                isSuspendRequestCreated = false;
-                isSuspended = true;
-            }
-        }
-
-        public void Resume()
-        {
-            if(isSuspended) isSuspended = false;
         }
     }
 }

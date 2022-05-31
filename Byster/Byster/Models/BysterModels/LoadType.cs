@@ -5,18 +5,36 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using Byster.Localizations.Tools;
+using Byster.Models.BysterModels.Primitives;
 
 namespace Byster.Models.BysterModels
 {
-    public class LoadType
+    public class LoadType : Setting<int, int, LoadTypeType>
     {
-        public int Value { get; set; }
-        public string Name { get; set; }
+        public LoadType(string _name, LoadTypeType _enum, int _value = 0, int _registryValue = 0) : base(_name, _enum, _value, _registryValue) { }
+    }
 
-        public static LoadType[] AllLoadTypes { get; set; } = new LoadType[] {
-            //new LoadType(){ Name=Localizator.GetLocalizationResourceByKey("LocalLoadtype"), Value=1},
-            new LoadType(){ Name=Localizator.GetLocalizationResourceByKey("MixedLoadtype"), Value=2},
-            new LoadType(){ Name=Localizator.GetLocalizationResourceByKey("ServerLoadtype"), Value=3},
-        };
+    public class LoadTypeAssociator : SettingAssociator<LoadType, int, int, LoadTypeType>
+    {
+        private static LoadTypeAssociator instance;
+        public static new LoadTypeAssociator GetAssociator()
+        {
+            return instance ?? (instance = new LoadTypeAssociator());
+        }
+        public LoadTypeAssociator()
+        {
+            AllInstances = new List<LoadType>()
+            {
+                new LoadType(Localizator.GetLocalizationResourceByKey("MixedLoadtype").Value, LoadTypeType.MIXED, 2, 2),
+                new LoadType(Localizator.GetLocalizationResourceByKey("ServerLoadtype").Value, LoadTypeType.SERVER, 3, 3),
+            };
+        }
+
+    }
+
+    public enum LoadTypeType
+    {
+        MIXED = 1,
+        SERVER = 2,
     }
 }

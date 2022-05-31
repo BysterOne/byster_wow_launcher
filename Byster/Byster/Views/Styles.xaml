@@ -1006,6 +1006,7 @@
     </Style>
 
     <Style TargetType="{x:Type ListBox}" x:Key="mediaViewBox">
+        <Setter Property="VirtualizingStackPanel.IsVirtualizing" Value="True"/>
         <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
         <Setter Property="ItemsPanel">
             <Setter.Value>
@@ -1076,7 +1077,7 @@
                             <ControlTemplate TargetType="ListBoxItem">
                                 <Grid Cursor="Hand">
                                     <viewmodels:MediaControl MediaElement="{Binding ElementName=mediaImage}" x:Name="mediaControl"/>
-                                    <Image x:Name="mediaImage" Margin="5, 0" RenderOptions.BitmapScalingMode="HighQuality" Source="{Binding Path=Uri}"/>
+                                    <Image x:Name="mediaImage" Margin="5, 0" RenderOptions.BitmapScalingMode="Fant" Source="{Binding Path=Uri}"/>
                                     <Grid Visibility="Collapsed" x:Name="waterPlayButton" VerticalAlignment="Center" HorizontalAlignment="Center">
                                         <Path Data="M 0 0 L 0 16 L 16 8 Z" Fill="{DynamicResource MediaPlayButtonColor}"/>
                                     </Grid>
@@ -1191,20 +1192,20 @@
 
                                             <VisualStateGroup x:Name="SelectionStates">
                                                 <VisualState x:Name="Selected">
-                                                    <Storyboard Duration="0:0:0.5">
+                                                    <Storyboard Duration="0:0:0.25">
                                                         <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                         To="350"
                                                                         BeginTime="0:0:0"
-                                                                        Duration="0:0:0.5"
+                                                                        Duration="0:0:0.25"
                                                                         Storyboard.TargetName="itemGrid"/>
                                                     </Storyboard>
                                                 </VisualState>
                                                 <VisualState x:Name="Unselected">
-                                                    <Storyboard Duration="0:0:0.5">
+                                                    <Storyboard Duration="0:0:0.25">
                                                         <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                         To="80"
                                                                         BeginTime="0:0:0"
-                                                                        Duration="0:0:0.5"
+                                                                        Duration="0:0:0.25"
                                                                             Storyboard.TargetName="itemGrid"/>
                                                     </Storyboard>
                                                 </VisualState>
@@ -1262,7 +1263,7 @@
                     <Setter Property="Template">
                         <Setter.Value>
                             <ControlTemplate TargetType="ListBoxItem">
-                                <CheckBox IsChecked="{Binding Path=IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Mode=TwoWay}"
+                                <CheckBox IsChecked="{Binding Path=DataContext.IsSelected, RelativeSource={RelativeSource AncestorType=ListBoxItem}, Mode=TwoWay}"
                                           FontFamily="{DynamicResource Roboto}"
                                           Foreground="{DynamicResource FontInfoColor}"
                                           FontSize="{DynamicResource FontUISize}"
@@ -1432,7 +1433,7 @@
         <Setter Property="ItemsPanel">
             <Setter.Value>
                 <ItemsPanelTemplate>
-                    <WrapPanel Background="Transparent"/>
+                    <WrapPanel Background="Transparent" Orientation="Horizontal"/>
                 </ItemsPanelTemplate>
             </Setter.Value>
         </Setter>
@@ -1583,10 +1584,13 @@
                                                             <TextBlock x:Name="productSpecializationName" VerticalAlignment="Center" Style="{DynamicResource orangeTextBlockStyle}" TextAlignment="Right"
                                                                    Margin="0"/>
                                                         </StackPanel>
-                                                        <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}"
-                                                                Grid.Row="1" Margin="0, 10">
-                                                            <TextBox Style="{DynamicResource infoReadOnlyTextBoxStyle}" ClipToBounds="True" TextWrapping="Wrap" Text="{Binding Path=Product.Description}"/>
-                                                        </ScrollViewer>
+                                                        <Grid Grid.Row="1" Margin="10">
+                                                            <ScrollViewer Style="{DynamicResource scrollViewerSmallStyle}"
+                                                                 Margin="0, 0">
+                                                                <TextBox Style="{DynamicResource infoReadOnlyTextBoxStyle}" ClipToBounds="True" TextWrapping="Wrap" Text="{Binding Path=Product.Description}"/>
+                                                            </ScrollViewer>
+                                                        </Grid>
+                                                        
                                                         <ListBox Style="{DynamicResource mediaViewBox}" ItemsSource="{Binding Path=Product.Medias}" Grid.Row="2"/>
                                                     </Grid>
                                                     <Grid x:Name="multipleProductExpanderGrid" Visibility="Visible">
@@ -1608,30 +1612,30 @@
                                     <VisualStateManager.VisualStateGroups>
                                         <VisualStateGroup x:Name="SelectionStates">
                                             <VisualState x:Name="Selected">
-                                                <Storyboard Duration="0:0:0.5">
+                                                <Storyboard Duration="0:0:0.25">
                                                     <DoubleAnimation Storyboard.TargetProperty="Width"
                                                          From="{TemplateBinding ActualWidth}"
                                                          To="588"
                                                          BeginTime="0:0:0"
-                                                                     Duration="0:0:0.5"/>
+                                                                     Duration="0:0:0.25"/>
                                                     <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                      BeginTime="0:0:0"
-                                                                     Duration="0:0:0.25"
+                                                                     Duration="0:0:0.1"
                                                                      To="0"
                                                                      Storyboard.TargetName="singleProductShortInfoGrid"/>
                                                 </Storyboard>
                                             </VisualState>
                                             <VisualState x:Name="Unselected">
-                                                <Storyboard Duration="0:0:0.5">
+                                                <Storyboard Duration="0:0:0.25">
 
                                                     <DoubleAnimation Storyboard.TargetProperty="Width"
                                                          From="{TemplateBinding ActualWidth}"
                                                          To="180"
                                                          BeginTime="0:0:0"
-                                                                     Duration="0:0:0.5"/>
+                                                                     Duration="0:0:0.25"/>
                                                     <DoubleAnimation Storyboard.TargetProperty="Height"
                                                                      BeginTime="0:0:0"
-                                                                     Duration="0:0:0.5"
+                                                                     Duration="0:0:0.25"
                                                                      To="30"
                                                                      Storyboard.TargetName="singleProductShortInfoGrid"/>
                                                 </Storyboard>

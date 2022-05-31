@@ -87,7 +87,7 @@
                                                     <ColumnDefinition Width="*"/>
                                                     <ColumnDefinition Width="Auto"/>
                                                 </Grid.ColumnDefinitions>
-                                                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource checkboxStyle}" IsChecked="{Binding IsEnabled}" IsEnabled="{Binding IsEnabledChangingIsEnabled}" Grid.Column="0"/>
+                                                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource checkboxStyle}" IsChecked="{Binding IsEnabled}" IsEnabled="{Binding IsEnabledChangingOfIsEnabled}" Grid.Column="0"/>
                                                 <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Text="{Binding RotationTypeOfRotation.Name}" Grid.Column="1"/>
                                                 <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Text="{Binding ClassOfRotation.Name}" Grid.Column="2"/>
                                                 <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Name}" Grid.Column="3"/>

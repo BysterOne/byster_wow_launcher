@@ -29,7 +29,7 @@ namespace Byster.Models.BysterModels
         public string Currency { get; set; }
         public bool IsTestable { get; set; }
         public List<Media> Medias { get; set; }
-        public List<ShopRotation>Rotations { get; set; }
+        public List<ShopRotation> Rotations { get; set; }
         public bool IsPack { get; set; }
 
         public ShopProduct() { }
@@ -41,26 +41,29 @@ namespace Byster.Models.BysterModels
             Price = RestShopProduct.price;
             Currency = RestShopProduct.currency;
             Duration = RestShopProduct.duration;
+            Media prevMedia = null;
             Medias = new List<Media>();
-            foreach(var restMedia in RestShopProduct.media)
+            foreach (var restMedia in RestShopProduct.media)
             {
-                Medias.Add(new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type)));
+                Media currentMedia = new Media(restMedia.url, Media.GetMediaTypeByName(restMedia.type), prevMedia);
+                Medias.Add(currentMedia);
+                prevMedia = currentMedia;
             }
             Rotations = new List<ShopRotation>();
-            foreach(var restRotation in RestShopProduct.rotations)
+            foreach (var restRotation in RestShopProduct.rotations)
             {
                 Rotations.Add(new ShopRotation(restRotation));
             }
             IsPack = Rotations.Count > 1;
-            if(Localizator.LoadedLocalizationInfo.Language == "Русский")
+            if (Localizator.LoadedLocalizationInfo.Language == "Русский")
                 Description = string.IsNullOrEmpty(RestShopProduct.description) ? Rotations[0].Description : RestShopProduct.description;
             else
                 Description = string.IsNullOrEmpty(RestShopProduct.description_en) ? Rotations[0].Description : RestShopProduct.description_en;
             IsTestable = RestShopProduct.can_test;
 
-            if(Rotations.Count == 1)
+            if (Rotations.Count == 1)
             {
-                foreach(var media in Rotations[0].Medias)
+                foreach (var media in Rotations[0].Medias)
                 {
                     Medias.Add(media);
                 }

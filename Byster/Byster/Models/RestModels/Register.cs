@@ -33,13 +33,4 @@ namespace Byster.Models.RestModels
     {
         public RegisterResponse() { }
     }
-
-    public class RegisterChoice
-    {
-        public int id { get; set; }
-        public string selection { get; set; }
-        public bool need_referral_code { get; set; }
-
-        public RegisterChoice() { }
-    }
 }

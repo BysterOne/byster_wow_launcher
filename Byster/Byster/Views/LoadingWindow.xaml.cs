@@ -37,30 +37,30 @@ namespace Byster.Views
         public LoadingWindow()
         {
             InitializeComponent();
-            
+
             string currentDir = Directory.GetCurrentDirectory();
-            
+
             // Запуск логирования
             BysterLogger.Init();
-            
+
             //Обработчик исключений диспетчера
             App.Current.DispatcherUnhandledException += (sender, e) =>
             {
-                Log("Fatal:Необработанное исключение", e.Exception.Message, e.Exception.StackTrace, e.Exception.InnerException?.StackTrace ?? "[]");
+                LogFatal("Common Dispather", "Необработанное исключение", e.Exception.Message, e.Exception.StackTrace, e.Exception.InnerException?.StackTrace ?? "[]");
                 e.Handled = true;
             };
 
-            Log("Подготовка к запуску");
-            Log("Версия Windows", Environment.OSVersion.Version.Major);
+            LogInfo("Common", "Подготовка к запуску");
+            LogInfo("Common", "Версия Windows", Environment.OSVersion.Version.Major);
             if (Environment.OSVersion.Version.Major <= 7)
             {
-                Log("Применение настроек для версий Windows <7");
+                LogInfo("Common", "Применение настроек для версий Windows <7");
                 ServicePointManager.Expect100Continue = true;
                 ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
                                                        | SecurityProtocolType.Tls11
                                                        | SecurityProtocolType.Tls12
                                                        | SecurityProtocolType.Ssl3;
-                Log("Сеть", "Разрешены сертификаты типов: TLS, TLS1.1, TLS1.2, SSL3");
+                LogInfo("Сеть", "Разрешены сертификаты типов: TLS, TLS1.1, TLS1.2, SSL3");
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
                 {
                     if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None)
@@ -74,14 +74,14 @@ namespace Byster.Views
                     }
                     return false;
                 };
-                Log("Сеть", "Отключена проверка сертификатов для хостов: api.byster.ru, s3.byster.ru");
+                LogInfo("Сеть", "Отключена проверка сертификатов для хостов: api.byster.ru, s3.byster.ru");
             }
-            Log("Подготовка завершена, запуск...");
+            LogInfo("Common", "Подготовка завершена, запуск...");
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
-            Log("Запуск окна LoadingWindow");
+            LogInfo("Common", "Запуск окна LoadingWindow");
             rotateProgressTransform.CenterX = this.ActualWidth / 2;
             rotateProgressTransform.CenterY = this.ActualHeight / 2;
             rotateProgressTransform.BeginAnimation(RotateTransform.AngleProperty, new DoubleAnimation()
@@ -91,26 +91,41 @@ namespace Byster.Views
                 RepeatBehavior = RepeatBehavior.Forever,
             });
 
-            Log("Запуск потока");
+            LogInfo("Common", "Запуск потока");
 
             Task.Run(() =>
             {
-                Log("Запущен поток");
-                Log("Запуск BackgroundImageDownloader");
+                LogInfo("Common", "Запущен поток");
+                LogInfo("Common", "Запуск BackgroundImageDownloader");
                 BackgroundImageDownloader.Init();
-                Log("Запущен BackgroundImageDownloader");
-                Log("Удаление остаточных файлов");
-                if (File.Exists("BysterUpdate.exe")) File.Delete("BysterUpdate.exe");
-                if (File.Exists("update.bat")) File.Delete("update.bat");
-                if (File.Exists("changeLocalization.bat")) File.Delete("changeLocalization.bat");
-                Log("Удаление остаточных файлов завершено");
-                Log("Проверка обновлений");
+                LogInfo("Common", "Запущен BackgroundImageDownloader");
+                LogInfo("Common", "Удаление остаточных файлов");
+                if (File.Exists("BysterUpdate.exe")) try { File.Delete("BysterUpdate.exe"); } catch { LogWarn("Common", "Ошибка удаления BysterUpdate.exe"); }
+                if (File.Exists("update.bat")) try { File.Delete("update.bat"); } catch { LogWarn("Common", "Ошибка удаления update.bat"); }
+                if (File.Exists("changeLocalization.bat")) try { File.Delete("changeLocalization.bat"); } catch { LogWarn("Common", "Ошибка удаления changeLocalization.bat"); }
+                string qrCodesPath = Path.Combine(Path.GetTempPath(), "BysterQRCodes");
+                if(Directory.Exists(qrCodesPath))
+                {
+                    foreach (var file in Directory.GetFiles(qrCodesPath))
+                    {
+                        try
+                        {
+                            File.Delete(Path.Combine(qrCodesPath, file));
+                        }
+                        catch
+                        {
+                            LogWarn("Common", "Ошибка удаления QR Code", "Path: ", file);
+                        }
+                    }
+                }
+                LogInfo("Common", "Удаление остаточных файлов завершено");
+                LogInfo("Common", "Проверка обновлений");
                 string version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
                 var response = App.Rest.Get(new RestRequest("launcher/check_updates"));
                 {
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        Log("Ошибка соединения с сервером", "HTTP-Code: " + response.StatusCode.ToString());
+                        LogError("Common", "Ошибка соединения с сервером", "HTTP-Code: " + response.StatusCode.ToString());
                         MessageBox.Show($"Error while connecting server\nResponse HTTP-Code: {(int)response.StatusCode}\nError message: {response.ErrorMessage}\nServer error message: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "No server answer"}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);
                         closeApp();
                         return;
@@ -119,21 +134,21 @@ namespace Byster.Views
                 string onlineVersion = Encoding.UTF8.GetString(response.RawBytes);
                 if (onlineVersion != version)
                 {
-                    
-                    Log($"Обновление от версии {version} до {onlineVersion}");
+
+                    LogInfo("Common", $"Обновление от версии {version} до {onlineVersion}");
                     Thread thread = new Thread(() => { updateApp(onlineVersion); });
                     thread.Start();
                 }
                 else
                 {
-                    Log("Обновления не найдены. Запуск основного приложения");
+                    LogInfo("Common", "Обновления не найдены. Запуск основного приложения");
                     string login = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Login", null);
                     string password = (string)Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Password", null);
                     if (!string.IsNullOrEmpty(login) && !string.IsNullOrEmpty(password))
                     {
                         string passwordHash = password;
                         string sessionId;
-                        Log("Попытка авторизации");
+                        LogInfo("Authorization", "Попытка авторизации");
                         int status_code = tryAuth(login, passwordHash, out sessionId);
                         switch (status_code)
                         {
@@ -242,7 +257,7 @@ namespace Byster.Views
 
         private void updateApp(string versionToUpdate)
         {
-            Log("Получение новой версии");
+            LogInfo("Common", "Получение новой версии");
             RestClient client = new RestClient("https://api.byster.ru/");
             var response = client.Get(new RestRequest("launcher/download"));
             if (response.StatusCode != HttpStatusCode.OK)
@@ -251,7 +266,7 @@ namespace Byster.Views
                 closeApp();
                 return;
             }
-            Log("Обновление");
+            LogInfo("Common", "Обновление");
             File.WriteAllBytes("BysterUpdate.exe", response.RawBytes);
             File.WriteAllLines("update.bat", new List<string>(){
                     $"taskkill /IM \"{ Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe\" /F",
@@ -260,7 +275,7 @@ namespace Byster.Views
                     $"rename BysterUpdate.exe { Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe",
                     $"{ Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe",
                 });
-            Log("Перезапуск...");
+            LogInfo("Common", "Перезапуск...");
             Process process = new Process();
             process.StartInfo.FileName = "update.bat";
             process.StartInfo.CreateNoWindow = true;

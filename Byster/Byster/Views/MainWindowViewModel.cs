@@ -16,6 +16,7 @@ using Byster.Models.ViewModels;
 using Byster.Localizations.Tools;
 using System.Windows;
 using System.Windows.Threading;
+using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Views
 {
@@ -112,7 +113,7 @@ namespace Byster.Views
         {
             get
             {
-                if(SelectedSession == null || !SelectedSession.WowApp.WorldLoaded)
+                if (SelectedSession == null || !SelectedSession.WowApp.WorldLoaded)
                 {
                     return Visibility.Collapsed;
                 }
@@ -126,7 +127,7 @@ namespace Byster.Views
         {
             get
             {
-                if(SelectedSession == null)
+                if (SelectedSession == null)
                 {
                     return Visibility.Visible;
                 }
@@ -140,7 +141,7 @@ namespace Byster.Views
         {
             get
             {
-                if(SelectedSession?.WowApp?.WorldLoaded ?? true)
+                if (SelectedSession?.WowApp?.WorldLoaded ?? true)
                 {
                     return Visibility.Collapsed;
                 }
@@ -212,14 +213,8 @@ namespace Byster.Views
             {
                 MultipleConnectionErrorsDetected?.Invoke();
             };
-            UserInfo = new UserInfoService(restService)
-            {
-                SessionId = sessionId,
-            };
-            ActiveRotations = new ActiveRotationsService(restService)
-            {
-                SessionId = sessionId,
-            };
+            UserInfo = new UserInfoService(restService);
+            ActiveRotations = new ActiveRotationsService(restService);
             Shop = new ShopService(restService)
             {
                 PreTestElementAction = () =>
@@ -249,7 +244,7 @@ namespace Byster.Views
                     bool res = false;
                     res = selectorWindow.ShowModalDialog();
                     if (selectorWindow.SystemId == -1 && Shop.ResultSum > 0) return false;
-                    if (res)  Shop.SelectedPaymentSystemId = selectorWindow.SystemId;
+                    if (res) Shop.SelectedPaymentSystemId = selectorWindow.SystemId;
                     return res;
                 },
                 BuyCartSuccessAction = (string str) =>
@@ -274,11 +269,9 @@ namespace Byster.Views
                     InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), $"{Localizator.GetLocalizationResourceByKey("BuyBonusesErrorMessage")}\n{restService.LastError}");
                     infoWindow.ShowModalDialog();
                 },
-                SessionId = sessionId,
             };
             ActionService = new ActionService(restService, UpdateData)
             {
-                SessionId = sessionId,
             };
             SessionService = new SessionService(App.Rest)
             {
@@ -295,44 +288,14 @@ namespace Byster.Views
             {
                 if (args.PropertyName == "Branch")
                 {
-                    Injector.Branch = UserInfo.Branch;
+                    Injector.Branch = UserInfo.Branch.Value;
                 };
             };
-            //MediaControl.OpenAction = (uri) =>
-            //{
-            //    //string ext = getExtension(uri);
-            //    //string[] videoExtensions = new string[]
-            //    //{
-            //    //    "mp4",
-            //    //    "avi",
-            //    //    "mkv"
-            //    //};
-            //    //if(videoExtensions.Contains(ext))
-            //    //{
-            //    //    SourceOfMediaToOpen = "/Resources/Images/video-error.png";
-            //    //    IsMediaOpened = Visibility.Visible;
-            //    //    RedirectToBrowserWindow redirectWindow = new RedirectToBrowserWindow(Localizator.GetLocalizationResourceByKey("Error").Value, Localizator.GetLocalizationResourceByKey("OpenMediaErrorMessage").Value, uri);
-            //    //    redirectWindow.ShowDialog();
-            //    //}
-            //    //else
-            //    //{
-            //    //    SourceOfMediaToOpen = uri;
-            //    //    IsMediaOpened = Visibility.Visible;
-            //    //}
-            //};
             DeveloperRotations = new DeveloperRotationService()
             {
                 RestService = restService,
             };
         }
-
-        public static string getExtension(string uri)
-        {
-            string[] parts = uri.Split('.');
-            if (parts.Length < 2) return "";
-            return parts[parts.Length - 1].ToLower();
-        }
-
         public void Initialize(Dispatcher dispatcher)
         {
             StatusText = Localizator.GetLocalizationResourceByKey("Initialization");
@@ -342,7 +305,7 @@ namespace Byster.Views
             UserInfo.Initialize(dispatcher);
             ActionService.Initialize(dispatcher);
             SessionService.Initialize(dispatcher);
-            if(UserInfo.UserType == BranchType.DEVELOPER)
+            if (UserInfo.UserType == BranchType.DEVELOPER)
             {
                 DeveloperRotations.Initialize(dispatcher);
             }
@@ -383,7 +346,7 @@ namespace Byster.Views
             {
                 return startCommand ?? (startCommand = new RelayCommand((obj) =>
                      {
-                         Injector.Branch = UserInfo.Branch;
+                         Injector.Branch = UserInfo.Branch.Value;
                          SessionService.StartInjecting(SelectedSession.WowApp.Process.Id);
                      }));
             }
@@ -432,16 +395,16 @@ namespace Byster.Views
             {
                 return shopCommand ?? (shopCommand = new RelayCommand(() =>
                 {
-                    
-                    Shop.FilterOptions = new Filter()
+                    foreach (var item in Shop.FilterOptions.FilterClasses)
                     {
-                        FilterClasses = new ObservableCollection<FilterClass>()
-                        {
-                            new FilterClass(ActiveRotations.FilterClass),
-                        },
-                        FilterTypes = new ObservableCollection<string>()
-                        {},
-                    };
+                        item.IsSelected = false;
+                    }
+                    var selectedClass = Shop.FilterOptions.FilterClasses.Where(_ifi => _ifi.FilterValue.EnumClass == SelectedSession.SessionClass.EnumWOWClass).FirstOrDefault();
+                    if (selectedClass != null) selectedClass.IsSelected = true;
+                    foreach (var item in Shop.FilterOptions.FilterTypes)
+                    {
+                        item.IsSelected = false;
+                    }
                     selectPage(1);
                 }));
             }
@@ -468,37 +431,36 @@ namespace Byster.Views
 
         private void syncData()
         {
-
         }
-
+        bool isUpdating = false;
         public void UpdateData()
         {
+            if(isUpdating) return;
+            isUpdating = true;
             Task.Run(() =>
             {
                 StatusText = Localizator.GetLocalizationResourceByKey("UpdatingData");
+                LogInfo("Common", "Приостановка работы Background Image Downloader...");
+                BackgroundImageDownloader.Suspend();
+                LogInfo("Common", "Обновление данных...");
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataStarted?.Invoke();
                 });
-                BackgroundImageDownloader.Suspend();
-                try
-                {
-                    UserInfo.UpdateRemoteData();
-                    ActiveRotations.UpdateData();
-                    Shop.UpdateData();
-                    syncData();
-                }
-                catch(Exception ex)
-                {
-                    MessageBox.Show(ex.Message + "\n" + ex.ToString(), "Error while updating data");
-                }
-                BackgroundImageDownloader.Resume();
+                UserInfo.UpdateRemoteData();
+                ActiveRotations.UpdateData();
+                Shop.UpdateData();
+                syncData();
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataCompleted?.Invoke();
                 });
+                LogInfo("Common", "Обновление данных завершено");
+                BackgroundImageDownloader.Resume();
+                LogInfo("Common", "Возобновление работы Background Image Downloader");
+                isUpdating = false;
             });
-            
+
         }
 
         public void Dispose()
@@ -511,7 +473,7 @@ namespace Byster.Views
         public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
-            if(property == "SelectedSession")
+            if (property == "SelectedSession")
             {
                 checkRotations();
             }

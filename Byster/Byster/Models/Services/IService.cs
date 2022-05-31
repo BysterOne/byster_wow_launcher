@@ -6,13 +6,16 @@ using System.Threading.Tasks;
 using System.Windows.Threading;
 namespace Byster.Models.Services
 {
-    internal interface IService
+    internal interface IService : IDisposable
     {
-        bool IsInitialized { get; set; }
+        bool IsInitialized { get; }
         Dispatcher Dispatcher { get; set; }
-        string SessionId { get; set; }
-        RestService RestService { get; set; }
         void UpdateData();
         void Initialize(Dispatcher dispatcher);
+    }
+
+    internal interface INetService : IService
+    {
+        RestService RestService { get; set; }
     }
 }

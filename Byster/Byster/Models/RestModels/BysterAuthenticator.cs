@@ -8,7 +8,7 @@ using RestSharp.Authenticators;
 
 namespace Byster.Models.RestModels
 {
-    class BysterAuthenticator: IAuthenticator
+    class BysterAuthenticator : IAuthenticator
     {
         public string sessionToken { get; set; }
 

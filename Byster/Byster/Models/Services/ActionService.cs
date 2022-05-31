@@ -29,10 +29,10 @@ namespace Byster.Models.Services
             {
                 Dispatcher?.Invoke(() =>
                 {
-                    if(UpdateAction != null)
+                    if (UpdateAction != null)
                         UpdateAction();
                 });
-                Log("Получен запрос на обновление данных");
+                LogInfo("Action Service", "Получен запрос на обновление данных");
             }
         }
 
@@ -51,9 +51,12 @@ namespace Byster.Models.Services
 
         public async void Initialize(Dispatcher dispatcher)
         {
+            LogInfo("Action Service", "Запуск сервиса...");
             Dispatcher = dispatcher;
             IsInitialized = true;
             await Task.Run(() => updatingTimer = new Timer(new TimerCallback(TimerTick), null, 0, 5000));
+            LogInfo("Action Service", "Запуск сервиса завершён");
+
         }
     }
 }

@@ -39,11 +39,11 @@ namespace Byster.Views
             ViewModel = new MainWindowViewModel(App.Rest, App.Sessionid);
             ViewModel.UpdateDataStarted += () =>
             {
-                 updatingDataActionGrid.Visibility = Visibility.Visible;
+                updatingDataActionGrid.Visibility = Visibility.Visible;
             };
             ViewModel.UpdateDataCompleted += () =>
             {
-                 updatingDataActionGrid.Visibility = Visibility.Collapsed;
+                updatingDataActionGrid.Visibility = Visibility.Collapsed;
             };
             ViewModel.InitializationStarted += () =>
             {
@@ -59,7 +59,7 @@ namespace Byster.Views
                 {
                     var window = new InfoWindow(Localizator.GetLocalizationResourceByKey("ConnectionError"), Localizator.GetLocalizationResourceByKey("ConnectionErrorMessage"));
                     window.ShowDialog();
-                    foreach(var w in App.Current.Windows)
+                    foreach (var w in App.Current.Windows)
                     {
                         (w as Window).Close();
                     }
@@ -98,33 +98,6 @@ namespace Byster.Views
             BackgroundImageDownloader.Close();
             Injector.Close();
         }
-
-        private void filterClassListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            foreach (var removingElement in e.RemovedItems)
-            {
-                ViewModel.Shop.FilterOptions.FilterClasses.Remove(removingElement as FilterClass);
-            }
-            foreach (var addingElement in e.AddedItems)
-            {
-                ViewModel.Shop.FilterOptions.FilterClasses.Add(addingElement as FilterClass);
-            }
-            ViewModel.Shop.FilterProducts();
-        }
-
-        private void filterTypeListBox_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            foreach(var removingElement in e.RemovedItems)
-            {
-                ViewModel.Shop.FilterOptions.FilterTypes.Remove(removingElement as string);
-            }
-            foreach(var addingElement in e.AddedItems)
-            {
-                ViewModel.Shop.FilterOptions.FilterTypes.Add(addingElement as string);
-            }
-            ViewModel.Shop.FilterProducts();
-        }
-
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
@@ -133,7 +106,7 @@ namespace Byster.Views
 
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
-            if(e.Key == Key.F5)
+            if (e.Key == Key.F5)
             {
                 ViewModel.UpdateData();
             }
@@ -143,13 +116,13 @@ namespace Byster.Views
     public class FromInjectInfoStatusCodeToVisibility : IValueConverter
     {
         public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
-        { 
-            if(value != null && parameter != null && value is InjectInfoStatusCode && parameter is string)
+        {
+            if (value != null && parameter != null && value is InjectInfoStatusCode && parameter is string)
             {
                 InjectInfoStatusCode statusCode = (InjectInfoStatusCode)value;
                 int status = (int)statusCode;
 
-                switch(parameter.ToString())
+                switch (parameter.ToString())
                 {
                     default:
                     case "Default":
@@ -164,7 +137,7 @@ namespace Byster.Views
                         return status == 3 ? Visibility.Visible : Visibility.Collapsed;
                     case "Injected":
                         return status == 4 ? Visibility.Visible : Visibility.Collapsed;
-                        
+
                 }
             }
             return Visibility.Collapsed;
@@ -189,15 +162,15 @@ namespace Byster.Views
                 {
                     default:
                     case InjectInfoStatusCode.INACTIVE:
-                        return "Инжект инактивен...";
+                        return Localizator.GetLocalizationResourceByKey("InjectInactive").Value;
                     case InjectInfoStatusCode.ENEQUEUED:
-                        return "Ожидание в очереди для инжекта...";
+                        return Localizator.GetLocalizationResourceByKey("InjectEnqueued").Value;
                     case InjectInfoStatusCode.DOWNLOADING:
-                        return "Скачивание ядра....";
+                        return Localizator.GetLocalizationResourceByKey("InjectDownloadingCore").Value;
                     case InjectInfoStatusCode.INJECTING:
-                        return "Инжект...";
+                        return Localizator.GetLocalizationResourceByKey("InjectActive").Value;
                     case InjectInfoStatusCode.INJECTED_OK:
-                        return "Инжект завершён, перейдите в игру.";
+                        return Localizator.GetLocalizationResourceByKey("InjectOK").Value;
                 }
             }
             return "---";

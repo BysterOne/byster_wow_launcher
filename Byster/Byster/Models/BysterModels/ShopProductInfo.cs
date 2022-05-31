@@ -14,9 +14,9 @@ namespace Byster.Models.BysterModels
     public class ShopProductInfo : INotifyPropertyChanged
     {
         public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged([CallerMemberName]string property = "")
+        public void OnPropertyChanged([CallerMemberName] string property = "")
         {
-            if(PropertyChanged != null)
+            if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
             }
@@ -58,7 +58,7 @@ namespace Byster.Models.BysterModels
                 OnPropertyChanged("Product");
             }
         }
-        
+
         public ShopProductInfo()
         {
             Count = 0;

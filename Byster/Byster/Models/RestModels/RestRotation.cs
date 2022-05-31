@@ -10,7 +10,7 @@ namespace Byster.Models.RestModels
     {
         public string expired_date { get; set; }
 
-        public RestRotationPart rotation { get; set;}
+        public RestRotationPart rotation { get; set; }
         public RestRotationWOW() { }
     }
 

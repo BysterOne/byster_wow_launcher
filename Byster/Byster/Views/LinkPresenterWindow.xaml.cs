@@ -45,9 +45,9 @@ namespace Byster.Views
 
             for (int i = 0; i < 300; i++)
             {
-                for(int j = 0; j < 300; j++)
+                for (int j = 0; j < 300; j++)
                 {
-                    if(bitMatrix[i, j])
+                    if (bitMatrix[i, j])
                     {
                         bitmap.SetPixel(i, j, System.Drawing.Color.Black);
                     }
@@ -58,7 +58,7 @@ namespace Byster.Views
                 }
             }
             string root = System.IO.Path.GetTempPath() + "\\BysterQRCodes\\";
-            if(!Directory.Exists(root)) Directory.CreateDirectory(root);
+            if (!Directory.Exists(root)) Directory.CreateDirectory(root);
             int k = 0;
             while (File.Exists(root + "qrCode" + k + ".bmp")) k++;
             bitmap.Save(root + "qrCode" + k + ".bmp");
@@ -66,7 +66,7 @@ namespace Byster.Views
             this.Closed += (obj, e) =>
             {
                 try { File.Delete(root + "qrCode" + k + ".bmp"); }
-                catch { }
+                catch { Models.Utilities.BysterLogger.LogWarn("LinkPresenter", "Ошибка удаления файла", "qeCode" + k + ".bmp"); }
             };
         }
 
@@ -74,8 +74,6 @@ namespace Byster.Views
         {
             this.DialogResult = true;
         }
-
-        
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

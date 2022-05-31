@@ -39,5 +39,5 @@ namespace Byster.Views
             this.DialogResult = true;
         }
     }
-    
+
 }

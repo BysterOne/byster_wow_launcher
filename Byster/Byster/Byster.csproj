@@ -167,6 +167,9 @@
     <Compile Include="Localizations\Tools\LocalizationResource.cs" />
     <Compile Include="Localizations\Tools\Localizator.cs" />
     <Compile Include="Models\BysterModels\Branch.cs" />
+    <Compile Include="Models\BysterModels\Primitives\SettingAssociator.cs" />
+    <Compile Include="Models\BysterModels\Primitives\Setting.cs" />
+    <Compile Include="Models\BysterModels\UserSettings.cs" />
     <Compile Include="Models\BysterModels\Cart.cs" />
     <Compile Include="Models\BysterModels\DeveloperRotation.cs" />
     <Compile Include="Models\BysterModels\LoadType.cs" />

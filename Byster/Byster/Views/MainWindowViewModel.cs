@@ -288,7 +288,7 @@ namespace Byster.Views
             {
                 if (args.PropertyName == "Branch")
                 {
-                    Injector.Branch = UserInfo.Branch;
+                    Injector.Branch = UserInfo.Branch.Value;
                 };
             };
             DeveloperRotations = new DeveloperRotationService()
@@ -346,7 +346,7 @@ namespace Byster.Views
             {
                 return startCommand ?? (startCommand = new RelayCommand((obj) =>
                      {
-                         Injector.Branch = UserInfo.Branch;
+                         Injector.Branch = UserInfo.Branch.Value;
                          SessionService.StartInjecting(SelectedSession.WowApp.Process.Id);
                      }));
             }

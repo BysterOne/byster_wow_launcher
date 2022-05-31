@@ -37,6 +37,10 @@ namespace Byster.Models.Services
         public List<DeveloperRotation> DeveloperRotations { get; set; }
         public RestService RestService { get; set; }
 
+        private Semaphore semaphore = new Semaphore(3, 3);
+        private Semaphore autoSyncSemaphore = new Semaphore(3, 3);
+        private Thread startAutoSyncThread;
+
         private DeveloperRotationStatusCodes statusCode = DeveloperRotationStatusCodes.IDLE;
         public DeveloperRotationStatusCodes StatusCode
         {
@@ -75,13 +79,11 @@ namespace Byster.Models.Services
             while (!IsReadyToSyncronization) { }
             DeveloperRotations = new List<DeveloperRotation>();
             Task.Run(() => UpdateData());
-            InitializationCompleted?.Invoke();
             StatusCode = DeveloperRotationStatusCodes.IDLE;
+            InitializationCompleted?.Invoke();
         }
 
-        private Semaphore autoSyncSemaphore = new Semaphore(3, 3);
-        private Thread startAutoSyncThread;
-        private void startRotationSync(IEnumerable<DeveloperRotation> developerRotations)
+        private void startRotationSyncMethod(IEnumerable<DeveloperRotation> developerRotations)
         {
             foreach (var developerRotation in developerRotations)
             {
@@ -97,7 +99,6 @@ namespace Byster.Models.Services
                 });
             }
         }
-        private Semaphore semaphore = new Semaphore(3, 3);
 
         public void UpdateData()
         {
@@ -119,9 +120,10 @@ namespace Byster.Models.Services
             var devRotations = RestService.ExecuteDeveloperRotationRequest();
             foreach (var devRotation in devRotations)
             {
-                if (DeveloperRotations.Where(rot => rot.gitUrl == devRotation.git_ssh_url).Count() == 0)
+                DeveloperRotation rotation = DeveloperRotations.Where(rot => rot.gitUrl == devRotation.git_ssh_url).FirstOrDefault();
+                if (rotation == null)
                 {
-                    DeveloperRotation rotation = new DeveloperRotation(devRotation.git_ssh_url, BaseDirectory, semaphore)
+                    rotation = new DeveloperRotation(devRotation.git_ssh_url, BaseDirectory, semaphore)
                     {
                         ClassOfRotation = Classes.Where(_c => _c.Value.ToLower() == devRotation.klass.ToLower()).FirstOrDefault(),
                         RoleTypeOfRotation = null,
@@ -138,27 +140,30 @@ namespace Byster.Models.Services
                 }
                 else
                 {
-                    DeveloperRotation rotation = DeveloperRotations.Where(rot => rot.gitUrl == devRotation.git_ssh_url).FirstOrDefault();
-                    rotation.StopWaitSync();
-                    rotation.ClassOfRotation = Classes.Where(_c => _c.Value.ToLower() == devRotation.klass.ToLower()).FirstOrDefault();
-                    rotation.RoleTypeOfRotation = null;
-                    rotation.RotationTypeOfRotation = Types.Where(_rt => _rt.Name.ToLower() == devRotation.type.ToLower()).FirstOrDefault();
-                    rotation.Name = devRotation.name;
-                    if (string.IsNullOrEmpty(rotation.TocPath))
+                    if (rotation.Status == DeveloperRotationStatusCode.WAITING_SYNC)
                     {
-                        rotationsToAutoSync.Add(rotation);
+                        rotation.StopWaitSync();
+                    }
+                    else if(rotation.Status != DeveloperRotationStatusCode.IDLE)
+                    {
+                        rotation.PropertyChanged += getPCEHToUpdatingSingleRotation(devRotation.klass, devRotation.type, devRotation.name);
+                    }
+                    else
+                    {
+                        rotation.ClassOfRotation = Classes.Where(_c => _c.Value.ToLower() == devRotation.klass.ToLower()).FirstOrDefault();
+                        rotation.RotationTypeOfRotation = Types.Where(_rt => _rt.Name.ToLower() == devRotation.type.ToLower()).FirstOrDefault();
+                        rotation.Name = devRotation.name;
+                        if (string.IsNullOrEmpty(rotation.TocPath))
+                        {
+                            rotationsToAutoSync.Add(rotation);
+                        }
                     }
                 }
             }
             DeveloperRotations.RemoveAll(rotation => devRotations.Where(dr => dr.git_ssh_url == rotation.gitUrl).Count() == 0);
-            DeveloperRotations = DeveloperRotations.OrderByDescending(_c => _c.IsEnabledChangingIsEnabled).OrderByDescending(_c => _c.IsEnabled).ToList();
+            DeveloperRotations = DeveloperRotations.OrderByDescending(_c => _c.IsEnabledChangingOfIsEnabled).OrderByDescending(_c => _c.IsEnabled).ToList();
             StatusCode = DeveloperRotationStatusCodes.IDLE;
-            startAutoSyncThread = new Thread(() => { startRotationSync(rotationsToAutoSync); })
-            {
-                Name = "Auto Sync Of Dev Rotations",
-                IsBackground = true,
-            };
-            startAutoSyncThread.Start();
+            startAutoSyncOfRotations(rotationsToAutoSync);
             SyncronizationCompleted?.Invoke();
         }
 
@@ -176,6 +181,7 @@ namespace Byster.Models.Services
             }
             return files.ToArray();
         }
+
         private void readConfFile()
         {
             if (!File.Exists(internalConfigurationFilePath))
@@ -228,7 +234,7 @@ namespace Byster.Models.Services
             }
             DeveloperRotation rotation = new DeveloperRotation(devRotation.git_ssh_url, BaseDirectory, semaphore)
             {
-                ClassOfRotation = Classes.Where(_c => _c.Value.ToLower() == devRotation.klass).FirstOrDefault(),
+                ClassOfRotation = Classes.Where(_c => _c.Value.ToLower() == devRotation.klass.ToLower()).FirstOrDefault(),
                 RotationTypeOfRotation = Types.Where(_rt => _rt.Name.ToLower() == devRotation.type.ToLower()).FirstOrDefault(),
                 Name = devRotation.name,
                 RoleTypeOfRotation = null,
@@ -248,6 +254,30 @@ namespace Byster.Models.Services
                 devRotationsDict.Add(item.TocPath, item.IsEnabled);
             }
             File.WriteAllText(rotationConfigurationFilePath, JsonConvert.SerializeObject(devRotationsDict));
+        }
+
+        private void startAutoSyncOfRotations(IEnumerable<DeveloperRotation> rotationsToSync)
+        {
+            startAutoSyncThread = new Thread(() => { startRotationSyncMethod(rotationsToSync); })
+            {
+                Name = "Auto Syncronization of Dev Rotations",
+                IsBackground = true,
+            };
+            startAutoSyncThread.Start();
+        }
+
+        private PropertyChangedEventHandler getPCEHToUpdatingSingleRotation(string klass, string type, string name)
+        {
+            PropertyChangedEventHandler pceh = null;
+            pceh = (s, e) =>
+            {
+                var rotation = s as DeveloperRotation;
+                rotation.PropertyChanged -= pceh;
+                rotation.ClassOfRotation = Classes.Where(_c => _c.Value.ToLower() == klass.ToLower()).FirstOrDefault();
+                rotation.RotationTypeOfRotation = Types.Where(_rt => _rt.Name.ToLower() == type.ToLower()).FirstOrDefault();
+                rotation.Name = name;
+            };
+            return pceh;
         }
 
         public List<DevClass> Classes { get; set; } = new List<DevClass>()
@@ -353,6 +383,32 @@ namespace Byster.Models.Services
 
         private string searchRequest;
 
+        public List<DevClass> Classes
+        {
+            get => core.Classes;
+        }
+
+        public List<DevRotationType> Types
+        {
+            get => core.Types;
+        }
+
+        public List<DevSpecialization> Specializations
+        {
+            get => core.Specializations;
+        }
+
+        public List<DevRoleType> Roletypes
+        {
+            get => core.Roletypes;
+        }
+
+        public event Action EmptyConfigurationRead;
+        public event Action InitializationStarted;
+        public event Action InitializationCompleted;
+        public event Action SyncronizationStarted;
+        public event Action SyncronizationCompleted;
+
         public string SearchRequest
         {
             get => searchRequest;
@@ -383,66 +439,6 @@ namespace Byster.Models.Services
             }
 
         }
-        public void Initialize(Dispatcher dispatcher)
-        {
-            Dispatcher = dispatcher;
-            core = new DeveloperRotationCore()
-            {
-                RestService = this.RestService,
-            };
-            core.EmptyConfigurationRead += () =>
-            {
-                LogInfo("Developer Rotation Service", "Конфигурация не найдена. Установка нового пути для сохранения");
-                Dispatcher.Invoke(() =>
-                {
-                    FolderBrowserDialog dialog = new FolderBrowserDialog();
-                    dialog.ShowNewFolderButton = true;
-                    dialog.Description = Localizator.GetLocalizationResourceByKey("SelectRepoForDevRotations").Value;
-                    DialogResult dialogResult = DialogResult.None;
-                    do
-                    {
-                        dialogResult = dialog.ShowDialog();
-                    }
-                    while (dialogResult != DialogResult.OK);
-                    core.ChangeBaseDirectory(dialog.SelectedPath);
-                });
-            };
-            core.StatusCodeChanged += () =>
-            {
-                IsReadyForUsing = core.StatusCode == DeveloperRotationStatusCodes.IDLE ? Visibility.Collapsed : Visibility.Visible;
-                OnPropertyChanged("StatusCodeText");
-            };
-            core.Initialize();
-            IsInitialized = true;
-        }
-
-        public void UpdateData()
-        {
-            if (!IsInitialized) return;
-            SyncronizationStarted?.Invoke();
-            core.SaveRotations();
-            core.UpdateData();
-            OnPropertyChanged("DeveloperRotations");
-            SyncronizationCompleted?.Invoke();
-        }
-
-        public bool AddRotation(string name,
-                                string description,
-                                int type,
-                                string klass,
-                                string spec,
-                                string roletype)
-        {
-            if (!IsInitialized) return false;
-            return core.AddRotation(name,
-                            description,
-                            type,
-                            klass,
-                            spec,
-                            roletype);
-        }
-
-
 
         private DevClass selectedClass;
         private DevRotationType selectedType;
@@ -539,6 +535,70 @@ namespace Byster.Models.Services
             }
         }
 
+        public void Initialize(Dispatcher dispatcher)
+        {
+            Dispatcher = dispatcher;
+            core = new DeveloperRotationCore()
+            {
+                RestService = this.RestService,
+            };
+            core.EmptyConfigurationRead += () =>
+            {
+                LogInfo("Developer Rotation Service", "Конфигурация не найдена. Установка нового пути для сохранения");
+                Dispatcher.Invoke(() =>
+                {
+                    FolderBrowserDialog dialog = new FolderBrowserDialog();
+                    dialog.ShowNewFolderButton = true;
+                    dialog.Description = Localizator.GetLocalizationResourceByKey("SelectRepoForDevRotations").Value;
+                    DialogResult dialogResult = DialogResult.None;
+                    do
+                    {
+                        dialogResult = dialog.ShowDialog();
+                    }
+                    while (dialogResult != DialogResult.OK);
+                    core.ChangeBaseDirectory(dialog.SelectedPath);
+                });
+            };
+            core.StatusCodeChanged += () =>
+            {
+                IsReadyForUsing = core.StatusCode == DeveloperRotationStatusCodes.IDLE ? Visibility.Collapsed : Visibility.Visible;
+                OnPropertyChanged("StatusCodeText");
+            };
+            core.Initialize();
+            IsInitialized = true;
+        }
+
+        public void UpdateData()
+        {
+            if (!IsInitialized) return;
+            SyncronizationStarted?.Invoke();
+            core.SaveRotations();
+            core.UpdateData();
+            OnPropertyChanged("DeveloperRotations");
+            SyncronizationCompleted?.Invoke();
+        }
+
+        public void Dispose()
+        {
+
+        }
+
+        private bool addRotation(string name,
+                                string description,
+                                int type,
+                                string klass,
+                                string spec,
+                                string roletype)
+        {
+            if (!IsInitialized) return false;
+            return core.AddRotation(name,
+                            description,
+                            type,
+                            klass,
+                            spec,
+                            roletype);
+        }
+
         private RelayCommand addCommand;
         private RelayCommand saveCommand;
         private RelayCommand searchCommand;
@@ -553,7 +613,7 @@ namespace Byster.Models.Services
                     if (!result) return;
                     Task.Run(() =>
                     {
-                        if (AddRotation(EnteredName,
+                        if (addRotation(EnteredName,
                                 EnteredDescription,
                                 SelectedType.Value,
                                 SelectedClass.Value,
@@ -667,38 +727,7 @@ namespace Byster.Models.Services
                     }
                 }
             }
-
         }
-
-
-
-        public List<DevClass> Classes
-        {
-            get => core.Classes;
-        }
-
-        public List<DevRotationType> Types
-        {
-            get => core.Types;
-        }
-
-        public List<DevSpecialization> Specializations
-        {
-            get => core.Specializations;
-        }
-
-        public List<DevRoleType> Roletypes
-        {
-            get => core.Roletypes;
-        }
-
-        public event Action EmptyConfigurationRead;
-        public event Action InitializationStarted;
-        public event Action InitializationCompleted;
-        public event Action SyncronizationStarted;
-        public event Action SyncronizationCompleted;
-
-
     }
 
     public class JsonConfiguration

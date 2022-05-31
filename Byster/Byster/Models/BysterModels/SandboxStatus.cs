@@ -6,40 +6,35 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using Byster.Models.BysterModels.Primitives;
 
 namespace Byster.Models.BysterModels
 {
-    public class SandboxStatus
+    public class SandboxStatus : Setting<int, int, SandboxType>
     {
-        public string Name { get; set; }
-        public int RegistryValue { get; set; }
-        public static List<SandboxStatus> SandboxStatuses { get; set; } = new List<SandboxStatus>()
+        public SandboxStatus(string _name, SandboxType _enum, int _value = 0, int _registryValue = 0) : base(_name, _enum, _value, _registryValue) { }
+    }
+
+    public class SandboxStatusAssociator : SettingAssociator<SandboxStatus, int, int, SandboxType>
+    {
+        private static SandboxStatusAssociator instance;
+        public new static SandboxStatusAssociator GetAssociator()
         {
-            new SandboxStatus() { Name = "Production", RegistryValue = 0 },
-            new SandboxStatus() { Name = "Sandbox", RegistryValue = 1 }
-        };
-        public static SandboxStatus ReadServerTypeFromReg()
-        {
-            int regValue = (int)Registry.GetValue(@"HKEY_CURRENT_USER\Software\Byster", "Sandbox", -1);
-            if (regValue == -1)
-            {
-                regValue = 0;
-            }
-            else if (regValue == 0)
-            {
-                Registry.CurrentUser.OpenSubKey("Software").OpenSubKey("Byster", true).DeleteValue("Sandbox");
-            }
-            return SandboxStatuses.Where(_type => _type.RegistryValue == regValue).FirstOrDefault();
+            return instance ?? (instance = new SandboxStatusAssociator());
         }
-        public static void WriteServerTypeToReg(SandboxStatus serverType)
+        public SandboxStatusAssociator() : base()
         {
-            if (serverType == null) return;
-            if(serverType.RegistryValue == 0)
+            AllInstances = new List<SandboxStatus>()
             {
-                Registry.CurrentUser.OpenSubKey(@"Software\Byster", true).DeleteValue(@"Sandbox", false);
-                return;
-            }
-            Registry.SetValue(@"HKEY_CURRENT_USER\Software\Byster", "Sandbox", serverType.RegistryValue);
+                new SandboxStatus("Production", SandboxType.PRODUCTION, 0, 0),
+                new SandboxStatus("Sandbox", SandboxType.SANDBOX, 1, 1),
+            };
         }
+    }
+
+    public enum SandboxType
+    {
+        PRODUCTION = 0,
+        SANDBOX = 1,
     }
 }

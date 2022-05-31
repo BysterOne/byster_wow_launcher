@@ -255,6 +255,47 @@ namespace Byster.Models.Services
             multipleConnectionErrorEventCalled = false;
         }
 
+        public bool ExecuteSpecifiedRequest<TRequest, TResponse>(string url, string operationName, TRequest requestObject, out TResponse responseObject) where TResponse : BaseResponse
+        {
+            var rawResponse = client.Execute<TResponse>(new RestRequest(url).AddJsonBody(requestObject), Method.POST);
+            if(checkAndLogResponseToError(rawResponse, operationName))
+            {
+                logSuccessOfOperation(operationName);
+                responseObject = rawResponse.Data;
+                return true;
+            }
+            responseObject = null;
+            return false;
+
+        }
+        public bool ExecuteSpecifiedRequest<TRequest>(string url, string operationName, TRequest requestObject)
+        {
+            var rawResponse = client.Execute(new RestRequest(url).AddJsonBody(requestObject), Method.POST);
+            if (checkAndLogResponseToError(rawResponse, operationName))
+            {
+                logSuccessOfOperation(operationName);
+                return true;
+            }
+            return false;
+        }
+
+        public bool ExecuteSpecifiedRequest<TResponse>(string url, string operationName, Method method, out TResponse responseObject) where TResponse : BaseResponse
+        {
+            var rawResponse = client.Execute<TResponse>(new RestRequest(url), method);
+            if (checkAndLogResponseToError(rawResponse, operationName))
+            {
+                logSuccessOfOperation(operationName);
+                responseObject = rawResponse.Data;
+                return true;
+            }
+            responseObject = null;
+            return false;
+        }
+
+        private void logSuccessOfOperation(string operationName)
+        {
+            LogInfo("Rest Service", $"Выполнена операция:{operationName}");
+        }
         private bool checkAndLogResponseToError(IRestResponse response, string operationName)
         {
             if(!checkHTTPStatusCodeToServerTrouble(response.StatusCode)) return false;

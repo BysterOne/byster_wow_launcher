@@ -136,9 +136,9 @@ namespace Byster.Models.BysterModels
     public enum RotationTypes
     {
         UNKNOWN = -1,
-        PvE = 0,
-        PvP = 1,
-        Bot = 2,
+        PvE     = 0,
+        PvP     = 1,
+        Bot     = 2,
         Utility = 3,
     }
 

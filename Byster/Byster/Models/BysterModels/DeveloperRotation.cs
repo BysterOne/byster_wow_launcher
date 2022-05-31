@@ -157,7 +157,7 @@ namespace Byster.Models.BysterModels
                 return "";
             }
         }
-        public bool IsEnabledChangingIsEnabled
+        public bool IsEnabledChangingOfIsEnabled
         {
             get => string.IsNullOrEmpty(TocPath) ? false : File.Exists(TocPath);
         }
@@ -251,78 +251,77 @@ namespace Byster.Models.BysterModels
                 Status = DeveloperRotationStatusCode.GIT_STARTING;
                 if (File.Exists(TocPath))
                 {
-                    Status = DeveloperRotationStatusCode.PULLING;
-                    Process gitCloneProcess = Process.Start(new ProcessStartInfo()
-                    {
-                        FileName = "git",
-                        WorkingDirectory = Path + $"\\{name}",
-                        Arguments = $"pull origin dev",
-                        CreateNoWindow = true,
-                        UseShellExecute = false,
-                        WindowStyle = ProcessWindowStyle.Hidden,
-                    });
-                    gitCloneProcess.WaitForExit();
-                    if (gitCloneProcess.ExitCode != 0)
-                    {
-                        LogWarn("Developer Rotation Service", $"Ошибка синхронизациии репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
-                        Status = DeveloperRotationStatusCode.ERROR_SYNC;
-                        Thread.Sleep(5000);
-                    }
-                    else
-                    {
-                        LogInfo("Developer Rotation Service", $"Репозиторй синхронизирован успешно {Path}");
-                        Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
-                        Thread.Sleep(5000);
-                        OnPropertyChanged("IsEnabledChangingIsEnabled");
-                    }
+                    pullRepo();
                 }
                 else
                 {
-                    if (!string.IsNullOrEmpty(PathToClone))
-                    {
-                        Status = DeveloperRotationStatusCode.CLONING;
-                        Process gitCloneProcess = Process.Start(new ProcessStartInfo()
-                        {
-                            FileName = "git",
-                            WorkingDirectory = PathToClone,
-                            Arguments = $"clone --remote-submodules --recursive --branch=dev {gitUrl}",
-                            CreateNoWindow = true,
-                            UseShellExecute = false,
-                            WindowStyle = ProcessWindowStyle.Hidden,
-                        });
-                        gitCloneProcess.WaitForExit();
-                        if (gitCloneProcess.ExitCode != 0)
-                        {
-                            LogWarn("Developer Rotation Service", $"Ошибка создания репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
-                            Status = DeveloperRotationStatusCode.ERROR_SYNC;
-                            Thread.Sleep(5000);
-                        }
-                        else
-                        {
-                            LogInfo("Developer Rotation Service", $"Репозиторй создан и синхронизирован успешно {Path}");
-                            Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
-                            Thread.Sleep(5000);
-                            OnPropertyChanged("IsEnabledChangingIsEnabled");
-                        }
-                    }
-                    else
-                    {
-                        LogWarn("Developer Rotation Service", $"Ошибка создания репозитория", $"Отсутствует путь для клонирования репозитория");
-                        Status = DeveloperRotationStatusCode.ERROR_SYNC;
-                        Thread.Sleep(5000);
-                    }
+                    cloneRepo();
                 }
             }
             finally
             {
+                Thread.Sleep(5000);
                 Status = DeveloperRotationStatusCode.IDLE;
             }
             syncSemaphore?.Release();
         }
 
-        public bool checkGitUrl(string url)
+        private void cloneRepo()
         {
-            return url == gitUrl;
+            if (string.IsNullOrEmpty(PathToClone))
+            {
+                LogWarn("Developer Rotation Service", $"Ошибка создания репозитория", $"Отсутствует путь для клонирования репозитория");
+                Status = DeveloperRotationStatusCode.ERROR_SYNC;
+            }
+            Status = DeveloperRotationStatusCode.CLONING;
+            Process gitCloneProcess = Process.Start(new ProcessStartInfo()
+            {
+                FileName = "git",
+                WorkingDirectory = PathToClone,
+                Arguments = $"clone --remote-submodules --recursive --branch=dev {gitUrl}",
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WindowStyle = ProcessWindowStyle.Hidden,
+            });
+            gitCloneProcess.WaitForExit();
+            if (gitCloneProcess.ExitCode != 0)
+            {
+                LogWarn("Developer Rotation Service", $"Ошибка создания репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
+                Status = DeveloperRotationStatusCode.ERROR_SYNC;
+            }
+            else
+            {
+                LogInfo("Developer Rotation Service", $"Репозиторй создан и синхронизирован успешно {Path}");
+                Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
+                OnPropertyChanged("IsEnabledChangingIsEnabled");
+            }
+            
+        }
+
+        private void pullRepo()
+        {
+            Status = DeveloperRotationStatusCode.PULLING;
+            Process gitCloneProcess = Process.Start(new ProcessStartInfo()
+            {
+                FileName = "git",
+                WorkingDirectory = Path + $"\\{name}",
+                Arguments = $"pull origin dev",
+                CreateNoWindow = true,
+                UseShellExecute = false,
+                WindowStyle = ProcessWindowStyle.Hidden,
+            });
+            gitCloneProcess.WaitForExit();
+            if (gitCloneProcess.ExitCode != 0)
+            {
+                LogWarn("Developer Rotation Service", $"Ошибка синхронизациии репозитория {Path}", $"Код эавершения: {gitCloneProcess.ExitCode}");
+                Status = DeveloperRotationStatusCode.ERROR_SYNC;
+            }
+            else
+            {
+                LogInfo("Developer Rotation Service", $"Репозиторй синхронизирован успешно {Path}");
+                Status = DeveloperRotationStatusCode.SUCCESS_SYNC;
+                OnPropertyChanged("IsEnabledChangingIsEnabled");
+            }
         }
 
         private RelayCommand syncCommand;

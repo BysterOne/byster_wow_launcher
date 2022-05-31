@@ -5,59 +5,37 @@ using System.Text;
 using System.Threading.Tasks;
 using System.ComponentModel;
 using Byster.Localizations.Tools;
+using Byster.Models.BysterModels.Primitives;
 
 namespace Byster.Models.BysterModels
 {
-    public class Branch : INotifyPropertyChanged
+    public class Branch : Setting<string, string, BranchType>
     {
-        public string Name { get; set; }
-        private BranchType branchType;
-        public BranchType BranchType
-        {
-            get { return branchType; }
-            set
-            {
-                branchType = value;
-                OnPropertyChanged("BranchType");
-                switch (branchType)
-                {
-                    case BranchType.TEST:
-                        Name = Localizator.GetLocalizationResourceByKey("TesterBranch");
-                        break;
-                    case BranchType.DEVELOPER:
-                        Name = Localizator.GetLocalizationResourceByKey("DeveloperBranch");
-                        break;
-                    default:
-                    case BranchType.MASTER:
-                        Name = Localizator.GetLocalizationResourceByKey("MasterBranch");
-                        break;
-                }
-                OnPropertyChanged("Name");
-            }
-        }
-        public Branch(BranchType type)
-        {
-            BranchType = type;
-        }
-        public static Branch[] AllBranches { get; set; } =
-            new Branch[]
-            {
-                new Branch(BranchType.MASTER),
-                new Branch(BranchType.TEST),
-                new Branch(BranchType.DEVELOPER),
-            };
+        public Branch(string _name, BranchType _enum, string _value = null, string _registryValue = null) : base(_name, _enum, _value, _registryValue) { }
+    }
 
-        public event PropertyChangedEventHandler PropertyChanged;
-        public void OnPropertyChanged(string property = "")
+    public class BranchAssociator : SettingAssociator<Branch, string, string, BranchType>
+    {
+        private static BranchAssociator instance;
+        public static new BranchAssociator GetAssociator()
         {
-            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            return instance ?? (instance = new BranchAssociator());
+        }
+        public BranchAssociator() : base()
+        {
+            AllInstances = new List<Branch>()
+            {
+                new Branch(Localizator.GetLocalizationResourceByKey("TesterBranch"), BranchType.TEST, "test", "test"),
+                new Branch(Localizator.GetLocalizationResourceByKey("DeveloperBranch"), BranchType.TEST, "dev", "dev"),
+                new Branch(Localizator.GetLocalizationResourceByKey("MasterBranch"), BranchType.TEST, "master", "master"),
+            };
         }
     }
     public enum BranchType
     {
         DEVELOPER = 3,
-        TEST = 2,
-        MASTER = 1,
-        UNKNOWN = -1,
+        TEST =      2,
+        MASTER =    1,
+        UNKNOWN =   -1,
     }
 }

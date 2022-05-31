@@ -20,25 +20,19 @@ namespace Byster.Models.Services
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
         public RestService RestService { get; set; }
-
+        //Registry values
         private string username;
-        private string password;
         private string referalCode;
         private int bonusBalance;
-        private string branch;
-        private int console;
         private BranchType userType;
-        private int loadType;
         private string currency;
         private bool encryption;
-        private SandboxStatus sandboxStatus;
-
         public SandboxStatus SandboxStatus
         {
-            get { return sandboxStatus; }
+            get => SandboxStatusAssociator.GetAssociator().GetInstanceByRegistryValue(BysterSandboxEditor.GetInstance().Value);
             set
             {
-                sandboxStatus = value;
+                BysterSandboxEditor.GetInstance().Value = value?.RegistryValue ?? 0;
                 OnPropertyChanged("SandboxStatus");
             }
         }
@@ -50,15 +44,6 @@ namespace Byster.Models.Services
             {
                 username = value;
                 OnPropertyChanged("Username");
-            }
-        }
-        public string Password
-        {
-            get { return password; }
-            set
-            {
-                password = value;
-                OnPropertyChanged("Password");
             }
         }
         public int BonusBalance
@@ -80,25 +65,22 @@ namespace Byster.Models.Services
             }
         }
 
-        public string Branch
+        public Branch Branch
         {
-            get { return branch; }
+            get { return BranchAssociator.GetAssociator().GetInstanceByRegistryValue(BysterBranchEditor.GetInstance().Value); }
             set
             {
-                branch = value;
+                BysterBranchEditor.GetInstance().Value = value?.RegistryValue ?? "master";
                 OnPropertyChanged("Branch");
             }
         }
 
-        public int Console
+        public bool Console
         {
-            get
-            {
-                return console;
-            }
+            get => BysterConsoleEditor.GetInstance().Value;
             set
             {
-                console = value;
+                BysterConsoleEditor.GetInstance().Value = value;
                 OnPropertyChanged("Console");
             }
         }
@@ -113,12 +95,12 @@ namespace Byster.Models.Services
             }
         }
 
-        public int LoadType
+        public LoadType LoadType
         {
-            get { return loadType; }
+            get => LoadTypeAssociator.GetAssociator().GetInstanceByRegistryValue(BysterLoadTypeEditor.GetInstance().Value);
             set
             {
-                loadType = value;
+                BysterLoadTypeEditor.GetInstance().Value = value?.RegistryValue ?? 3;
                 OnPropertyChanged("LoadType");
             }
         }
@@ -189,9 +171,13 @@ namespace Byster.Models.Services
         }
 
 
-        public List<Branch> BranchChoices { get => BysterModels.Branch.AllBranches.Where(branch => branch.BranchType <= this.UserType).ToList(); }
-        public List<LoadType> LoadTypes { get => BysterModels.LoadType.AllLoadTypes.ToList(); }
-        public List<SandboxStatus> SandboxStatuses { get => SandboxStatus.SandboxStatuses; }
+        public List<Branch> BranchChoices { get => BranchAssociator.GetAssociator().AllInstances.Where(_branch => _branch.EnumValue <= UserType).ToList(); }
+        public List<LoadType> LoadTypes { get => LoadTypeAssociator.GetAssociator().AllInstances; }
+        public List<SandboxStatus> SandboxStatuses { get => SandboxStatusAssociator.GetAssociator().AllInstances; }
+
+        static UserInfoService()
+        {
+        }
 
         public void UpdateRemoteData()
         {
@@ -207,19 +193,6 @@ namespace Byster.Models.Services
 
         public void UpdateData()
         {
-            Console = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", -1));
-            if (Console == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", (Console = 0));
-
-            Branch = Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", "undefined") as string;
-            if (Branch == "undefined") Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", (Branch = "master"));
-
-            LoadType = Convert.ToInt32(Registry.GetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", -1));
-            if (LoadType == -1) Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", (LoadType = 3));
-
-            if (UserType == BranchType.TEST)
-            {
-            }
-            SandboxStatus = SandboxStatus.ReadServerTypeFromReg();
             UpdateRemoteData();
         }
 
@@ -236,30 +209,21 @@ namespace Byster.Models.Services
 
         public void SetBranch(Branch branch)
         {
-            if (branch == null) return;
-
-            Branch = branch.BranchType == BranchType.DEVELOPER ? "dev" :
-                     branch.BranchType == BranchType.TEST ? "test" :
-                     branch.BranchType == BranchType.MASTER ? "master" :
-                                                            "master";
-            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Branch", Branch);
+            Branch = branch;
         }
 
         public void SetConsole(bool isConsoleEnabled)
         {
-            Console = isConsoleEnabled ? 1 : 0;
-            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "Console", Console);
+            Console = isConsoleEnabled;
         }
 
         public void SetLoadType(LoadType loadType)
         {
-            LoadType = loadType.Value;
-            Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", "LoadType", LoadType);
+            LoadType = loadType;
         }
         public void SetSandboxStatus(SandboxStatus sandbox)
         {
             SandboxStatus = sandbox;
-            SandboxStatus.WriteServerTypeToReg(SandboxStatus);
         }
         public UserInfoService(RestService service)
         {
@@ -280,24 +244,21 @@ namespace Byster.Models.Services
             {
                 case BranchType.UNKNOWN:
                     LogWarn("User Info Service", "UserType изменил значение на UNKNOWN");
-                    SetBranch(new Branch(BranchType.MASTER));
-                    SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
+                    SetBranch(BranchAssociator.GetAssociator().GetInstanceByEnumValue(BranchType.MASTER));
+                    SetLoadType(LoadTypeAssociator.GetAssociator().GetInstanceByEnumValue(LoadTypeType.SERVER));
                     SetConsole(false);
-                    SandboxStatus = SandboxStatus.SandboxStatuses.Where(_type => _type.RegistryValue == 0).First();
-                    SandboxStatus.WriteServerTypeToReg(SandboxStatus);
+                    SetSandboxStatus(SandboxStatusAssociator.GetAssociator().GetInstanceByEnumValue(SandboxType.PRODUCTION));
                     break;
                 case BranchType.MASTER:
-                    SetBranch(new Branch(BranchType.MASTER));
-                    SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
+                    SetBranch(BranchAssociator.GetAssociator().GetInstanceByEnumValue(BranchType.MASTER));
+                    SetLoadType(LoadTypeAssociator.GetAssociator().GetInstanceByEnumValue(LoadTypeType.SERVER));
                     SetConsole(false);
-                    SandboxStatus = SandboxStatus.SandboxStatuses.Where(_type => _type.RegistryValue == 0).First();
-                    SandboxStatus.WriteServerTypeToReg(SandboxStatus);
+                    SetSandboxStatus(SandboxStatusAssociator.GetAssociator().GetInstanceByEnumValue(SandboxType.PRODUCTION));
                     break;
                 case BranchType.TEST:
-                    if (Branch == "dev") SetBranch(new Branch(BranchType.MASTER));
-                    SetLoadType(LoadTypes.First(_loadtype => _loadtype.Value == 3));
-                    SandboxStatus = SandboxStatus.SandboxStatuses.Where(_type => _type.RegistryValue == 0).First();
-                    SandboxStatus.WriteServerTypeToReg(SandboxStatus);
+                    if(Branch.EnumValue > BranchType.TEST) SetBranch(BranchAssociator.GetAssociator().GetInstanceByEnumValue(BranchType.TEST));
+                    SetLoadType(LoadTypeAssociator.GetAssociator().GetInstanceByEnumValue(LoadTypeType.SERVER));
+                    SetSandboxStatus(SandboxStatusAssociator.GetAssociator().GetInstanceByEnumValue(SandboxType.PRODUCTION));
                     break;
                 case BranchType.DEVELOPER:
                     break;
@@ -315,6 +276,11 @@ namespace Byster.Models.Services
             };
             IsInitialized = true;
             LogInfo("User Info Service", "Запуск сервиса завершён");
+        }
+
+        public void Dispose()
+        {
+
         }
 
         public bool ChangePasssword(string newPassswordHash)

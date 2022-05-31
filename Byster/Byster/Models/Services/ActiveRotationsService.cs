@@ -126,6 +126,11 @@ namespace Byster.Models.Services
             });
         }
 
+        public void Dispose()
+        {
+            
+        }
+
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName] string property = "")
         {

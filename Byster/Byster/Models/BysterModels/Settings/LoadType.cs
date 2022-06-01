@@ -19,17 +19,15 @@ namespace Byster.Models.BysterModels
         private static LoadTypeAssociator instance;
         public static LoadTypeAssociator GetAssociator()
         {
-            return instance ?? (instance = new LoadTypeAssociator());
-        }
-        public LoadTypeAssociator()
-        {
-            AllInstances = new List<LoadType>()
+            return instance ?? (instance = new LoadTypeAssociator()
             {
-                new LoadType(Localizator.GetLocalizationResourceByKey("MixedLoadtype").Value, LoadTypeType.MIXED, 2, 2),
-                new LoadType(Localizator.GetLocalizationResourceByKey("ServerLoadtype").Value, LoadTypeType.SERVER, 3, 3),
-            };
+                AllInstances = new List<LoadType>()
+                {
+                    new LoadType(Localizator.GetLocalizationResourceByKey("MixedLoadtype").Value, LoadTypeType.MIXED, 2, 2),
+                    new LoadType(Localizator.GetLocalizationResourceByKey("ServerLoadtype").Value, LoadTypeType.SERVER, 3, 3),
+                }
+            });
         }
-
     }
 
     public enum LoadTypeType

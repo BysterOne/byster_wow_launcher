@@ -20,10 +20,10 @@ namespace Byster.Models.BysterModels
             if (PropertyChanged != null)
             {
                 PropertyChanged(this, new PropertyChangedEventArgs(property));
-                if (property == "WowApp")
-                {
-                    InjectInfo.ProcessId = (uint)WowApp.Process.Id;
-                }
+            }
+            if (property == "WowApp")
+            {
+                InjectInfo.ProcessId = (uint)WowApp.Process.Id;
             }
         }
 

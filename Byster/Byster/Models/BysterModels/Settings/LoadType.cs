@@ -9,15 +9,15 @@ using Byster.Models.BysterModels.Primitives;
 
 namespace Byster.Models.BysterModels
 {
-    public class LoadType : Setting<int, int, LoadTypeType>
+    public class LoadType : Setting<LoadTypeType>
     {
         public LoadType(string _name, LoadTypeType _enum, int _value = 0, int _registryValue = 0) : base(_name, _enum, _value, _registryValue) { }
     }
 
-    public class LoadTypeAssociator : SettingAssociator<LoadType, int, int, LoadTypeType>
+    public class LoadTypeAssociator : SettingAssociator<LoadType,LoadTypeType>
     {
         private static LoadTypeAssociator instance;
-        public static new LoadTypeAssociator GetAssociator()
+        public static LoadTypeAssociator GetAssociator()
         {
             return instance ?? (instance = new LoadTypeAssociator());
         }

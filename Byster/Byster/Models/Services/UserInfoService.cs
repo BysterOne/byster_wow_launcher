@@ -29,10 +29,10 @@ namespace Byster.Models.Services
         private bool encryption;
         public SandboxStatus SandboxStatus
         {
-            get => SandboxStatusAssociator.GetAssociator().GetInstanceByRegistryValue(BysterSandboxEditor.GetInstance().Value);
+            get => SandboxStatusAssociator.GetAssociator().GetInstanceByRegistryValue(RegistryEditor.GetEditor("Sandbox").RegistryValue);
             set
             {
-                BysterSandboxEditor.GetInstance().Value = value?.RegistryValue ?? 0;
+                RegistryEditor.GetEditor("Sandbox").RegistryValue = value?.RegistryValue ?? 0;
                 OnPropertyChanged("SandboxStatus");
             }
         }
@@ -67,20 +67,20 @@ namespace Byster.Models.Services
 
         public Branch Branch
         {
-            get { return BranchAssociator.GetAssociator().GetInstanceByRegistryValue(BysterBranchEditor.GetInstance().Value); }
+            get { return BranchAssociator.GetAssociator().GetInstanceByRegistryValue(RegistryEditor.GetEditor("Branch").RegistryValue); }
             set
             {
-                BysterBranchEditor.GetInstance().Value = value?.RegistryValue ?? "master";
+                RegistryEditor.GetEditor("Branch").RegistryValue = value?.RegistryValue ?? "master";
                 OnPropertyChanged("Branch");
             }
         }
 
         public bool Console
         {
-            get => BysterConsoleEditor.GetInstance().Value;
+            get => (int)RegistryEditor.GetEditor("Console").RegistryValue == 1;
             set
             {
-                BysterConsoleEditor.GetInstance().Value = value;
+                RegistryEditor.GetEditor("Console").RegistryValue = value ? 1 : 0;
                 OnPropertyChanged("Console");
             }
         }
@@ -97,10 +97,10 @@ namespace Byster.Models.Services
 
         public LoadType LoadType
         {
-            get => LoadTypeAssociator.GetAssociator().GetInstanceByRegistryValue(BysterLoadTypeEditor.GetInstance().Value);
+            get => LoadTypeAssociator.GetAssociator().GetInstanceByRegistryValue(RegistryEditor.GetEditor("LoadType").RegistryValue);
             set
             {
-                BysterLoadTypeEditor.GetInstance().Value = value?.RegistryValue ?? 3;
+                RegistryEditor.GetEditor("LoadType").RegistryValue = value?.RegistryValue ?? 3;
                 OnPropertyChanged("LoadType");
             }
         }

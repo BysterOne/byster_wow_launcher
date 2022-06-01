@@ -6,15 +6,15 @@ using System.Threading.Tasks;
 
 namespace Byster.Models.BysterModels.Primitives
 {
-    public abstract class SettingAssociator<TSetting, TRegistryValue, TValue, TEnum> where TSetting : Setting<TRegistryValue, TValue, TEnum> where TEnum : Enum
+    public abstract class SettingAssociator<TSetting, TEnum> where TSetting : Setting<TEnum> where TEnum : Enum
     { 
         public List<TSetting> AllInstances { get; set; }
-        public TSetting GetInstanceByRegistryValue(TRegistryValue _registryValue)
+        public TSetting GetInstanceByRegistryValue(object _registryValue)
         {
             return AllInstances.Where(_ins => _ins.RegistryValue.Equals(_registryValue)).FirstOrDefault();
         }
 
-        public TSetting GetInstanceByValue(TValue _value)
+        public TSetting GetInstanceByValue(object _value)
         {
             return AllInstances.Where(_ins => _ins.Value.Equals(_value)).FirstOrDefault();
         }
@@ -25,11 +25,6 @@ namespace Byster.Models.BysterModels.Primitives
         public TSetting GetInstanceByEnumValue(TEnum _enumValue)
         {
             return AllInstances.Where(_ins => _ins.EnumValue.Equals(_enumValue)).FirstOrDefault();
-        }
-
-        public static SettingAssociator<TSetting, TRegistryValue, TValue, TEnum> GetAssociator()
-        {
-            throw new NotImplementedException();
         }
     }
 }

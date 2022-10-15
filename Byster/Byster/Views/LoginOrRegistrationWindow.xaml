@@ -5,6 +5,8 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Byster.Views"
         xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:lb="clr-namespace:Byster.Models.Utilities"
         mc:Ignorable="d"
         Title="Byster - Регистрация"
         Height="543"
@@ -37,7 +39,11 @@
             </StackPanel>
             <StackPanel x:Name="authBlock" Margin="20, 0">
                 <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
-                <PasswordBox Style="{StaticResource pbStyle}" x:Name="passwordBox" Tag="Пароль" PasswordChanged="passwordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
+                <PasswordBox Style="{StaticResource pbStyle}" x:Name="passwordBox" Tag="Пароль" PasswordChanged="passwordBox_PasswordChanged" Margin="{StaticResource marginUI}">
+                    <i:Interaction.Behaviors>
+                        <lb:PressToSeePassword/>
+                    </i:Interaction.Behaviors>
+                </PasswordBox>
                 <Button Style="{StaticResource bStyle}" Content="Авторизоваться" x:Name="loginBtn" Click="loginBtn_Click" Margin="{StaticResource marginUI}"/>
                 <Grid>
                     <TextBlock Margin="{StaticResource marginUI}">
@@ -50,8 +56,16 @@
             </StackPanel>
             <StackPanel x:Name="registerBlock" Margin="20, 0">
                 <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
-                <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
-                <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" Margin="{StaticResource marginUI}"/>
+                <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged" Margin="{StaticResource marginUI}">
+                    <i:Interaction.Behaviors>
+                        <lb:PressToSeePassword/>
+                    </i:Interaction.Behaviors>
+                </PasswordBox>
+                <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" Margin="{StaticResource marginUI}">
+                    <i:Interaction.Behaviors>
+                        <lb:PressToSeePassword/>
+                    </i:Interaction.Behaviors>
+                </PasswordBox>
                 <Grid>
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition/>

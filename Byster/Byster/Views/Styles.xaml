@@ -144,26 +144,42 @@
                 <Setter.Value>
                     <ControlTemplate TargetType="PasswordBox">
                         <Border x:Name="textboxBorder"
-                                            BorderBrush="{TemplateBinding Background}"
-                                            BorderThickness="{TemplateBinding BorderThickness}"
-                                            Background="{TemplateBinding Background}"
-                                            CornerRadius="{DynamicResource CornerUIRadius}"
-                                            Padding="0">
+                                BorderBrush="{TemplateBinding Background}"
+                                BorderThickness="{TemplateBinding BorderThickness}"
+                                Background="{TemplateBinding Background}"
+                                CornerRadius="{DynamicResource CornerUIRadius}"
+                                Padding="0">
                             <Grid>
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition/>
+                                    <ColumnDefinition Width="40"/>
+                                </Grid.ColumnDefinitions>
                                 <TextBlock x:Name="placeholder"
-                                                       Background="Transparent"
-                                                       Foreground="{TemplateBinding Foreground}"
-                                                       Text="{TemplateBinding Tag}"
-                                                       Padding="{TemplateBinding Padding}"
-                                                       FontSize="{TemplateBinding FontSize}"
-                                                       FontFamily="{TemplateBinding FontFamily}"/>
+                                            Background="Transparent"
+                                            Foreground="{TemplateBinding Foreground}"
+                                            Text="{TemplateBinding Tag}"
+                                            Padding="{TemplateBinding Padding}"
+                                            FontSize="{TemplateBinding FontSize}"
+                                            FontFamily="{TemplateBinding FontFamily}"/>
+                                <TextBlock x:Name="PART_CheckPassword"
+                                           Background="Transparent"
+                                           Foreground="{TemplateBinding Foreground}"
+                                           Padding="{TemplateBinding Padding}"
+                                           FontSize="{TemplateBinding FontSize}"
+                                           FontFamily="{TemplateBinding FontFamily}"/>
                                 <ScrollViewer x:Name="PART_ContentHost"
-                                                 Background="Transparent"
-                                                 BorderBrush="Transparent"
-                                                 Padding="{TemplateBinding Padding}"
-                                                 FontFamily="{TemplateBinding FontFamily}"
-                                                 FontSize="{TemplateBinding FontSize}"
-                                                 Foreground="{TemplateBinding Foreground}"/>
+                                             Background="Transparent"
+                                             BorderBrush="Transparent"
+                                             Padding="{TemplateBinding Padding}"
+                                             FontFamily="{TemplateBinding FontFamily}"
+                                             FontSize="{TemplateBinding FontSize}"
+                                             Foreground="{TemplateBinding Foreground}"/>
+                                <Button Style="{DynamicResource uibStyle}"                                        
+                                        x:Name="lookPasswordBtn"
+                                        Width="40"
+                                        Grid.Column="1">
+                                    <Image Source="/Resources/Images/eye-icon.png" Stretch="Uniform" HorizontalAlignment="Center" VerticalAlignment="Center" Margin="10"/>
+                                </Button>
                             </Grid>
                         </Border>
                         <ControlTemplate.Triggers>

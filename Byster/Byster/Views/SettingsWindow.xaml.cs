@@ -138,6 +138,7 @@ namespace Byster.Views
                             }
                         });
                     });
+                    clearCacheTask.Start();
                 }
             }));
         }

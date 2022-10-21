@@ -242,8 +242,10 @@ namespace Byster.Models.Services
 
         public async Task<bool> ExecuteAsyncClearCacheRequest()
         {
-            var response = await client.ExecutePostAsync(new RestRequest("laucnher/clear_cache"));
-            return response.StatusCode == HttpStatusCode.OK;
+            var response = await client.ExecutePostAsync<BaseResponse>(new RestRequest("launcher/clear_cache"));
+            if (!checkHTTPStatusCodeToServerTrouble(response.StatusCode)) return false;
+            logSuccessOfOperation("Очистка кеша");
+            return true;
         }
         private void addConnectionErrorAccident()
         {

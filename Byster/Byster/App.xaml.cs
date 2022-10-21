@@ -10,6 +10,8 @@ using RestSharp;
 using System.Diagnostics;
 using System.Threading;
 using Byster.Models.Utilities;
+using Byster.Models.BysterModels;
+
 namespace Byster
 {
     /// <summary>
@@ -18,7 +20,8 @@ namespace Byster
     public partial class App : Application
     {
         public static string Sessionid;
-        public static RestClient Rest = new RestClient("https://api.byster.ru");
+        private static string apiUrl = Convert.ToBoolean(RegistryEditor.GetEditor("Sandbox").RegistryValue) ? "https://api-test.byster.ru" : "https://api.byster.ru";
+        public static RestClient Rest = new RestClient(apiUrl);
         public App()
         {
         }

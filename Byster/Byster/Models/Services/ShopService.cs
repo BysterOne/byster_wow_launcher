@@ -84,12 +84,10 @@ namespace Byster.Models.Services
             }
         }
 
-
         public RestService RestService { get; set; }
         public ObservableCollection<ShopProductInfoViewModel> AllProducts { get; set; }
-
         public Action CloseElementAction { get; set; }
-        public Func<bool> PreTestElementAction { get; set; }
+        public Func<int, bool> PreTestElementAction { get; set; }
         public Action TestElementSuccessAction { get; set; }
         public Action TestElementFailAction { get; set; }
         public Predicate<Cart> PreBuyCartAction { get; set; }
@@ -148,10 +146,10 @@ namespace Byster.Models.Services
             }
         }
 
-        public void TestProduct(int id)
+        public void TestProduct(ShopProduct productInfo)
         {
-            if (!(PreTestElementAction?.Invoke() ?? true)) return;
-            bool status = RestService.ExecuteTestRequest(id);
+            if (!(PreTestElementAction?.Invoke(productInfo.TestDuration) ?? false)) return;
+            bool status = RestService.ExecuteTestRequest(productInfo.Id);
             if (status)
             {
                 TestElementSuccessAction?.Invoke();
@@ -206,7 +204,6 @@ namespace Byster.Models.Services
             {
                 Dispatcher.Invoke(() =>
                 {
-                    //AllProducts.Clear();
                     foreach (var item in products)
                     {
                         var existedProduct = AllProducts.Where(product => product.Product.Id == item.Product.Id).FirstOrDefault();
@@ -235,7 +232,7 @@ namespace Byster.Models.Services
             foreach (var product in AllProducts)
             {
                 product.CloseDel = new Action(() => { CloseElement(); });
-                product.TestDel = new Action<object>((obj) => { TestProduct(Convert.ToInt32(obj)); });
+                product.TestDel = new Action<object>((obj) => { TestProduct(obj as ShopProduct); });
                 product.AddDel = new Action<object>((obj) => { AddOneToCountInProduct(Convert.ToInt32(obj)); });
                 product.RemoveDel = new Action<object>((obj) => { RemoveOneFromCountInProduct(Convert.ToInt32(obj)); });
                 product.RemoveAllDel = new Action<object>((obj) => { ClearAllCountFromProduct(Convert.ToInt32(obj)); });

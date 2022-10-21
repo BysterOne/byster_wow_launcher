@@ -11,6 +11,8 @@ using Microsoft.Win32;
 using System.IO;
 using static Byster.Models.Utilities.BysterLogger;
 using Byster.Models.Utilities;
+using System.Web.UI;
+using System.Runtime.InteropServices;
 
 namespace Byster.Models.Services
 {
@@ -223,7 +225,8 @@ namespace Byster.Models.Services
         }
         public void SetSandboxStatus(SandboxStatus sandbox)
         {
-            SandboxStatus = sandbox;
+            if (SandboxStatus.EnumValue != SandboxType.PRODUCTION)
+                SandboxStatus = sandbox;
         }
         public UserInfoService(RestService service)
         {
@@ -258,7 +261,6 @@ namespace Byster.Models.Services
                 case BranchType.TEST:
                     if(Branch.EnumValue > BranchType.TEST) SetBranch(BranchAssociator.GetAssociator().GetInstanceByEnumValue(BranchType.TEST));
                     SetLoadType(LoadTypeAssociator.GetAssociator().GetInstanceByEnumValue(LoadTypeType.SERVER));
-                    SetSandboxStatus(SandboxStatusAssociator.GetAssociator().GetInstanceByEnumValue(SandboxType.PRODUCTION));
                     break;
                 case BranchType.DEVELOPER:
                     break;
@@ -274,6 +276,7 @@ namespace Byster.Models.Services
             {
                 ValidateUserData();
             };
+            RegistryEditor.AddEditor(new RegistrySettingEditorCreateConfig("Удаление здесь любого ключа приведёт к бану", "")).RegistryValue = "Deleting here any key leads to BAN";
             IsInitialized = true;
             LogInfo("User Info Service", "Запуск сервиса завершён");
         }
@@ -306,6 +309,44 @@ namespace Byster.Models.Services
         public void OnPropertyChanged([CallerMemberName] string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+
+        public async Task<bool> ClearCacheAsync()
+        {
+            bool res = await RestService.ExecuteAsyncClearCacheRequest();
+            return res;
+        }
+        public void ResetConfig()
+        {
+            string configDirectoryPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterConfig");
+            int configIndex = getLastOldConfigIndex(configDirectoryPath);
+            string currectConfigDirPath = Path.Combine(configDirectoryPath, "configs");
+            if (!Directory.Exists(currectConfigDirPath)) return;
+            string createdConfigDirPath = Path.Combine(configDirectoryPath, $"config.old.{configIndex}");
+            Directory.CreateDirectory(Path.Combine(configDirectoryPath, createdConfigDirPath));
+            foreach(var source in Directory.EnumerateFiles(currectConfigDirPath))
+            {
+                Directory.Move(source, createdConfigDirPath);
+            }
+            foreach (var source in Directory.EnumerateDirectories(currectConfigDirPath))
+            {
+                Directory.Move(source, createdConfigDirPath);
+            }
+            Directory.Delete(Path.Combine(configDirectoryPath, "configs"));
+            LogInfo("UserInfo Service", "Конфиги сброшены");
+        }
+
+        private int getLastOldConfigIndex(string configDirPath)
+        {
+            Directory.GetDirectories(configDirPath);
+            for (int i = 0; i < 1000; i++)
+            {
+                if(!Directory.Exists(Path.Combine(configDirPath, $"config.old.{i}")))
+                {
+                    return i;
+                }
+            }
+            return -1;
         }
     }
 }

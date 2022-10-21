@@ -56,6 +56,8 @@ namespace Byster.Localizations.Tools
         public LocalizationResource Payment { get; set; }
         public LocalizationResource RotationCreateWindowTitle { get; set; }
         public LocalizationResource Sandbox { get; set; }
+        public LocalizationResource ClearCache { get; set; }
+        public LocalizationResource ResetConfig { get; set; }
 
         public LocalizationDataForViewModels()
         {
@@ -106,6 +108,8 @@ namespace Byster.Localizations.Tools
             ReferalCode = "ReferalCode";
             Payment = "Payment";
             RotationCreateWindowTitle = "RotationCreateWindowTitle";
+            ClearCache = "ClearCache";
+            ResetConfig = "ResetConfig";
         }
 
         public LocalizationInfo LoadedLocalizationInfo

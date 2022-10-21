@@ -240,7 +240,12 @@ namespace Byster.Models.Services
             return true;
         }
 
-        private void addConnectoinErrorAccident()
+        public async Task<bool> ExecuteAsyncClearCacheRequest()
+        {
+            var response = await client.ExecutePostAsync(new RestRequest("laucnher/clear_cache"));
+            return response.StatusCode == HttpStatusCode.OK;
+        }
+        private void addConnectionErrorAccident()
         {
             if (++connectionErrorCounter >= 3 && !multipleConnectionErrorEventCalled)
             {
@@ -339,7 +344,7 @@ namespace Byster.Models.Services
             {
                 LastError = "Ошибка соединения с сервером";
                 LogError("Rest Service", "Сервер недоступен", statusCode.ToString());
-                addConnectoinErrorAccident();
+                addConnectionErrorAccident();
                 return false;
             }
             //resetConnectionErrorAccidentsCounter();

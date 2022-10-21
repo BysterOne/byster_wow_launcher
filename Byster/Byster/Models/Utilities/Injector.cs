@@ -17,8 +17,9 @@ using Microsoft.Win32;
 
 namespace Byster.Models.Utilities
 {
-    public class Injector
+    public static class Injector
     {
+        private static int timerInterval = 10;
         public static event Action PreInjection;
         public static event Action PostInjection;
         private static string FullLibPath
@@ -165,9 +166,7 @@ namespace Byster.Models.Utilities
                 {
                     File.Delete(Path.Combine(FullLibPath, file));
                 }
-                catch
-                {
-                }
+                catch { }
             }
             InjectQueueUpdated += baseInjectQueueChangedHandler;
         }
@@ -187,7 +186,7 @@ namespace Byster.Models.Utilities
                     changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTED_OK;
                     Task taskToDelete = new Task(() =>
                     {
-                        Thread.Sleep(60000);
+                        Thread.Sleep(timerInterval * 1000);
                         changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
                     });
                     taskToDelete.Start();

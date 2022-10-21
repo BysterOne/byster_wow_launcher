@@ -9,11 +9,15 @@ using System.Collections.ObjectModel;
 using System.Runtime.CompilerServices;
 using System.Windows.Threading;
 using static Byster.Models.Utilities.BysterLogger;
+using NLog.LayoutRenderers.Wrappers;
 
 namespace Byster.Models.Services
 {
     public class ActionService : IService, IDisposable
     {
+        private Random rnd = new Random();
+        private int tickCounter = 0;
+        private int tickLimiter = 0;
         public bool IsInitialized { get; set; } = false;
         public Dispatcher Dispatcher { get; set; }
         public string SessionId { get; set; }
@@ -24,6 +28,11 @@ namespace Byster.Models.Services
 
         private void TimerTick(object obj)
         {
+            if(tickCounter++ == tickLimiter)
+            {
+                tickCounter = 0;
+                tickLimiter = rnd.Next(7, 16);
+            }
             bool isUpdateRequired = RestService.GetActionState(SessionId);
             if (isUpdateRequired)
             {
@@ -54,7 +63,7 @@ namespace Byster.Models.Services
             LogInfo("Action Service", "Запуск сервиса...");
             Dispatcher = dispatcher;
             IsInitialized = true;
-            await Task.Run(() => updatingTimer = new Timer(new TimerCallback(TimerTick), null, 0, 5000));
+            await Task.Run(() => updatingTimer = new Timer(new TimerCallback(TimerTick), null, 0, 1000));
             LogInfo("Action Service", "Запуск сервиса завершён");
 
         }

@@ -21,8 +21,8 @@ namespace Byster.Models.Services
 {
     public class DeveloperRotationCore
     {
-        private readonly string internalConfigurationFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig\\launcherConfiguration.json";
-        private readonly string rotationConfigurationFilePath = Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData) + "\\BysterConfig\\rotations.json";
+        private readonly string internalConfigurationFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterConfig\\launcherConfiguration.json");
+        private readonly string rotationConfigurationFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterConfig\\rotations.json");
 
         public string BaseDirectory { get; set; }
         public bool IsReadyToSyncronization { get; set; } = false;

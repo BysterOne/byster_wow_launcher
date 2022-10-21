@@ -60,7 +60,6 @@ namespace Byster.Models.Utilities
 
     public class ScrollToViewAfterSelectionBehavior : Behavior<ListBox>
     {
-
         protected override void OnAttached()
         {
             base.OnAttached();

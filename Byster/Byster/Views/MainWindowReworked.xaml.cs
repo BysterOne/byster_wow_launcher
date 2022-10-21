@@ -23,6 +23,9 @@ using Byster.Models.Services;
 using System.ComponentModel;
 using Byster.Localizations.Tools;
 using Byster.Models.ViewModels;
+using System.Diagnostics;
+using System.Reflection;
+using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Views
 {
@@ -64,6 +67,28 @@ namespace Byster.Views
                         (w as Window).Close();
                     }
                 });
+            };
+            ViewModel.UserInfo.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(ViewModel.UserInfo.SandboxStatus))
+                {
+                    System.IO.File.WriteAllLines("changeLocalization.bat", new List<string>(){
+                    $"taskkill /IM \"{ System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe\" /F",
+                    "timeout /t 2 /NOBREAK",
+                    $"{ System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe"
+                    });
+                    Process process = new Process();
+                    process.StartInfo.FileName = "changeLocalization.bat";
+                    process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    process.Start();
+                    LogInfo("Common", "Перезапуск...");
+                    foreach (var window in App.Current.Windows)
+                    {
+                        (window as Window).Close();
+                    }
+                    App.Current.Shutdown();
+                }
             };
             InitializeComponent();
             MediaControl.OpenAction = (url) =>

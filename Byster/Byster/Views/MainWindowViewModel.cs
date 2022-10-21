@@ -217,9 +217,9 @@ namespace Byster.Views
             ActiveRotations = new ActiveRotationsService(restService);
             Shop = new ShopService(restService)
             {
-                PreTestElementAction = () =>
+                PreTestElementAction = (testDuration) =>
                 {
-                    DialogWindow dialogWindow = new DialogWindow(Localizator.GetLocalizationResourceByKey("Confirmation"), Localizator.GetLocalizationResourceByKey("TestDialogInfo"));
+                    DialogWindow dialogWindow = new DialogWindow(Localizator.GetLocalizationResourceByKey("Confirmation"), Localizator.GetLocalizationResourceByKey("TestDialogInfo").Value.Replace("{testDuration}", testDuration.ToString()));
                     bool result = false;
                     result = dialogWindow.ShowModalDialog();
                     return result;
@@ -399,7 +399,7 @@ namespace Byster.Views
                     {
                         item.IsSelected = false;
                     }
-                    var selectedClass = Shop.FilterOptions.FilterClasses.Where(_ifi => _ifi.FilterValue.EnumClass == SelectedSession.SessionClass.EnumWOWClass).FirstOrDefault();
+                    var selectedClass = Shop.FilterOptions.FilterClasses.Where(_ifi => _ifi.FilterValue.EnumClass == (SelectedSession?.SessionClass.EnumWOWClass ?? WOWClasses.ANY)).FirstOrDefault();
                     if (selectedClass != null) selectedClass.IsSelected = true;
                     foreach (var item in Shop.FilterOptions.FilterTypes)
                     {

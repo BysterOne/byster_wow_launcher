@@ -25,7 +25,7 @@ namespace Byster.Models.BysterModels
         public string Description { get; set; }
         public double Price { get; set; }
         public int Duration { get; set; }
-
+        public int TestDuration { get; set; }
         public string Currency { get; set; }
         public bool IsTestable { get; set; }
         public List<Media> Medias { get; set; }
@@ -41,6 +41,7 @@ namespace Byster.Models.BysterModels
             Price = RestShopProduct.price;
             Currency = RestShopProduct.currency;
             Duration = RestShopProduct.duration;
+            TestDuration = RestShopProduct.test_duration;
             Media prevMedia = null;
             Medias = new List<Media>();
             foreach (var restMedia in RestShopProduct.media)
@@ -56,9 +57,9 @@ namespace Byster.Models.BysterModels
             }
             IsPack = Rotations.Count > 1;
             if (Localizator.LoadedLocalizationInfo.Language == "Русский")
-                Description = string.IsNullOrEmpty(RestShopProduct.description) ? Rotations[0].Description : RestShopProduct.description;
+                Description = string.IsNullOrEmpty(RestShopProduct.description) ? (Rotations.Count > 0 ? Rotations[0].Description : "") : RestShopProduct.description;
             else
-                Description = string.IsNullOrEmpty(RestShopProduct.description_en) ? Rotations[0].Description : RestShopProduct.description_en;
+                Description = string.IsNullOrEmpty(RestShopProduct.description_en) ? (Rotations.Count > 0 ? Rotations[0].Description : "") : RestShopProduct.description_en;
             IsTestable = RestShopProduct.can_test;
 
             if (Rotations.Count == 1)

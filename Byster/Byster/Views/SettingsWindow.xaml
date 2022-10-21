@@ -35,7 +35,7 @@
         <Grid Grid.Row="0" x:Name="nameGrid" Height="Auto">
             <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding MainViewModel.LocalizationData.Settings}" FontSize="20" Margin="20, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
         </Grid>
-        <Grid Grid.Row="1" Width="300" Height="303" x:Name="masterGrid">
+        <Grid Grid.Row="1" Width="300" Height="400" x:Name="masterGrid">
             <Grid.ColumnDefinitions>
                 <ColumnDefinition Width="2*"/>
                 <ColumnDefinition Width="3*"/>
@@ -73,6 +73,8 @@
                         <lb:CopyToClipboardOnClick/>
                     </i:Interaction.Behaviors>
                 </TextBox>
+                <Button x:Name="resetConfigButton" Style="{DynamicResource transparentButtonStyle}" Content="{Binding MainViewModel.LocalizationData.ResetConfig}" Command="{Binding ResetConfigCommand}" Margin="9, 1, 9, 8"/>
+                <Button x:Name="clearCacheButton" Style="{DynamicResource transparentButtonStyle}" Content="{Binding MainViewModel.LocalizationData.ClearCache}" Command="{Binding ClearCacheCommand}" Margin="9, 1, 9, 8"/>
                 <TextBlock Text="{Binding MainViewModel.LocalizationData.Localization}" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding MainViewModel.LocalizationData.Localizations}" DisplayMemberPath="Language" SelectedItem="{Binding MainViewModel.LocalizationData.LoadedLocalizationInfo}"/>
             </StackPanel>
@@ -84,7 +86,7 @@
                 <TextBlock x:Name="loadTypeText" Text="{Binding MainViewModel.LocalizationData.SelectLoadtype}" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox x:Name="loadTypeSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.LoadTypes}" DisplayMemberPath="Name" SelectedItem="{Binding MainViewModel.UserInfo.LoadType, Mode=TwoWay}"/>
                 <TextBlock x:Name="sandboxStatusText" Text="{Binding MainViewModel.LocalizationData.Sandbox}" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
-                <ComboBox x:Name="sandBoxStatusSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.SandboxStatuses}" DisplayMemberPath="Name" SelectedItem="{Binding Path=SelectedSandboxStatus, Mode=TwoWay}"/>
+                <ComboBox x:Name="sandBoxStatusSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.SandboxStatuses}" DisplayMemberPath="Name" SelectedItem="{Binding MainViewModel.UserInfo.SandboxStatus, Mode=TwoWay}"/>
                 <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="admin.byster.ru" Command="{Binding OpenAccountPageCommand}"/>
                 <Button x:Name="rotationSettingsBtn" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Command="{Binding OpenRotationSettingsWindow}">
                     <TextBlock Text="{Binding MainViewModel.LocalizationData.MenuOfSelectingRotations}"/>

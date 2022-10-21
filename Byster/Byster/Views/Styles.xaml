@@ -1555,7 +1555,7 @@
                                                     
                                                     <Grid Grid.Row="1" Margin="10">
                                                         <Grid HorizontalAlignment="Stretch" x:Name="StartControls" Visibility="Collapsed">
-                                                            <Button Width="53" Style="{DynamicResource transparentButtonStyle}" x:Name="testBtn" Visibility="Collapsed" Content="{Binding Converter={StaticResource localizationConverter}, ConverterParameter=Test}" Margin="0, 0, 10, 0" HorizontalAlignment="Left" Command="{Binding TestCommand}" CommandParameter="{Binding Path=Product.Id}"/>
+                                                            <Button Width="53" Style="{DynamicResource transparentButtonStyle}" x:Name="testBtn" Visibility="Collapsed" Content="{Binding Converter={StaticResource localizationConverter}, ConverterParameter=Test}" Margin="0, 0, 10, 0" HorizontalAlignment="Left" Command="{Binding TestCommand}" CommandParameter="{Binding Path=Product}"/>
                                                             <Button Width="160" Style="{DynamicResource productButtonStyle}" x:Name="buyBtn" Content="{Binding Converter={StaticResource localizationConverter}, ConverterParameter=ToCart}" HorizontalAlignment="Right" Command="{Binding AddCommand}" CommandParameter="{Binding Path=Product.Id}"/>
                                                         </Grid>
                                                         <Grid HorizontalAlignment="Stretch" x:Name="CountControls">

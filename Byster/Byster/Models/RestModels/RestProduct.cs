@@ -17,6 +17,7 @@ namespace Byster.Models.RestModels
         public double price { get; set; }
         public string currency { get; set; }
         public int duration { get; set; }
+        public int test_duration { get; set; }
         public bool can_test { get; set; }
         public List<RestMediaPart> media { get; set; }
         public List<RestRotationShop> rotations { get; set; }

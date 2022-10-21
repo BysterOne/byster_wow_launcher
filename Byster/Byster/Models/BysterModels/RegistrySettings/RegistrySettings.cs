@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
 using System.Runtime.CompilerServices;
+using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Models.BysterModels
 {
@@ -120,7 +121,9 @@ namespace Byster.Models.BysterModels
 
     public static class RegistryEditor
     {
-        private static IEnumerable<RegistrySettingEditor> allSettingEditors;
+        private static List<RegistrySettingEditor> allSettingEditors;
+        public static IEnumerable<RegistrySettingEditor> AllSettingEditors => allSettingEditors;
+
         private readonly static RegistrySettingEditorCreateConfig[] presetConfigs =
         {
             new RegistrySettingEditorCreateConfig("Console", 0),
@@ -148,16 +151,16 @@ namespace Byster.Models.BysterModels
         public static RegistrySettingEditor AddEditor(IRegistrySettingEditorConfig config)
         {
             if (config == null) return null;
-            if (!allSettingEditors.Any(_editor => _editor.RegistryValueName == config.RegistryValueName)) return null;
+            if (allSettingEditors.Any(_editor => _editor.RegistryValueName == config.RegistryValueName)) return null;
             try
             {
                 var editor = new RegistrySettingEditor(config);
-                var allSettingEditorsList = allSettingEditors as List<object>;
-                allSettingEditorsList.Add(editor);
+                allSettingEditors.Add(editor);
                 return editor;
             }
             catch
             {
+                LogWarn("Редактор реестра", "Ошибка создания редактора");
                 return null;
             }
         }

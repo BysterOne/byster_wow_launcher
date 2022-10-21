@@ -1,4 +1,6 @@
 ﻿using NLog;
+using System;
+using System.Collections.Generic;
 using System.Text;
 using System.Windows;
 namespace Byster.Models.Utilities
@@ -50,7 +52,27 @@ namespace Byster.Models.Utilities
             stringBuilder.Append("]\t");
             foreach (object o in p)
                 stringBuilder.Append(o?.ToString() ?? "{Ошибка преобразования}");
-            logger.Info(stringBuilder.ToString());
+            if(level == LogLevel.Info)
+            {
+                logger.Info(stringBuilder.ToString());
+            }
+            else if(level == LogLevel.Warn)
+            {
+                logger.Warn(stringBuilder.ToString());
+            }
+            else if(level == LogLevel.Error)
+            {
+                logger.Error(stringBuilder.ToString());
+            }
+            else if(level == LogLevel.Fatal)
+            {
+                logger.Fatal(stringBuilder.ToString());
+            }
+            else
+            {
+                logger.Debug(stringBuilder.ToString());
+            }
+
         }
 
 

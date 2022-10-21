@@ -1,6 +1,7 @@
 ﻿using Byster.Localizations.Tools;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -15,9 +16,6 @@ using System.Windows.Shapes;
 
 namespace Byster.Views
 {
-    /// <summary>
-    /// Логика взаимодействия для InfoWindow.xaml
-    /// </summary>
     public partial class InfoWindow : Window
     {
         public static void ShowWindow(string title, string infoText)
@@ -36,7 +34,14 @@ namespace Byster.Views
 
         private void okBtn_Click(object sender, RoutedEventArgs e)
         {
-            this.DialogResult = true;
+            try
+            {
+                this.DialogResult = true;
+            }
+            finally
+            {
+                this.Close();
+            }
         }
 
         private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)

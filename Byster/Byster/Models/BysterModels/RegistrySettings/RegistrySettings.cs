@@ -70,7 +70,12 @@ namespace Byster.Models.BysterModels
         private void pullValueFromRegistry()
         {
             if (!checkRegistryAccessConfig()) return;
-            RegistryValue = Registry.CurrentUser.OpenSubKey(registryRootSubkey).GetValue(RegistryValueName, defaultValue);
+            var subKey = Registry.CurrentUser.OpenSubKey(registryRootSubkey);
+            if(subKey == null)
+            {
+                subKey = Registry.CurrentUser.CreateSubKey(registryRootSubkey);
+            }
+            RegistryValue = subKey.GetValue(RegistryValueName, defaultValue);
             if (checkTrigger()) onTriggered();
         }
         private bool checkRegistryAccessConfig()

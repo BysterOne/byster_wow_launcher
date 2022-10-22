@@ -63,7 +63,12 @@ namespace Byster.Models.BysterModels
             }
             else
             {
-                Registry.CurrentUser.OpenSubKey(registryRootSubkey, true).SetValue(RegistryValueName, RegistryValue);
+                var subKey = Registry.CurrentUser.OpenSubKey(registryRootSubkey, true);
+                if(subKey == null)
+                {
+                    subKey = Registry.CurrentUser.CreateSubKey(registryRootSubkey, true);
+                }
+                subKey.SetValue(RegistryValueName, RegistryValue);
             }
 
         }

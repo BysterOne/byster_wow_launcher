@@ -33,7 +33,9 @@ namespace Byster.Views
     public partial class LoadingWindow : Window
     {
         public string[] TrustedHosts = new string[] {"api.byster.ru",
-                                                     "s3.byster.ru"};
+                                                     "s3.byster.ru",
+                                                     "old.byster.ru",
+                                                     "byster.ru"};
         public LoadingWindow()
         {
             InitializeComponent();

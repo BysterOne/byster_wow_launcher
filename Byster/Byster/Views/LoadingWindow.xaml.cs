@@ -260,8 +260,7 @@ namespace Byster.Views
         private void updateApp(string versionToUpdate)
         {
             LogInfo("Common", "Получение новой версии");
-            RestClient client = new RestClient("https://api.byster.ru/");
-            var response = client.Get(new RestRequest("launcher/download"));
+            var response = App.Rest.Get(new RestRequest("launcher/download"));
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 MessageBox.Show($"Error while connecting server\nResponse HTTP-Code: {(int)response.StatusCode}\nError message: {response.ErrorMessage}\nServer error message: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "No Server answer"}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

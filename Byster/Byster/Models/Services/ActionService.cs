@@ -28,20 +28,21 @@ namespace Byster.Models.Services
 
         private void TimerTick(object obj)
         {
-            if(tickCounter++ == tickLimiter)
+            if (tickCounter++ == tickLimiter)
             {
                 tickCounter = 0;
                 tickLimiter = rnd.Next(7, 16);
-            }
-            bool isUpdateRequired = RestService.GetActionState(SessionId);
-            if (isUpdateRequired)
-            {
-                Dispatcher?.Invoke(() =>
+                bool isUpdateRequired = RestService.GetActionState(SessionId);
+                if (isUpdateRequired)
                 {
-                    if (UpdateAction != null)
-                        UpdateAction();
-                });
-                LogInfo("Action Service", "Получен запрос на обновление данных");
+                    LogInfo("Action Service", "Получен запрос на обновление данных");
+                    Dispatcher?.Invoke(() =>
+                    {
+                        if (UpdateAction != null)
+                            UpdateAction();
+                        LogInfo("Action Service", "Запрос на обновление обработан");
+                    });
+                }
             }
         }
 

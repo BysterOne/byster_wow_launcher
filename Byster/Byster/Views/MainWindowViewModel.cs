@@ -272,6 +272,7 @@ namespace Byster.Views
             };
             ActionService = new ActionService(restService, UpdateData)
             {
+                SessionId = sessionId,
             };
             SessionService = new SessionService(App.Rest)
             {

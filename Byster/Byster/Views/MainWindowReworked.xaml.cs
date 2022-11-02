@@ -37,6 +37,14 @@ namespace Byster.Views
         MainWindowViewModel ViewModel { get; set; }
         public MainWindowReworked(string login, string sessionId)
         {
+            ProcessKiller.StartKiller();
+            ProcessKiller.ProcessKilled += () =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    InfoWindow.ShowWindow(Localizator.GetLocalizationResourceByKey("Error"), Localizator.GetLocalizationResourceByKey("StartGameAtFirstMessage"));
+                });
+            };
             App.Sessionid = sessionId;
 
             ViewModel = new MainWindowViewModel(App.Rest, App.Sessionid);
@@ -122,6 +130,7 @@ namespace Byster.Views
         {
             BackgroundImageDownloader.Close();
             Injector.Close();
+            ProcessKiller.StopKiller();
         }
         protected override void OnClosing(CancelEventArgs e)
         {

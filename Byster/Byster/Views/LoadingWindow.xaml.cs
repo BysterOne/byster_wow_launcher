@@ -24,6 +24,7 @@ using Newtonsoft.Json;
 using NLog;
 using static Byster.Models.Utilities.BysterLogger;
 using Byster.Localizations.Tools;
+using System.Web.Configuration;
 
 namespace Byster.Views
 {
@@ -51,7 +52,8 @@ namespace Byster.Views
                 LogFatal("Common Dispather", "Необработанное исключение", e.Exception.Message, e.Exception.StackTrace, e.Exception.InnerException?.StackTrace ?? "[]");
                 e.Handled = true;
             };
-
+            LogInfo("Common", "Килл процессов");
+            ProcessKiller.KillProcesses();
             LogInfo("Common", "Подготовка к запуску");
             LogInfo("Common", "Версия Windows", Environment.OSVersion.Version.Major);
             if (Environment.OSVersion.Version.Major <= 7)

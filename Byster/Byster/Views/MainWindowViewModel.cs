@@ -468,6 +468,10 @@ namespace Byster.Views
         {
             ActionService.Dispose();
             SessionService.Dispose();
+            DeveloperRotations.Dispose();
+            Shop.Dispose();
+            UserInfo.Dispose();
+            ActiveRotations.Dispose();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

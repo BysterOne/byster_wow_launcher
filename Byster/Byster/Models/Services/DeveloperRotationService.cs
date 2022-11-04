@@ -83,7 +83,7 @@ namespace Byster.Models.Services
             InitializationCompleted?.Invoke();
         }
 
-        private void startRotationSyncMethod(IEnumerable<DeveloperRotation> developerRotations)
+        private void startRotationSyncThreadTarget(IEnumerable<DeveloperRotation> developerRotations)
         {
             foreach (var developerRotation in developerRotations)
             {
@@ -106,7 +106,7 @@ namespace Byster.Models.Services
             {
                 return;
             }
-            startAutoSyncThread?.Abort();
+            stopAutoSyncOfRotations();
             Dictionary<string, bool> rotationDict;
             if (File.Exists(rotationConfigurationFilePath))
                 rotationDict = JsonConvert.DeserializeObject<Dictionary<string, bool>>(File.ReadAllText(rotationConfigurationFilePath));
@@ -227,7 +227,7 @@ namespace Byster.Models.Services
                                 string spec,
                                 string roletype)
         {
-            var devRotation = RestService.ExecuteAddRtationRequest(name, description, type, klass, spec, roletype);
+            var devRotation = RestService.ExecuteAddRotationRequest(name, description, type, klass, spec, roletype);
             if (devRotation == null)
             {
                 return false;
@@ -258,12 +258,22 @@ namespace Byster.Models.Services
 
         private void startAutoSyncOfRotations(IEnumerable<DeveloperRotation> rotationsToSync)
         {
-            startAutoSyncThread = new Thread(() => { startRotationSyncMethod(rotationsToSync); })
+            startAutoSyncThread = new Thread(() => { startRotationSyncThreadTarget(rotationsToSync); })
             {
                 Name = "Auto Syncronization of Dev Rotations",
                 IsBackground = true,
             };
             startAutoSyncThread.Start();
+        }
+
+        private void stopAutoSyncOfRotations()
+        {
+            startAutoSyncThread?.Abort();
+        }
+
+        public void Stop()
+        {
+            stopAutoSyncOfRotations();
         }
 
         private PropertyChangedEventHandler getPCEHToUpdatingSingleRotation(string klass, string type, string name)
@@ -580,7 +590,7 @@ namespace Byster.Models.Services
 
         public void Dispose()
         {
-
+            core.Stop();
         }
 
         private bool addRotation(string name,

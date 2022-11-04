@@ -260,7 +260,6 @@ namespace Byster.Models.BysterModels
             }
             finally
             {
-                Thread.Sleep(5000);
                 Status = DeveloperRotationStatusCode.IDLE;
             }
             syncSemaphore?.Release();

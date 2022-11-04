@@ -126,16 +126,13 @@ namespace Byster.Views
         {
             Close();
         }
-        private void ClosingHandler(object sender, System.ComponentModel.CancelEventArgs e)
-        {
-            BackgroundImageDownloader.Close();
-            Injector.Close();
-            ProcessKiller.StopKiller();
-        }
         protected override void OnClosing(CancelEventArgs e)
         {
             base.OnClosing(e);
             ViewModel.Dispose();
+            BackgroundImageDownloader.Close();
+            Injector.Close();
+            ProcessKiller.StopKiller();
         }
 
         private void Window_KeyDown(object sender, KeyEventArgs e)

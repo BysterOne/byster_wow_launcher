@@ -203,7 +203,7 @@ namespace Byster.Models.Services
             return response.Data;
         }
 
-        public RestDeveloperRotation ExecuteAddRtationRequest(string name,
+        public RestDeveloperRotation ExecuteAddRotationRequest(string name,
                                             string description,
                                             int type,
                                             string klass,

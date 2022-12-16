@@ -56,6 +56,7 @@ namespace Byster.Models.Services
 
         public void Dispose()
         {
+            LogInfo("Action Service", "Завершение работы сервиса...");
             updatingTimer?.Dispose();
         }
 

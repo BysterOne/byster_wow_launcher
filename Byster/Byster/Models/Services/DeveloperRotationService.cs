@@ -590,6 +590,7 @@ namespace Byster.Models.Services
 
         public void Dispose()
         {
+            LogInfo("Developer Rotations Service", "Завершение работы сервиса...");
             core.Stop();
         }
 

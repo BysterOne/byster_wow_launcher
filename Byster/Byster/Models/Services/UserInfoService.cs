@@ -283,7 +283,7 @@ namespace Byster.Models.Services
 
         public void Dispose()
         {
-
+            LogInfo("User Info Service", "Завершение работы сервиса...");
         }
 
         public bool ChangePasssword(string newPassswordHash)

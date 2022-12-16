@@ -363,7 +363,7 @@ namespace Byster.Models.Services
 
         public void Dispose()
         {
-
+            LogInfo("Shop Service", "Завершение работы сервиса...");
         }
     }
 

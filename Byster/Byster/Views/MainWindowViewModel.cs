@@ -69,10 +69,10 @@ namespace Byster.Views
 
         public event Action MultipleConnectionErrorsDetected;
         public ActiveRotationsService ActiveRotations { get; set; }
-        public ShopService Shop { get; set; }
-        public UserInfoService UserInfo { get; set; }
-        public ActionService ActionService { get; set; }
-        public SessionService SessionService { get; set; }
+        public ShopService Shop { get; private set; }
+        public UserInfoService UserInfo { get; private set; }
+        public ActionService ActionService { get; private set; }
+        public SessionService SessionService { get; private set; }
 
         private SessionViewModel selectedSession;
 

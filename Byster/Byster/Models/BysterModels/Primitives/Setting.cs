@@ -8,19 +8,19 @@ using System.Threading.Tasks;
 
 namespace Byster.Models.BysterModels.Primitives
 {
-    public abstract class Setting<TRegValue, TValue, TEnum> : INotifyPropertyChanged where TEnum : Enum
+    public abstract class Setting<TEnum> : INotifyPropertyChanged where TEnum : Enum
     {
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged([CallerMemberName]string property = "")
         {
             PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
         }
-        public TRegValue RegistryValue { get; set; }
-        public TValue Value { get; set; }
-        public TEnum EnumValue { get; set; }
-        public string Name { get; set; }
+        public object RegistryValue { get; }
+        public object Value { get; }
+        public TEnum EnumValue { get; }
+        public string Name { get; }
 
-        public Setting(string _name, TEnum _enum, TValue _value = default(TValue), TRegValue _registryValue = default(TRegValue))
+        public Setting(string _name, TEnum _enum, object _value = default(object), object _registryValue = default(object))
         {
             RegistryValue = _registryValue;
             EnumValue = _enum;

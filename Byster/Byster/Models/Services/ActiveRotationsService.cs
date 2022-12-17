@@ -12,7 +12,7 @@ using System.Windows;
 using System.Collections.Specialized;
 using System.Windows.Threading;
 using Byster.Models.Utilities;
-
+using static Byster.Models.Utilities.BysterLogger;
 namespace Byster.Models.Services
 {
     public class ActiveRotationsService : INotifyPropertyChanged, IService
@@ -128,7 +128,7 @@ namespace Byster.Models.Services
 
         public void Dispose()
         {
-            
+            LogInfo("Active Rotations Service", "Завершение работы сервиса...");
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

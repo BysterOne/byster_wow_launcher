@@ -11,6 +11,7 @@ using System.Windows.Interactivity;
 using System.Collections.Specialized;
 using System.Windows.Media;
 using System.Windows.Data;
+using System.Runtime.Remoting.Channels;
 
 namespace Byster.Models.Utilities
 {
@@ -59,7 +60,6 @@ namespace Byster.Models.Utilities
 
     public class ScrollToViewAfterSelectionBehavior : Behavior<ListBox>
     {
-
         protected override void OnAttached()
         {
             base.OnAttached();
@@ -248,6 +248,127 @@ namespace Byster.Models.Utilities
             }
             if (selectedState == null) return null;
             return selectedState.Storyboard;
+        }
+    }
+
+    public class PressToSeePassword : Behavior<DependencyObject>
+    {
+        private DependencyObject rootElement;
+        private Button btnToSeePassword;
+        private TextBlock decryptedTextBlock;
+        private FrameworkElement encryptedTextBox;
+        private PasswordBox encryptedPasswordBox;
+        protected override void OnAttached()
+        {
+            base.OnAttached();
+            if (AssociatedObject == null) return;
+            (AssociatedObject as Control).Loaded += linkRequiredElements;
+        }
+
+        private void linkRequiredElements(object sender, RoutedEventArgs args)
+        {
+            rootElement = (DependencyObject)(AssociatedObject as Control).Template.FindName("textboxBorder", AssociatedObject as FrameworkElement);
+            if (rootElement == null) throw new Exception("Expected element in template but no one was found");
+            (AssociatedObject as FrameworkElement).Loaded -= linkRequiredElements;
+            var childBtn = getFirstChildOfType<Button>(rootElement);
+            if (childBtn == null) throw new Exception("Expected button in visual tree, but no buttons were found");
+            btnToSeePassword = childBtn as Button;
+            var allTextBlocks = getAllVisualElementsByType<TextBlock>(rootElement);
+            foreach (var textBlock in allTextBlocks)
+            {
+                if (textBlock.Name == "PART_CheckPassword")
+                {
+                    decryptedTextBlock = textBlock;
+                    break;
+                }
+            }
+            var allDependenctObjects = getAllVisualElementsByType<DependencyObject>(rootElement);
+            if (decryptedTextBlock == null) throw new Exception("Expected TextBlock with name \"PART_CheckPassword\" but no one found");
+            encryptedPasswordBox = getParentByType<PasswordBox>(rootElement);
+            if (encryptedPasswordBox == null) throw new Exception("Expected PasswordBox as one of ancestors, but no one found");
+            var allElements = getAllVisualElementsByType<FrameworkElement>(rootElement);
+            foreach(var element in allElements)
+            {
+                if(element.Name == "PART_ContentHost")
+                {
+                    encryptedTextBox = element;
+                    break;
+                }
+            }
+            encryptedPasswordBox.Visibility = Visibility.Visible;
+            encryptedTextBox.Visibility = Visibility.Visible;
+            decryptedTextBlock.Visibility = Visibility.Collapsed;
+            btnToSeePassword.PreviewMouseLeftButtonDown += onPressToSeePasswordClicked;
+            btnToSeePassword.PreviewMouseLeftButtonUp += onPressToSeePasswordUnclicked;
+        }
+
+        protected override void OnDetaching()
+        {
+            btnToSeePassword.PreviewMouseLeftButtonDown -= onPressToSeePasswordClicked;
+            btnToSeePassword.PreviewMouseLeftButtonUp -= onPressToSeePasswordUnclicked;
+            base.OnDetaching();
+        }
+
+        private void onPressToSeePasswordClicked(object sender, RoutedEventArgs e)
+        {
+            decryptedTextBlock.Text = encryptedPasswordBox.Password;
+            decryptedTextBlock.Visibility = Visibility.Visible;
+            encryptedTextBox.Visibility = Visibility.Collapsed;
+        }
+
+        private void onPressToSeePasswordUnclicked(object sender, RoutedEventArgs e)
+        {
+            decryptedTextBlock.Visibility = Visibility.Collapsed;
+            encryptedTextBox.Visibility = Visibility.Visible;
+        }
+
+        private T getParentByType<T>(DependencyObject childdo) where T : DependencyObject
+        {
+            if (childdo is T) return childdo as T;
+            var parent = VisualTreeHelper.GetParent(childdo);
+            if (parent != null && parent is T) return parent as T;
+            return _getParentByType<T>(parent, 0);
+        }
+        
+        private T _getParentByType<T>(DependencyObject childdo, int searchLevel) where T : DependencyObject
+        {
+            if (searchLevel > 8) return null;
+            var parent = VisualTreeHelper.GetParent(childdo);
+            if (parent != null && parent is T) return parent as T;
+            return _getParentByType<T>(parent, searchLevel + 1);
+        }
+
+        private T getFirstChildOfType<T>(DependencyObject ancestorDO) where T : DependencyObject
+        {
+            int childCount = VisualTreeHelper.GetChildrenCount(ancestorDO);
+            for (int i = 0; i < childCount; i++)
+            {
+                DependencyObject _do = VisualTreeHelper.GetChild(ancestorDO, i);
+                if (_do is T)
+                {
+                    return _do as T;
+                }
+                T _doChild = getFirstChildOfType<T>(_do);
+                if (_doChild != null) return _doChild;
+            }
+            return null;
+        }
+
+        private static IEnumerable<T> getAllVisualElementsByType<T>(DependencyObject dependencyObject) where T : DependencyObject
+        {
+            List<T> children = new List<T>();
+            if (dependencyObject == null) return null;
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(dependencyObject); i++)
+            {
+                var rawChild = VisualTreeHelper.GetChild(dependencyObject, i);
+                if (rawChild is T)
+                {
+                    children.Add((T)rawChild);
+                }
+                children.AddRange(getAllVisualElementsByType<T>(rawChild));
+            }
+            return children;
         }
     }
 

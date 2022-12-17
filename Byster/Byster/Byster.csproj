@@ -166,19 +166,19 @@
     <Compile Include="Localizations\Tools\LocalizationDataForViewModels.cs" />
     <Compile Include="Localizations\Tools\LocalizationResource.cs" />
     <Compile Include="Localizations\Tools\Localizator.cs" />
-    <Compile Include="Models\BysterModels\Branch.cs" />
+    <Compile Include="Models\BysterModels\Settings\Branch.cs" />
     <Compile Include="Models\BysterModels\Primitives\SettingAssociator.cs" />
     <Compile Include="Models\BysterModels\Primitives\Setting.cs" />
-    <Compile Include="Models\BysterModels\UserSettings.cs" />
-    <Compile Include="Models\BysterModels\Cart.cs" />
+    <Compile Include="Models\BysterModels\RegistrySettings\RegistrySettings.cs" />
+    <Compile Include="Models\BysterModels\ProductsAndRotations\Cart.cs" />
     <Compile Include="Models\BysterModels\DeveloperRotation.cs" />
-    <Compile Include="Models\BysterModels\LoadType.cs" />
+    <Compile Include="Models\BysterModels\Settings\LoadType.cs" />
     <Compile Include="Models\BysterModels\PaymentSystem.cs" />
-    <Compile Include="Models\BysterModels\Rotation.cs" />
-    <Compile Include="Models\BysterModels\SandboxStatus.cs" />
-    <Compile Include="Models\BysterModels\WOWClass.cs" />
-    <Compile Include="Models\BysterModels\WOWSession.cs" />
-    <Compile Include="Models\BysterModels\ShopProductInfo.cs" />
+    <Compile Include="Models\BysterModels\ProductsAndRotations\Rotation.cs" />
+    <Compile Include="Models\BysterModels\Settings\SandboxStatus.cs" />
+    <Compile Include="Models\BysterModels\Settings\WOWClass.cs" />
+    <Compile Include="Models\BysterModels\Sessions\WOWSession.cs" />
+    <Compile Include="Models\BysterModels\ProductsAndRotations\ShopProductInfo.cs" />
     <Compile Include="Models\RestModels\Auth.cs" />
     <Compile Include="Models\RestModels\BaseResponse.cs" />
     <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
@@ -198,14 +198,15 @@
     <Compile Include="Models\RestModels\RestProduct.cs" />
     <Compile Include="Models\RestModels\RestRotation.cs" />
     <Compile Include="Models\RestModels\RestParts.cs" />
-    <Compile Include="Models\BysterModels\Media.cs" />
-    <Compile Include="Models\BysterModels\ShopProduct.cs" />
+    <Compile Include="Models\BysterModels\Settings\Media.cs" />
+    <Compile Include="Models\BysterModels\ProductsAndRotations\ShopProduct.cs" />
     <Compile Include="Models\RestModels\RestTest.cs" />
     <Compile Include="Models\RestModels\RestUserInfo.cs" />
     <Compile Include="Models\Services\ActionService.cs" />
     <Compile Include="Models\Services\ActiveRotationsService.cs" />
     <Compile Include="Models\Services\DeveloperRotationService.cs" />
     <Compile Include="Models\Services\IService.cs" />
+    <Compile Include="Models\Utilities\ProcessKiller.cs" />
     <Compile Include="Models\Services\RestService.cs" />
     <Compile Include="Models\Services\SessionService.cs" />
     <Compile Include="Models\Services\ShopService.cs" />
@@ -488,6 +489,9 @@
   <ItemGroup>
     <Resource Include="Resources\Images\volume-down.png" />
     <Resource Include="Resources\Images\volume-up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\eye-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.6.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.6.0\build\Fody.targets')" />

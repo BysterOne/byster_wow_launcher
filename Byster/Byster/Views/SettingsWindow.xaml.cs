@@ -18,12 +18,11 @@ using Byster.Models.ViewModels;
 using Byster.Models.Services;
 using Byster.Models.Utilities;
 using System.Diagnostics;
+using Byster.Localizations.Tools;
+using System.Windows.Threading;
 
 namespace Byster.Views
 {
-    /// <summary>
-    /// Логика взаимодействия для SettingsWindow.xaml
-    /// </summary>
     public partial class SettingsWindow : Window
     {
         public SettingsViewModel SettingsViewModel;
@@ -41,12 +40,10 @@ namespace Byster.Views
                 }
             };
             this.DataContext = SettingsViewModel;
-            SettingsViewModel.SelectedSandboxStatus = SettingsViewModel.MainViewModel.UserInfo.SandboxStatus;
         }
 
         private void closeBtn_Click(object sender, RoutedEventArgs e)
         {
-            SettingsViewModel.MainViewModel.UserInfo.SetSandboxStatus(SettingsViewModel.SelectedSandboxStatus);
             this.Close();
         }
 
@@ -66,7 +63,7 @@ namespace Byster.Views
                 consoleSwitch.Visibility = Visibility.Visible;
                 testElementGrid.Visibility = Visibility.Visible;
                 encryptSwitch.Visibility = Visibility.Visible;
-                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + testElementGrid.ActualHeight + 40;
+                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + testElementGrid.ActualHeight + 58;
             }
             else if (SettingsViewModel.MainViewModel.UserInfo.UserType == BranchType.TEST)
             {
@@ -76,7 +73,7 @@ namespace Byster.Views
                 consoleSwitch.Visibility = Visibility.Visible;
                 testElementGrid.Visibility = Visibility.Visible;
                 encryptSwitch.Visibility = Visibility.Visible;
-                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + testElementGrid.ActualHeight + 40;
+                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + testElementGrid.ActualHeight + 58;
             }
             else
             {
@@ -86,7 +83,7 @@ namespace Byster.Views
                 loadTypeText.Visibility = Visibility.Collapsed;
                 loadTypeSelector.Visibility = Visibility.Collapsed;
                 rotationSettingsBtn.Visibility = Visibility.Collapsed;
-                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + 40;
+                this.Height = masterGrid.ActualHeight + nameGrid.ActualHeight + 58;
             }
         }
     }
@@ -94,6 +91,57 @@ namespace Byster.Views
     {
         public Action CloseAction { get; set; }
         public MainWindowViewModel MainViewModel { get; set; }
+
+        private RelayCommand resetConfigCommand;
+
+        public RelayCommand ResetConfigCommand
+        {
+            get => resetConfigCommand ?? (resetConfigCommand = new RelayCommand(() =>
+            {
+                var resetConfigDialog = new DialogWindow(Localizator.GetLocalizationResourceByKey("ResetConfig"), Localizator.GetLocalizationResourceByKey("ResetConfigText"));
+                bool result = resetConfigDialog.ShowDialog() ?? false;
+                if(result)
+                {
+                    MainViewModel.UserInfo.ResetConfig();
+                    var successInfoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("ResetConfig"), Localizator.GetLocalizationResourceByKey("Success"));
+                    successInfoWindow.ShowDialog();
+                }
+            }));
+        }
+
+        private RelayCommand clearCacheCommand;
+        public RelayCommand ClearCacheCommand
+        {
+            get => clearCacheCommand ?? (clearCacheCommand = new RelayCommand(() =>
+            {
+                var clearCacheDialog = new DialogWindow(Localizator.GetLocalizationResourceByKey("ClearCache"), Localizator.GetLocalizationResourceByKey("ClearCacheText"));
+                bool result = clearCacheDialog.ShowDialog() ?? false;
+                if(result)
+                {
+                    var statusWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("ClearCache"), Localizator.GetLocalizationResourceByKey("ClearInProgress"));
+                    statusWindow.Show();
+                    Task clearCacheTask = new Task(async () =>
+                    {
+                        bool requestResult = await MainViewModel.UserInfo.ClearCacheAsync();
+                        MainViewModel.UserInfo.Dispatcher.Invoke(() =>
+                        {
+                            statusWindow.Close();
+                            if (requestResult)
+                            {
+                                var successWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("ClearCache"), Localizator.GetLocalizationResourceByKey("Success"));
+                                successWindow.ShowDialog();
+                            }
+                            else
+                            {
+                                var errorInfoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("ClearCache"), Localizator.GetLocalizationResourceByKey("Error"));
+                                errorInfoWindow.ShowDialog();
+                            }
+                        });
+                    });
+                    clearCacheTask.Start();
+                }
+            }));
+        }
 
         private RelayCommand changePwdCommand;
         public RelayCommand ChangePwdCommand
@@ -158,8 +206,6 @@ namespace Byster.Views
                 }));
             }
         }
-        public SandboxStatus SelectedSandboxStatus { get; set; }
-
         public event PropertyChangedEventHandler PropertyChanged;
         public void OnPropertyChanged(string property = "")
         {

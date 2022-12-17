@@ -217,9 +217,9 @@ namespace Byster.Views
             ActiveRotations = new ActiveRotationsService(restService);
             Shop = new ShopService(restService)
             {
-                PreTestElementAction = () =>
+                PreTestElementAction = (testDuration) =>
                 {
-                    DialogWindow dialogWindow = new DialogWindow(Localizator.GetLocalizationResourceByKey("Confirmation"), Localizator.GetLocalizationResourceByKey("TestDialogInfo"));
+                    DialogWindow dialogWindow = new DialogWindow(Localizator.GetLocalizationResourceByKey("Confirmation"), Localizator.GetLocalizationResourceByKey("TestDialogInfo").Value.Replace("{testDuration}", testDuration.ToString()));
                     bool result = false;
                     result = dialogWindow.ShowModalDialog();
                     return result;
@@ -272,6 +272,7 @@ namespace Byster.Views
             };
             ActionService = new ActionService(restService, UpdateData)
             {
+                SessionId = sessionId,
             };
             SessionService = new SessionService(App.Rest)
             {
@@ -288,7 +289,7 @@ namespace Byster.Views
             {
                 if (args.PropertyName == "Branch")
                 {
-                    Injector.Branch = UserInfo.Branch.Value;
+                    Injector.Branch = UserInfo.Branch.Value as string;
                 };
             };
             DeveloperRotations = new DeveloperRotationService()
@@ -346,7 +347,7 @@ namespace Byster.Views
             {
                 return startCommand ?? (startCommand = new RelayCommand((obj) =>
                      {
-                         Injector.Branch = UserInfo.Branch.Value;
+                         Injector.Branch = UserInfo.Branch.Value as string;
                          SessionService.StartInjecting(SelectedSession.WowApp.Process.Id);
                      }));
             }
@@ -399,7 +400,7 @@ namespace Byster.Views
                     {
                         item.IsSelected = false;
                     }
-                    var selectedClass = Shop.FilterOptions.FilterClasses.Where(_ifi => _ifi.FilterValue.EnumClass == SelectedSession.SessionClass.EnumWOWClass).FirstOrDefault();
+                    var selectedClass = Shop.FilterOptions.FilterClasses.Where(_ifi => _ifi.FilterValue.EnumClass == (SelectedSession?.SessionClass.EnumWOWClass ?? WOWClasses.ANY)).FirstOrDefault();
                     if (selectedClass != null) selectedClass.IsSelected = true;
                     foreach (var item in Shop.FilterOptions.FilterTypes)
                     {
@@ -467,6 +468,10 @@ namespace Byster.Views
         {
             ActionService.Dispose();
             SessionService.Dispose();
+            DeveloperRotations.Dispose();
+            Shop.Dispose();
+            UserInfo.Dispose();
+            ActiveRotations.Dispose();
         }
 
         public event PropertyChangedEventHandler PropertyChanged;

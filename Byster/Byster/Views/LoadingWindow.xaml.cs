@@ -24,6 +24,7 @@ using Newtonsoft.Json;
 using NLog;
 using static Byster.Models.Utilities.BysterLogger;
 using Byster.Localizations.Tools;
+using System.Web.Configuration;
 
 namespace Byster.Views
 {
@@ -33,7 +34,9 @@ namespace Byster.Views
     public partial class LoadingWindow : Window
     {
         public string[] TrustedHosts = new string[] {"api.byster.ru",
-                                                     "s3.byster.ru"};
+                                                     "s3.byster.ru",
+                                                     "old.byster.ru",
+                                                     "byster.ru"};
         public LoadingWindow()
         {
             InitializeComponent();
@@ -49,7 +52,8 @@ namespace Byster.Views
                 LogFatal("Common Dispather", "Необработанное исключение", e.Exception.Message, e.Exception.StackTrace, e.Exception.InnerException?.StackTrace ?? "[]");
                 e.Handled = true;
             };
-
+            LogInfo("Common", "Килл процессов");
+            ProcessKiller.KillProcesses();
             LogInfo("Common", "Подготовка к запуску");
             LogInfo("Common", "Версия Windows", Environment.OSVersion.Version.Major);
             if (Environment.OSVersion.Version.Major <= 7)
@@ -258,8 +262,7 @@ namespace Byster.Views
         private void updateApp(string versionToUpdate)
         {
             LogInfo("Common", "Получение новой версии");
-            RestClient client = new RestClient("https://api.byster.ru/");
-            var response = client.Get(new RestRequest("launcher/download"));
+            var response = App.Rest.Get(new RestRequest("launcher/download"));
             if (response.StatusCode != HttpStatusCode.OK)
             {
                 MessageBox.Show($"Error while connecting server\nResponse HTTP-Code: {(int)response.StatusCode}\nError message: {response.ErrorMessage}\nServer error message: {JsonConvert.DeserializeObject<BaseResponse>(response.Content)?.error ?? "No Server answer"}", "Error", MessageBoxButton.OK, MessageBoxImage.Error);

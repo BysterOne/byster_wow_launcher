@@ -10,15 +10,16 @@ using Byster.Models.BysterModels.Primitives;
 
 namespace Byster.Models.BysterModels
 {
-    public class SandboxStatus : Setting<int, int, SandboxType>
+    public class SandboxStatus : Setting<SandboxType>
     {
-        public SandboxStatus(string _name, SandboxType _enum, int _value = 0, int _registryValue = 0) : base(_name, _enum, _value, _registryValue) { }
+        public SandboxStatus(string _name, SandboxType _enum, object _value = null, object _registryValue = null)
+            : base(_name, _enum, _value, _registryValue) { }
     }
 
-    public class SandboxStatusAssociator : SettingAssociator<SandboxStatus, int, int, SandboxType>
+    public class SandboxStatusAssociator : SettingAssociator<SandboxStatus, SandboxType>
     {
         private static SandboxStatusAssociator instance;
-        public new static SandboxStatusAssociator GetAssociator()
+        public static SandboxStatusAssociator GetAssociator()
         {
             return instance ?? (instance = new SandboxStatusAssociator());
         }

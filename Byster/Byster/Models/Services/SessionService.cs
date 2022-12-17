@@ -14,6 +14,7 @@ using System.Windows.Threading;
 using RestSharp;
 using Byster.Views;
 using Byster.Localizations.Tools;
+using static Byster.Models.Utilities.BysterLogger;
 
 namespace Byster.Models.Services
 {
@@ -117,6 +118,7 @@ namespace Byster.Models.Services
 
         public void Dispose()
         {
+            LogInfo("Session Service", "Завершение работы сервиса...");
             searcher.Dispose();
             Injector.Close();
         }

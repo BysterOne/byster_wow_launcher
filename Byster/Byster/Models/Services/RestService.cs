@@ -203,7 +203,7 @@ namespace Byster.Models.Services
             return response.Data;
         }
 
-        public RestDeveloperRotation ExecuteAddRtationRequest(string name,
+        public RestDeveloperRotation ExecuteAddRotationRequest(string name,
                                             string description,
                                             int type,
                                             string klass,
@@ -240,7 +240,14 @@ namespace Byster.Models.Services
             return true;
         }
 
-        private void addConnectoinErrorAccident()
+        public async Task<bool> ExecuteAsyncClearCacheRequest()
+        {
+            var response = await client.ExecutePostAsync<BaseResponse>(new RestRequest("launcher/clear_cache"));
+            if (!checkHTTPStatusCodeToServerTrouble(response.StatusCode)) return false;
+            logSuccessOfOperation("Очистка кеша");
+            return true;
+        }
+        private void addConnectionErrorAccident()
         {
             if (++connectionErrorCounter >= 3 && !multipleConnectionErrorEventCalled)
             {
@@ -339,7 +346,7 @@ namespace Byster.Models.Services
             {
                 LastError = "Ошибка соединения с сервером";
                 LogError("Rest Service", "Сервер недоступен", statusCode.ToString());
-                addConnectoinErrorAccident();
+                addConnectionErrorAccident();
                 return false;
             }
             //resetConnectionErrorAccidentsCounter();

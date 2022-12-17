@@ -9,15 +9,15 @@ using Byster.Models.BysterModels.Primitives;
 
 namespace Byster.Models.BysterModels
 {
-    public class Branch : Setting<string, string, BranchType>
+    public class Branch : Setting<BranchType>
     {
         public Branch(string _name, BranchType _enum, string _value = null, string _registryValue = null) : base(_name, _enum, _value, _registryValue) { }
     }
 
-    public class BranchAssociator : SettingAssociator<Branch, string, string, BranchType>
+    public class BranchAssociator : SettingAssociator<Branch, BranchType>
     {
         private static BranchAssociator instance;
-        public static new BranchAssociator GetAssociator()
+        public static BranchAssociator GetAssociator()
         {
             return instance ?? (instance = new BranchAssociator());
         }

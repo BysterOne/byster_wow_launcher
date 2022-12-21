@@ -369,9 +369,6 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Resources\Images\logo.png" />
-  </ItemGroup>
-  <ItemGroup>
     <Resource Include="Resources\Images\close-button-image.png" />
   </ItemGroup>
   <ItemGroup>
@@ -396,7 +393,6 @@
     <Resource Include="Resources\Images\utility-icon-default.png" />
     <Resource Include="Resources\Images\Specializations\DEMONOLOGY.png" />
     <Resource Include="Resources\Images\settings-image.png" />
-    <Resource Include="Resources\Images\top-decoration-figure.png" />
     <Resource Include="Resources\Images\Specializations\ANY.png" />
     <Resource Include="Resources\Images\Specializations\ARMS.png" />
     <Resource Include="Resources\Images\Specializations\FURY.png" />
@@ -492,6 +488,18 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\eye-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\top-decoration-figure.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\top-decoration-toys.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\no-rotation-new-year.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\logo.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.6.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.6.0\build\Fody.targets')" />

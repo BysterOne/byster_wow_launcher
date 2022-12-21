@@ -35,7 +35,7 @@
                 <Button x:Name="closeButton" HorizontalAlignment="Right" Style="{StaticResource uibStyle}" Height="45" Width="45" Click="closeButton_Click">
                     <Image Source="../Resources/Images/close-button-image.png" Stretch="Uniform" Margin="12"/>
                 </Button>
-                <Image Source="../Resources/Images/logo.png" Stretch="None" Margin="0 0 0 5"/>
+                <Image Source="../Resources/Images/logo.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Height="90" Margin="0 0 0 5"/>
             </StackPanel>
             <StackPanel x:Name="authBlock" Margin="20, 0">
                 <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>

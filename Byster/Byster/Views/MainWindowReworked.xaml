@@ -43,10 +43,11 @@
         <Grid x:Name="topPanel" Grid.Row="0">
             <Button x:Name="titleButton" Style="{DynamicResource imageButtonStyle}" HorizontalAlignment="Left" Margin="5" Cursor="Hand"
                     Command="{Binding UnselectSessionCommand}">
-                <Image Source="/Resources/Images/logo.png"/>
+                <Image Source="/Resources/Images/logo.png" RenderOptions.BitmapScalingMode="HighQuality" Width="164" Stretch="Uniform"/>
             </Button>
 
-            <Image Source="/Resources/Images/top-decoration-figure.png" Width="720" VerticalAlignment="Top"/>
+            <Image Source="/Resources/Images/top-decoration-toys.png" RenderOptions.BitmapScalingMode="HighQuality" Stretch="Uniform" Height="65" HorizontalAlignment="Right" Margin="0, 0, 242, 0" VerticalAlignment="Top"/>
+            <Image Source="/Resources/Images/top-decoration-figure.png" Width="840" RenderOptions.BitmapScalingMode="HighQuality" VerticalAlignment="Top" Margin="0, -3, 0, 0"/>
 
             <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Top">
                 <Button Style="{DynamicResource uibStyle}" x:Name="minimizeBtn" Height="30" Click="minimizeBtn_Click">
@@ -101,7 +102,10 @@
                     <Grid>
                         <ListBox Style="{DynamicResource rotationsViewStyle}" x:Name="rotationsViewBox"
                              ItemsSource="{Binding Mode=TwoWay, Path=ActiveRotations.AllActiveRotations, UpdateSourceTrigger=PropertyChanged}"/>
-                        <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding LocalizationData.NoRotations}" HorizontalAlignment="Center" VerticalAlignment="Center" x:Name="noRotationNotificationTextBlock" Visibility="{Binding Path=ControlVisibilities[2]}"/>
+                        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center">
+                            <Image Source="/Resources/Images/no-rotation-new-year.png" Stretch="Uniform" RenderOptions.BitmapScalingMode="HighQuality" Height="240" Visibility="{Binding Path=ControlVisibilities[2]}" Margin="0,0,0,15"/>
+                            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding LocalizationData.NoRotations}" x:Name="noRotationNotificationTextBlock" Visibility="{Binding Path=ControlVisibilities[2]}"/>
+                        </StackPanel>
                     </Grid>
                 </Border>
             </Grid>

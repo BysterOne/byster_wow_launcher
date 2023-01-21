@@ -20,7 +20,7 @@ namespace Byster
     public partial class App : Application
     {
         public static string Sessionid;
-        private static string apiUrl = Convert.ToBoolean(RegistryEditor.GetEditor("Sandbox").RegistryValue) ? "https://api-test.byster.ru" : "https://api.byster.ru";
+        private static string apiUrl = Convert.ToBoolean(RegistryEditor.GetEditor("Sandbox").RegistryValue) ? "https://api-test.byster.one" : "https://api.byster.one";
         public static RestClient Rest = new RestClient(apiUrl);
         public App()
         {

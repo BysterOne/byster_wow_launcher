@@ -87,7 +87,7 @@
                 <ComboBox x:Name="loadTypeSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.LoadTypes}" DisplayMemberPath="Name" SelectedItem="{Binding MainViewModel.UserInfo.LoadType, Mode=TwoWay}"/>
                 <TextBlock x:Name="sandboxStatusText" Text="{Binding MainViewModel.LocalizationData.Sandbox}" Style="{DynamicResource infoTextBlockStyle}" Margin="9, 0"/>
                 <ComboBox x:Name="sandBoxStatusSelector" Style="{DynamicResource combobStyle}" Margin="9, 1, 9, 8" ItemsSource="{Binding Path=MainViewModel.UserInfo.SandboxStatuses}" DisplayMemberPath="Name" SelectedItem="{Binding MainViewModel.UserInfo.SandboxStatus, Mode=TwoWay}"/>
-                <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="admin.byster.ru" Command="{Binding OpenAccountPageCommand}"/>
+                <Button x:Name="myAccountPageOpener" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Content="admin.byster.one" Command="{Binding OpenAccountPageCommand}"/>
                 <Button x:Name="rotationSettingsBtn" Style="{DynamicResource transparentButtonStyle}" Margin="9, 8" Command="{Binding OpenRotationSettingsWindow}">
                     <TextBlock Text="{Binding MainViewModel.LocalizationData.MenuOfSelectingRotations}"/>
                 </Button>

@@ -21,7 +21,7 @@ namespace Byster.Views
     /// </summary>
     public partial class RedirectToBrowserWindow : Window
     {
-        private string navUri = "https://s3.byster.ru/public/directx.7z";
+        private string navUri = "https://s3.byster.one/public/directx.7z";
         public RedirectToBrowserWindow(string title, string infoText, string uri)
         {
             InitializeComponent();

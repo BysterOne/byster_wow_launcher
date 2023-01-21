@@ -33,10 +33,10 @@ namespace Byster.Views
     /// </summary>
     public partial class LoadingWindow : Window
     {
-        public string[] TrustedHosts = new string[] {"api.byster.ru",
-                                                     "s3.byster.ru",
-                                                     "old.byster.ru",
-                                                     "byster.ru"};
+        public string[] TrustedHosts = new string[] {"api.byster.one",
+                                                     "s3.byster.one",
+                                                     "old.byster.one",
+                                                     "byster.one"};
         public LoadingWindow()
         {
             InitializeComponent();
@@ -78,7 +78,7 @@ namespace Byster.Views
                     }
                     return false;
                 };
-                LogInfo("Сеть", "Отключена проверка сертификатов для хостов: api.byster.ru, s3.byster.ru");
+                LogInfo("Сеть", "Отключена проверка сертификатов для хостов: api.byster.one, s3.byster.one");
             }
             LogInfo("Common", "Подготовка завершена, запуск...");
         }

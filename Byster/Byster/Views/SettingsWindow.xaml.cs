@@ -189,7 +189,7 @@ namespace Byster.Views
             {
                 return openAccountPageCommand ?? (openAccountPageCommand = new RelayCommand(() =>
                 {
-                    Process.Start("https://admin.byster.ru/shop/rotation/");
+                    Process.Start("https://admin.byster.one/shop/rotation/");
                 }));
             }
         }

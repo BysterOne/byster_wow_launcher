@@ -312,7 +312,8 @@ namespace Byster.Models.Services
             new DevRotationType(1, "PvP"),
             new DevRotationType(2, "Utility"),
             new DevRotationType(3, "Common"),
-            new DevRotationType(4, "Core Module"),
+            new DevRotationType(4, "Private Common"),
+            new DevRotationType(5, "Core Module"),
             new DevRotationType(-3, "Core Lua"),
         };
 

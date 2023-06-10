@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Byster")]
-[assembly: AssemblyCopyright("Byster & Alexus16 Copyright ©  2021-2022")]
+[assembly: AssemblyCopyright("Byster & Alexus16 Copyright ©  2021-2023")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 

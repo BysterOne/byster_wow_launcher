@@ -26,13 +26,15 @@ namespace Byster.Models.BysterModels
             AllInstances = new List<Branch>()
             {
                 new Branch(Localizator.GetLocalizationResourceByKey("TesterBranch"), BranchType.TEST, "test", "test"),
-                new Branch(Localizator.GetLocalizationResourceByKey("DeveloperBranch"), BranchType.TEST, "dev", "dev"),
+                new Branch(Localizator.GetLocalizationResourceByKey("DeveloperBranch"), BranchType.DEVELOPER, "dev", "dev"),
                 new Branch(Localizator.GetLocalizationResourceByKey("MasterBranch"), BranchType.TEST, "master", "master"),
+                new Branch(Localizator.GetLocalizationResourceByKey("ReworkBranch"), BranchType.DEVELOPER_REWORK, "dev-rework", "dev-rework"),
             };
         }
     }
     public enum BranchType
     {
+        DEVELOPER_REWORK = 3,
         DEVELOPER = 3,
         TEST =      2,
         MASTER =    1,

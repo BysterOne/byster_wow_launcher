@@ -193,6 +193,7 @@
     <Compile Include="Models\RestModels\RestCoupon.cs" />
     <Compile Include="Models\RestModels\RestDeveloperRotation.cs" />
     <Compile Include="Models\RestModels\RestEncryption.cs" />
+    <Compile Include="Models\RestModels\RestCheckServerStatus.cs" />
     <Compile Include="Models\RestModels\RestLibRequest.cs" />
     <Compile Include="Models\RestModels\RestPaymentSystem.cs" />
     <Compile Include="Models\RestModels\RestProduct.cs" />

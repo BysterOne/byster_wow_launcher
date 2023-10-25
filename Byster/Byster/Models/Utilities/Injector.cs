@@ -14,6 +14,9 @@ using Byster.Models.RestModels;
 using System.Windows;
 using static Byster.Models.Utilities.BysterLogger;
 using Microsoft.Win32;
+using Byster.Models.ViewModels;
+using Byster.Localizations.Tools;
+using Byster.Views;
 
 namespace Byster.Models.Utilities
 {
@@ -134,9 +137,9 @@ namespace Byster.Models.Utilities
             return true;
         }
 
-        static private Queue<InjectInfo> injectQueue;
+        static private Queue<SessionViewModel> injectQueue;
 
-        public delegate void InjectQueueChangedDelegate(InjectInfo changedElement, InjectorStatusCode injectorStatusCode);
+        public delegate void InjectQueueChangedDelegate(SessionViewModel changedElement, InjectorStatusCode injectorStatusCode);
 
         public static event InjectQueueChangedDelegate InjectQueueUpdated;
 
@@ -154,7 +157,7 @@ namespace Byster.Models.Utilities
                 string newFolderName = HashCalc.GetRandomString(random.Next(30) + 15);
                 Registry.SetValue("HKEY_CURRENT_USER\\Software\\Byster", _valueName, (coreFolderName = newFolderName));
             }
-            injectQueue = new Queue<InjectInfo>();
+            injectQueue = new Queue<SessionViewModel>();
             injectionThread = new Thread(new ThreadStart(ThreadMethod));
             injectionThread.Start();
             Branch = "master";
@@ -176,53 +179,57 @@ namespace Byster.Models.Utilities
             injectionThread.Abort();
         }
 
-        private static void baseInjectQueueChangedHandler(InjectInfo changedElement, InjectorStatusCode injectorStatusCode)
+        private static void baseInjectQueueChangedHandler(SessionViewModel changedElement, InjectorStatusCode injectorStatusCode)
         {
+            var inject_info = changedElement.InjectInfo;
             switch (injectorStatusCode)
             {
                 default:
                 case InjectorStatusCode.INJECTED_OK:
                     LogInfo("Injector", "Инжект завершён");
-                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTED_OK;
+                    inject_info.InjectInfoStatusCode = InjectInfoStatusCode.INJECTED_OK;
                     Task taskToDelete = new Task(() =>
                     {
                         Thread.Sleep(timerInterval * 1000);
-                        changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
+                        inject_info.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
                     });
                     taskToDelete.Start();
                     break;
                 case InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB:
                 case InjectorStatusCode.ERROR_WHILE_INJECTING:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_FOUND:
+                case InjectorStatusCode.ERROR_SERVER_NOT_FOUND:
+                case InjectorStatusCode.ERROR_SERVER_NOT_ALLOWED:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED:
-                    LogWarn("Injector", "Ошибка инжекта", "Статус-код:", injectorStatusCode.ToString(), $"ID Инжекта: {changedElement.InjectInfoId}");
-                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
+                    LogWarn("Injector", "Ошибка инжекта", "Статус-код:", injectorStatusCode.ToString(), $"ID Инжекта: {inject_info.InjectInfoId}");
+                    inject_info.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
                     break;
                 case InjectorStatusCode.ADDED_OK:
-                    LogInfo("Injector", "Добавлен инжект в очередь", $"ID Инжекта: {changedElement.InjectInfoId}");
-                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.ENEQUEUED;
+                    LogInfo("Injector", "Добавлен инжект в очередь", $"ID Инжекта: {inject_info.InjectInfoId}");
+                    inject_info.InjectInfoStatusCode = InjectInfoStatusCode.ENEQUEUED;
                     break;
                 case InjectorStatusCode.LIBRARY_DOWNLOADING_STARTED:
-                    LogInfo("Injector", "Скачивание библиотеки начато", $"ID Инжекта: {changedElement.InjectInfoId}");
-                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.DOWNLOADING;
+                    LogInfo("Injector", "Скачивание библиотеки начато", $"ID Инжекта: {inject_info.InjectInfoId}");
+                    inject_info.InjectInfoStatusCode = InjectInfoStatusCode.DOWNLOADING;
                     break;
                 case InjectorStatusCode.INJECTION_STARTED:
-                    LogInfo("Injector", "Запуск инжекта", $"ID Инжекта: {changedElement.InjectInfoId}");
-                    changedElement.InjectInfoStatusCode = InjectInfoStatusCode.INJECTING;
+                    LogInfo("Injector", "Запуск инжекта", $"ID Инжекта: {inject_info.InjectInfoId}");
+                    inject_info.InjectInfoStatusCode = InjectInfoStatusCode.INJECTING;
                     break;
             }
         }
 
-        static public void AddProcessToInject(InjectInfo injectingProcessInfo)
+        static public void AddProcessToInject(SessionViewModel session)
         {
+            var injectingProcessInfo = session.InjectInfo;
             if (injectingProcessInfo.InjectInfoStatusCode != InjectInfoStatusCode.INACTIVE) return;
             if (injectingProcessInfo.ProcessId == 0)
             {
-                InjectQueueUpdated.Invoke(injectingProcessInfo, InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED);
+                InjectQueueUpdated.Invoke(session, InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED);
                 return;
             }
-            injectQueue.Enqueue(injectingProcessInfo);
-            InjectQueueUpdated?.Invoke(injectingProcessInfo, InjectorStatusCode.ADDED_OK);
+            injectQueue.Enqueue(session);
+            InjectQueueUpdated?.Invoke(session, InjectorStatusCode.ADDED_OK);
         }
 
         static public void ThreadMethod()
@@ -231,16 +238,43 @@ namespace Byster.Models.Utilities
             {
                 if (injectQueue.Count > 0)
                 {
-                    InjectInfo injectingProcess = injectQueue.Dequeue();
+                    SessionViewModel session = injectQueue.Dequeue();
+                    InjectInfo injectingProcess = session.InjectInfo;
+                    
 
-                    InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.LIBRARY_DOWNLOADING_STARTED);
+                    if (string.IsNullOrEmpty(session.WowApp.RealmName) || string.IsNullOrEmpty(session.WowApp.RealmServer))
+                    {
+                        MessageBox.Show(Localizator.GetLocalizationResourceByKey("Сначала зайдите на сервер"), Localizator.GetLocalizationResourceByKey("Error"));
+                        InjectQueueUpdated?.Invoke(session, InjectorStatusCode.ERROR_SERVER_NOT_FOUND);
+                        continue;
+                    }
+
+                    var status_response = Rest.Post<RestCheckServerStatusResponse>(new RestRequest("launcher/check_server_status").AddJsonBody(new RestCheckServerStatusRequest()
+                    {
+                        realm_list = session.WowApp.RealmServer,
+                        realm_name = session.WowApp.RealmName,
+                    }));
+                    if (status_response.StatusCode != HttpStatusCode.OK)
+                    {
+                        MessageBox.Show(Localizator.GetLocalizationResourceByKey("Сервер недоступен"), Localizator.GetLocalizationResourceByKey("Error"));
+                        InjectQueueUpdated?.Invoke(session, InjectorStatusCode.ERROR_SERVER_NOT_ALLOWED);
+                        continue;
+                    }
+                    if (!status_response.Data.is_active)
+                    {
+                        MessageBox.Show(Localizator.GetLocalizationResourceByKey("Игровой сервер заможрожен"), Localizator.GetLocalizationResourceByKey("Error"));
+                        InjectQueueUpdated?.Invoke(session, InjectorStatusCode.ERROR_SERVER_NOT_ALLOWED);
+                        continue;
+                    }
+
+                    InjectQueueUpdated?.Invoke(session, InjectorStatusCode.ERROR_WHILE_INJECTING);
                     var response = Rest.Post(new RestRequest("launcher/get_lib").AddJsonBody(new RestLibRequest()
                     {
                         branch = Branch,
                     }));
                     if (response.StatusCode != HttpStatusCode.OK)
                     {
-                        InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB);
+                        InjectQueueUpdated?.Invoke(session, InjectorStatusCode.ERROR_WHILE_DOWNLOADING_LIB);
                         continue;
                     }
                     string dllPath = "";
@@ -250,17 +284,17 @@ namespace Byster.Models.Utilities
                     }
                     while (File.Exists(dllPath));
                     File.WriteAllBytes(dllPath, response.RawBytes);
-                    InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.INJECTION_STARTED);
+                    InjectQueueUpdated?.Invoke(session, InjectorStatusCode.INJECTION_STARTED);
                     PreInjection?.Invoke();
                     bool injectionResult = Inject(injectingProcess.ProcessId, dllPath);
                     PostInjection?.Invoke();
                     if (injectionResult)
                     {
-                        InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.INJECTED_OK);
+                        InjectQueueUpdated?.Invoke(session, InjectorStatusCode.INJECTED_OK);
                     }
                     else
                     {
-                        InjectQueueUpdated?.Invoke(injectingProcess, InjectorStatusCode.ERROR_WHILE_INJECTING);
+                        InjectQueueUpdated?.Invoke(session, InjectorStatusCode.ERROR_WHILE_INJECTING);
                     }
                 }
                 Thread.Sleep(100);
@@ -317,6 +351,8 @@ namespace Byster.Models.Utilities
 
         LIBRARY_DOWNLOADING_STARTED = 6,
         INJECTION_STARTED = 7,
+        ERROR_SERVER_NOT_FOUND = 8,
+        ERROR_SERVER_NOT_ALLOWED = 9
     }
 
     public enum InjectInfoStatusCode

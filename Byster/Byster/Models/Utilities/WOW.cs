@@ -169,7 +169,11 @@ namespace Byster.Models.Utilities
 
                 w.Version = _(ref updated, w.Version, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xCAD851, 30)));
                 w.RealmName = _(ref updated, w.RealmName, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79B9E, 30)));
-                w.RealmServer = _(ref updated, w.RealmServer, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0x879B9E, 30)));
+
+                var server_ip_ptr1 = BitConverter.ToInt32(w.Memory.ReadVirtualMemory((IntPtr)0x0C79D00, 4), 0);
+                var server_ip_ptr2 = BitConverter.ToInt32(w.Memory.ReadVirtualMemory((IntPtr)server_ip_ptr1 + 0x28, 4), 0);
+                w.RealmServer = _(ref updated, w.RealmServer, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)server_ip_ptr2, 30)));
+
                 if (w.WorldLoaded)
                 {
                     w.Name = _(ref updated, w.Name, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79D18, 30)));

@@ -168,15 +168,15 @@ namespace Byster.Models.Utilities
                 w.WorldLoaded = _(ref updated, w.WorldLoaded, w.Memory.ReadVirtualMemory((IntPtr)0xBEBA40, 1)[0] == 1);
 
                 w.Version = _(ref updated, w.Version, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xCAD851, 30)));
-                w.RealmName = _(ref updated, w.RealmName, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79B9E, 30)));
+                w.RealmName = _(ref updated, w.RealmName, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79B9E, 100)));
 
-                var server_ip_ptr1 = BitConverter.ToInt32(w.Memory.ReadVirtualMemory((IntPtr)0x0C79D00, 4), 0);
-                var server_ip_ptr2 = BitConverter.ToInt32(w.Memory.ReadVirtualMemory((IntPtr)server_ip_ptr1 + 0x28, 4), 0);
-                w.RealmServer = _(ref updated, w.RealmServer, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)server_ip_ptr2, 30)));
+                var server_ip_ptr1 = BitConverter.ToUInt32(w.Memory.ReadVirtualMemory((IntPtr)0x0C79D00, 4), 0);
+                var server_ip_ptr2 = BitConverter.ToUInt32(w.Memory.ReadVirtualMemory((IntPtr)server_ip_ptr1 + 0x28, 4), 0);
+                w.RealmServer = _(ref updated, w.RealmServer, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)server_ip_ptr2, 100)));
 
                 if (w.WorldLoaded)
                 {
-                    w.Name = _(ref updated, w.Name, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79D18, 30)));
+                    w.Name = _(ref updated, w.Name, StringFromBytes(w.Memory.ReadVirtualMemory((IntPtr)0xC79D18, 100)));
                     w.Class = _(ref updated, w.Class, (Classes)w.Memory.ReadVirtualMemory<byte>((IntPtr)0xC79E89));
                 }
                 else

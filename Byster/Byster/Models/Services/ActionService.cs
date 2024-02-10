@@ -31,7 +31,7 @@ namespace Byster.Models.Services
             if (tickCounter++ == tickLimiter)
             {
                 tickCounter = 0;
-                tickLimiter = rnd.Next(7, 16);
+                tickLimiter = rnd.Next(15, 25);
                 bool isUpdateRequired = RestService.GetActionState(SessionId);
                 if (isUpdateRequired)
                 {

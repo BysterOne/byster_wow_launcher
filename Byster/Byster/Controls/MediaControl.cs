@@ -163,7 +163,6 @@ namespace Byster.Models.ViewModels
             MediaPresenterVisibility = Visibility.Visible;
             if (videoExtens.Contains(ext))
             {
-                url = url.Replace("https", "http");
                 VideoPlayer.Visibility = Visibility.Visible;
                 ImagePlayer.Visibility = Visibility.Collapsed;
                 ControlsPanel.Visibility = Visibility.Visible;

@@ -11,6 +11,7 @@ using System.Diagnostics;
 using System.Threading;
 using Byster.Models.Utilities;
 using Byster.Models.BysterModels;
+using System.Reflection;
 
 namespace Byster
 {
@@ -24,6 +25,7 @@ namespace Byster
         public static RestClient Rest = new RestClient(apiUrl);
         public App()
         {
+            App.Rest.UserAgent = $"BysterLauncher/{Assembly.GetExecutingAssembly().GetName().Version.ToString()}";
         }
     }
 }

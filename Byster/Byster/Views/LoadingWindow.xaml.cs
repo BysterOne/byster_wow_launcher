@@ -55,30 +55,28 @@ namespace Byster.Views
             ProcessKiller.KillProcesses();
             LogInfo("Common", "Подготовка к запуску");
             LogInfo("Common", "Версия Windows", Environment.OSVersion.Version.Major);
-            // if (Environment.OSVersion.Version.Major <= 7)
-            // {
-            //     LogInfo("Common", "Применение настроек для версий Windows <7");
-            //     ServicePointManager.Expect100Continue = true;
-            //     ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-            //                                            | SecurityProtocolType.Tls11
-            //                                            | SecurityProtocolType.Tls12
-            //                                            | SecurityProtocolType.Ssl3;
-            //     LogInfo("Сеть", "Разрешены сертификаты типов: TLS, TLS1.1, TLS1.2, SSL3");
-            //     ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
-            //     {
-            //         if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None)
-            //         {
-            //             return true;
-            //         }
-            //         var request = sender as HttpWebRequest;
-            //         if (request != null)
-            //         {
-            //             return TrustedHosts.Contains(request.RequestUri.Host);
-            //         }
-            //         return false;
-            //     };
-            //     LogInfo("Сеть", "Отключена проверка сертификатов для хостов: api.byster.one, s3.byster.one");
-            // }
+            if (Environment.OSVersion.Version.Major <= 7)
+            {
+                LogInfo("Common", "Применение настроек для версий Windows <7");
+                ServicePointManager.Expect100Continue = true;
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
+                                                       | SecurityProtocolType.Tls11;
+                LogInfo("Сеть", "Разрешены сертификаты типов: TLS, TLS1.1");
+                ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
+                {
+                    if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None)
+                    {
+                        return true;
+                    }
+                    var request = sender as HttpWebRequest;
+                    if (request != null)
+                    {
+                        return TrustedHosts.Contains(request.RequestUri.Host);
+                    }
+                    return false;
+                };
+                LogInfo("Сеть", "Отключена проверка сертификатов для хостов: api.byster.one, s3.byster.one");
+            }
             LogInfo("Common", "Подготовка завершена, запуск...");
         }
 

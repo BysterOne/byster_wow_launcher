@@ -4,7 +4,7 @@ variables:
   VSWHERE_PATH: '%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe'
   DLL_NAME: Byster/Byster/bin/Release/Byster.exe
   UPLOAD_URL: 'https://service.byster.one/launcher/push_launcher_ci'
-  UPLOAD_URL_DEV: 'https://api-test.byster.one/launcher/push_launcher_ci'
+  UPLOAD_URL_DEV: 'https://service.staging.byster.one/launcher/push_launcher_ci'
   ASSEMBLY_INFO: 'Byster/Byster/Properties/AssemblyInfo.cs'
 
 .before_msbuild: &enter_vsdevshell

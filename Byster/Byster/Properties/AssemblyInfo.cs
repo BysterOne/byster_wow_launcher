@@ -12,7 +12,7 @@ using System.Windows;
 [assembly: AssemblyConfiguration("")]
 [assembly: AssemblyCompany("")]
 [assembly: AssemblyProduct("Byster")]
-[assembly: AssemblyCopyright("Byster & Alexus16 Copyright ©  2021-2023")]
+[assembly: AssemblyCopyright("Byster & Alexus16 Copyright ©  2021-2024")]
 [assembly: AssemblyTrademark("")]
 [assembly: AssemblyCulture("")]
 
@@ -51,5 +51,5 @@ using System.Windows;
 // Можно задать все значения или принять номера сборки и редакции по умолчанию 
 // используя "*", как показано ниже:
 // [assembly: AssemblyVersion("1.0.*")]
-[assembly: AssemblyVersion("4.0.2.1")]
-[assembly: AssemblyFileVersion("4.0.2.1")]
+[assembly: AssemblyVersion("4.0.3.0")]
+[assembly: AssemblyFileVersion("4.0.3.0")]

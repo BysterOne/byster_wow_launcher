@@ -128,7 +128,7 @@
     "InjectDownloadingCore": "Downloading core...",
     "InjectActive": "Injection...",
     "InjectOK": "Complete, go to the game window",
-    "Sandbox": "Sandbox",
+    "Sandbox": "Staging",
     "AllClasses": "All Classes",
     "ClearCache": "Clear cache",
     "ClearCacheText": "This button will reset your rotations cache on Byster servers. You may use this if you encounter any unexpected LUA Errors. If the problem persists, please contact our support, we will assist you.",

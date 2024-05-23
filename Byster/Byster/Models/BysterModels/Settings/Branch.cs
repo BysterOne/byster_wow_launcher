@@ -29,7 +29,7 @@ namespace Byster.Models.BysterModels
                 new Branch(Localizator.GetLocalizationResourceByKey("DeveloperBranch"), BranchType.DEVELOPER, "dev", "dev"),
                 new Branch(Localizator.GetLocalizationResourceByKey("MasterBranch"), BranchType.TEST, "master", "master"),
                 new Branch(Localizator.GetLocalizationResourceByKey("ReworkBranch"), BranchType.DEVELOPER_REWORK, "dev-rework", "dev-rework"),
-                new Branch(Localizator.GetLocalizationResourceByKey("ReworkBranch"), BranchType.DEVELOPER_REWORK, "new-thread", "new-thread"),
+                new Branch(Localizator.GetLocalizationResourceByKey("NewThreadBranch"), BranchType.DEVELOPER_REWORK, "new-thread", "new-thread"),
             };
         }
     }

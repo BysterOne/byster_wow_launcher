@@ -59,9 +59,8 @@ namespace Byster.Views
             {
                 LogInfo("Common", "Применение настроек для версий Windows <7");
                 ServicePointManager.Expect100Continue = true;
-                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls
-                                                       | SecurityProtocolType.Tls11;
-                LogInfo("Сеть", "Разрешены сертификаты типов: TLS, TLS1.1");
+                ServicePointManager.SecurityProtocol = SecurityProtocolType.Tls12;
+                LogInfo("Сеть", "Разрешены сертификаты типов: TLS1.2");
                 ServicePointManager.ServerCertificateValidationCallback += (sender, cert, chain, sslPolicyErrors) =>
                 {
                     if (sslPolicyErrors == System.Net.Security.SslPolicyErrors.None)

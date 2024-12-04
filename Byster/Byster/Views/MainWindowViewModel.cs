@@ -348,7 +348,7 @@ namespace Byster.Views
                 return startCommand ?? (startCommand = new RelayCommand((obj) =>
                      {
                          Injector.Branch = UserInfo.Branch.Value as string;
-                         SessionService.StartInjecting(SelectedSession.WowApp.Process.Id);
+                         //SessionService.StartInjecting(SelectedSession.WowApp.Process.Id);
                      }));
             }
         }
@@ -441,9 +441,9 @@ namespace Byster.Views
             Task.Run(() =>
             {
                 StatusText = Localizator.GetLocalizationResourceByKey("UpdatingData");
-                LogInfo("Common", "Приостановка работы Background Image Downloader...");
+                LogInfo("Common", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ Background Image Downloader...");
                 BackgroundImageDownloader.Suspend();
-                LogInfo("Common", "Обновление данных...");
+                LogInfo("Common", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ...");
                 App.Current.Dispatcher.Invoke(() =>
                 {
                     UpdateDataStarted?.Invoke();
@@ -456,9 +456,9 @@ namespace Byster.Views
                 {
                     UpdateDataCompleted?.Invoke();
                 });
-                LogInfo("Common", "Обновление данных завершено");
+                LogInfo("Common", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ");
                 BackgroundImageDownloader.Resume();
-                LogInfo("Common", "Возобновление работы Background Image Downloader");
+                LogInfo("Common", "пїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅпїЅ пїЅпїЅпїЅпїЅпїЅпїЅ Background Image Downloader");
                 isUpdating = false;
             });
 

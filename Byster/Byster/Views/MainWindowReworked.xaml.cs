@@ -12,7 +12,6 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 using Byster.Models.BysterModels;
 using Byster.Models.RestModels;
 using Byster.Models.Utilities;
@@ -26,6 +25,8 @@ using Byster.Models.ViewModels;
 using System.Diagnostics;
 using System.Reflection;
 using static Byster.Models.Utilities.BysterLogger;
+using System.IO;
+using Byster.Views.ModelsTemp;
 
 namespace Byster.Views
 {
@@ -135,6 +136,8 @@ namespace Byster.Views
             ProcessKiller.StopKiller();
         }
 
+        private ClientModel SelectedClient { get; set; }
+
         private void Window_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key == Key.F5)
@@ -142,6 +145,60 @@ namespace Byster.Views
                 ViewModel.UpdateData();
             }
         }
+
+        private async void startBtn_Click(object sender, RoutedEventArgs e)
+        {
+            startBtn.IsEnabled = false;
+
+            try
+            {
+                startBtn.Content = $"{ViewModel.LocalizationData.Downloading}...";
+                await Task.Run(() => Thread.Sleep(500));
+                var response = App.Rest.Post(new RestRequest("launcher/get_lib").AddJsonBody(new RestLibRequest()
+                {
+                    branch = ViewModel.UserInfo.Branch.Value as string
+                }));                
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    MessageBox.Show("Не удалось скачать файл", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                startBtn.Content = $"{ViewModel.LocalizationData.Installing}...";
+                await Task.Run(() => Thread.Sleep(500));
+                string exePath = "";
+                do
+                {
+                    exePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{HashCalc.GetRandomString(25)}.exe");
+                }
+                while (File.Exists(exePath));
+                File.WriteAllBytes(exePath, response.RawBytes);
+
+                startBtn.Content = $"{ViewModel.LocalizationData.Starting}...";
+                await Task.Run(() => Thread.Sleep(500));
+                try 
+                { 
+                    Process.Start(new ProcessStartInfo { FileName = exePath, UseShellExecute = true });
+                    await Task.Run(() => Thread.Sleep(15000));
+                }
+                catch (Exception ex)
+                {
+                    LogError("RunDownloadedExe", ex.Message);
+                }
+            }
+            finally 
+            { 
+                startBtn.IsEnabled = true;
+                startBtn.Content = ViewModel.LocalizationData.Start;
+            }
+        }
+
+        private void clientsList_OnClientSelected(object sender, ModelsTemp.ClientModel e)
+        {
+            SelectedClient = e;
+            ViewModel.ControlVisibilities[0] = Visibility.Visible;
+            sessionExistingChecker.Visibility = Visibility.Visible;
+        }
+
     }
 
     public class FromInjectInfoStatusCodeToVisibility : IValueConverter

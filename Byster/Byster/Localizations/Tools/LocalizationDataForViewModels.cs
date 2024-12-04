@@ -15,6 +15,9 @@ namespace Byster.Localizations.Tools
         public LocalizationResource AllAvailableRotations { get; set; }
         public LocalizationResource LoginToCharacter { get; set; }
         public LocalizationResource Start { get; set; }
+        public LocalizationResource Downloading { get; set; }
+        public LocalizationResource Installing { get; set; }
+        public LocalizationResource Starting { get; set; }
         public LocalizationResource WaitLoadingEnd { get; set; }
         public LocalizationResource Classes { get; set; }
         public LocalizationResource Types { get; set; }
@@ -69,6 +72,11 @@ namespace Byster.Localizations.Tools
             AllAvailableRotations = "AllAvailableRotations";
             LoginToCharacter = "LoginToCharacter";
             Start = "Start";
+
+            Downloading = "Downloading";
+            Installing = "Installing";
+            Starting = "Starting";
+
             WaitLoadingEnd = "WaitLoadingEnd";
             Classes = "Classes";
             Types = "Types";

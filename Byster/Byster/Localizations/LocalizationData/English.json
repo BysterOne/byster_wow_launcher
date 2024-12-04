@@ -8,6 +8,12 @@
     "AllAvailableRotations": "All available rotations are listed above",
     "LoginToCharacter": "Log onto character",
     "Start": "Launch",
+
+    "Downloading": "Downloading",
+    "Installing": "Installing",
+    "Launching": "Launching",
+    "Starting": "Starting",
+
     "WaitLoadingEnd": "Please wait until the injection is complete",
     "Classes": "Classes",
     "Types": "Types",

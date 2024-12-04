@@ -9,7 +9,7 @@
     <OutputType>WinExe</OutputType>
     <RootNamespace>Byster</RootNamespace>
     <AssemblyName>Byster</AssemblyName>
-    <TargetFrameworkVersion>v4.8</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
@@ -172,6 +172,7 @@
     <Compile Include="Models\BysterModels\RegistrySettings\RegistrySettings.cs" />
     <Compile Include="Models\BysterModels\ProductsAndRotations\Cart.cs" />
     <Compile Include="Models\BysterModels\DeveloperRotation.cs" />
+    <Compile Include="Models\BysterModels\Settings\Global.cs" />
     <Compile Include="Models\BysterModels\Settings\LoadType.cs" />
     <Compile Include="Models\BysterModels\PaymentSystem.cs" />
     <Compile Include="Models\BysterModels\ProductsAndRotations\Rotation.cs" />
@@ -222,6 +223,7 @@
     <Compile Include="Models\Utilities\Behaviors.cs" />
     <Compile Include="Models\Utilities\WOW.cs" />
     <Compile Include="Controls\MediaControl.cs" />
+    <Compile Include="Models\ViewModels\ClientImageSourceConverter.cs" />
     <Compile Include="Models\ViewModels\ShopProductInfoViewModel.cs" />
     <Compile Include="Models\ViewModels\RelayCommand.cs" />
     <Compile Include="Models\ViewModels\RotationViewModel.cs" />
@@ -229,11 +231,20 @@
     <Compile Include="Views\ActivateCouponWindow.xaml.cs">
       <DependentUpon>ActivateCouponWindow.xaml</DependentUpon>
     </Compile>
+    <Compile Include="Views\AddNewClient.xaml.cs">
+      <DependentUpon>AddNewClient.xaml</DependentUpon>
+    </Compile>
     <Compile Include="Views\AddRotationWindow.xaml.cs">
       <DependentUpon>AddRotationWindow.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\ChangePasswordWindow.xaml.cs">
       <DependentUpon>ChangePasswordWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ClientsList.xaml.cs">
+      <DependentUpon>ClientsList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ClientsListItem.xaml.cs">
+      <DependentUpon>ClientsListItem.xaml</DependentUpon>
     </Compile>
     <Compile Include="Views\DialogWindow.xaml.cs">
       <DependentUpon>DialogWindow.xaml</DependentUpon>
@@ -273,11 +284,23 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
+    <Page Include="Views\AddNewClient.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="Views\AddRotationWindow.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="Views\ChangePasswordWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ClientsList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ClientsListItem.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -493,6 +516,15 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Resources\Images\eye-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\remove-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\ClassesWOW\no-client-image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\add-icon.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="..\packages\Fody.6.6.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.6.0\build\Fody.targets')" />

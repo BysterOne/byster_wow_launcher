@@ -29,7 +29,7 @@ namespace Byster.Models.Utilities
         {
             get => Path.Combine(Path.GetTempPath(), coreFolderName);
         }
-        private static string coreFolderName;
+        private static string coreFolderName { get; set; }
         public static string Branch { get; set; } = "master";
         public static RestClient Rest { get; set; }
 
@@ -186,7 +186,7 @@ namespace Byster.Models.Utilities
             {
                 default:
                 case InjectorStatusCode.INJECTED_OK:
-                    LogInfo("Injector", "Инжект завершён");
+                    LogInfo("Injector", "Скачивание и запуск завершён");
                     inject_info.InjectInfoStatusCode = InjectInfoStatusCode.INJECTED_OK;
                     Task taskToDelete = new Task(() =>
                     {
@@ -201,19 +201,19 @@ namespace Byster.Models.Utilities
                 case InjectorStatusCode.ERROR_SERVER_NOT_FOUND:
                 case InjectorStatusCode.ERROR_SERVER_NOT_ALLOWED:
                 case InjectorStatusCode.ERROR_PROCESS_NOT_DECLARED:
-                    LogWarn("Injector", "Ошибка инжекта", "Статус-код:", injectorStatusCode.ToString(), $"ID Инжекта: {inject_info.InjectInfoId}");
+                    LogWarn("Injector", "Ошибка запуска", "Статус-код:", injectorStatusCode.ToString());
                     inject_info.InjectInfoStatusCode = InjectInfoStatusCode.INACTIVE;
                     break;
                 case InjectorStatusCode.ADDED_OK:
-                    LogInfo("Injector", "Добавлен инжект в очередь", $"ID Инжекта: {inject_info.InjectInfoId}");
+                    LogInfo("Injector", "Добавлен запуск в очередь");
                     inject_info.InjectInfoStatusCode = InjectInfoStatusCode.ENEQUEUED;
                     break;
                 case InjectorStatusCode.LIBRARY_DOWNLOADING_STARTED:
-                    LogInfo("Injector", "Скачивание библиотеки начато", $"ID Инжекта: {inject_info.InjectInfoId}");
+                    LogInfo("Injector", "Скачивание библиотеки начато");
                     inject_info.InjectInfoStatusCode = InjectInfoStatusCode.DOWNLOADING;
                     break;
                 case InjectorStatusCode.INJECTION_STARTED:
-                    LogInfo("Injector", "Запуск инжекта", $"ID Инжекта: {inject_info.InjectInfoId}");
+                    LogInfo("Injector", "Запуск инжекта");
                     inject_info.InjectInfoStatusCode = InjectInfoStatusCode.INJECTING;
                     break;
             }

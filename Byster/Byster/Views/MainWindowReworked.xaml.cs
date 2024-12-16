@@ -177,7 +177,12 @@ namespace Byster.Views
                 await Task.Run(() => Thread.Sleep(500));
                 try 
                 { 
-                    Process.Start(new ProcessStartInfo { FileName = exePath, UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo 
+                    { 
+                        FileName = exePath, 
+                        Arguments = SelectedClient?.Path, 
+                        UseShellExecute = true 
+                    });
                     await Task.Run(() => Thread.Sleep(15000));
                 }
                 catch (Exception ex)

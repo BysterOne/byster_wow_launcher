@@ -180,7 +180,7 @@ namespace Byster.Views
                     Process.Start(new ProcessStartInfo 
                     { 
                         FileName = exePath, 
-                        Arguments = SelectedClient?.Path, 
+                        Arguments = $"\"{SelectedClient?.Path}\"", 
                         UseShellExecute = true 
                     });
                     await Task.Run(() => Thread.Sleep(15000));

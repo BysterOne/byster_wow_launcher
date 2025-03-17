@@ -1,0 +1,19 @@
+{
+  "Language": "enUS",
+  "Associations": {
+    "Логин": "Login",
+    "Пароль": "Password",
+    "Повторите пароль": "Repeat password",
+    "Реферальный код": "Referral code",
+    "Авторизоваться": "Log in",
+    "Авторизация": "Log in",
+    "Регистрация": "Registration",
+    "Зарегистрироваться": "Sign in",
+    "Логин не может быть пустым": "Login cannot be empty",
+    "Укажите пароль": "Enter a password",
+    "Пароли не совпадают": "Passwords don't match",
+    "Неверный логин/пароль": "Invalid login/password",
+    "Минимальная длина пароля 8 символов": "Minimum password length is 8 characters",
+    "Ошибка регистрации. Обратитесь к администрации": "Registration Error. Contact the administration"
+  }
+}

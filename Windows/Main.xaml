@@ -1,0 +1,98 @@
+﻿<Window
+    x:Class="Launcher.Windows.Main"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Launcher.Windows"
+    xmlns:components="clr-namespace:Launcher.Components"
+    mc:Ignorable="d"
+    AllowsTransparency="True"
+    Background="Transparent"
+    WindowStyle="None"
+    WindowStartupLocation="CenterScreen"
+    ResizeMode="NoResize"
+    Title="Byster"
+    Height="550"
+    Width="1200">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Styles/Global.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid>
+        <Rectangle
+            Fill="{DynamicResource back_main}"
+            RadiusX="10"
+            RadiusY="10" />
+
+        <!--#region Уведомление -->
+        <Grid
+            x:Name="NotifyPanel"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Center"
+            Margin="0 40 0 0"
+            MaxWidth="300"
+            MinWidth="50"
+            Opacity="0"
+            Panel.ZIndex="9">
+            <Rectangle
+                Fill="#FF151721"
+                RadiusX="20"
+                RadiusY="20" />
+            <TextBlock
+                x:Name="NP_message_block"
+                Text=""
+                Margin="14 8"
+                MaxHeight="66"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                FontFamily="{DynamicResource fontfamily_main}"
+                FontSize="18"
+                Foreground="{DynamicResource textcolor_main}" />
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Лоадер -->
+        <Grid
+            x:Name="LoaderPanel"
+            Panel.ZIndex="10"
+            Visibility="Hidden"
+            Opacity="0">
+            <Rectangle
+                Fill="{DynamicResource popup_back}" />
+            <components:CLoader
+                x:Name="LP_loader"
+                ForeColor="{StaticResource orange_main}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Height="30" />
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Панель кнопок -->
+        <StackPanel
+            x:Name="WindowControlPanel"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Orientation="Horizontal">
+            <!--#region Свернуть -->
+            <components:CButton
+                x:Name="WCP_minimize"
+                Icon="../Media/minimize_icon.png"
+                Style="{DynamicResource MinimizeWindowControlButtonStyle}" />
+            <!--#endregion-->
+            <!--#region Закрыть -->
+            <components:CButton
+                x:Name="WCP_close"
+                Icon="../Media/close_icon.png"
+                Style="{DynamicResource CloseWindowControlButtonStyle}" />
+            <!--#endregion-->
+        </StackPanel>
+        <!--#endregion-->
+
+    </Grid>
+</Window>

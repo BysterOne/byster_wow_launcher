@@ -1,0 +1,65 @@
+﻿<UserControl
+    x:Class="Launcher.Components.CButton"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components"
+    mc:Ignorable="d"
+    MinHeight="15"
+    MinWidth="15"
+    d:DataContext="{d:DesignInstance Type=local:CButton, IsDesignTimeCreatable=True}"
+    HorizontalAlignment="Center"
+    FontWeight="Medium">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="../Styles/Global.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Border
+        Background="{Binding BackColor}"
+        CornerRadius="{Binding BorderRadius}"
+        ClipToBounds="True">
+        <Grid
+            MouseLeave="N_MouseLeave"
+            MouseEnter="N_MouseEnter"
+            Cursor="Hand">
+            <Rectangle
+                Fill="Black"
+                Opacity="0"
+                RadiusX="{Binding BorderRadius}"
+                RadiusY="{Binding BorderRadius}" />
+            <Grid
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
+                <StackPanel
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Orientation="Horizontal"
+                    Margin="{Binding Padding, RelativeSource={RelativeSource AncestorType={x:Type local:CButton}}}"
+                    MinHeight="30">
+                    <Image
+                        x:Name="image"
+                        Source="{Binding Icon, RelativeSource={RelativeSource AncestorType={x:Type local:CButton}}}"
+                        Height="{Binding IconHeight, RelativeSource={RelativeSource AncestorType={x:Type local:CButton}}}"
+                        Width="{Binding IconWidth, RelativeSource={RelativeSource AncestorType={x:Type local:CButton}}}"
+                        Visibility="Collapsed"
+                        VerticalAlignment="Center"
+                        RenderOptions.BitmapScalingMode="HighQuality" />
+                    <TextBlock
+                        x:Name="text"
+                        Text="{Binding Text}"
+                        VerticalAlignment="Center"
+                        FontFamily="{StaticResource fontfamily_main}"
+                        FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType={x:Type local:CButton}}}"
+                        FontWeight="{Binding FontWeight}"
+                        Foreground="{Binding Foreground}"
+                        Margin="5 0 5 2" />
+                </StackPanel>
+            </Grid>
+        </Grid>
+    </Border>
+</UserControl>

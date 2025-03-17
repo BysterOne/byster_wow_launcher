@@ -1,0 +1,246 @@
+﻿<Window
+    x:Class="Launcher.Windows.Authorization"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:local="clr-namespace:Launcher.Windows"
+    xmlns:components="clr-namespace:Launcher.Components"
+    mc:Ignorable="d"
+    AllowsTransparency="True"
+    Background="Transparent"
+    WindowStyle="None"
+    WindowStartupLocation="CenterScreen"
+    ResizeMode="NoResize"
+    Title="Authorization"
+    Height="680"
+    Width="400">
+    <Window.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Styles/Authorization.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </Window.Resources>
+    <Grid
+        x:Name="mainGrid">
+        <Rectangle
+            Fill="{DynamicResource back_main}"
+            RadiusX="10"
+            RadiusY="10" />
+
+        <!--#region Уведомление -->
+        <Grid
+            x:Name="NotifyPanel"
+            VerticalAlignment="Top"
+            HorizontalAlignment="Center"
+            Margin="0 40 0 0"
+            MaxWidth="300"
+            MinWidth="50"
+            Opacity="0"
+            Panel.ZIndex="9">
+            <Rectangle
+                Fill="#FF151721"
+                RadiusX="20"
+                RadiusY="20" />
+            <TextBlock
+                x:Name="NP_message_block"
+                Text=""
+                Margin="14 8"
+                MaxHeight="66"
+                TextAlignment="Center"
+                TextWrapping="Wrap"
+                FontFamily="{DynamicResource fontfamily_main}"
+                FontSize="18"
+                Foreground="{DynamicResource textcolor_main}" />
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Лоадер -->
+        <Grid
+            x:Name="LoaderPanel"
+            Panel.ZIndex="10"
+            Visibility="Hidden"
+            Opacity="0">
+            <Rectangle
+                Fill="{DynamicResource popup_back}" />
+            <components:CLoader
+                x:Name="LP_loader"
+                ForeColor="{StaticResource orange_main}"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Height="30" />
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Панель кнопок -->
+        <StackPanel
+            x:Name="WindowControlPanel"
+            HorizontalAlignment="Right"
+            VerticalAlignment="Top"
+            Orientation="Horizontal">
+            <!--#region Свернуть -->
+            <components:CButton
+                x:Name="WCP_minimize"
+                Icon="../Media/minimize_icon.png"
+                Style="{DynamicResource MinimizeWindowControlButtonStyle}" />
+            <!--#endregion-->
+            <!--#region Закрыть -->
+            <components:CButton
+                x:Name="WCP_close"
+                Icon="../Media/close_icon.png"
+                Style="{DynamicResource CloseWindowControlButtonStyle}" />
+            <!--#endregion-->
+        </StackPanel>
+        <!--#endregion-->
+
+        <!--#region Панель смены языка -->
+        <Grid
+            x:Name="ChangeLanguagePanel"
+            Panel.ZIndex="10"
+            Opacity="0"
+            Visibility="Hidden">
+            <Rectangle
+                Fill="{DynamicResource popup_back}" />
+            <components:CList
+                x:Name="CLP_list"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"
+                Width="250"
+                Background="#FF131319"
+                BorderRadius="10"
+                IsEnabledLeaveHide="False"
+                IsOpened="True"/>
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Логин -->
+        <StackPanel
+            Visibility="Visible"
+            Style="{DynamicResource AuthStackPanelStyle}"
+            x:Name="LoginPanel">
+            <!--#region Лого -->
+            <Image
+                RenderOptions.BitmapScalingMode="HighQuality"
+                MaxWidth="200"
+                MaxHeight="80"
+                Source="/Media/logo_full.png"
+                Margin="0 0 0 25" />
+            <!--#endregion-->
+            <!--#region Логин -->
+            <components:CTextInput
+                x:Name="LP_login_input"
+                Style="{DynamicResource CTextInputStyle}"
+                Placeholder="Логин" />
+            <!--#endregion-->
+            <!--#region Пароль -->
+            <components:CTextInput
+                InputType="Password"
+                x:Name="LP_password_input"
+                Style="{DynamicResource CTextInputStyle}"
+                Placeholder="Пароль" />
+            <!--#endregion-->
+            <!--#region Кнопка входа -->
+            <components:CButton
+                Style="{DynamicResource FormButtonStyle}"
+                x:Name="LP_button_input"
+                Margin="0 20 0 10"
+                Text="Авторизоваться" 
+                MouseDown="LP_button_input_MouseDown"/>
+            <!--#endregion-->
+            <!--#region Для регистрации -->
+            <Label
+                x:Name="LP_change_to_sign"
+                FontFamily="{StaticResource fontfamily_main}"
+                FontSize="18"
+                Foreground="{StaticResource textcolor_main}"
+                HorizontalContentAlignment="Center"
+                Content="Регистрация?"
+                Cursor="Hand"
+                MouseDown="LP_change_to_sign_MouseDown" />
+            <!--#endregion-->
+        </StackPanel>
+        <!--#endregion-->
+
+        <!--#region Регистрация -->
+        <StackPanel
+            Visibility="Hidden"
+            Style="{DynamicResource AuthStackPanelStyle}"
+            x:Name="RegistrationPanel">
+            <!--#region Лого -->
+            <Image
+                RenderOptions.BitmapScalingMode="HighQuality"
+                MaxWidth="200"
+                MaxHeight="80"
+                Source="/Media/logo_full.png"
+                Margin="0 0 0 25" />
+            <!--#endregion-->
+            <!--#region Логин -->
+            <components:CTextInput
+                x:Name="RP_login_input"
+                Style="{DynamicResource CTextInputStyle}"
+                Placeholder="Логин" />
+            <!--#endregion-->
+            <!--#region Пароль -->
+            <components:CTextInput
+                InputType="Password"
+                x:Name="RP_password_input"
+                Style="{DynamicResource CTextInputStyle}"
+                Placeholder="Пароль" />
+            <!--#endregion-->
+            <!--#region Пароль -->
+            <components:CTextInput
+                InputType="Password"
+                x:Name="RP_repeat_password_input"
+                Style="{DynamicResource CTextInputStyle}"
+                Placeholder="Повторите пароль" />
+            <!--#endregion-->
+            <!--#region Реферальный код -->
+            <components:CTextInput
+                x:Name="RP_ref_code_input"
+                Style="{DynamicResource CTextInputStyle}"
+                Placeholder="Реферальный код" />
+            <!--#endregion-->
+            <!--#region Кнопка регистрации -->
+            <components:CButton
+                Style="{DynamicResource FormButtonStyle}"
+                x:Name="RP_button_input"
+                Margin="0 20 0 10"
+                Text="Зарегистрироваться"
+                MouseDown="RP_button_input_MouseDown" />
+            <!--#endregion-->
+            <!--#region Для регистрации -->
+            <Label
+                x:Name="RP_change_to_login"
+                FontFamily="{StaticResource fontfamily_main}"
+                FontSize="18"
+                Foreground="{StaticResource textcolor_main}"
+                HorizontalContentAlignment="Center"
+                Content="Вход?"
+                Cursor="Hand"
+                MouseDown="RP_change_to_login_MouseDown" />
+            <!--#endregion-->
+        </StackPanel>
+        <!--#endregion-->
+
+        <!--#region Смена языка -->
+        <components:CButton
+        x:Name="ChangeLangButton"
+            Height="38"
+            FontSize="18"
+            VerticalAlignment="Bottom"
+            Margin="0 0 0 15"
+            Text="Русский"
+            BorderRadius="18"
+            BackColor="#14FFFFFF"
+            Foreground="#99FFFFFF"
+            Icon="/Media/language.png"
+            IconHeight="22"
+            Padding="6 0 10 0"
+            MouseDown="ChangeLangButton_MouseDown"/>
+        <!--#endregion-->
+    </Grid>
+</Window>

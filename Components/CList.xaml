@@ -1,0 +1,55 @@
+﻿<UserControl
+    x:Class="Launcher.Components.CList"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components"
+    mc:Ignorable="d"
+    FontSize="20"
+    Height="Auto"
+    MinHeight="{Binding ElementHeight, ElementName=root}"
+    x:Name="root"
+    d:DataContext="{d:DesignInstance Type=local:CList, IsDesignTimeCreatable=True}"
+    d:DesignHeight="{Binding ElementHeight}"
+    d:DesignWidth="250">
+    <Grid
+        ClipToBounds="True" Cursor="Hand">
+        <Rectangle
+            RadiusX="{Binding BorderRadius, ElementName=root}"
+            RadiusY="{Binding BorderRadius, ElementName=root}"
+            Fill="{Binding Background, ElementName=root}" />
+
+        <Rectangle
+            x:Name="selector"
+            Height="{Binding ElementHeight, ElementName=root}"
+            RadiusX="{Binding BorderRadius, ElementName=root}"
+            RadiusY="{Binding BorderRadius, ElementName=root}"
+            Fill="{Binding SelectorColor, ElementName=root}"
+            VerticalAlignment="Top"
+            ClipToBounds="True"/>
+
+        <StackPanel
+            x:Name="items"           
+            ClipToBounds="True">
+            <Grid
+                Height="{Binding ElementHeight, ElementName=root}">
+                <TextBlock
+                    Text="item 1"
+                    TextAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="{Binding Foreground, ElementName=root}"
+                    FontSize="{Binding FontSize, ElementName=root}" />
+            </Grid>
+            <Grid
+                Height="{Binding ElementHeight, ElementName=root}">
+                <TextBlock
+                    Text="item 1"
+                    TextAlignment="Center"
+                    VerticalAlignment="Center"
+                    Foreground="{Binding Foreground, ElementName=root}"
+                    FontSize="{Binding FontSize, ElementName=root}" />
+            </Grid>
+        </StackPanel>
+    </Grid>
+</UserControl>

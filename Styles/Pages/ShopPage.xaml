@@ -1,0 +1,34 @@
+﻿<ResourceDictionary xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+                    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:MainWindow="clr-namespace:Launcher.Components.MainWindow">
+    <ResourceDictionary.MergedDictionaries> 
+        <ResourceDictionary Source="../../Styles/Global.xaml"/>
+    </ResourceDictionary.MergedDictionaries>
+
+    <Style
+        x:Key="RectangleFiltersSpacer"
+        TargetType="{x:Type Rectangle}">
+        <Setter Property="Margin" Value="10 10 10 10"/>
+        <Setter Property="Fill"
+            Value="#19FFFFFF" />
+        <Setter Property="Height" Value="4"/>
+        <Setter Property="RadiusX" Value="2"/>
+        <Setter Property="RadiusY" Value="2"/>
+    </Style>
+    <Style x:Key="FilterChangerClaessesStyle" TargetType="{x:Type MainWindow:CFilterChanger}">
+        <Setter Property="ChangerType" Value="Icon"/>
+        <Setter Property="Foreground" Value="{DynamicResource textcolor_main}"/>
+        <Setter Property="FontFamily" Value="{DynamicResource fontfamily_main}"/>
+        <Setter Property="FontSize" Value="20"/>
+        <Setter Property="Margin" Value="10 2"/>
+        <Setter Property="Icon" Value="../../Media/TEST_warrior_icon.png"/>
+
+        <Setter Property="Template">
+            <Setter.Value>
+                <ControlTemplate TargetType="{x:Type MainWindow:CFilterChanger}">
+                    <ContentPresenter/>
+                </ControlTemplate>
+            </Setter.Value>
+        </Setter>
+    </Style>
+</ResourceDictionary>

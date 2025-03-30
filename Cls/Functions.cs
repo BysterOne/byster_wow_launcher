@@ -1,9 +1,15 @@
 ﻿using Cls.Errors;
 using Cls.Exceptions;
+using Launcher.Any;
+using Launcher.Windows;
+using System.Globalization;
 using System.Reflection;
 using System.Runtime.CompilerServices;
 using System.Security.Cryptography;
 using System.Text;
+using System.Windows;
+using System.Windows.Media.Imaging;
+using System.Windows.Media;
 
 namespace Cls.Any
 {
@@ -127,8 +133,58 @@ namespace Cls.Any
                 {
                     sb.Append(hashBytes[i].ToString("X2"));
                 }
-                return sb.ToString();
+                return sb.ToString().ToLower();
             }
+        }
+        #endregion
+
+        #region OpenWindow
+        public static void OpenWindow<T>(Window inner, T window) where T : Window
+        {
+            var animation = AnimationHelper.OpacityAnimation(inner, 0);
+            animation.Completed += async (s, e) =>
+            {
+                WindowAnimations.ApplyFadeAnimations(ref window);
+                window.Topmost = true;
+                window.Show();
+                await Task.Run(() => Thread.Sleep(AnimationHelper.AnimationDuration));
+                window.Topmost = false;
+
+                inner.Close();
+            };
+            animation.Begin();
+        }
+        #endregion
+
+        #region ToOut
+        public static string ToOut(this double value)
+        {
+            return value.ToString
+            (
+                "#,0.##",
+                new NumberFormatInfo
+                {
+                    NumberGroupSeparator = " ",
+                    NumberDecimalSeparator = "."
+                }
+            );
+        }
+        #endregion
+
+        #region GetSourceFromResource
+        public static Uri GetSourceFromResource(string resourceName)
+        {            
+            return new Uri("pack://application:,,,/" + resourceName, UriKind.RelativeOrAbsolute);
+        }
+        #endregion
+
+        #region GlobalResources
+        public static ResourceDictionary GlobalResources()
+        {
+            return new ResourceDictionary
+            {
+                Source = new Uri($"pack://application:,,,/Styles/Global.xaml", UriKind.RelativeOrAbsolute)
+            };
         }
         #endregion
     }

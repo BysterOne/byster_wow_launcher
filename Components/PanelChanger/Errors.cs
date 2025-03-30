@@ -1,4 +1,4 @@
-﻿namespace ControlCenter.PanelChanger.Errors
+﻿namespace Launcher.PanelChanger.Errors
 {
     #region EInit
     public enum EInit

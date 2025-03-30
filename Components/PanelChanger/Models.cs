@@ -1,6 +1,6 @@
 ﻿using System.Windows;
 
-namespace ControlCenter.PanelChanger.Models
+namespace Launcher.PanelChanger.Models
 {
     #region CChangerItem
     public class CChangerItem<T> where T : Enum

@@ -1,0 +1,77 @@
+﻿<UserControl
+    x:Class="Launcher.Components.MainWindow.CPageShop"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow"
+    xmlns:components="clr-namespace:Launcher.Components"
+    mc:Ignorable="d"
+    d:Height="600"
+    d:Width="1200">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="../../Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="../../Styles/Pages/ShopPage.xaml" />
+                <ResourceDictionary
+                    Source="../../Components/ScrollPanel/CScrollPanelStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid
+        d:Background="{DynamicResource back_main}">
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="Auto" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <!--#region Фильтры -->
+        <Grid
+            x:Name="FiltersPanel"
+            MinWidth="220"
+            Margin="5 15 0 25">
+            <components:CScrollPanel>
+                <StackPanel x:Name="FP_stack_panel"
+                    Margin="5 0 10 0">
+                    <!--#region Типы -->
+                    <local:CFilterChanger
+                        Text="Вdd оин"
+                        ChangerType="Marker"
+                        Foreground="{DynamicResource textcolor_main}"
+                        FontFamily="{DynamicResource fontfamily_main}"
+                        FontSize="20"
+                        Margin="15 5 5 5"/>
+                    <!--#endregion-->
+                    <!--#region Разделитель -->
+                    <Rectangle Style="{DynamicResource RectangleFiltersSpacer}" />
+                    <!--#endregion-->
+                    <!--#region Классы -->
+                    <local:CFilterChanger
+                        Text="Все"
+                        ChangerType="Marker"
+                        Foreground="White"
+                        FontFamily="{DynamicResource fontfamily_main}"
+                        FontSize="20"
+                        Margin="10 5 5 5" />
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Воин"/>
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Друид"/>
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Жрец"/>
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Маг"/>
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Охотник"/>
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Паладин"/>
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Разбойник"/>
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Варлок"/>
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Шаман"/>
+                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="ДК"/>
+                    <!--#endregion-->
+                </StackPanel>
+            </components:CScrollPanel>
+        </Grid>
+        <!--#endregion-->
+
+    </Grid>
+</UserControl>

@@ -17,4 +17,10 @@ namespace Launcher.Any.GlobalEnums
         Show,
         Hide
     }
+
+    public enum ECurrency
+    {
+        Rub,
+        Usd
+    }
 }

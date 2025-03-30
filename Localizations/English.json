@@ -1,6 +1,21 @@
 {
   "Language": "enUS",
   "Associations": {
+    "Все": "All",
+    "Воин": "Warrior",
+    "Друид": "Druid",
+    "Жрец": "Priest",
+    "Маг": "Mage",
+    "Охотник": "Hunter",
+    "Паладин": "Paladin",
+    "Разбойник": "Rogue",
+    "Рыцарь смерти": "Deathknight",
+    "Чернокнижник": "Warlock",
+    "Шаман": "Shaman",
+    "Набор": "Bundle",
+    "Бот": "Bot",
+    "ГЛАВНАЯ": "MAIN",
+    "МАГАЗИН": "SHOP",
     "Логин": "Login",
     "Пароль": "Password",
     "Повторите пароль": "Repeat password",
@@ -14,6 +29,7 @@
     "Пароли не совпадают": "Passwords don't match",
     "Неверный логин/пароль": "Invalid login/password",
     "Минимальная длина пароля 8 символов": "Minimum password length is 8 characters",
-    "Ошибка регистрации. Обратитесь к администрации": "Registration Error. Contact the administration"
+    "Ошибка регистрации. Обратитесь к администрации": "Registration Error. Contact the administration",
+    "На данный момент у Вас нет ротаций. Их можно приобрести в магазине": "You do not currently have rotations. They can be purchased from the store"
   }
 }

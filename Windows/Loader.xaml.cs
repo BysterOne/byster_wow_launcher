@@ -3,7 +3,9 @@ using Cls.Any;
 using Cls.Enums;
 using Cls.Errors;
 using Cls.Exceptions;
+using Launcher.Any;
 using Launcher.Api;
+using Launcher.Api.Models;
 using Launcher.Cls;
 using Launcher.Settings;
 using Launcher.Windows.AnyLoader.Errors;
@@ -23,6 +25,7 @@ using System.Windows.Data;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Xml;
 
@@ -104,39 +107,45 @@ namespace Launcher.Windows
             await CheckReferalSource();
             #endregion
 
-            #region Авторизация
-            if (true)
+            #region Авторизация, если данные сохранены
+            if 
+            (
+                !String.IsNullOrWhiteSpace(AppSettings.Instance.Login) &&
+                !String.IsNullOrWhiteSpace(AppSettings.Instance.Password)
+            )
             {
-                OpenAuthorization();
+                #region Запрос
+                var tryLogin = await CApi.Login
+                (
+                    new LoginRequestBody
+                    {
+                        Login = AppSettings.Instance.Login,
+                        Password = AppSettings.Instance.Password
+                    }
+                );
+                if (tryLogin.IsSuccess) 
+                {
+                    #region Сохраняем данные
+                    CApi.Session = tryLogin.Response.Session;
+                    #endregion
+                    #region Главное окно
+                    OpenMainWindow();
+                    #endregion
+                    return; 
+                }
+                #endregion
             }
             #endregion
-            #region Главное окно
-            else
-            {
-                OpenMain();
-            }
+            #region В любом другом случае
+            OpenAuthorization();
             #endregion
         }
-        #endregion
-        #region OpenMain
-        private void OpenMain()
-        {
-            Application.Current.Dispatcher.Invoke(() =>
-            {
-
-            });
-        }
+        #endregion        
+        #region OpenMainWindow
+        private void OpenMainWindow() => Application.Current.Dispatcher.Invoke(() => Functions.OpenWindow(this, new Main()));        
         #endregion
         #region OpenAuthorization
-        private void OpenAuthorization()
-        {
-            Application.Current.Dispatcher.Invoke(async () =>
-            {
-                Hide();
-                WindowAnimations.ApplyFadeAnimations(new Authorization()).Show();
-                Close();
-            });
-        }
+        private void OpenAuthorization() => Application.Current.Dispatcher.Invoke(() => Functions.OpenWindow(this, new Authorization()));
         #endregion
         #region ConfigureNLog
         private void ConfigureNLog()

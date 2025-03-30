@@ -12,7 +12,9 @@ namespace Launcher
     {
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            WindowAnimations.ApplyFadeAnimations(new Loader()).Show();
+            var loader = new Loader();
+            WindowAnimations.ApplyFadeAnimations(ref loader);
+            loader.Show();
         }
     }
 

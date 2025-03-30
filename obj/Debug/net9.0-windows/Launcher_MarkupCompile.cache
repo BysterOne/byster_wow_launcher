@@ -10,11 +10,11 @@ none
 false
 TRACE;DEBUG;NET;NET9_0;NETCOREAPP
 H:\Lenovo\Source\Byster\Launcher\App.xaml
-9-1969568815
+171297211092
 
-37-694242596
+481715624459
 211-1274368826
-Components\CButton.xaml;Components\CList.xaml;Components\CLoader.xaml;Components\CTextInput.xaml;Styles\Authorization.xaml;Styles\Global.xaml;Windows\Authorization.xaml;Windows\Loader.xaml;Windows\Main.xaml;
+Components\CButton.xaml;Components\CList.xaml;Components\CLoader.xaml;Components\CMainPageButton.xaml;Components\CTextInput.xaml;Components\MainWindow\CFilterChanger.xaml;Components\MainWindow\CPageMain.xaml;Components\MainWindow\CPageShop.xaml;Components\ScrollPanel\CScrollPanelStyle.xaml;Styles\Authorization.xaml;Styles\Global.xaml;Styles\Main.xaml;Styles\Pages\MainPage.xaml;Styles\Pages\ShopPage.xaml;Windows\Authorization.xaml;Windows\Loader.xaml;Windows\Main.xaml;
 
 False
 

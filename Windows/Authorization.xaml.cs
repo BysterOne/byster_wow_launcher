@@ -2,7 +2,7 @@
 using Cls.Any;
 using Cls.Errors;
 using Cls.Exceptions;
-using ControlCenter.PanelChanger.Enums;
+using Launcher.PanelChanger.Enums;
 using Launcher.Any;
 using Launcher.Any.GlobalEnums;
 using Launcher.Api;
@@ -42,7 +42,7 @@ namespace Launcher.Windows
             InitializeComponent();
 
             Loaded += ALoaded;
-            Closing += (a, e) => { Application.Current.Shutdown(); };
+            //Closing += (a, e) => { Application.Current.Shutdown(); };
         }
 
         #region Переменные
@@ -208,7 +208,12 @@ namespace Launcher.Windows
                     return;
                 }
                 hideLoader = false;
+                #endregion
+                #region Сохранение данных
                 CApi.Session = tryReg.Response.Session;
+                AppSettings.Instance.Login = regData.Login;
+                AppSettings.Instance.Password = regData.Password;
+                AppSettings.Save();
                 #endregion
                 #region Открытие основного окна
                 OpenMainWindow();
@@ -270,7 +275,7 @@ namespace Launcher.Windows
                 if (String.IsNullOrWhiteSpace(password)) throw new UExcept(ELogin.NonComplianceData, "Укажите пароль");               
                 #endregion
                 #region Создание объекта запроса
-                var regData = new LoginRequestBody()
+                var loginData = new LoginRequestBody()
                 {
                     Login = login,
                     Password = Functions.GetMd5Hash(password),
@@ -279,14 +284,19 @@ namespace Launcher.Windows
                 #endregion
                 #region Запрос
                 await Loader(ELoaderState.Show);
-                var tryLogin = await CApi.Login(regData);
+                var tryLogin = await CApi.Login(loginData);
                 if (!tryLogin.IsSuccess)
                 {
                     if (tryLogin.Error.Code is ERequest.BadRequest) Notify(Dictionary.Translate(tryLogin.Error.Message));
                     else Notify(Dictionary.Translate("Ошибка входа. Обратитесь к администрации"));
                     return;
                 }
+                #endregion
+                #region Сохранение данных
                 CApi.Session = tryLogin.Response.Session;
+                AppSettings.Instance.Login = loginData.Login;
+                AppSettings.Instance.Password = loginData.Password;
+                AppSettings.Save();
                 #endregion
                 #region Открытие основного окна
                 OpenMainWindow();
@@ -331,21 +341,9 @@ namespace Launcher.Windows
             button.IsEnabled = true;
             _ = Loader(ELoaderState.Hide);
         }
-        #endregion
+        #endregion        
         #region OpenMainWindow
-        private void OpenMainWindow()
-        {
-            var animation = AnimationHelper.OpacityAnimation(this, 0);
-            animation.Completed += (s, e) =>
-            {
-                Close();
-                Application.Current.Dispatcher.Invoke(() => 
-                {
-                    var mainWindow = new Main();
-                    mainWindow.Show();
-                });
-            };
-        }
+        private void OpenMainWindow() => Application.Current.Dispatcher.Invoke(() => Functions.OpenWindow(this, new Main()));
         #endregion
         #region UpdateAllValues
         public async Task UpdateAllValues()
@@ -452,18 +450,34 @@ namespace Launcher.Windows
         private void CLP_list_NewSelectedItem(CList.CListItem item)
         {
             var newSelectedLanguage = (ELang)item.Id;
+
+            #region Если выбран тот же язык
+            if (newSelectedLanguage == AppSettings.Instance.Language)
+            {
+                var animation = AnimationHelper.OpacityAnimation(ChangeLanguagePanel, 0);
+                animation.Completed += (s, e) => ChangeLanguagePanel.Visibility = Visibility.Hidden;
+                animation.Begin(ChangeLanguagePanel, HandoffBehavior.SnapshotAndReplace, true);
+
+                return;
+            }
+            #endregion
+            #region Если другой язык
             var fadeIn = AnimationHelper.OpacityAnimation(this, 1);
             var fadeOut = AnimationHelper.OpacityAnimation(this, 0);
-            fadeOut.Completed += async (e, f) => 
+
+            fadeOut.Completed += async (e, f) =>
             {
                 AppSettings.Instance.Language = newSelectedLanguage;
+                AppSettings.Save();
                 await UpdateAllValues();
                 ChangeLanguagePanel.Opacity = 0;
                 ChangeLanguagePanel.Visibility = Visibility.Hidden;
                 await Task.Run(() => Thread.Sleep(500));
                 fadeIn.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
             };
+
             fadeOut.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
+            #endregion
         }
         #endregion
         #region ChangeLangButton_MouseDown
@@ -477,8 +491,19 @@ namespace Launcher.Windows
         #region LP_button_input_MouseDown
         private void LP_button_input_MouseDown(object sender, MouseButtonEventArgs e) => _ = Login();
         #endregion
+        #region BackRectangle_MouseDown
+        private void BackRectangle_MouseDown(object sender, MouseButtonEventArgs e) => DragMove();
         #endregion
-
+        #region LP_password_input_KeyDown
+        private void LP_password_input_KeyDown(object sender, KeyEventArgs e) { if (e.Key is Key.Enter) _ = Login(); }
+        #endregion
+        #region RP_repeat_password_input_KeyDown
+        private void RP_repeat_password_input_KeyDown(object sender, KeyEventArgs e) { if (e.Key is Key.Enter) _ = Registration(); }
+        #endregion
+        #region RP_ref_code_input_KeyDown
+        private void RP_ref_code_input_KeyDown(object sender, KeyEventArgs e) { if (e.Key is Key.Enter) _ = Registration(); }
+        #endregion
+        #endregion
 
     }
 }

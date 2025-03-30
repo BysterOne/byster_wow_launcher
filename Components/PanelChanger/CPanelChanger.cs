@@ -2,9 +2,10 @@
 using Cls.Any;
 using Cls.Errors;
 using Cls.Exceptions;
-using ControlCenter.PanelChanger.Enums;
-using ControlCenter.PanelChanger.Errors;
-using ControlCenter.PanelChanger.Models;
+using Launcher.PanelChanger.Enums;
+using Launcher.PanelChanger.Errors;
+using Launcher.PanelChanger.Models;
+using Launcher.Any;
 using System.Windows;
 
 namespace Launcher.Components.PanelChanger
@@ -28,8 +29,8 @@ namespace Launcher.Components.PanelChanger
             Panels = panels;
             DefaultPanel = defaultPanel;
             State = defaultState;
-            Any.OpacityMonitor.Monitor(parent);
-            foreach (var panel in panels) Any.OpacityMonitor.Monitor(panel.Element, IsHitTestMonitor);
+            OpacityMonitor.Monitor(parent);
+            foreach (var panel in panels) OpacityMonitor.Monitor(panel.Element, IsHitTestMonitor);
         }
 
         #region Init

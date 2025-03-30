@@ -30,6 +30,18 @@ namespace Launcher.Api
 
 
         #region Функции
+        #region GetProductsList
+        public static async Task<UResponse<List<Product>>> GetProductsList()
+        {
+            return await Request<List<Product>>("/shop/product_list", Method.Post, body: new { });
+        }
+        #endregion
+        #region GetUserInfo
+        public static async Task<UResponse<User>> GetUserInfo()
+        {
+            return await Request<User>("/launcher/info", Method.Get);
+        }
+        #endregion
         #region GetReferralSource
         public static async Task<UResponse<RReferralSource>> GetReferralSource(string filename)
         {

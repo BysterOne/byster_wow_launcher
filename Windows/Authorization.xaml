@@ -26,11 +26,27 @@
         </ResourceDictionary>
     </Window.Resources>
     <Grid
-        x:Name="mainGrid">
+        x:Name="mainGrid"
+        ClipToBounds="True">
+        <Grid.OpacityMask>
+            <VisualBrush>
+                <VisualBrush.Visual>
+                    <Rectangle
+                        d:Width="400"
+                        d:Height="680"
+                        Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}"
+                        RadiusX="12"
+                        RadiusY="12"
+                        Fill="Black" />
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </Grid.OpacityMask>
+
         <Rectangle
+            x:Name="BackRectangle"
             Fill="{DynamicResource back_main}"
-            RadiusX="10"
-            RadiusY="10" />
+            MouseDown="BackRectangle_MouseDown" />
 
         <!--#region Уведомление -->
         <Grid
@@ -110,10 +126,14 @@
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center"
                 Width="250"
-                Background="#FF131319"
+                FontFamily="{DynamicResource fontfamily_main}"
+                FontSize="18"
+                Background="#FF131313"
+                SelectorColor="#0CFFFFFF"
                 BorderRadius="10"
                 IsEnabledLeaveHide="False"
-                IsOpened="True"/>
+                IsEnabledSameSelect="True"
+                IsOpened="True" />
         </Grid>
         <!--#endregion-->
 
@@ -132,24 +152,27 @@
             <!--#endregion-->
             <!--#region Логин -->
             <components:CTextInput
+                TabIndex="1"
                 x:Name="LP_login_input"
                 Style="{DynamicResource CTextInputStyle}"
                 Placeholder="Логин" />
             <!--#endregion-->
             <!--#region Пароль -->
             <components:CTextInput
+                TabIndex="2"
                 InputType="Password"
                 x:Name="LP_password_input"
                 Style="{DynamicResource CTextInputStyle}"
-                Placeholder="Пароль" />
+                Placeholder="Пароль" 
+                KeyDown="LP_password_input_KeyDown"/>
             <!--#endregion-->
             <!--#region Кнопка входа -->
             <components:CButton
                 Style="{DynamicResource FormButtonStyle}"
                 x:Name="LP_button_input"
                 Margin="0 20 0 10"
-                Text="Авторизоваться" 
-                MouseDown="LP_button_input_MouseDown"/>
+                Text="Авторизоваться"
+                MouseDown="LP_button_input_MouseDown" />
             <!--#endregion-->
             <!--#region Для регистрации -->
             <Label
@@ -181,11 +204,13 @@
             <!--#region Логин -->
             <components:CTextInput
                 x:Name="RP_login_input"
+                TabIndex="1"
                 Style="{DynamicResource CTextInputStyle}"
                 Placeholder="Логин" />
             <!--#endregion-->
             <!--#region Пароль -->
             <components:CTextInput
+                TabIndex="2"
                 InputType="Password"
                 x:Name="RP_password_input"
                 Style="{DynamicResource CTextInputStyle}"
@@ -193,16 +218,20 @@
             <!--#endregion-->
             <!--#region Пароль -->
             <components:CTextInput
+                TabIndex="3"
                 InputType="Password"
                 x:Name="RP_repeat_password_input"
                 Style="{DynamicResource CTextInputStyle}"
-                Placeholder="Повторите пароль" />
+                Placeholder="Повторите пароль" 
+                KeyDown="RP_repeat_password_input_KeyDown"/>
             <!--#endregion-->
             <!--#region Реферальный код -->
             <components:CTextInput
+                TabIndex="4"
                 x:Name="RP_ref_code_input"
                 Style="{DynamicResource CTextInputStyle}"
-                Placeholder="Реферальный код" />
+                Placeholder="Реферальный код"
+                KeyDown="RP_ref_code_input_KeyDown"/>
             <!--#endregion-->
             <!--#region Кнопка регистрации -->
             <components:CButton
@@ -228,7 +257,7 @@
 
         <!--#region Смена языка -->
         <components:CButton
-        x:Name="ChangeLangButton"
+            x:Name="ChangeLangButton"
             Height="38"
             FontSize="18"
             VerticalAlignment="Bottom"
@@ -240,7 +269,7 @@
             Icon="/Media/language.png"
             IconHeight="22"
             Padding="6 0 10 0"
-            MouseDown="ChangeLangButton_MouseDown"/>
+            MouseDown="ChangeLangButton_MouseDown" />
         <!--#endregion-->
     </Grid>
 </Window>

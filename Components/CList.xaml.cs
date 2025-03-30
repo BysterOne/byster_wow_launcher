@@ -63,6 +63,7 @@ namespace Launcher.Components
 
         #region Переменные
         public bool IsEnabledLeaveHide { get; set; } = true;
+        public bool IsEnabledSameSelect { get; set; } = false;
         private bool IsStateChanging { get; set; } = false;
         private bool IsNewSelected { get; set; } = false;
         private LogBox Pref { get; set; } = new("List");
@@ -158,7 +159,7 @@ namespace Launcher.Components
             control.UpdateViewModel();
             control.IsNewSelected = false;
 
-            if (e.OldValue != e.NewValue && e.OldValue is not null) control.NewSelectedItem?.Invoke((CListItem)e.NewValue);
+            if (e.OldValue is not null) control.NewSelectedItem?.Invoke((CListItem)e.NewValue);
         }
         #endregion
         #endregion
@@ -173,12 +174,12 @@ namespace Launcher.Components
         }
         #endregion
         #region ItemClick
-        private async void ItemClick(object sender, MouseButtonEventArgs e)
+        private void ItemClick(object sender, MouseButtonEventArgs e)
         {
             var control = (Grid)sender;
             var index = items.Children.IndexOf(control);
 
-            if (index is 0)
+            if (index is 0 && !IsEnabledSameSelect)
             {
                 _ = ChangeState(!IsOpened);
                 return;
@@ -188,6 +189,7 @@ namespace Launcher.Components
             if (getItem)
             {
                 SelectedItem = item!;
+                if (item == SelectedItem && IsEnabledSameSelect) NewSelectedItem?.Invoke(SelectedItem);
             }
         }
         #endregion

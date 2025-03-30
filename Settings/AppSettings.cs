@@ -34,11 +34,11 @@ namespace Launcher.Settings
             }
         }
 
-        public void Save()
+        public static void Save()
         {
             if (!Directory.Exists(MainFolderPath)) Directory.CreateDirectory(MainFolderPath);
 
-            var json = JsonConvert.SerializeObject(this, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(Instance, Formatting.Indented);
             File.WriteAllText(SettingsFilePath, json);
         }
 

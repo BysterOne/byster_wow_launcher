@@ -1,0 +1,101 @@
+﻿<UserControl
+    x:Class="Launcher.Components.MainWindow.CFilterChanger"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow"
+    xmlns:shapes="clr-namespace:Launcher.Components.MainWindow.Any"
+    mc:Ignorable="d"
+    Cursor="Hand">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="../../Styles/Global.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="Auto"
+                SharedSizeGroup="IconWidth" />
+            <ColumnDefinition />
+        </Grid.ColumnDefinitions>
+
+        <!--#region Иконка или маркер -->
+        <Grid
+            x:Name="MarkerPanel">
+            <!--#region Маркер -->
+            <Grid
+                x:Name="MP_type_marker" Visibility="Visible"
+                Width="{Binding MarkerWidth}"
+                Margin="2">
+                <!--#region Граница -->
+                <shapes:Hexagon
+                    x:Name="MPTM_stroke"
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    Width="22"
+                    Height="26"
+                    Stroke="{DynamicResource marker_fill}"
+                    StrokeThickness="2" />
+                <!--#endregion-->
+                <!--#region Заливка -->
+                <shapes:Hexagon
+                    x:Name="MPTM_fill"
+                    Opacity="0"
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    Width="15"
+                    Height="18"
+                    Fill="{DynamicResource marker_fill}"
+                    StrokeThickness="3" />
+                <!--#endregion-->
+                <shapes:Hexagon />
+            </Grid>
+            <!--#endregion-->
+            <!--#region Иконка -->
+            <Grid
+                x:Name="MP_type_icon" Visibility="Collapsed"
+                >
+                <Rectangle
+                    x:Name="MPTI_brush"
+                    StrokeThickness="2"
+                    Stroke="{DynamicResource marker_fill}"
+                    Margin="2" 
+                    RadiusX="3" RadiusY="3"/>
+                <Border
+                    x:Name="MPTI_border"
+                    BorderThickness="2"
+                    Margin="2"
+                    Width="{Binding MarkerWidth}"
+                    Height="{Binding MarkerWidth}"
+                    MinWidth="15"
+                    MinHeight="15"
+                    CornerRadius="6"
+                    BorderBrush="Transparent">
+                    <Border.Background>
+                        <ImageBrush
+                            AlignmentX="Center"
+                            AlignmentY="Center"
+                            Stretch="UniformToFill"
+                            x:Name="MPTIB_image_brush"
+                            ImageSource="{Binding Icon}"
+                            RenderOptions.BitmapScalingMode="HighQuality"/>
+                    </Border.Background>
+                </Border>
+            </Grid>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+        <!--#region Текст -->
+        <TextBlock
+            Text="{Binding Text}"
+            Grid.Column="1"
+            Margin="10 0 5 0"
+            VerticalAlignment="Center"
+            FontFamily="{Binding FontFamily, RelativeSource={RelativeSource AncestorType=local:CFilterChanger}}" 
+            FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=local:CFilterChanger}}"/>
+        <!--#endregion-->
+    </Grid>
+</UserControl>

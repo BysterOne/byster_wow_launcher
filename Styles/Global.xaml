@@ -7,9 +7,18 @@
     <SolidColorBrush
         x:Key="orange_main"
         Color="#ffba03" />
+    <LinearGradientBrush
+        x:Key="marker_fill" StartPoint="0, 1" EndPoint="1, 0">
+        <GradientStop Offset="0" Color="#ffba03"/>
+        <GradientStop Offset="1"
+            Color="#FFFF8203" />
+    </LinearGradientBrush>
     <SolidColorBrush
         x:Key="back_main"
         Color="#090c16" />
+    <SolidColorBrush
+        x:Key="back_second"
+        Color="#FF161921" />
     <SolidColorBrush
         x:Key="textcolor_main"
         Color="#FFF3F3F3" />

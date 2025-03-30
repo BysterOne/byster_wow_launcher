@@ -14,6 +14,10 @@
     <None Remove="Media\language.png" />
     <None Remove="Media\logo_full.png" />
     <None Remove="Media\minimize_icon.png" />
+    <None Remove="Media\no_items_icon.png" />
+    <None Remove="Media\settings_icon.png" />
+    <None Remove="Media\Shop\death_knight_icon.png" />
+    <None Remove="Media\TEST_warrior_icon.png" />
     <None Remove="NLog.config" />
   </ItemGroup>
 
@@ -29,6 +33,10 @@
     <Resource Include="Media\language.png" />
     <Resource Include="Media\logo_full.png" />
     <Resource Include="Media\minimize_icon.png" />
+    <Resource Include="Media\no_items_icon.png" />
+    <Resource Include="Media\settings_icon.png" />
+    <Resource Include="Media\Shop\death_knight_icon.png" />
+    <Resource Include="Media\TEST_warrior_icon.png" />
     <EmbeddedResource Include="Localizations\English.json" />
     <EmbeddedResource Include="NLog.config" />
   </ItemGroup>

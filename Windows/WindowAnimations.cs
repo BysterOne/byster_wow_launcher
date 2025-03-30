@@ -16,7 +16,7 @@ namespace Launcher.Windows
     {
         private static TimeSpan LocalAnimationDuration = TimeSpan.FromMilliseconds(150);
 
-        public static Window ApplyFadeAnimations(Window window, bool closeWindowIsCloseApp = false)
+        public static void ApplyFadeAnimations<T>(ref T window, bool closeWindowIsCloseApp = false) where T : Window
         {
             window.Opacity = 0;
 
@@ -28,8 +28,6 @@ namespace Launcher.Windows
             else window.Closing += AClosing;
 
             window.CommandBindings.Add(new CommandBinding(SystemCommands.MinimizeWindowCommand, OnMinimizeWindow));
-
-            return window;
         }           
 
         private static void ALoaded(object sender, RoutedEventArgs e)

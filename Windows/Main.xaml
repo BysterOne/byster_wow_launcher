@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Launcher.Windows"
     xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:pages="clr-namespace:Launcher.Components.MainWindow"
     mc:Ignorable="d"
     AllowsTransparency="True"
     Background="Transparent"
@@ -13,21 +14,36 @@
     WindowStartupLocation="CenterScreen"
     ResizeMode="NoResize"
     Title="Byster"
-    Height="550"
+    Height="700"
     Width="1200">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
                     Source="/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Styles/Main.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
     <Grid>
+        <Grid.OpacityMask>
+            <VisualBrush>
+                <VisualBrush.Visual>
+                    <Rectangle
+                        d:Width="1200"
+                        d:Height="700"
+                        Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}}"
+                        Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}"
+                        RadiusX="12"
+                        RadiusY="12"
+                        Fill="Black" />
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </Grid.OpacityMask>
+
         <Rectangle
-            Fill="{DynamicResource back_main}"
-            RadiusX="10"
-            RadiusY="10" />
+            Fill="{DynamicResource back_main}" />
 
         <!--#region Уведомление -->
         <Grid
@@ -63,6 +79,7 @@
             Visibility="Hidden"
             Opacity="0">
             <Rectangle
+                x:Name="LP_fill"
                 Fill="{DynamicResource popup_back}" />
             <components:CLoader
                 x:Name="LP_loader"
@@ -94,5 +111,107 @@
         </StackPanel>
         <!--#endregion-->
 
+        <!--#region Верхняя панель -->
+        <Grid
+            x:Name="TopPanel"
+            VerticalAlignment="Top">
+            <!--#region Лого и кнопки -->
+            <StackPanel
+                x:Name="TP_logo_page_buttons"
+                VerticalAlignment="Top"
+                Margin="0 20 0 0"
+                Height="76"
+                Orientation="Horizontal"
+                HorizontalAlignment="Left">
+                <!--#region Лого -->
+                <Image
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    MaxWidth="200"
+                    MaxHeight="70"
+                    HorizontalAlignment="Left"
+                    Source="/Media/logo_full.png"
+                    Margin="18 0 20 0" />
+                <!--#endregion-->
+                <!--#region Главная -->
+                <components:CMainPageButton
+                    Style="{DynamicResource TopPanel_MainPageButtonStyle}"
+                    Text="ГЛАВНАЯ"
+                    IsActive="True"
+                    x:Name="TP_main_page_button"
+                    MouseDown="TP_main_page_button_MouseDown" />
+                <!--#endregion-->
+                <!--#region Магазин -->
+                <components:CMainPageButton
+                    Style="{DynamicResource TopPanel_MainPageButtonStyle}"
+                    Text="МАГАЗИН"
+                    IsActive="False"
+                    x:Name="TP_store_page_button"
+                    MouseDown="TP_store_page_button_MouseDown" />
+                <!--#endregion-->
+            </StackPanel>
+            <!--#endregion-->
+            <!--#region Информация о пользователе и настройки -->
+            <StackPanel
+                x:Name="TP_info_settings"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Bottom"
+                Margin="0 0 10 5"
+                Orientation="Horizontal">
+                <!--#region Имя пользователя -->
+                <TextBlock
+                    d:Text="Suriomi"
+                    x:Name="TPIS_username"
+                    FontFamily="{DynamicResource fontfamily_main}"
+                    FontSize="24"
+                    Foreground="#ecbe32"
+                    VerticalAlignment="Center"
+                    Margin="0 0 12 0" />
+                <!--#endregion-->
+                <!--#region Баланс -->
+                <TextBlock
+                    d:Text="0 RUB"
+                    x:Name="TPIS_balance"
+                    FontFamily="{DynamicResource fontfamily_main}"
+                    FontSize="22"
+                    Foreground="#FFAAAEBD"
+                    VerticalAlignment="Center"
+                    Margin="0 0 12 0" />
+                <!--#endregion-->
+                <!--#region Настройки -->
+                <components:CButton
+                    Width="40"
+                    Height="40"
+                    Text=""
+                    BorderRadius="10"
+                    BackColor="Transparent"
+                    Icon="../Media/settings_icon.png"
+                    Padding="0"
+                    IconHeight="36"
+                    IconWidth="36"
+                    VerticalAlignment="Center" />
+                <!--#endregion-->
+            </StackPanel>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+
+        <!--#region Панели главной и магазина -->
+        <Grid
+            x:Name="MainPanels"
+            Margin="0 105 0 0">
+            <!--#region Главная -->
+            <pages:CPageMain
+                Opacity="0"
+                Visibility="Hidden"
+                x:Name="MP_main"
+                Margin="10 0 0 0" />
+            <!--#endregion-->
+            <!--#region Магазин -->
+            <pages:CPageShop
+                x:Name="MP_shop"
+                Margin="2 0 0 0" />
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
     </Grid>
 </Window>

@@ -149,7 +149,7 @@ namespace Launcher.Api.Models
 
         [JsonProperty("role_type")]
         [JsonConverter(typeof(RotationRolesConverter))]
-        public ERotationRole RoleType { get; set; }
+        public ERotationRole Role { get; set; }
 
         [JsonProperty("media")]
         public List<Media> Media { get; set; } = [];
@@ -181,5 +181,5 @@ namespace Launcher.Api.Models
         [JsonProperty("error")]
         public string Error { get; set; } = string.Empty;
     }
-    #endregion
+    #endregion    
 }

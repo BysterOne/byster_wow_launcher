@@ -1,0 +1,84 @@
+﻿<UserControl
+    x:Class="Launcher.Components.CDialogBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800"
+    DataContext="{Binding RelativeSource={x:Static RelativeSource.Self}}">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="../Styles/Global.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Rectangle
+            Fill="{StaticResource back_main}" Opacity="0.95"/>
+
+        <Grid
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center" x:Name="middleGrid">
+            <!--#region Фон -->
+            <Rectangle
+                Fill="#0CFFFFFF"
+                RadiusX="15"
+                RadiusY="15" />
+            <!--#endregion-->
+            <StackPanel
+                Margin="10">
+                <!--#region Заголовок -->
+                <StackPanel
+                    x:Name="headerBlock"
+                    HorizontalAlignment="Center"
+                    Visibility="Visible"
+                    Margin="0 5 0 -8">
+                    <TextBlock
+                        x:Name="header"
+                        Style="{DynamicResource Base_TextBlock}"
+                        Text="Важно"
+                        FontSize="24" />
+                    <Rectangle
+                        Height="6"
+                        Margin="10 8 10 0"
+                        Fill="White"
+                        RadiusX="3"
+                        RadiusY="3"
+                        MinWidth="50"/>
+                </StackPanel>
+                <!--#endregion-->
+                <!--#region Текст -->
+                <TextBlock
+                    x:Name="message"
+                    MaxWidth="400"
+                    Style="{DynamicResource Base_TextBlock}"
+                    Text="У людей есть право выбора. Вы знали об этом?"
+                    Margin="20 25 20 20"
+                    FontSize="20" />
+                <!--#endregion-->
+                <!--#region Кнопки -->
+                <StackPanel
+                    x:Name="buttons"
+                    Margin="20 0 20 5"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Center">
+                    <!--#region Да -->
+                    <local:CButton
+                        Margin="5 0"
+                        MinWidth="10"
+                        Text="Да"
+                        Padding="30 5"
+                        BorderRadius="20" />
+                    <!--#endregion-->
+                </StackPanel>
+                <!--#endregion-->
+            </StackPanel>
+        </Grid>
+    </Grid>
+</UserControl>

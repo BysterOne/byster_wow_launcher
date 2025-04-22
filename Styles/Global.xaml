@@ -122,4 +122,29 @@
             Event="MouseDown"
             Handler="CloseWindowControlButtonStyle_MouseDown" />
     </Style>
+    <Style
+        x:Key="Base_TextBlock"
+        TargetType="{x:Type TextBlock}">
+        <Setter
+            Property="TextWrapping"
+            Value="Wrap" />
+        <Setter
+            Property="TextTrimming"
+            Value="None" />
+        <Setter
+            Property="FontFamily"
+            Value="{StaticResource fontfamily_main}" />
+        <Setter
+            Property="FontSize"
+            Value="18" />
+        <Setter
+            Property="TextAlignment"
+            Value="Center" />
+        <Setter
+            Property="Foreground"
+            Value="White" />
+        <Setter
+            Property="RenderOptions.BitmapScalingMode"
+            Value="HighQuality" />
+    </Style>
 </ResourceDictionary>

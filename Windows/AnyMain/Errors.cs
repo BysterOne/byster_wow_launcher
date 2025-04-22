@@ -6,10 +6,18 @@ using System.Threading.Tasks;
 
 namespace Launcher.Windows.AnyMain.Errors
 {
+    #region EInitialization
     public enum EInitialization
     {
         FailInitPanelChanger,
         FailGetUserInfo,
         FailInitPage
     }
+    #endregion
+    #region EShowModal
+    public enum EShowModal
+    {
+        MainWindowWasNull
+    }
+    #endregion
 }

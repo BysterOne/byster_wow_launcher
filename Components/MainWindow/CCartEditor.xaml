@@ -1,0 +1,172 @@
+﻿<UserControl
+    x:Class="Launcher.Components.MainWindow.CCartEditor"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow"
+    xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:settings="clr-namespace:Launcher.Settings"
+    xmlns:cartEditor="clr-namespace:Launcher.Components.MainWindow.Any.CartEditor"
+    mc:Ignorable="d"
+    d:DesignHeight="650"
+    d:DesignWidth="1200">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Components/ScrollPanel/CScrollPanelStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <!--#region Фон -->
+        <Rectangle
+            Fill="{StaticResource back_main}"
+            Opacity="0.99" />
+        <!--#endregion-->
+
+        <!--#region Центральный блок -->
+        <Grid
+            Width="900"
+            Height="500"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center">
+            <!--#region Разметка -->
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
+            <!--#endregion-->
+            <!--#region Фон -->
+            <Rectangle
+                Grid.RowSpan="3"
+                Fill="{StaticResource back_main}"
+                RadiusX="10"
+                RadiusY="10" />
+            <Rectangle
+                Grid.RowSpan="3"
+                Fill="#0CFFFFFF"
+                RadiusX="10"
+                RadiusY="10" />
+            <!--#endregion-->
+            <!--#region Кнопка закрытия -->
+            <components:CButton
+                x:Name="close_button"
+                BackColor="Transparent"
+                Icon="/Media/close_icon.png"
+                Text=""
+                BorderRadius="10"                
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Padding="8"
+                MouseLeftButtonDown="close_button_MouseLeftButtonDown" />
+            <!--#endregion-->
+            <!--#region Заголовок -->
+            <StackPanel
+                x:Name="MP_header"
+                HorizontalAlignment="Center"
+                Visibility="Visible"
+                Margin="0 6 0 0">
+                <TextBlock
+                    x:Name="MPH_text"
+                    Style="{DynamicResource Base_TextBlock}"
+                    Text="Корзина"
+                    FontSize="26" />
+                <Rectangle
+                    Height="4"
+                    Margin="10 4 10 0"
+                    Fill="White"
+                    RadiusX="2"
+                    RadiusY="2"
+                    MinWidth="50" />
+            </StackPanel>
+            <!--#endregion-->
+            <!--#region Элементы корзины -->
+            <Grid
+                x:Name="cart_items_panel"
+                Grid.Row="1">
+                <!--#region Корзина пустая -->
+                <Grid
+                    x:Name="CIP_empty">
+                    <TextBlock
+                        Text="В данный момент корзина пустая"
+                        FontFamily="{DynamicResource fontfamily_main}"
+                        Foreground="{DynamicResource textcolor_main}"
+                        FontSize="22"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center" />
+                </Grid>
+                <!--#endregion-->
+                <!--#region Элементы -->
+                <components:CScrollPanel
+                    x:Name="CIP_elements"
+                    Margin="10 10 0 0">
+                    <ItemsControl Grid.IsSharedSizeScope="True"
+                        x:Name="items_list"
+                        ItemsSource="{Binding Items, Source={x:Static settings:GProp.Cart}}"
+                        ScrollViewer.CanContentScroll="True"
+                        VirtualizingPanel.IsVirtualizing="True"
+                        VirtualizingPanel.VirtualizationMode="Recycling">
+                        <!--#region Разметка -->
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <WrapPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <!--#endregion-->
+                        <!--#region Шаблон элемента -->
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <cartEditor:CCartEditorItem
+                                    Item="{Binding}"
+                                    Margin="10 8 10 8" 
+                                    Width="860"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <!--#endregion-->
+                    </ItemsControl>
+                </components:CScrollPanel>
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
+            <!--#region Сумма корзины и оплата -->
+            <StackPanel
+                Grid.Row="2"
+                Orientation="Horizontal"
+                HorizontalAlignment="Right"
+                Margin="5">
+                <!--#region Сумма корзины -->
+                <TextBlock
+                    x:Name="cart_sum"
+                    Style="{DynamicResource Base_TextBlock}"
+                    Text="0 RUB"
+                    VerticalAlignment="Center"
+                    Margin="0 0 10 0"
+                    FontSize="22" />
+                <!--#endregion-->
+                <!--#region Купить -->
+                <components:CButton
+                    x:Name="buy_button"
+                    Text="К оплате"
+                    BackColor="#FF2AA72A"
+                    BorderRadius="8"
+                    VerticalAlignment="Center"
+                    Margin="5"
+                    MinWidth="180"
+                    FontFamily="{DynamicResource fontfamily_main}"
+                    FontSize="20"
+                    Grid.Column="2" />
+                <!--#endregion-->
+            </StackPanel>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+    </Grid>
+</UserControl>

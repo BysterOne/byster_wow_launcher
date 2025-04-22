@@ -35,7 +35,8 @@
             MinWidth="220"
             Margin="5 15 0 25">
             <components:CScrollPanel>
-                <StackPanel x:Name="FP_stack_panel"
+                <StackPanel
+                    x:Name="FP_stack_panel"
                     Margin="5 0 10 0">
                     <!--#region Типы -->
                     <local:CFilterChanger
@@ -44,10 +45,11 @@
                         Foreground="{DynamicResource textcolor_main}"
                         FontFamily="{DynamicResource fontfamily_main}"
                         FontSize="20"
-                        Margin="15 5 5 5"/>
+                        Margin="10 5 5 5" />
                     <!--#endregion-->
                     <!--#region Разделитель -->
-                    <Rectangle Style="{DynamicResource RectangleFiltersSpacer}" />
+                    <Rectangle
+                        Style="{DynamicResource RectangleFiltersSpacer}" />
                     <!--#endregion-->
                     <!--#region Классы -->
                     <local:CFilterChanger
@@ -57,21 +59,84 @@
                         FontFamily="{DynamicResource fontfamily_main}"
                         FontSize="20"
                         Margin="10 5 5 5" />
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Воин"/>
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Друид"/>
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Жрец"/>
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Маг"/>
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Охотник"/>
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Паладин"/>
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Разбойник"/>
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Варлок"/>
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="Шаман"/>
-                    <local:CFilterChanger Style="{DynamicResource FilterChangerClaessesStyle}" Text="ДК"/>
                     <!--#endregion-->
                 </StackPanel>
             </components:CScrollPanel>
         </Grid>
         <!--#endregion-->
+        <!--#region Продукты и корзина -->
+        <Grid
+            Grid.Column="1"
+            x:Name="main_panel"
+            Margin="10 0 10 10">
+            <Grid.RowDefinitions>
+                <RowDefinition />
+                <RowDefinition
+                    Height="Auto" />
+            </Grid.RowDefinitions>
 
+            <!--#region Продукты -->
+            <local:CProductList HorizontalAlignment="Left" x:Name="MP_products_list" Margin="0 0 0 8"/>
+            <!--#endregion-->
+            <!--#region Панель -->
+            <Grid
+                x:Name="MP_buy_panel"
+                Grid.Row="1"
+                Margin="5 5 15 5"
+                HorizontalAlignment="Right">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition
+                        Width="Auto" />
+                    <ColumnDefinition
+                        Width="Auto" />
+                    <ColumnDefinition
+                        Width="Auto" />
+                    <ColumnDefinition
+                        Width="Auto" />
+                </Grid.ColumnDefinitions>
+
+                <!--#region Сумма корзины -->
+                <TextBlock
+                x:Name="MPBP_cart_sum"
+                    Style="{DynamicResource Base_TextBlock}"
+                    Text="0 RUB"
+                    VerticalAlignment="Center"
+                    Margin="0 0 10 0"
+                    FontSize="22"/>
+                <!--#endregion-->
+                <!--#region Купить -->
+                <components:CButton
+                    Text="К оплате"
+                    BackColor="#FF2AA72A"
+                    BorderRadius="8"
+                    VerticalAlignment="Center"
+                    Margin="5"
+                    MinWidth="180"
+                    FontFamily="{DynamicResource fontfamily_main}"
+                    FontSize="20"
+                    Grid.Column="2" />
+                <!--#endregion-->
+                <!--#region Корзина -->
+                <components:CButton
+                    Text="Корзина" 
+                    x:Name="MPBP_cart"
+                    BackColor="#26FFFFFF"
+                    BorderRadius="8"
+                    VerticalAlignment="Center"
+                    Margin="5"
+                    MinWidth="180"
+                    FontFamily="{DynamicResource fontfamily_main}"
+                    FontSize="20"
+                    Grid.Column="3"
+                    Icon="/Media/cart_icon.png"
+                    IconWidth="25"
+                    Gap="3"
+                    MouseLeftButtonDown="MPBP_cart_MouseLeftButtonDown"/>
+                <!--#endregion-->
+               
+            </Grid>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
     </Grid>
 </UserControl>

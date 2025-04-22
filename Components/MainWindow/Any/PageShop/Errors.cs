@@ -10,6 +10,7 @@ namespace Launcher.Components.MainWindow.Any.PageShop.Errors
 	public enum EInitialization
 	{
 		FailLoadProductsList,
-	}
+        FailInitProductList,
+    }
     #endregion
 }

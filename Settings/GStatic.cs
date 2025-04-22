@@ -17,13 +17,23 @@ namespace Launcher.Settings
         {
             var name = rotationClass switch
             {
+                ERotationClass.Any => "any_icon.png",
+                ERotationClass.Warrior => "warrior_icon.png",
+                ERotationClass.Druid => "druid_icon.png",
+                ERotationClass.Priest => "priest_icon.png",
+                ERotationClass.Mage => "mage_icon.png",
+                ERotationClass.Hunter => "hunter_icon.png",
+                ERotationClass.Paladin => "paladin_icon.png",
+                ERotationClass.Rogue => "roque_icon.png",
                 ERotationClass.DeathKnight => "death_knight_icon.png",
+                ERotationClass.Warlock => "warlock_icon.png",
+                ERotationClass.Shaman => "shaman_icon.png",
                 _ => null
             };
 
             if (name is null) return null;
 
-            return BitmapFrame.Create(Functions.GetSourceFromResource($"Media/Shop/{name}"));
+            return BitmapFrame.Create(Functions.GetSourceFromResource($"Media/Shop/ClassIcons/{name}"));
         }
         #endregion
         #region GetRotationTypeName
@@ -55,6 +65,40 @@ namespace Launcher.Settings
             };
 
             return Dictionary.Translate(key);
+        }
+        #endregion
+        #region GetRotationTypeIcon
+        public static ImageSource? GetRotationTypeIcon(ERotationType rotationType)
+        {
+            var name = rotationType switch
+            {
+                ERotationType.Bot => "bot_icon.png",
+                ERotationType.PvE => "pve_icon.png",
+                ERotationType.PvP => "pvp_icon.png",
+                ERotationType.Utility => "utility_icon.png",
+                _ => null
+            };
+
+            if (name is null) return null;
+
+            return BitmapFrame.Create(Functions.GetSourceFromResource($"Media/Shop/TypesIcons/{name}"));
+        }
+        #endregion
+        #region GetRotationRoleIcon
+        public static ImageSource? GetRotationRoleIcon(ERotationRole rotationType)
+        {
+            var name = rotationType switch
+            {
+                ERotationRole.Any => "any_icon.png",
+                ERotationRole.Dps => "dps_icon.png",
+                ERotationRole.Heal => "heal_icon.png",
+                ERotationRole.Tank => "tank_icon.png",
+                _ => null
+            };
+
+            if (name is null) return null;
+
+            return BitmapFrame.Create(Functions.GetSourceFromResource($"Media/Shop/RolesIcons/{name}"));
         }
         #endregion
     }

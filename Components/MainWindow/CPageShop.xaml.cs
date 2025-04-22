@@ -5,10 +5,13 @@ using Cls.Exceptions;
 using Launcher.Api;
 using Launcher.Cls;
 using Launcher.Components.MainWindow.Any.PageShop.Errors;
+using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Settings;
+using Launcher.Windows;
 using Launcher.Windows.AnyMain.Enums;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Shapes;
 
@@ -22,10 +25,13 @@ namespace Launcher.Components.MainWindow
         public CPageShop()
         {
             InitializeComponent();
-        }
+
+            GProp.Cart.CartSumUpdated += ECartSumUpdated;
+        }       
 
         #region Переменные
         public static LogBox Pref { get; set; } = new("Shop Page Component");
+        private List<CFilterChanger> FilterClasses { get; set; } = [];        
         #endregion
 
         #region Функции
@@ -46,8 +52,18 @@ namespace Launcher.Components.MainWindow
                 }
                 GProp.Products = tryGetProducts.Response;
                 #endregion
-                #region Установка фильтров
-                SetFilters();
+                #region Инициализация компонента списка продуктов
+                var tryInitProductList = await MP_products_list.Initialization();
+                if (!tryInitProductList.IsSuccess)
+                {
+                    throw new UExcept(EInitialization.FailInitProductList, $"Ошибка инициализации списка продуктов", tryInitProductList.Error);
+                }
+                #endregion
+                #region Установка переключателей фильтров
+                SetupFiltersChangers();
+                #endregion
+                #region Первая загрузка фильтров
+                UpdateFilters(true);
                 #endregion
 
                 return new() { IsSuccess = true };
@@ -70,10 +86,11 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #region SetFilters
-        private void SetFilters()
+        private void SetupFiltersChangers()
         {
             #region Очистка
             FP_stack_panel.Children.Clear();
+            FilterClasses.Clear();
             #endregion
             #region Установка маркеров типа
             var hasBotType = GProp.Products.Any(x => x.Rotations.Any(y => y.Type == ERotationType.Bot));
@@ -92,8 +109,9 @@ namespace Launcher.Components.MainWindow
                     Foreground = Functions.GlobalResources()["textcolor_main"] as SolidColorBrush,
                     FontFamily = Functions.GlobalResources()["fontfamily_main"] as FontFamily,
                     FontSize = 18,
-                    Margin = new (10, 2, 5, 2),
+                    Margin = new(10, 2, 5, 2),
                 };
+                marker.Clicked += FilterChanger_Clicked;
                 #endregion
                 FP_stack_panel.Children.Add(marker);
             }
@@ -113,6 +131,7 @@ namespace Launcher.Components.MainWindow
                 FontSize = 18,
                 Margin = new(10, 2, 5, 2),
             };
+            marker_bundle.Clicked += FilterChanger_Clicked;
             FP_stack_panel.Children.Add(marker_bundle);
             #endregion
             #region Полоска пропуска
@@ -134,6 +153,8 @@ namespace Launcher.Components.MainWindow
                     FontSize = 18,
                     Margin = new(10, 2, 5, 2),
                 };
+                changer.Clicked += FilterChanger_Clicked;
+                FilterClasses.Add(changer);
                 FP_stack_panel.Children.Add(changer);
             }
             #endregion
@@ -148,6 +169,96 @@ namespace Launcher.Components.MainWindow
             };
         }
         #endregion
+        #region UpdateFilters
+        private void UpdateFilters(bool isFirstLoad = false)
+        {
+            var Filters = GProp.Filters;
+
+            #region Все переключатели
+            var allChangers = FP_stack_panel.Children.OfType<CFilterChanger>().ToList();
+            #endregion
+            #region Набор или нет
+            var bundleChanger = allChangers.FirstOrDefault(x => x.Value is EProductsType.Bundle);
+            if (bundleChanger is not null) Filters.IsBundle = bundleChanger.IsActive;
+            #endregion
+            #region Типы
+            var typeChangers = allChangers.Where(x => x.Value is ERotationType).ToList();
+            var typeChangersActive = typeChangers.Where(x => x.IsActive).Select(x => (ERotationType)x.Value).ToList();
+            Filters.Types = typeChangersActive;
+            #endregion
+            #region Классы
+            var classChangers = allChangers.Where(x => x.Value is ERotationClass && (ERotationClass)x.Value != ERotationClass.Any).ToList();
+            var activeClassChangers = classChangers.Where(x => x.IsActive).Select(x => (ERotationClass)x.Value).ToList();
+            Filters.Classes = activeClassChangers;
+            #endregion
+
+            _ = MP_products_list.ApplyFiltersAndSort(!isFirstLoad);
+        }
         #endregion
+        #region HandleRotationClassChange
+        private void HandleRotationClassChange(CFilterChanger sender, bool newValue)
+        {
+            var value = (ERotationClass)sender.Value;
+            #region Если это "Все"
+            if (value is ERotationClass.Any)
+            {
+                // Все переключатели, не соответствующие новому статусу "Все", должны поменять его на новый статус
+                var needChange = FilterClasses.Where(x => (ERotationClass)x.Value != ERotationClass.Any && x.IsActive != newValue);
+                foreach (var filter in needChange) filter.IsActive = newValue;
+            }
+            #endregion
+            #region Если класс
+            else
+            {
+                // Меняем статус переключателя "Все" в зависимоти от статуса всех остальных переключателей
+                var anyChanger = FilterClasses.First(x => (ERotationClass)x.Value == ERotationClass.Any);
+                anyChanger.IsActive = !(FilterClasses.Where(x => (ERotationClass)x.Value != ERotationClass.Any)).Any(x => !x.IsActive);
+            }
+            #endregion
+
+            #region Обновление фильтров
+            UpdateFilters();
+            #endregion
+        }
+        #endregion
+        #endregion
+
+        #region Обработчики событий
+        #region FilterChanger_Clicked
+        private void FilterChanger_Clicked(CFilterChanger sender, bool newValue)
+        {
+            var type = sender.Value.GetType();
+
+            switch (type)
+            {
+                case Type t when t == typeof(ERotationClass):
+                    HandleRotationClassChange(sender, newValue);
+                    break;
+                case Type t when t == typeof(ERotationType):
+                    UpdateFilters();
+                    break;
+                case Type t when t == typeof(EProductsType):
+                    UpdateFilters();
+                    break;
+                default:
+                    throw new NotSupportedException($"Необрабатываемый тип фильтра: {type.Name}.{sender.Value}");
+            }
+        }
+        #endregion
+        #region ECartSumUpdated
+        private void ECartSumUpdated(double sum)
+        {
+            MPBP_cart_sum.Text = $"{sum.ToOut()} {GProp.User.Currency.ToUpper()}";
+        }
+        #endregion
+        #region MPBP_cart_MouseLeftButtonDown
+        private void MPBP_cart_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Main.ChangeCartEditorState(true);
+        }
+        #endregion
+        #endregion
+
+
     }
 }

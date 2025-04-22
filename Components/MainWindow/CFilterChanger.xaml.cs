@@ -21,12 +21,16 @@ namespace Launcher.Components.MainWindow
             InitializeComponent();
 
             this.DataContext = this;
-
-            //MPTI_border.BorderBrush = GetMarkerFill();
-            MouseDown += 
-                (s, e) => 
-                    IsActive = !IsActive;
+            MouseDown += EMouseDown;
         }
+
+        #region События
+        #region Clicked
+        public delegate void OnClicked(CFilterChanger sender, bool newValue);
+        public event OnClicked? Clicked;
+        public event OnClicked? PreviewClicked;
+        #endregion
+        #endregion
 
         #region Переменные
         public Enum Value { get; set; }
@@ -121,6 +125,17 @@ namespace Launcher.Components.MainWindow
                 //sender.MPTM_stroke.Width = newWidth;
                 //sender.MPTM_fill.Width = newWidth - (sender.MPTM_stroke.StrokeThickness + 1) * 2;
             }
+        }
+        #endregion
+        #endregion
+
+        #region Обработчики событий
+        #region EMouseDown
+        private void EMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            PreviewClicked?.Invoke(this, !IsActive);
+            IsActive = !IsActive;
+            Clicked?.Invoke(this, IsActive);
         }
         #endregion
         #endregion

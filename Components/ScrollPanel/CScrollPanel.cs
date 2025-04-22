@@ -18,6 +18,16 @@ namespace Launcher.Components
         private ScrollBar? VerticalScrollBar { get; set; } = null;
         #endregion
 
+        #region Функции
+        #region ScrollTo
+        public void ScrollTo(int y)
+        {
+            var scroll_viewer = (ScrollViewer)GetTemplateChild("scroll_viewer");
+            scroll_viewer.ScrollToVerticalOffset(y);
+        }
+        #endregion
+        #endregion
+
         #region События
         #region scroll_viewer_MouseEnter
         private void scroll_viewer_MouseEnter(object sender, MouseEventArgs e)

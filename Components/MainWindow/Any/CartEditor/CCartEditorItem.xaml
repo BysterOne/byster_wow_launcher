@@ -1,0 +1,184 @@
+﻿<UserControl
+    x:Class="Launcher.Components.MainWindow.Any.CartEditor.CCartEditorItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow.Any.CartEditor"
+    mc:Ignorable="d"
+    xmlns:components="clr-namespace:Launcher.Components"
+    d:DesignHeight="80"
+    d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Components/Skeleton/CSkeletonStyle.xaml" />
+                <ResourceDictionary
+                    Source="/Styles/Pages/ShopPage.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <!--#region Разметка -->
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition
+                Width="80" />
+            <ColumnDefinition />
+            <ColumnDefinition
+                Width="Auto"
+                SharedSizeGroup="CartItemDuration" />
+            <ColumnDefinition
+                Width="Auto"
+                SharedSizeGroup="CartItemTotalSum" />
+            <ColumnDefinition
+                Width="Auto" />
+            <ColumnDefinition
+                Width="60" />
+        </Grid.ColumnDefinitions>
+        <!--#endregion-->
+        <!--#region Фон -->
+        <Rectangle
+            Fill="#0CFFFFFF"
+            RadiusX="15"
+            RadiusY="15" 
+            Grid.ColumnSpan="6"/>
+        <!--#endregion-->
+
+        <!--#region Изображение -->
+        <Grid
+        x:Name="image_grid"
+            Width="80"
+            Height="80"
+            HorizontalAlignment="Left">
+            <!--#region Маска -->
+            <Grid.OpacityMask>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Border
+                            CornerRadius="15"
+                            Background="White"
+                            Width="80"
+                            Height="80" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Grid.OpacityMask>
+            <!--#endregion-->
+
+            <components:CSkeleton
+                Padding="0"
+                x:Name="image_skeleton">
+                <Image
+                    x:Name="image"
+                    Source="/Media/test-back.jpg"
+                    Stretch="UniformToFill"
+                    RenderOptions.BitmapScalingMode="HighQuality">
+                </Image>
+            </components:CSkeleton>
+        </Grid>
+        <!--#endregion-->
+        <!--#region Название -->
+        <TextBlock
+            x:Name="product_name"
+            Grid.Column="1"
+            Text="Priest Bundle"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Left"
+            Margin="30 0 20 0"
+            Foreground="{DynamicResource textcolor_main}"
+            FontFamily="{DynamicResource fontfamily_main}"
+            FontSize="24" />
+        <!--#endregion-->
+        <!--#region Длительность -->
+        <TextBlock
+            x:Name="duration"
+            Grid.Column="2"
+            Text="31 день"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Margin="15 0"
+            Foreground="{DynamicResource textcolor_main}"
+            FontFamily="{DynamicResource fontfamily_main}"
+            FontSize="20" />
+        <!--#endregion-->
+        <!--#region Общая сумма -->
+        <TextBlock
+            x:Name="sum"
+            Grid.Column="3"
+            Text="999 RUB"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            Margin="15 0"
+            Foreground="{DynamicResource textcolor_main}"
+            FontFamily="{DynamicResource fontfamily_main}"
+            FontSize="20" />
+        <!--#endregion-->
+        <!--#region Колво -->
+        <Grid
+            Margin="5 0"
+            Grid.Column="4"
+            VerticalAlignment="Center"
+            x:Name="count_grid"
+            HorizontalAlignment="Center">
+            <!--#region Разметка -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="50" />
+                <ColumnDefinition
+                    MinWidth="30" />
+                <ColumnDefinition
+                    Width="50" />
+            </Grid.ColumnDefinitions>
+            <!--#endregion-->
+
+            <!--#region Уменьшить -->
+            <components:CButton
+                Style="{DynamicResource ProductItemCartCountButtonStyle}"
+                Grid.Column="0"
+                x:Name="CG_remove"
+                Icon="/Media/minus_icon.png"
+                MouseLeftButtonDown="CG_remove_MouseLeftButtonDown" />
+            <!--#endregion-->
+            <!--#region Колво -->
+            <TextBlock
+                x:Name="CG_count"
+                Text="0"
+                FontFamily="{DynamicResource fontfamily_main}"
+                Foreground="{DynamicResource textcolor_main}"
+                FontSize="22"
+                TextAlignment="Center"
+                VerticalAlignment="Center"
+                Margin="0 0 0 0"
+                Grid.Column="1" />
+            <!--#endregion-->
+            <!--#region Уменьшить -->
+            <components:CButton
+                Style="{DynamicResource ProductItemCartCountButtonStyle}"
+                Grid.Column="2"
+                x:Name="CG_add"
+                Icon="/Media/plus_icon.png"
+                MouseLeftButtonDown="CG_add_MouseLeftButtonDown" />
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+        <!--#region Удалить -->
+        <components:CButton
+            Text=""
+            Width="50"
+            Height="50"
+            x:Name="remove_button"
+            Grid.Column="5"
+            BorderRadius="10"
+            HorizontalAlignment="Left"
+            VerticalAlignment="Center"
+            BackColor="Transparent"
+            Icon="/Media/remove_icon.png"
+            IconWidth="30"
+            IconHeight="36"
+            Padding="2"
+            MouseLeftButtonDown="remove_button_MouseLeftButtonDown"/>
+        <!--#endregion-->
+    </Grid>
+</UserControl>

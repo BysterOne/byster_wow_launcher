@@ -15,7 +15,7 @@
     ResizeMode="NoResize"
     Title="Byster"
     Height="700"
-    Width="1200">
+    Width="1280">
     <Window.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -44,6 +44,22 @@
 
         <Rectangle
             Fill="{DynamicResource back_main}" />
+
+        <!--#region Место для модального окна -->
+        <Grid
+            x:Name="modalGrid"
+            Visibility="Collapsed"
+            Panel.ZIndex="997">
+
+        </Grid>
+        <!--#endregion-->
+        <!--#region Корзина -->
+        <pages:CCartEditor
+            x:Name="CartEditor"
+            Visibility="Hidden"
+            Opacity="0"
+            Panel.ZIndex="990" />
+        <!--#endregion-->
 
         <!--#region Уведомление -->
         <Grid

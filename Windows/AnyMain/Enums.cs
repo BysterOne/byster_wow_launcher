@@ -53,4 +53,11 @@ namespace Launcher.Windows.AnyMain.Enums
     {        
         Bundle
     }
+
+    public enum EServerIcon
+    {
+        Main,
+        Devnet,
+        Sernet
+    }
 }

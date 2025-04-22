@@ -1,7 +1,9 @@
 ﻿using Launcher.Any.GlobalEnums;
+using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,15 +12,18 @@ using System.Threading.Tasks;
 namespace Launcher.Settings
 {
     public class AppSettings
-    {     
-        public static readonly string MainFolderPath = "local";
-        private static readonly string SettingsFilePath = Path.Combine(MainFolderPath, "settings.json");
+    {
+        public static string RootFolder { get => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "local"); }
+        public static string CacheFolder { get => Path.Combine(RootFolder, "cache"); }
+        public static string SettingsFilePath { get => Path.Combine(RootFolder, "settings.json"); }
+
         private static AppSettings? _instance;
 
         #region Параметры
         public ELang Language { get; set; } = ELang.Ru;
         public string Login { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;        
+        public string Password { get; set; } = string.Empty;
+        public ObservableCollection<CServer> Server { get; set; } = [];
         #endregion
 
         public static AppSettings Instance
@@ -36,7 +41,7 @@ namespace Launcher.Settings
 
         public static void Save()
         {
-            if (!Directory.Exists(MainFolderPath)) Directory.CreateDirectory(MainFolderPath);
+            if (!Directory.Exists(RootFolder)) Directory.CreateDirectory(RootFolder);
 
             var json = JsonConvert.SerializeObject(Instance, Formatting.Indented);
             File.WriteAllText(SettingsFilePath, json);

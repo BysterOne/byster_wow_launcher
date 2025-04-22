@@ -6,12 +6,15 @@ using Launcher.Any;
 using Launcher.Any.GlobalEnums;
 using Launcher.Api;
 using Launcher.Cls;
+using Launcher.Components;
+using Launcher.Components.DialogBox;
 using Launcher.Components.PanelChanger;
 using Launcher.PanelChanger.Enums;
 using Launcher.Settings;
 using Launcher.Windows.AnyMain.Enums;
 using Launcher.Windows.AnyMain.Errors;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -31,7 +34,7 @@ namespace Launcher.Windows
         }
 
         #region Переменные
-        public LogBox Pref { get; set; } = new("Main");
+        public static LogBox Pref { get; set; } = new("Main");
         private CPanelChanger<EPC_MainShop> EPC_MainPanelChanger { get; set; }
         #endregion
 
@@ -188,9 +191,10 @@ namespace Launcher.Windows
         }
         #endregion
         #region Notify
-        public void Notify(string message)
+        public static void Notify(string message)
         {
-            NP_message_block.Text = message;
+            var mainWindow = Application.Current.Windows.OfType<Main>().FirstOrDefault() ?? throw new UExcept(EShowModal.MainWindowWasNull, $"Основное окно было пустым");
+            mainWindow.NP_message_block.Text = message;
 
             #region Анимация
             var storyboard = new Storyboard();
@@ -199,44 +203,130 @@ namespace Launcher.Windows
             animation.KeyFrames.Add(new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(3150)));
             animation.KeyFrames.Add(new EasingDoubleKeyFrame(0, TimeSpan.FromMilliseconds(3300)));
 
-            Storyboard.SetTarget(animation, NotifyPanel);
+            Storyboard.SetTarget(animation, mainWindow.NotifyPanel);
             Storyboard.SetTargetProperty(animation, new PropertyPath(OpacityProperty));
 
             storyboard.Children.Add(animation);
 
-            storyboard.Begin(NP_message_block, HandoffBehavior.SnapshotAndReplace, true);
+            storyboard.Begin(mainWindow.NP_message_block, HandoffBehavior.SnapshotAndReplace, true);
             #endregion
         }
         #endregion
         #region Loader
-        public async Task Loader(ELoaderState newState, bool isFullBlack = false)
+        public static async Task Loader(ELoaderState newState, bool isFullBlack = false)
         {
+            #region Установка ожидания
             var tcs = new TaskCompletionSource<object?>();
-
+            #endregion
+            #region Главное окно
+            var mainWindow = Application.Current.Windows.OfType<Main>().FirstOrDefault() ?? throw new Exception("Пустое окно");
+            #endregion
+            #region Показ
             if (newState == ELoaderState.Show)
             {
-                if (isFullBlack) LP_fill.SetResourceReference(Shape.FillProperty, "back_main");
-                else LP_fill.Fill = new SolidColorBrush(Color.FromArgb(254, 9, 12, 22));
+                if (isFullBlack) mainWindow.LP_fill.SetResourceReference(Shape.FillProperty, "back_main");
+                else mainWindow.LP_fill.Fill = new SolidColorBrush(Color.FromArgb(254, 9, 12, 22));
 
-                LoaderPanel.Visibility = Visibility.Visible;
-                var animation = AnimationHelper.OpacityAnimation(LoaderPanel, 1);
+                mainWindow.LoaderPanel.Visibility = Visibility.Visible;
+                var animation = AnimationHelper.OpacityAnimation(mainWindow.LoaderPanel, 1);
                 animation.Completed += (s, e) => tcs.SetResult(null);
-                animation.Begin(LoaderPanel, HandoffBehavior.SnapshotAndReplace, true);
-                LP_loader.StartAnimation();
+                animation.Begin(mainWindow.LoaderPanel, HandoffBehavior.SnapshotAndReplace, true);
+                mainWindow.LP_loader.StartAnimation();
             }
+            #endregion
+            #region Скрытие
             else
             {
-                var animation = AnimationHelper.OpacityAnimation(LoaderPanel, 0);
+                var animation = AnimationHelper.OpacityAnimation(mainWindow.LoaderPanel, 0);
                 animation.Completed += (s, e) =>
                 {
-                    Dispatcher.Invoke(() => LoaderPanel.Visibility = Visibility.Hidden);
+                    mainWindow.Dispatcher.Invoke(() => mainWindow.LoaderPanel.Visibility = Visibility.Hidden);
                     tcs.SetResult(null);
                 };
-                LP_loader.StopAnimation();
-                animation.Begin(LoaderPanel, HandoffBehavior.SnapshotAndReplace, true);
+                mainWindow.LP_loader.StopAnimation();
+                animation.Begin(mainWindow.LoaderPanel, HandoffBehavior.SnapshotAndReplace, true);
             }
-
+            #endregion
             await tcs.Task;
+        }
+        #endregion
+        #region ShowModal
+        public static async Task<UResponse<EResponse>> ShowModal(BoxSettings settings)
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось отобразить модальное окно";
+
+            #region try
+            try
+            {
+                #region Установка компонента
+                var mainWindow = Application.Current.Windows.OfType<Main>().FirstOrDefault() ?? throw new UExcept(EShowModal.MainWindowWasNull, $"Основное окно было пустым");
+                #endregion
+                #region Создание задачи на ожидание
+                var taskWaiter = new TaskCompletionSource<UResponse<EResponse>>();
+                #endregion
+                #region Создание компонента
+                await mainWindow.Dispatcher.InvokeAsync(async () =>
+                {
+                    try
+                    {
+                        var modalComponent = new CDialogBox();
+                        Panel.SetZIndex(modalComponent, 9);
+                        mainWindow.modalGrid.Visibility = Visibility.Visible;
+                        mainWindow.modalGrid.Children.Add(modalComponent);
+
+                        var response = await modalComponent.Show(settings);
+                        taskWaiter.SetResult(response);
+                        await modalComponent.Hide();
+                        mainWindow.modalGrid.Children.Remove(modalComponent);
+                    }
+                    catch (Exception ex) { taskWaiter.SetException(ex); }
+                });
+                #endregion
+                #region Ожидание ответа
+                return await taskWaiter.Task;
+                #endregion
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                Functions.Error(ex, _failinf, _proc);
+                return new(ex.Error);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
+                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
+                return new(uerror);
+            }
+            #endregion
+        }
+        #endregion
+        #region ChangeCartEditorState
+        public static void ChangeCartEditorState(bool show)
+        {
+            var mainWindow = Application.Current.Windows.OfType<Main>().FirstOrDefault() ?? throw new UExcept(EShowModal.MainWindowWasNull, $"Основное окно было пустым");
+            #region Показать
+            if (show)
+            {
+                mainWindow.CartEditor.Visibility = Visibility.Visible;
+                AnimationHelper.OpacityAnimation(mainWindow.CartEditor, 1).
+                    Begin(mainWindow.CartEditor, HandoffBehavior.SnapshotAndReplace, true);
+                mainWindow.CartEditor.IsShowed = true;
+            }
+            #endregion
+            #region Скрыть
+            else
+            {
+                var anim = AnimationHelper.OpacityAnimation(mainWindow.CartEditor, 0);
+                anim.Completed += (s, e) => mainWindow.Dispatcher.Invoke(() => mainWindow.CartEditor.Visibility = Visibility.Hidden);
+                anim.Begin(mainWindow.CartEditor, HandoffBehavior.SnapshotAndReplace, true);
+                mainWindow.CartEditor.IsShowed = false;
+            }
+            #endregion
         }
         #endregion
         #endregion

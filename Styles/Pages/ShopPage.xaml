@@ -3,6 +3,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:MainWindow="clr-namespace:Launcher.Components.MainWindow"
     xmlns:l="clr-namespace:Launcher.Components"
+    xmlns:settings="clr-namespace:Launcher.Settings"
     xmlns:any="clr-namespace:Launcher.Any">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary
@@ -844,6 +845,6 @@
             Value="30" />
         <Setter
             Property="RenderOptions.BitmapScalingMode"
-            Value="HighQuality" />
+            Value="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}" />
     </Style>
 </ResourceDictionary>

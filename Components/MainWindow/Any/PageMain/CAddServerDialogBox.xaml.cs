@@ -119,6 +119,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                     MarkerWidth = 50,
                     Icon = imageSource,
                     IconBorderRadius = 50,
+                    IsAutoChangeState = false,
                     IconBorderThickness = 3,
                     Value = icon,
                     Margin = new Thickness(5)
@@ -179,6 +180,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         {
             if ((EServerIcon)sender.Value == (EServerIcon)SelectedIcon.Value) return;
 
+            if (!sender.IsActive) sender.IsActive = true;            
             SelectedIcon.IsActive = false;
             SelectedIcon = sender;
         }

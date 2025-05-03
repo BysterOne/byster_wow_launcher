@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Launcher.Windows"
     xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:settings="clr-namespace:Launcher.Settings"
     xmlns:pages="clr-namespace:Launcher.Components.MainWindow"
     mc:Ignorable="d"
     AllowsTransparency="True"
@@ -142,7 +143,7 @@
                     HorizontalAlignment="Left">
                     <!--#region Лого -->
                     <Image
-                        RenderOptions.BitmapScalingMode="HighQuality"
+                        RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                         MaxWidth="200"
                         MaxHeight="70"
                         HorizontalAlignment="Left"

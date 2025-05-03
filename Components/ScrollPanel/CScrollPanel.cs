@@ -1,4 +1,5 @@
 ﻿using Launcher.Any;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Controls.Primitives;
@@ -125,7 +126,7 @@ namespace Launcher.Components
         {
             if (_scrollViewer == null) return;
 
-            //e.Handled = true;
+            e.Handled = true;
 
             //const double pixelsPerDelta = 150;
             //double target = _scrollViewer.VerticalOffset - e.Delta / 120.0 * pixelsPerDelta;
@@ -135,10 +136,11 @@ namespace Launcher.Components
             //double ms = Math.Clamp(distance * 0.2, 100, 400);
 
             //AnimateToOffset(target, ms);
+                        
+            const double pxPerDelta = 80;
+            _targetOffset = Math.Clamp(_targetOffset - (e.Delta / 120.0 * pxPerDelta), 0, _scrollViewer.ScrollableHeight);
 
-            const double pxPerDelta = 110;
-            _targetOffset -= e.Delta / 120.0 * pxPerDelta;
-            _targetOffset = Math.Clamp(_targetOffset, 0, _scrollViewer.ScrollableHeight);
+            Debug.WriteLine($"{e.Delta} - {_targetOffset}");
 
             AnimateToOffset(_targetOffset, 150);
         }

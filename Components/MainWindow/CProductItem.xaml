@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:any="clr-namespace:Launcher.Any"
     xmlns:local="clr-namespace:Launcher.Components.MainWindow"
+    xmlns:settings="clr-namespace:Launcher.Settings"
     xmlns:components="clr-namespace:Launcher.Components"
     mc:Ignorable="d"
     d:DesignHeight="300"
@@ -115,7 +116,7 @@
                                     Value="30" />
                                 <Setter
                                     Property="RenderOptions.BitmapScalingMode"
-                                    Value="HighQuality" />
+                                    Value="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}" />
                                 <Setter
                                     Property="OpacityMask">
                                     <Setter.Value>

@@ -35,6 +35,7 @@ namespace Launcher.Components.MainWindow
 
         #region Переменные
         public Enum Value { get; set; }
+        public bool IsAutoChangeState { get; set; } = true;
         #endregion
 
         #region Свойства
@@ -176,7 +177,7 @@ namespace Launcher.Components.MainWindow
         private void EMouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
             PreviewClicked?.Invoke(this, !IsActive);
-            IsActive = !IsActive;
+            if (IsAutoChangeState) IsActive = !IsActive;
             Clicked?.Invoke(this, IsActive);
         }
         #endregion

@@ -4,7 +4,8 @@
              xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
              xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
              xmlns:controlComponents="clr-namespace:Launcher.Components"
-             mc:Ignorable="d" d:Width="250" d:Height="50" FontSize="20"
+    xmlns:settings="clr-namespace:Launcher.Settings"
+    mc:Ignorable="d" d:Width="250" d:Height="50" FontSize="20"
              d:DataContext="{Binding RelativeSource={x:Static RelativeSource.Self}}">
     <UserControl.Resources>
         <ResourceDictionary>
@@ -46,7 +47,7 @@
                     CaretBrush="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controlComponents:CTextInput}}}"
                     d:CaretBrush="{Binding Foreground}"
                     TextChanged="passwordbox_PasswordChanged"
-                    RenderOptions.BitmapScalingMode="HighQuality"
+                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                     Background="Transparent" BorderThickness="0"
                     Margin="5 0 10 0" Grid.Column="0" x:Name="textbox"
                     />
@@ -65,7 +66,7 @@
                     CaretBrush="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controlComponents:CTextInput}}}"
                     d:CaretBrush="{Binding Foreground}"
                     PasswordChanged="passwordbox_PasswordChanged"
-                    RenderOptions.BitmapScalingMode="HighQuality"
+                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                     Background="Transparent"
                     BorderThickness="0"
                     Margin="5 0 10 0"
@@ -88,7 +89,9 @@
 
                 <Image 
                     x:Name="image" Grid.Column="1"
-                    Stretch="Uniform" Visibility="Collapsed" RenderOptions.BitmapScalingMode="HighQuality"
+                    Stretch="Uniform"
+                    Visibility="Collapsed"
+                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                     Source="{Binding Icon, RelativeSource={RelativeSource AncestorType={x:Type controlComponents:CTextInput}}}"
                     d:Source="{Binding Icon}"
                     MaxHeight="{Binding IconHeight, RelativeSource={RelativeSource AncestorType={x:Type controlComponents:CTextInput}}}"

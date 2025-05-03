@@ -3,6 +3,7 @@
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:sys="clr-namespace:System;assembly=netstandard"
+    xmlns:settings="clr-namespace:Launcher.Settings"
     xmlns:Components="clr-namespace:Launcher.Components">
     <SolidColorBrush
         x:Key="orange_main"
@@ -78,7 +79,7 @@
             Value="30" />
         <Setter
             Property="RenderOptions.BitmapScalingMode"
-            Value="HighQuality" />
+            Value="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}" />
         <EventSetter
             Event="MouseEnter"
             Handler="WindowControlButtonStyle_MouseEnter" />
@@ -145,6 +146,6 @@
             Value="White" />
         <Setter
             Property="RenderOptions.BitmapScalingMode"
-            Value="HighQuality" />
+            Value="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}" />
     </Style>
 </ResourceDictionary>

@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Launcher.Components.MainWindow"
+    xmlns:settings="clr-namespace:Launcher.Settings"
     xmlns:shapes="clr-namespace:Launcher.Components.MainWindow.Any"
     mc:Ignorable="d"
     Cursor="Hand">
@@ -39,7 +40,7 @@
                 <!--#region Граница -->
                 <shapes:Hexagon
                     x:Name="MPTM_stroke"
-                    RenderOptions.BitmapScalingMode="HighQuality"
+                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                     Width="22"
                     Height="26"
                     Stroke="{DynamicResource marker_fill}"
@@ -49,7 +50,7 @@
                 <shapes:Hexagon
                     x:Name="MPTM_fill"
                     Opacity="0"
-                    RenderOptions.BitmapScalingMode="HighQuality"
+                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                     Width="15"
                     Height="18"
                     Fill="{DynamicResource marker_fill}"
@@ -69,7 +70,7 @@
                     Margin="2" 
                     RadiusX="3" RadiusY="3"
                     Opacity="0"
-                    RenderOptions.BitmapScalingMode="HighQuality"/>
+                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"/>
                 <Border
                     x:Name="MPTI_border"
                     BorderThickness="{Binding IconBorderThickness}"
@@ -80,7 +81,7 @@
                     MinHeight="15"
                     CornerRadius="6"
                     BorderBrush="Transparent"
-                    RenderOptions.BitmapScalingMode="HighQuality">
+                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}">
                     <Border.Background>
                         <ImageBrush
                             AlignmentX="Center"
@@ -88,7 +89,7 @@
                             Stretch="UniformToFill"
                             x:Name="MPTIB_image_brush"
                             ImageSource="{Binding Icon}"
-                            RenderOptions.BitmapScalingMode="HighQuality"/>
+                            RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"/>
                     </Border.Background>
                 </Border>
             </Grid>

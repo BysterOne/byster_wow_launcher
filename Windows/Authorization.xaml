@@ -6,6 +6,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:local="clr-namespace:Launcher.Windows"
     xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:settings="clr-namespace:Launcher.Settings"
     mc:Ignorable="d"
     AllowsTransparency="True"
     Background="Transparent"
@@ -144,7 +145,7 @@
             x:Name="LoginPanel">
             <!--#region Лого -->
             <Image
-                RenderOptions.BitmapScalingMode="HighQuality"
+                RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                 MaxWidth="200"
                 MaxHeight="80"
                 Source="/Media/logo_full.png"
@@ -195,7 +196,7 @@
             x:Name="RegistrationPanel">
             <!--#region Лого -->
             <Image
-                RenderOptions.BitmapScalingMode="HighQuality"
+                RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                 MaxWidth="200"
                 MaxHeight="80"
                 Source="/Media/logo_full.png"

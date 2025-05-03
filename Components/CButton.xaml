@@ -5,6 +5,7 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Launcher.Components"
+    xmlns:settings="clr-namespace:Launcher.Settings"
     mc:Ignorable="d"
     MinHeight="15"
     MinWidth="15"
@@ -48,7 +49,7 @@
                         Width="{Binding IconWidth, RelativeSource={RelativeSource AncestorType={x:Type local:CButton}}}"
                         Visibility="Collapsed"
                         VerticalAlignment="Center"
-                        RenderOptions.BitmapScalingMode="HighQuality" />
+                        RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"/>
                     <TextBlock
                         x:Name="text"
                         Text="{Binding Text}"

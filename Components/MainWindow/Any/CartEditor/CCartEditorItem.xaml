@@ -4,6 +4,7 @@
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:settings="clr-namespace:Launcher.Settings"
     xmlns:local="clr-namespace:Launcher.Components.MainWindow.Any.CartEditor"
     mc:Ignorable="d"
     xmlns:components="clr-namespace:Launcher.Components"
@@ -74,7 +75,7 @@
                     x:Name="image"
                     Source="/Media/test-back.jpg"
                     Stretch="UniformToFill"
-                    RenderOptions.BitmapScalingMode="HighQuality">
+                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}">
                 </Image>
             </components:CSkeleton>
         </Grid>

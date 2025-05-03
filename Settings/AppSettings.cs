@@ -3,6 +3,7 @@ using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.IO;
+using System.Windows.Media;
 
 namespace Launcher.Settings
 {
@@ -11,7 +12,8 @@ namespace Launcher.Settings
         public static string RootFolder { get => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "local"); }
         public static string CacheFolder { get => Path.Combine(RootFolder, "cache"); }
         public static string TempBin { get => Path.Combine(RootFolder, "tempBin"); }
-        public static string SettingsFilePath { get => Path.Combine(RootFolder, "settings.json"); }        
+        public static string SettingsFilePath { get => Path.Combine(RootFolder, "settings.json"); }
+        public static BitmapScalingMode GlobalBitmapScalingMode { get; set; } = BitmapScalingMode.Fant;
 
         private static AppSettings? _instance;
 

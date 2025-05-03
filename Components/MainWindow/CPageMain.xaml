@@ -114,7 +114,7 @@
                 <Image
                     Source="../../Media/no_items_icon.png"
                     Width="110"
-                    RenderOptions.BitmapScalingMode="HighQuality"
+                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                     Grid.Row="0" />
                 <!--#endregion-->
                 <!--#region Текст -->

@@ -1,4 +1,5 @@
 ﻿using Launcher.Any;
+using Launcher.Settings;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -67,7 +68,7 @@ namespace Launcher.Components
                     RadiusX = StartBlockSize.Width / 2,
                     RadiusY = StartBlockSize.Width / 2
                 };
-                RenderOptions.SetBitmapScalingMode(rect, BitmapScalingMode.HighQuality);
+                RenderOptions.SetBitmapScalingMode(rect, AppSettings.GlobalBitmapScalingMode);
                 blocks.Children.Add(rect);
             }
         }

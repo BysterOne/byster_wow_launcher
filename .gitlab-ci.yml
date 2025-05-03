@@ -1,0 +1,41 @@
+variables:
+  Solution: Launcher.csproj
+  MSBUILD_CONCURRENCY: 4
+  VSWHERE_PATH: '%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe'
+  DLL_NAME: bin/Release/net9.0-windows/win-x64/publish/Launcher.exe
+  UPLOAD_URL: 'https://service.byster.one/launcher/push_launcher_ci'
+  UPLOAD_URL_DEV: 'https://service.staging.byster.one/launcher/push_launcher_ci'
+  ASSEMBLY_INFO: 'AssemblyInfo.cs'
+  DOTNET_CLI_TELEMETRY_OPTOUT: '1'
+
+.before_msbuild: &enter_vsdevshell
+  before_script:
+    - "echo off"
+    - 'call "C:\Program Files\Microsoft Visual Studio\2022\Community\Common7\Tools\VsDevCmd.bat"'
+
+stages:
+  - build
+  - deploy
+
+build:
+  <<: *enter_vsdevshell
+  stage: build
+  artifacts:
+     paths:
+       - bin/Release/net9.0-windows/win-x64/publish/*.exe
+       - bin/Release/net9.0-windows/win-x64/publish/*.pdb
+     expire_in: 1 hour
+  script:
+  - 'dotnet publish'
+
+deploy:
+  stage: deploy
+  dependencies: 
+    - build
+  script:
+  - echo deploying...
+  - 'python -m pip install requests'
+  - 'python upload_release.py --dll "%DLL_NAME%" --sha "%CI_COMMIT_SHA%" --gitlab "%GITLAB_USER_LOGIN%" --token "%GITLAB_TOKEN%" --url "%UPLOAD_URL%" --branch "%CI_COMMIT_BRANCH%" --assembly "%ASSEMBLY_INFO%"'
+  - 'python upload_release.py --dll "%DLL_NAME%" --sha "%CI_COMMIT_SHA%" --gitlab "%GITLAB_USER_LOGIN%" --token "%GITLAB_TOKEN%" --url "%UPLOAD_URL_DEV%" --branch "%CI_COMMIT_BRANCH%" --assembly "%ASSEMBLY_INFO%"'
+  only:
+    - tags

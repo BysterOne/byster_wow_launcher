@@ -1,3 +1,4 @@
+using System.Reflection;
 using System.Windows;
 
 [assembly: ThemeInfo(
@@ -8,3 +9,12 @@ using System.Windows;
                                                 //(used if a resource is not found in the page,
                                                 // app, or any theme specific resource dictionaries)
 )]
+
+[assembly: AssemblyTitle("Byster")]
+[assembly: AssemblyDescription("Byster Launcher (World of Warcraft)")]
+[assembly: AssemblyConfiguration("")]
+[assembly: AssemblyCompany("Byster")]
+[assembly: AssemblyProduct("Byster")]
+
+[assembly: AssemblyVersion("5.0.0.0")]
+[assembly: AssemblyFileVersion("5.0.0.0")]

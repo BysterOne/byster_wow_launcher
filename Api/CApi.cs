@@ -30,10 +30,16 @@ namespace Launcher.Api
 
 
         #region Функции
-        #region GetTest
-        public static async Task<UResponse<List<Product>>> GetTest(int productId)
+        #region MyRegion
+        public static async Task<UResponse<List<Subscription>>> GetUserSubscriptions()
         {
-            return await Request<List<Product>>("/shop/test", Method.Post, body: new { product_id = productId });
+            return await Request<List<Subscription>>("/shop/my_subscriptions", Method.Post, body: new { });
+        }
+        #endregion
+        #region GetTest
+        public static async Task<UResponse<List<Subscription>>> GetTest(int productId)
+        {
+            return await Request<List<Subscription>>("/shop/test", Method.Post, body: new { product_id = productId });
         }
         #endregion
         #region GetProductsList

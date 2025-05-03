@@ -12,6 +12,22 @@ namespace Launcher.Settings
 {
     class GStatic
     {
+        #region GetServerIcon
+        public static ImageSource? GetServerIcon(EServerIcon serverIcon)
+        {
+            var name = serverIcon switch
+            {         
+                EServerIcon.Test1 => "server_icon_test_1.png",
+                EServerIcon.Test2 => "server_icon_test_2.jpg",
+                EServerIcon.Test3 => "server_icon_test_3.jpg",
+                _ => "null_image_icon.png"
+            };
+
+            if (name is null) return null;
+
+            return BitmapFrame.Create(Functions.GetSourceFromResource($"Media/ServersIcons/{name}"));
+        }
+        #endregion
         #region GetRotationClassIcon
         public static ImageSource? GetRotationClassIcon(ERotationClass rotationClass)
         {

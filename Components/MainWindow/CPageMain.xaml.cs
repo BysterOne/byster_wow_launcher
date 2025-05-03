@@ -1,23 +1,49 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using Cls;
+using Cls.Any;
+using Cls.Errors;
+using Cls.Exceptions;
+using Launcher.Any;
+using Launcher.Api;
+using Launcher.Cls;
+using Launcher.Components.MainWindow.Any.PageMain;
+using Launcher.Components.MainWindow.Any.PageMain.Enums;
+using Launcher.Components.MainWindow.Any.PageMain.Errors;
+using Launcher.Components.PanelChanger;
+using Launcher.Settings;
+using Launcher.Windows;
+using System.Collections.Specialized;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
-using Cls.Any;
-using Launcher.Any;
+using System.Windows.Media.Animation;
 
 
 namespace Launcher.Components.MainWindow
 {
+    #region Errors
+    namespace Any.PageMain.Errors
+    {
+        #region EInitialization
+        public enum EInitialization 
+        {
+            FailLoadSubscriptions,
+            FailLoadPanelChanger
+        }
+        #endregion
+    }
+    #endregion
+    #region Errors
+    namespace Any.PageMain.Enums
+    {
+        #region EPC_Subscription
+        public enum EPC_Subscription
+        {
+            NoSubscriptions,
+            SubscriptionsList
+        }
+        #endregion
+    }
+    #endregion
     /// <summary>
     /// Логика взаимодействия для CPageMain.xaml
     /// </summary>
@@ -26,20 +52,176 @@ namespace Launcher.Components.MainWindow
         public CPageMain()
         {
             InitializeComponent();
+
+            GProp.Subscriptions.CollectionChanged += ECollectionChanged;
         }
 
+       
+        #region Переменные
+        public static LogBox Pref { get; set; } = new("Main Page");
+        private CPanelChanger<EPC_Subscription> PanelChanger { get; set; }
+        #endregion
 
+        #region Обработчики событий
+        #region LP_addButton_MouseLeftButtonDown
+        private void LP_addButton_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var dlg = new CAddServerDialogBox();
+            _ = Main.ShowModal(dlg);
+        }
+        #endregion
+        #region ECollectionChanged
+        private void ECollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        {
+            if (e.Action is NotifyCollectionChangedAction.Add || e.Action is NotifyCollectionChangedAction.Remove)
+            {
+                if (GProp.Subscriptions.Count is 0 && PanelChanger.SelectedPanel is not EPC_Subscription.NoSubscriptions)
+                    _ = PanelChanger.ChangePanel(EPC_Subscription.NoSubscriptions);
+                else
+                if (GProp.Subscriptions.Count > 0 && PanelChanger.SelectedPanel is not EPC_Subscription.SubscriptionsList)
+                    _ = PanelChanger.ChangePanel(EPC_Subscription.SubscriptionsList);
+            }
+        }
+        #endregion
+        #region launch_button_MouseLeftButtonDown
+        private void launch_button_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+
+        }
+        #endregion
+        #endregion
+
+        #region Анимации
+        #region PanelChangerHide
+        private async Task PanelChangerHide(UIElement element, bool UseAnimation = true, bool Pending = true)
+        {
+            var duration = AnimationHelper.AnimationDuration;
+            var tcs = new TaskCompletionSource<object?>();
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                animation.Completed += (s, e) => tcs.SetResult(null);
+                animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
+            });
+
+            if (Pending) { await tcs.Task; }
+        }
+        #endregion
+        #region PanelChangerShow
+        private async Task PanelChangerShow(UIElement element, bool UseAnimation = true, bool Pending = true)
+        {
+            var duration = AnimationHelper.AnimationDuration;
+            var tcs = new TaskCompletionSource<object?>();
+
+            await Dispatcher.InvokeAsync(() =>
+            {
+                element.Visibility = Visibility.Visible;
+
+                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 1, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                animation.Completed += (s, e) => tcs.SetResult(null);
+                animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
+            });
+
+            if (Pending) { await tcs.Task; }
+        }
+        #endregion
+        #endregion
 
         #region Функции
+        #region Инициализация
+        public async Task<UResponse> Initialization()
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось выполнить инициализацию";
 
+            #region try
+            try
+            {
+                #region Инициация переключателя панелей
+                PanelChanger = new
+                (
+                    AviableProducts,
+                    [
+                        new(EPC_Subscription.NoSubscriptions, AP_empty),
+                        new(EPC_Subscription.SubscriptionsList, AP_items)
+                    ],
+                    EPC_Subscription.NoSubscriptions
+                );
+                PanelChanger.ShowElement += PanelChangerShow;
+                PanelChanger.HideElement += PanelChangerHide;
+                var initPanelChanger = await PanelChanger.Init();
+                if (!initPanelChanger.IsSuccess)
+                {
+                    throw new UExcept(EInitialization.FailLoadPanelChanger, $"Ошибка загрузки панели типа {nameof(EPC_Subscription)}", initPanelChanger.Error);
+                }
+                #endregion
+                #region Делаем привязку серверов из настроек
+                LP_servers.SetBinding(ItemsControl.ItemsSourceProperty, new Binding() { Source = AppSettings.Instance.Servers });
+                #endregion
+                #region Загрузка списка ротаций
+                var tryGetSubscriptions = await CApi.GetUserSubscriptions();
+                if (!tryGetSubscriptions.IsSuccess)
+                {
+                    throw new UExcept(EInitialization.FailLoadSubscriptions, $"Ошибка загрузки ротаций пользователей", tryGetSubscriptions.Error);
+                }
+                GProp.Subscriptions.Clear();
+                foreach (var sub in tryGetSubscriptions.Response) GProp.Subscriptions.Add(sub);
+                #endregion
+                #region Инициализация компонента списка продуктов
+                //var tryInitProductList = await MP_products_list.Initialization();
+                //if (!tryInitProductList.IsSuccess)
+                //{
+                //    throw new UExcept(EInitialization.FailInitProductList, $"Ошибка инициализации списка продуктов", tryInitProductList.Error);
+                //}
+                #endregion
+                //#region Установка переключателей фильтров
+                //SetupFiltersChangers();
+                //#endregion
+                //#region Первая загрузка фильтров
+                //UpdateFilters(true);
+                //#endregion
 
+                return new() { IsSuccess = true };
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                return new(ex.Error);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
+                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
+                return new(uerror);
+            }
+            #endregion
+        }
+        #endregion
+        #region UpdatePanelsVisibility
+        private void UpdatePanelsVisibility()
+        {
+            
+        }
+        #endregion
         #region UpdateAllValues
         public async Task UpdateAllValues()
         {
             APE_text_block.Text = Dictionary.Translate("На данный момент у Вас нет ротаций. Их можно приобрести в магазине");
+            HoverHint.SetText(LP_addButton, Dictionary.Translate("Добавить сервер"));
+        }
+        #endregion
+        #region LaunchCheat
+        public async void LaunchCheat()
+        {
 
         }
         #endregion
         #endregion
+
+
     }
 }

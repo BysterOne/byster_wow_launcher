@@ -121,13 +121,11 @@ namespace Cls.Any
         #endregion
 
         #region MD5
-        public static string GetMd5Hash(string input)
+        public static string GetMd5Hash(byte[] input)
         {
             using (MD5 md5 = MD5.Create())
             {
-                byte[] inputBytes = Encoding.ASCII.GetBytes(input);
-                byte[] hashBytes = md5.ComputeHash(inputBytes);
-
+                byte[] hashBytes = md5.ComputeHash(input);
                 StringBuilder sb = new StringBuilder();
                 for (int i = 0; i < hashBytes.Length; i++)
                 {
@@ -136,6 +134,7 @@ namespace Cls.Any
                 return sb.ToString().ToLower();
             }
         }
+        public static string GetMd5Hash(string input) => GetMd5Hash(Encoding.UTF8.GetBytes(input));
         #endregion
 
         #region OpenWindow

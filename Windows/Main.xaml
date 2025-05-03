@@ -26,208 +26,210 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </Window.Resources>
-    <Grid>
-        <Grid.OpacityMask>
-            <VisualBrush>
-                <VisualBrush.Visual>
-                    <Rectangle
-                        d:Width="1200"
-                        d:Height="700"
-                        Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}}"
-                        Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}"
-                        RadiusX="12"
-                        RadiusY="12"
-                        Fill="Black" />
-                </VisualBrush.Visual>
-            </VisualBrush>
-        </Grid.OpacityMask>
+    <AdornerDecorator>
+        <Grid>
+            <Grid.OpacityMask>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Rectangle
+                            d:Width="1200"
+                            d:Height="700"
+                            Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=Window}}"
+                            Height="{Binding ActualHeight, RelativeSource={RelativeSource AncestorType=Window}}"
+                            RadiusX="12"
+                            RadiusY="12"
+                            Fill="Black" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Grid.OpacityMask>
 
-        <Rectangle
-            Fill="{DynamicResource back_main}" />
-
-        <!--#region Место для модального окна -->
-        <Grid
-            x:Name="modalGrid"
-            Visibility="Collapsed"
-            Panel.ZIndex="997">
-
-        </Grid>
-        <!--#endregion-->
-        <!--#region Корзина -->
-        <pages:CCartEditor
-            x:Name="CartEditor"
-            Visibility="Hidden"
-            Opacity="0"
-            Panel.ZIndex="990" />
-        <!--#endregion-->
-
-        <!--#region Уведомление -->
-        <Grid
-            x:Name="NotifyPanel"
-            VerticalAlignment="Top"
-            HorizontalAlignment="Center"
-            Margin="0 40 0 0"
-            MaxWidth="300"
-            MinWidth="50"
-            Opacity="0"
-            Panel.ZIndex="9">
             <Rectangle
-                Fill="#FF151721"
-                RadiusX="20"
-                RadiusY="20" />
-            <TextBlock
-                x:Name="NP_message_block"
-                Text=""
-                Margin="14 8"
-                MaxHeight="66"
-                TextAlignment="Center"
-                TextWrapping="Wrap"
-                FontFamily="{DynamicResource fontfamily_main}"
-                FontSize="18"
-                Foreground="{DynamicResource textcolor_main}" />
-        </Grid>
-        <!--#endregion-->
+                Fill="{DynamicResource back_main}" />
 
-        <!--#region Лоадер -->
-        <Grid
-            x:Name="LoaderPanel"
-            Panel.ZIndex="10"
-            Visibility="Hidden"
-            Opacity="0">
-            <Rectangle
-                x:Name="LP_fill"
-                Fill="{DynamicResource popup_back}" />
-            <components:CLoader
-                x:Name="LP_loader"
-                ForeColor="{StaticResource orange_main}"
-                VerticalAlignment="Center"
-                HorizontalAlignment="Center"
-                Height="30" />
-        </Grid>
-        <!--#endregion-->
+            <!--#region Место для модального окна -->
+            <Grid
+                x:Name="modalGrid"
+                Visibility="Collapsed"
+                Panel.ZIndex="995">
 
-        <!--#region Панель кнопок -->
-        <StackPanel
-            x:Name="WindowControlPanel"
-            HorizontalAlignment="Right"
-            VerticalAlignment="Top"
-            Orientation="Horizontal">
-            <!--#region Свернуть -->
-            <components:CButton
-                x:Name="WCP_minimize"
-                Icon="../Media/minimize_icon.png"
-                Style="{DynamicResource MinimizeWindowControlButtonStyle}" />
+            </Grid>
             <!--#endregion-->
-            <!--#region Закрыть -->
-            <components:CButton
-                x:Name="WCP_close"
-                Icon="../Media/close_icon.png"
-                Style="{DynamicResource CloseWindowControlButtonStyle}" />
+            <!--#region Корзина -->
+            <pages:CCartEditor
+                x:Name="CartEditor"
+                Visibility="Hidden"
+                Opacity="0"
+                Panel.ZIndex="990" />
             <!--#endregion-->
-        </StackPanel>
-        <!--#endregion-->
 
-        <!--#region Верхняя панель -->
-        <Grid
-            x:Name="TopPanel"
-            VerticalAlignment="Top">
-            <!--#region Лого и кнопки -->
-            <StackPanel
-                x:Name="TP_logo_page_buttons"
+            <!--#region Уведомление -->
+            <Grid
+                x:Name="NotifyPanel"
                 VerticalAlignment="Top"
-                Margin="0 20 0 0"
-                Height="76"
-                Orientation="Horizontal"
-                HorizontalAlignment="Left">
-                <!--#region Лого -->
-                <Image
-                    RenderOptions.BitmapScalingMode="HighQuality"
-                    MaxWidth="200"
-                    MaxHeight="70"
-                    HorizontalAlignment="Left"
-                    Source="/Media/logo_full.png"
-                    Margin="18 0 20 0" />
+                HorizontalAlignment="Center"
+                Margin="0 40 0 0"
+                MaxWidth="300"
+                MinWidth="50"
+                Opacity="0"
+                Panel.ZIndex="996">
+                <Rectangle
+                    Fill="#FF151721"
+                    RadiusX="20"
+                    RadiusY="20" />
+                <TextBlock
+                    x:Name="NP_message_block"
+                    Text=""
+                    Margin="14 8"
+                    MaxHeight="66"
+                    TextAlignment="Center"
+                    TextWrapping="Wrap"
+                    FontFamily="{DynamicResource fontfamily_main}"
+                    FontSize="18"
+                    Foreground="{DynamicResource textcolor_main}" />
+            </Grid>
+            <!--#endregion-->
+
+            <!--#region Лоадер -->
+            <Grid
+                x:Name="LoaderPanel"
+                Panel.ZIndex="10"
+                Visibility="Hidden"
+                Opacity="0">
+                <Rectangle
+                    x:Name="LP_fill"
+                    Fill="{DynamicResource popup_back}" />
+                <components:CLoader
+                    x:Name="LP_loader"
+                    ForeColor="{StaticResource orange_main}"
+                    VerticalAlignment="Center"
+                    HorizontalAlignment="Center"
+                    Height="30" />
+            </Grid>
+            <!--#endregion-->
+
+            <!--#region Панель кнопок -->
+            <StackPanel
+                x:Name="WindowControlPanel"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Orientation="Horizontal">
+                <!--#region Свернуть -->
+                <components:CButton
+                    x:Name="WCP_minimize"
+                    Icon="../Media/minimize_icon.png"
+                    Style="{DynamicResource MinimizeWindowControlButtonStyle}" />
                 <!--#endregion-->
+                <!--#region Закрыть -->
+                <components:CButton
+                    x:Name="WCP_close"
+                    Icon="../Media/close_icon.png"
+                    Style="{DynamicResource CloseWindowControlButtonStyle}" />
+                <!--#endregion-->
+            </StackPanel>
+            <!--#endregion-->
+
+            <!--#region Верхняя панель -->
+            <Grid
+                x:Name="TopPanel"
+                VerticalAlignment="Top">
+                <!--#region Лого и кнопки -->
+                <StackPanel
+                    x:Name="TP_logo_page_buttons"
+                    VerticalAlignment="Top"
+                    Margin="0 20 0 0"
+                    Height="76"
+                    Orientation="Horizontal"
+                    HorizontalAlignment="Left">
+                    <!--#region Лого -->
+                    <Image
+                        RenderOptions.BitmapScalingMode="HighQuality"
+                        MaxWidth="200"
+                        MaxHeight="70"
+                        HorizontalAlignment="Left"
+                        Source="/Media/logo_full.png"
+                        Margin="18 0 20 0" />
+                    <!--#endregion-->
+                    <!--#region Главная -->
+                    <components:CMainPageButton
+                        Style="{DynamicResource TopPanel_MainPageButtonStyle}"
+                        Text="ГЛАВНАЯ"
+                        IsActive="True"
+                        x:Name="TP_main_page_button"
+                        MouseDown="TP_main_page_button_MouseDown" />
+                    <!--#endregion-->
+                    <!--#region Магазин -->
+                    <components:CMainPageButton
+                        Style="{DynamicResource TopPanel_MainPageButtonStyle}"
+                        Text="МАГАЗИН"
+                        IsActive="False"
+                        x:Name="TP_store_page_button"
+                        MouseDown="TP_store_page_button_MouseDown" />
+                    <!--#endregion-->
+                </StackPanel>
+                <!--#endregion-->
+                <!--#region Информация о пользователе и настройки -->
+                <StackPanel
+                    x:Name="TP_info_settings"
+                    HorizontalAlignment="Right"
+                    VerticalAlignment="Bottom"
+                    Margin="0 0 10 5"
+                    Orientation="Horizontal">
+                    <!--#region Имя пользователя -->
+                    <TextBlock
+                        d:Text="Suriomi"
+                        x:Name="TPIS_username"
+                        FontFamily="{DynamicResource fontfamily_main}"
+                        FontSize="24"
+                        Foreground="#ecbe32"
+                        VerticalAlignment="Center"
+                        Margin="0 0 12 0" />
+                    <!--#endregion-->
+                    <!--#region Баланс -->
+                    <TextBlock
+                        d:Text="0 RUB"
+                        x:Name="TPIS_balance"
+                        FontFamily="{DynamicResource fontfamily_main}"
+                        FontSize="22"
+                        Foreground="#FFAAAEBD"
+                        VerticalAlignment="Center"
+                        Margin="0 0 12 0" />
+                    <!--#endregion-->
+                    <!--#region Настройки -->
+                    <components:CButton
+                        Width="40"
+                        Height="40"
+                        Text=""
+                        BorderRadius="10"
+                        BackColor="Transparent"
+                        Icon="../Media/settings_icon.png"
+                        Padding="0"
+                        IconHeight="36"
+                        IconWidth="36"
+                        VerticalAlignment="Center" />
+                    <!--#endregion-->
+                </StackPanel>
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
+
+            <!--#region Панели главной и магазина -->
+            <Grid
+                x:Name="MainPanels"
+                Margin="0 105 0 0">
                 <!--#region Главная -->
-                <components:CMainPageButton
-                    Style="{DynamicResource TopPanel_MainPageButtonStyle}"
-                    Text="ГЛАВНАЯ"
-                    IsActive="True"
-                    x:Name="TP_main_page_button"
-                    MouseDown="TP_main_page_button_MouseDown" />
+                <pages:CPageMain
+                    Opacity="0"
+                    Visibility="Hidden"
+                    x:Name="MP_main"
+                    Margin="10 0 0 0" />
                 <!--#endregion-->
                 <!--#region Магазин -->
-                <components:CMainPageButton
-                    Style="{DynamicResource TopPanel_MainPageButtonStyle}"
-                    Text="МАГАЗИН"
-                    IsActive="False"
-                    x:Name="TP_store_page_button"
-                    MouseDown="TP_store_page_button_MouseDown" />
+                <pages:CPageShop
+                    x:Name="MP_shop"
+                    Margin="2 0 0 0" />
                 <!--#endregion-->
-            </StackPanel>
-            <!--#endregion-->
-            <!--#region Информация о пользователе и настройки -->
-            <StackPanel
-                x:Name="TP_info_settings"
-                HorizontalAlignment="Right"
-                VerticalAlignment="Bottom"
-                Margin="0 0 10 5"
-                Orientation="Horizontal">
-                <!--#region Имя пользователя -->
-                <TextBlock
-                    d:Text="Suriomi"
-                    x:Name="TPIS_username"
-                    FontFamily="{DynamicResource fontfamily_main}"
-                    FontSize="24"
-                    Foreground="#ecbe32"
-                    VerticalAlignment="Center"
-                    Margin="0 0 12 0" />
-                <!--#endregion-->
-                <!--#region Баланс -->
-                <TextBlock
-                    d:Text="0 RUB"
-                    x:Name="TPIS_balance"
-                    FontFamily="{DynamicResource fontfamily_main}"
-                    FontSize="22"
-                    Foreground="#FFAAAEBD"
-                    VerticalAlignment="Center"
-                    Margin="0 0 12 0" />
-                <!--#endregion-->
-                <!--#region Настройки -->
-                <components:CButton
-                    Width="40"
-                    Height="40"
-                    Text=""
-                    BorderRadius="10"
-                    BackColor="Transparent"
-                    Icon="../Media/settings_icon.png"
-                    Padding="0"
-                    IconHeight="36"
-                    IconWidth="36"
-                    VerticalAlignment="Center" />
-                <!--#endregion-->
-            </StackPanel>
+            </Grid>
             <!--#endregion-->
         </Grid>
-        <!--#endregion-->
-
-        <!--#region Панели главной и магазина -->
-        <Grid
-            x:Name="MainPanels"
-            Margin="0 105 0 0">
-            <!--#region Главная -->
-            <pages:CPageMain
-                Opacity="0"
-                Visibility="Hidden"
-                x:Name="MP_main"
-                Margin="10 0 0 0" />
-            <!--#endregion-->
-            <!--#region Магазин -->
-            <pages:CPageShop
-                x:Name="MP_shop"
-                Margin="2 0 0 0" />
-            <!--#endregion-->
-        </Grid>
-        <!--#endregion-->
-    </Grid>
+    </AdornerDecorator>
 </Window>

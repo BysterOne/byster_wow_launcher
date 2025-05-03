@@ -50,7 +50,7 @@ namespace Launcher.Windows
             await Dispatcher.InvokeAsync(() =>
             {
                 var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
-                animation.Completed += (s, e) => tcs.SetResult(null);
+                animation.Completed += (s, e) => { Panel.SetZIndex(element, -1); tcs.SetResult(null); };
                 animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
             });
 
@@ -62,6 +62,7 @@ namespace Launcher.Windows
         {
             var duration = AnimationHelper.AnimationDuration;
             var tcs = new TaskCompletionSource<object?>();
+            Panel.SetZIndex(element, 1);
 
             await Dispatcher.InvokeAsync(() =>
             {
@@ -109,7 +110,11 @@ namespace Launcher.Windows
 
                 #region Инициализация страниц
                 #region Главная
-
+                var tryInitMainPage = await MP_main.Initialization();
+                if (!tryInitMainPage.IsSuccess)
+                {
+                    throw new UExcept(EInitialization.FailInitPage, $"Не удалось загрузить страницу Main", tryInitMainPage.Error);
+                }
                 #endregion
                 #region Магазин
                 var tryInitShopPage = await MP_shop.Initialization();
@@ -279,6 +284,61 @@ namespace Launcher.Windows
                         taskWaiter.SetResult(response);
                         await modalComponent.Hide();
                         mainWindow.modalGrid.Children.Remove(modalComponent);
+                    }
+                    catch (Exception ex) { taskWaiter.SetException(ex); }
+                });
+                #endregion
+                #region Ожидание ответа
+                return await taskWaiter.Task;
+                #endregion
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                Functions.Error(ex, _failinf, _proc);
+                return new(ex.Error);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
+                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
+                return new(uerror);
+            }
+            #endregion
+        }
+        #endregion
+        #region ShowModal
+        public static async Task<UResponse<Any.UDialogBox.EDialogResponse>> ShowModal<T>(T dialog) where T : UIElement, IUDialogBox
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось отобразить модальное окно типа {typeof(T).Name}";
+
+            #region try
+            try
+            {
+                #region Установка компонента
+                var mainWindow = Application.Current.Windows.OfType<Main>().FirstOrDefault() ?? throw new UExcept(EShowModal.MainWindowWasNull, $"Основное окно было пустым");
+                #endregion
+                #region Создание задачи на ожидание
+                var taskWaiter = new TaskCompletionSource<UResponse<Any.UDialogBox.EDialogResponse>>();
+                #endregion
+                #region Создание компонента
+                await mainWindow.Dispatcher.InvokeAsync(async () =>
+                {
+                    try
+                    {
+                        Panel.SetZIndex(dialog, 9);
+                        dialog.Opacity = 0;
+                        mainWindow.modalGrid.Visibility = Visibility.Visible;
+                        mainWindow.modalGrid.Children.Add(dialog);
+
+                        var response = await dialog.Show();
+                        taskWaiter.SetResult(response);
+                        await dialog.Hide();
+                        mainWindow.modalGrid.Children.Remove(dialog);
                     }
                     catch (Exception ex) { taskWaiter.SetException(ex); }
                 });

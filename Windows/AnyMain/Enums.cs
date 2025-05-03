@@ -56,8 +56,8 @@ namespace Launcher.Windows.AnyMain.Enums
 
     public enum EServerIcon
     {
-        Main,
-        Devnet,
-        Sernet
+        Test1,
+        Test2,
+        Test3
     }
 }

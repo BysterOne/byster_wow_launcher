@@ -5,7 +5,10 @@
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Launcher.Components.MainWindow"
+    xmlns:any="clr-namespace:Launcher.Any"
     xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:settings="clr-namespace:Launcher.Settings"
+    xmlns:mainPage="clr-namespace:Launcher.Components.MainWindow.Any.PageMain"
     mc:Ignorable="d"
     d:Height="600"
     d:Width="1200">
@@ -17,7 +20,7 @@
                 <ResourceDictionary
                     Source="../../Styles/Pages/MainPage.xaml" />
                 <ResourceDictionary
-                    Source="../../Components/ScrollPanel/CScrollPanelStyle.xaml"/>
+                    Source="../../Components/ScrollPanel/CScrollPanelStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -28,30 +31,73 @@
                 Width="Auto" />
             <ColumnDefinition />
         </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition />
+            <RowDefinition
+                Height="Auto" />
+        </Grid.RowDefinitions>
         <!--#region Левая панель -->
         <Grid
             x:Name="LeftPanel"
             HorizontalAlignment="Left"
-            Grid.Column="0">
-            <StackPanel
-                Margin="10 5 10 5">
-                <!--#region Значки ??? -->
-                <Rectangle Style="{DynamicResource TEST_RectangleStyle}"/>
-                <Rectangle Style="{DynamicResource TEST_RectangleStyle}"/>
-                <Rectangle Style="{DynamicResource TEST_RectangleStyle}"/>
-                <Rectangle Style="{DynamicResource TEST_RectangleStyle}"/>
-                <!--#endregion-->
-            </StackPanel>
+            Grid.Column="0"
+            Margin="10 0 10 0">
+            <!--#region Разметка -->
+            <Grid.RowDefinitions>
+                <RowDefinition
+                    Height="Auto" />
+                <RowDefinition />
+            </Grid.RowDefinitions>
+            <!--#endregion-->
+            <!--#region Кнопка добавления сервера -->
+            <components:CButton
+                x:Name="LP_addButton"
+                Height="60"
+                Width="60"
+                Text=""
+                any:HoverHint.Text="Добавить сервер"
+                BorderRadius="35"
+                Icon="/Media/plus_icon.png"
+                MouseLeftButtonDown="LP_addButton_MouseLeftButtonDown" />
+            <!--#endregion-->
+            <components:CScrollPanel
+                Grid.Row="1">
+                <StackPanel
+                    Margin="0 7 0 5">
+                    <ItemsControl
+                        x:Name="LP_servers">
+                        <!--#region Разметка -->
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <!--#endregion-->
+                        <!--#region Шаблоны элементов -->
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <mainPage:CServerItem
+                                    Server="{Binding}"
+                                    Width="60"
+                                    Height="60"
+                                    Margin="0 0 0 5" />
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                        <!--#endregion-->
+                    </ItemsControl>
+                </StackPanel>
+            </components:CScrollPanel>
         </Grid>
         <!--#endregion-->
-        <!--#region Купленные продукты -->
+        <!--#region Подписки -->
         <Grid
-            x:Name="AviableProducts"
-            Grid.Column="1">
+            Grid.Row="0"
+            Grid.Column="1"
+            x:Name="AviableProducts">
             <!--#region Фон -->
             <Border
                 Background="{DynamicResource back_second}"
-                CornerRadius="15 0 0 0" />
+                CornerRadius="15 0 0 15" />
             <!--#endregion-->
             <!--#region Пусто -->
             <Grid
@@ -68,9 +114,9 @@
                 <!--#region Картинка -->
                 <Image
                     Source="../../Media/no_items_icon.png"
-                    Width="110" 
+                    Width="110"
                     RenderOptions.BitmapScalingMode="HighQuality"
-                    Grid.Row="0"/>
+                    Grid.Row="0" />
                 <!--#endregion-->
                 <!--#region Текст -->
                 <TextBlock
@@ -90,9 +136,10 @@
             <!--#region Список продуктов -->
             <components:CScrollPanel
                 Opacity="0"
+                x:Name="AP_items"
                 Visibility="Hidden">
                 <ItemsControl
-                    x:Name="AP_items">
+                    ItemsSource="{Binding Source={x:Static settings:GProp.Subscriptions}}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <WrapPanel />
@@ -100,12 +147,35 @@
                     </ItemsControl.ItemsPanel>
                     <ItemsControl.ItemTemplate>
                         <DataTemplate>
-                            
+                            <mainPage:CSubscriptionItem
+                                Subscription="{Binding}"
+                                Width="235"
+                                Height="300"
+                                Margin="10" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
             </components:CScrollPanel>
             <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+        <!--#region Запуск -->
+        <Grid
+            Grid.Row="1"
+            Grid.ColumnSpan="2"
+            Margin="15">
+            <components:CButton
+                x:Name="launch_button"
+                Text="Запустить"
+                Height="50"
+                Width="250"
+                BackColor="{DynamicResource green_main}"
+                HorizontalAlignment="Center"
+                BorderRadius="10"
+                FontFamily="{DynamicResource fontfamily_main}"
+                FontSize="24"
+                MouseLeftButtonDown="launch_button_MouseLeftButtonDown"
+                />
         </Grid>
         <!--#endregion-->
     </Grid>

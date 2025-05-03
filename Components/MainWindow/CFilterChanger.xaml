@@ -43,7 +43,7 @@
                     Width="22"
                     Height="26"
                     Stroke="{DynamicResource marker_fill}"
-                    StrokeThickness="2" />
+                    StrokeThickness="{Binding IconBorderThickness}" />
                 <!--#endregion-->
                 <!--#region Заливка -->
                 <shapes:Hexagon
@@ -64,21 +64,23 @@
                 >
                 <Rectangle
                     x:Name="MPTI_brush"
-                    StrokeThickness="2"
+                    StrokeThickness="{Binding IconBorderThickness}"
                     Stroke="{DynamicResource marker_fill}"
                     Margin="2" 
                     RadiusX="3" RadiusY="3"
-                    Opacity="0"/>
+                    Opacity="0"
+                    RenderOptions.BitmapScalingMode="HighQuality"/>
                 <Border
                     x:Name="MPTI_border"
-                    BorderThickness="2"
+                    BorderThickness="{Binding IconBorderThickness}"
                     Margin="2"
                     Width="{Binding MarkerWidth}"
                     Height="{Binding MarkerWidth}"
                     MinWidth="15"
                     MinHeight="15"
                     CornerRadius="6"
-                    BorderBrush="Transparent">
+                    BorderBrush="Transparent"
+                    RenderOptions.BitmapScalingMode="HighQuality">
                     <Border.Background>
                         <ImageBrush
                             AlignmentX="Center"
@@ -98,6 +100,7 @@
             Text="{Binding Text}"
             Grid.Column="1"
             Margin="8 0 5 0"
+            x:Name="text"
             VerticalAlignment="Center"
             FontFamily="{Binding FontFamily, RelativeSource={RelativeSource AncestorType=local:CFilterChanger}}" 
             FontSize="{Binding FontSize, RelativeSource={RelativeSource AncestorType=local:CFilterChanger}}"/>

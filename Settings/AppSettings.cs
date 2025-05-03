@@ -1,13 +1,8 @@
 ﻿using Launcher.Any.GlobalEnums;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Newtonsoft.Json;
-using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace Launcher.Settings
 {
@@ -15,7 +10,8 @@ namespace Launcher.Settings
     {
         public static string RootFolder { get => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "local"); }
         public static string CacheFolder { get => Path.Combine(RootFolder, "cache"); }
-        public static string SettingsFilePath { get => Path.Combine(RootFolder, "settings.json"); }
+        public static string TempBin { get => Path.Combine(RootFolder, "tempBin"); }
+        public static string SettingsFilePath { get => Path.Combine(RootFolder, "settings.json"); }        
 
         private static AppSettings? _instance;
 
@@ -23,7 +19,7 @@ namespace Launcher.Settings
         public ELang Language { get; set; } = ELang.Ru;
         public string Login { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public ObservableCollection<CServer> Server { get; set; } = [];
+        public ObservableCollection<CServer> Servers { get; set; } = [];
         #endregion
 
         public static AppSettings Instance

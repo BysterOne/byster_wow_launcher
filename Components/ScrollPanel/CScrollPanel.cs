@@ -18,7 +18,7 @@ namespace Launcher.Components
         private ScrollBar? VerticalScrollBar { get; set; } = null;
         #endregion
 
-        #region Функции
+        #region Функции       
         #region ScrollTo
         public void ScrollTo(int y)
         {

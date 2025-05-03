@@ -14,11 +14,17 @@
     <None Remove="Media\close_icon.png" />
     <None Remove="Media\language.png" />
     <None Remove="Media\logo_full.png" />
+    <None Remove="Media\Main\folder_icon.png" />
     <None Remove="Media\minimize_icon.png" />
     <None Remove="Media\minus_icon.png" />
     <None Remove="Media\no_items_icon.png" />
     <None Remove="Media\plus_icon.png" />
     <None Remove="Media\remove_icon.png" />
+    <None Remove="Media\save_icon.png" />
+    <None Remove="Media\ServersIcons\null_image_icon.png" />
+    <None Remove="Media\ServersIcons\server_icon_test_1.png" />
+    <None Remove="Media\ServersIcons\server_icon_test_2.jpg" />
+    <None Remove="Media\ServersIcons\server_icon_test_3.jpg" />
     <None Remove="Media\settings_icon.png" />
     <None Remove="Media\Shop\ClassIcons\any_icon.png" />
     <None Remove="Media\Shop\ClassIcons\death_knight_icon.png" />
@@ -54,6 +60,10 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Resource Include="Media\Main\folder_icon.png" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
@@ -70,6 +80,11 @@
     <Resource Include="Media\no_items_icon.png" />
     <Resource Include="Media\plus_icon.png" />
     <Resource Include="Media\remove_icon.png" />
+    <Resource Include="Media\save_icon.png" />
+    <Resource Include="Media\ServersIcons\null_image_icon.png" />
+    <Resource Include="Media\ServersIcons\server_icon_test_1.png" />
+    <Resource Include="Media\ServersIcons\server_icon_test_2.jpg" />
+    <Resource Include="Media\ServersIcons\server_icon_test_3.jpg" />
     <Resource Include="Media\settings_icon.png" />
     <Resource Include="Media\Shop\ClassIcons\any_icon.png" />
     <Resource Include="Media\Shop\ClassIcons\death_knight_icon.png" />
@@ -94,5 +109,4 @@
     <EmbeddedResource Include="Localizations\English.json" />
     <EmbeddedResource Include="NLog.config" />
   </ItemGroup>
-
 </Project>

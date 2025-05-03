@@ -21,6 +21,7 @@ namespace Launcher.Components.MainWindow.Any.PageShop.Models
     #region CServer
     public class CServer
     {
+        public string Id { get; set; } = string.Empty;
         public string Name { get; set; } = string.Empty;
         public string PathToExe { get; set; } = string.Empty;
         public EServerIcon Icon { get; set; }

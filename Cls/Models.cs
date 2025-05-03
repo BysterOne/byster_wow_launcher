@@ -2,7 +2,9 @@
 using Launcher.Cls.ModelConverters;
 using Launcher.Windows.AnyMain.Enums;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Converters;
 using RestSharp;
+using System.Runtime.Serialization;
 
 namespace Launcher.Api.Models
 {
@@ -167,7 +169,17 @@ namespace Launcher.Api.Models
     }
     #endregion
 
+    #region Subscription
+    public class Subscription
+    {
+        [JsonProperty("expired_date")]
+        //[JsonConverter(typeof(IsoDateTimeConverter), DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.ffffff")]
+        public DateTime ExpiredDate { get; set; }
 
+        [JsonProperty("rotation")]
+        public Rotation Rotation { get; set; } = null!;
+    }
+    #endregion
     #region RCreateClient
     public class RCreateClient(RestRequest request, RestClient? client = null)
     {

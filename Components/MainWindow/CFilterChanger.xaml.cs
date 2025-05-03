@@ -1,4 +1,5 @@
 ﻿using Launcher.Any;
+using System.Reflection;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -46,7 +47,47 @@ namespace Launcher.Components.MainWindow
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(CFilterChanger),
-                new PropertyMetadata(""));
+                new PropertyMetadata("", OnTextChanged));
+
+        private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = (d as CFilterChanger)!;
+
+            sender.text.Margin =
+                String.IsNullOrWhiteSpace(e.NewValue.ToString()) ?
+                new Thickness(0, 0, 0, 0) :
+                new Thickness(8, 0, 5, 0);
+        }
+        #endregion
+        #region IconBorderThickness
+        public double IconBorderThickness
+        {
+            get { return (double)GetValue(IconBorderThicknessProperty); }
+            set { SetValue(IconBorderThicknessProperty, value); }
+        }
+
+        public static readonly DependencyProperty IconBorderThicknessProperty =
+            DependencyProperty.Register("IconBorderThickness", typeof(double), typeof(CFilterChanger),
+                new PropertyMetadata(2.0));
+        #endregion
+        #region IconBorderRadius
+        public double IconBorderRadius
+        {
+            get { return (double)GetValue(IconBorderRadiusProperty); }
+            set { SetValue(IconBorderRadiusProperty, value); }
+        }
+
+        public static readonly DependencyProperty IconBorderRadiusProperty =
+            DependencyProperty.Register("IconBorderRadius", typeof(double), typeof(CFilterChanger),
+                new PropertyMetadata(6.0, OnIconBorderRadiusChanged));
+
+        private static void OnIconBorderRadiusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = (CFilterChanger)d;
+            sender.MPTI_brush.RadiusX = Math.Floor((double)e.NewValue / 2);
+            sender.MPTI_brush.RadiusY = Math.Floor((double)e.NewValue / 2);
+            sender.MPTI_border.CornerRadius = new CornerRadius((double)e.NewValue);
+        }
         #endregion
         #region IsActive
         private bool _isActive = false;
@@ -75,6 +116,7 @@ namespace Launcher.Components.MainWindow
             sender.MP_type_icon.Visibility = sender.ChangerType is EFilterChangerType.Icon ? Visibility.Visible : Visibility.Collapsed;
 
             sender.ChangeState(sender.IsActive);
+
         }
         #endregion
         #region Icon
@@ -165,7 +207,12 @@ namespace Launcher.Components.MainWindow
                 storyboard.Children.Add(animation);
 
                 storyboard.Begin(MPTI_brush, HandoffBehavior.SnapshotAndReplace, true);
-            }           
+            }
+
+            text.Margin =
+                String.IsNullOrWhiteSpace(Text) ?
+                new Thickness(0, 0, 0, 0) :
+                new Thickness(8, 0, 5, 0);
         }
         #endregion
         #endregion

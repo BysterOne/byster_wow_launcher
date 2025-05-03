@@ -30,6 +30,18 @@
     "Неверный логин/пароль": "Invalid login/password",
     "Минимальная длина пароля 8 символов": "Minimum password length is 8 characters",
     "Ошибка регистрации. Обратитесь к администрации": "Registration Error. Contact the administration",
-    "На данный момент у Вас нет ротаций. Их можно приобрести в магазине": "You do not currently have rotations. They can be purchased from the store"
+    "На данный момент у Вас нет ротаций. Их можно приобрести в магазине": "You do not currently have rotations. They can be purchased from the store",
+    "Добавить сервер": "Add server",
+    "Добавление сервера": "Server addition",
+    "Название": "Name",
+    "Путь к лаунчеру": "Path to the launcher",
+    "Выберите иконку": "Select icon",
+    "Исполняемые файлы": "Executable files",
+    "Укажите название сервера": "Enter the name of the server",
+    "Укажите путь к лаунчеру": "Enter the path to the launcher",
+    "Выбранный файл не найден": "Selected file not found",
+    "Выберите иконку из доступных": "Choose an icon from the available",
+    "Сохранить": "Save",
+    "Выберите исполняемый файл лаунчера": "Select the executable file of the launcher"
   }
 }

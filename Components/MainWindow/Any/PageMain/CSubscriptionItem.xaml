@@ -1,0 +1,240 @@
+﻿<UserControl
+    x:Class="Launcher.Components.MainWindow.Any.PageMain.CSubscriptionItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:any="clr-namespace:Launcher.Any"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow"
+    xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:pagemain="clr-namespace:Launcher.Components.MainWindow.Any.PageMain"
+    mc:Ignorable="d"
+    d:DesignHeight="300"
+    d:DesignWidth="235">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Components/Skeleton/CSkeletonStyle.xaml" />
+                <ResourceDictionary
+                    Source="/Styles/Pages/ShopPage.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <any:SizeToRectConverter
+                x:Key="SizeToRectConverter" />
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Border
+            x:Name="MainBorder"
+            ClipToBounds="True">
+            <!--#region Маска -->
+            <Border.OpacityMask>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Border
+                            Background="White"
+                            d:Width="235"
+                            d:Height="300"
+                            Width="{Binding Width, RelativeSource={RelativeSource AncestorType={x:Type pagemain:CSubscriptionItem}}}"
+                            Height="{Binding Height, RelativeSource={RelativeSource AncestorType={x:Type pagemain:CSubscriptionItem}}}"
+                            CornerRadius="15" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.OpacityMask>
+            <!--#endregion-->
+            <!--#region Эффект -->
+            <!--<Border.Effect>
+                <DropShadowEffect
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    x:Name="ControlShadow"
+                    BlurRadius="0"
+                    Color="White"
+                    Direction="10"
+                    ShadowDepth="0"
+                    RenderingBias="Performance" />
+            </Border.Effect>-->
+            <!--#endregion-->
+            <!--#region Контент -->
+            <Grid
+                x:Name="ContentGrid">
+                <!--#region Изображение -->
+                <components:CSkeleton
+                    Padding="0"
+                    x:Name="CG_image_skeleton">
+                    <Image
+                        x:Name="CG_image"
+                        Source="/Media/test-back.jpg"
+                        Stretch="UniformToFill" />
+                </components:CSkeleton>
+                <!--#endregion-->
+
+                <!--#region Верхняя панель -->
+                <Grid
+                    Margin="0 7 0 0"
+                    Panel.ZIndex="2"
+                    x:Name="CG_top_panel"
+                    VerticalAlignment="Top"
+                    HorizontalAlignment="Center">
+                    <!--#region Фон -->
+                    <Rectangle
+                        x:Name="CGTP_background"
+                        Fill="#CC000000"
+                        RadiusX="20"
+                        RadiusY="20" />
+                    <!--#endregion-->
+                    <!--#region Класс, тип, роль -->
+                    <StackPanel
+                        Visibility="Visible"
+                        x:Name="CGTP_class_type_role"
+                        Margin="6 5 0 5"
+                        Orientation="Horizontal">
+                        <!--#region Стили -->
+                        <StackPanel.Resources>
+                            <Style
+                                TargetType="{x:Type Border}">
+                                <Setter
+                                    Property="Margin"
+                                    Value="0 0 6 0" />
+                                <Setter
+                                    Property="Width"
+                                    Value="30" />
+                                <Setter
+                                    Property="Height"
+                                    Value="30" />
+                                <Setter
+                                    Property="RenderOptions.BitmapScalingMode"
+                                    Value="HighQuality" />
+                                <Setter
+                                    Property="OpacityMask">
+                                    <Setter.Value>
+                                        <VisualBrush>
+                                            <VisualBrush.Visual>
+                                                <Rectangle
+                                                    Fill="Black"
+                                                    Width="30"
+                                                    Height="30"
+                                                    RadiusX="15"
+                                                    RadiusY="15" />
+                                            </VisualBrush.Visual>
+                                        </VisualBrush>
+                                    </Setter.Value>
+                                </Setter>
+                            </Style>
+                        </StackPanel.Resources>
+                        <!--#endregion-->
+                        <!--#region Класс -->
+                        <Border
+                            x:Name="CGTP_CTR_class">
+                            <Border.Background>
+                                <ImageBrush
+                                    Stretch="UniformToFill"
+                                    ImageSource="/Media/Shop/ClassIcons/warlock_icon.png" />
+                            </Border.Background>
+                        </Border>
+                        <!--#endregion-->
+                        <!--#region Тип -->
+                        <Border
+                            x:Name="CGTP_CTR_type">
+                            <Border.Background>
+                                <ImageBrush
+                                    Stretch="UniformToFill"
+                                    ImageSource="/Media/Shop/TypesIcons/pve_icon.png" />
+                            </Border.Background>
+                        </Border>
+                        <!--#endregion-->
+                        <!--#region Роль -->
+                        <Border
+                            x:Name="CGTP_CTR_role">
+                            <Border.Background>
+                                <ImageBrush
+                                    Stretch="UniformToFill"
+                                    ImageSource="/Media/Shop/TypesIcons/pve_icon.png" />
+                            </Border.Background>
+                        </Border>
+                        <!--#endregion-->
+                    </StackPanel>
+                    <!--#endregion-->
+                </Grid>
+                <!--#endregion-->
+                <!--#region Нижняя панель -->
+                <Grid
+                    x:Name="CG_bottom_panel"
+                    VerticalAlignment="Bottom"
+                    ClipToBounds="True">
+                    <!--#region Разметка -->
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="Auto" />
+                        <RowDefinition
+                            Height="Auto" />
+                    </Grid.RowDefinitions>
+                    <!--#endregion-->
+
+                    <!--#region Фон -->
+                    <Rectangle
+                        Grid.RowSpan="3">
+                        <Rectangle.Fill>
+                            <LinearGradientBrush
+                                StartPoint="1, 0"
+                                EndPoint="1, 1">
+                                <GradientStop
+                                    Color="#00000000"
+                                    Offset="0" />
+                                <GradientStop
+                                    Color="#BF000000"
+                                    Offset="0.3" />
+                                <GradientStop
+                                    Color="#F2000000"
+                                    Offset="1" />
+                            </LinearGradientBrush>
+                        </Rectangle.Fill>
+                    </Rectangle>
+                    <!--#endregion-->
+                    <!--#region Название и цена -->
+                    <Grid
+                        Grid.Row="0"
+                        Margin="10 50 10 15"
+                        x:Name="CGBP_name_price">
+                        <!--#region Разметка -->
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="Auto"/>
+                            <RowDefinition Height="30"/>
+                        </Grid.RowDefinitions>
+                        <!--#endregion-->
+
+                        <!--#region Название -->
+                        <TextBlock
+                            x:Name="CGBP_name"
+                            Grid.ColumnSpan="2"
+                            TextWrapping="Wrap"
+                            TextAlignment="Center"
+                            Text="PvP Survival Hunter"
+                            HorizontalAlignment="Center"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            FontSize="22"
+                            Foreground="{DynamicResource textcolor_main}"
+                            Margin="5 5" />
+                        <!--#endregion-->
+                        <!--#region Срок действия -->
+                        <TextBlock
+                            x:Name="CGBP_expired"
+                            Grid.Column="0"
+                            Grid.Row="1"
+                            Text="25.10.2025 19.00"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            FontSize="19"
+                            Foreground="#FF6BFF6B"
+                            HorizontalAlignment="Center" 
+                            VerticalAlignment="Center"/>
+                        <!--#endregion-->
+                    </Grid>                    
+                </Grid>
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
+        </Border>
+    </Grid>
+</UserControl>

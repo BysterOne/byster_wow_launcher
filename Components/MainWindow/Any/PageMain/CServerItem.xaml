@@ -1,0 +1,46 @@
+﻿<UserControl
+    x:Class="Launcher.Components.MainWindow.Any.PageMain.CServerItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow.Any.PageMain"
+    mc:Ignorable="d"
+    d:Height="60"
+    d:Width="60">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Styles/Global.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Border
+            CornerRadius="35"
+            BorderThickness="3"
+            x:Name="border"
+            RenderOptions.BitmapScalingMode="HighQuality">
+            <Border.BorderBrush>
+                <SolidColorBrush x:Name="border_brush"
+                    Color="#00000000"/>
+            </Border.BorderBrush>
+            <Border.OpacityMask>
+                <VisualBrush>
+                    <VisualBrush.Visual>
+                        <Border
+                            Width="60"
+                            Height="60"
+                            CornerRadius="35"
+                            Background="Black" />
+                    </VisualBrush.Visual>
+                </VisualBrush>
+            </Border.OpacityMask>
+            <Border.Background>
+                <ImageBrush
+                    ImageSource="/Media/Shop/ClassIcons/mage_icon.png"/>
+            </Border.Background>
+        </Border>
+    </Grid>
+</UserControl>

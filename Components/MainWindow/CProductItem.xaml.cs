@@ -102,18 +102,26 @@ namespace Launcher.Components.MainWindow
                 var tryRunTest = await CApi.GetTest(Product.Id);
                 if (tryRunTest.IsSuccess)
                 {
+                    #region Обновляем данный продукт
                     Product.CanTest = false;
                     UpdateView();
-                    UpdateButtonsPanelView();                   
-
-                    await Task.Run(() => Thread.Sleep(1000));
+                    UpdateButtonsPanelView();
+                    #endregion
+                    #region Обновляем активные подписки
+                    GProp.UpdateSubscriptions(tryRunTest.Response);
+                    #endregion
+                    #region Скрываем прелоадер и показываем ответ
+                    await Task.Run(() => Thread.Sleep(300));
                     await Main.Loader(ELoaderState.Hide);
                     Main.Notify(Dictionary.Translate("Отлично! Теперь можете приступить к тестированию"));
+                    #endregion
                 }
                 else
                 {
+                    #region Скрываем прелоадер
                     await Main.Loader(ELoaderState.Hide);
                     Main.Notify(Dictionary.Translate("Не удалось взять на тест. Попробуйте позже"));
+                    #endregion
                 }
             }
         }

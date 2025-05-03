@@ -77,7 +77,7 @@ namespace Launcher.Components.MainWindow
             #region try
             try
             {
-                if (showLoader) await Main.Loader(ELoaderState.Show);
+                //if (showLoader) await Main.Loader(ELoaderState.Show);
                 #region Время сейчас
                 SrollPanel.ScrollTo(0);
                 var timeStart = DateTime.Now;
@@ -120,7 +120,7 @@ namespace Launcher.Components.MainWindow
 
                     #region Функции для проверки
                     bool CheckType(ERotationType t) => !filters.Types.Any() || filters.Types.Contains(t);
-                    bool CheckClass(ERotationClass c) => !filters.Classes.Any() || filters.Classes.Contains(c) || c is ERotationClass.Any;
+                    bool CheckClass(ERotationClass c) =>  filters.Classes.Contains(c) || c is ERotationClass.Any; // !filters.Classes.Any() ||
                     #endregion
 
                     #region Для набора смотрим все ротации
@@ -171,7 +171,6 @@ namespace Launcher.Components.MainWindow
                 #endregion
                 .ToList();
                 #endregion
-
                 #endregion
                 #region Обновление списка
                 #region Удаляем не нужные
@@ -190,16 +189,16 @@ namespace Launcher.Components.MainWindow
                     else
                     {
                         collection.Insert(i, item);
-                        await Task.Run(() => Thread.Sleep(15));
+                        await Task.Run(() => Thread.Sleep(1));
                     }
                 }
                 #endregion
                 #endregion
                 #endregion
                 #region Если меньше 500 мс то ждем (что бы не было бликов)
-                var span = DateTime.Now - timeStart;
-                if (span.TotalMilliseconds < 500)
-                    await Task.Run(() => Thread.Sleep(500 - (int)span.TotalMilliseconds));
+                //var span = DateTime.Now - timeStart;
+                //if (span.TotalMilliseconds < 500)
+                //    await Task.Run(() => Thread.Sleep(500 - (int)span.TotalMilliseconds));
                 #endregion
             }
             #endregion

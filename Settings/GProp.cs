@@ -18,7 +18,7 @@ namespace Launcher.Settings
         public static Cart Cart { get; set; } = new();
         public static CServer? SelectedServer { get => _selectedServer; set { _selectedServer = value; SelectedServerChanged?.Invoke(value); } }
         public static RReferralSource? ReferralSource { get; set; } = null;
-        public static EServer Server { get; set; } = EServer.Prod;
+        public static EServer Server { get; set; } = EServer.Staging;
         public static JsonSerializerSettings JsonSeriSettings { get => new() { NullValueHandling = NullValueHandling.Ignore }; }
 
 

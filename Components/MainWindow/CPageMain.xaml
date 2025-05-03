@@ -55,7 +55,6 @@
                 Height="60"
                 Width="60"
                 Text=""
-                any:HoverHint.Text="Добавить сервер"
                 BorderRadius="35"
                 Icon="/Media/plus_icon.png"
                 MouseLeftButtonDown="LP_addButton_MouseLeftButtonDown" />

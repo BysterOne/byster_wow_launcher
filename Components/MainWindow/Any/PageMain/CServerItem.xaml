@@ -24,7 +24,7 @@
             RenderOptions.BitmapScalingMode="HighQuality">
             <Border.BorderBrush>
                 <SolidColorBrush x:Name="border_brush"
-                    Color="#00000000"/>
+                    Color="#00000000" RenderOptions.BitmapScalingMode="HighQuality"/>
             </Border.BorderBrush>
             <Border.OpacityMask>
                 <VisualBrush>
@@ -39,7 +39,8 @@
             </Border.OpacityMask>
             <Border.Background>
                 <ImageBrush
-                    ImageSource="/Media/Shop/ClassIcons/mage_icon.png"/>
+                    ImageSource="/Media/Shop/ClassIcons/mage_icon.png"
+                    RenderOptions.BitmapScalingMode="HighQuality"/>
             </Border.Background>
         </Border>
     </Grid>

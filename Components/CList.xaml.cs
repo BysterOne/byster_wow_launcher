@@ -33,11 +33,13 @@ namespace Launcher.Components
     /// <summary>
     /// Логика взаимодействия для CList.xaml
     /// </summary>
-    public partial class CList : UserControl, ITransferable
+    public partial class CList : UserControl, ITranslatable
     {
         public CList()
         {
             InitializeComponent();
+
+            TranslationHub.Register(this);
             DataContext = this;
             this.MouseLeave += EMouseLeave;
             this.PreviewMouseLeftButtonDown += ComponentLeftDown;

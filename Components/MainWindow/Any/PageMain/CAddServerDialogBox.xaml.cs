@@ -21,11 +21,12 @@ namespace Launcher.Components.MainWindow.Any.PageMain
     /// <summary>
     /// Логика взаимодействия для CAddServerDialogBox.xaml
     /// </summary>
-    public partial class CAddServerDialogBox : UserControl, IUDialogBox, ITransferable
+    public partial class CAddServerDialogBox : UserControl, IUDialogBox, ITranslatable
     {
         public CAddServerDialogBox()
         {
             InitializeComponent();
+            TranslationHub.Register(this);
         }
 
         #region Переменные
@@ -135,11 +136,11 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         private void AddServer(string? name, string? path, EServerIcon? icon)
         {
             #region Проверки
-            if (String.IsNullOrWhiteSpace(name)) { Main.Notify(Dictionary.Translate("Укажите название сервера")); return; }
-            if (String.IsNullOrWhiteSpace(path)) { Main.Notify(Dictionary.Translate("Укажите путь к лаунчеру")); return; }
+            if (String.IsNullOrWhiteSpace(name)) { Main.Notify(Dictionary.Translate("Укажите название клиента")); return; }
+            if (String.IsNullOrWhiteSpace(path)) { Main.Notify(Dictionary.Translate("Укажите путь к wow.exe")); return; }
             if (!File.Exists(path)) { Main.Notify(Dictionary.Translate("Выбранный файл не найден")); return; }            
             if (icon is null) { Main.Notify(Dictionary.Translate("Выберите иконку из доступных")); return; }
-            if (AppSettings.Instance.Servers.Any(x => x.PathToExe == path)) { Main.Notify(Dictionary.Translate("Сервер с указанным путём к лаунчеру уже существует")); return; }
+            if (AppSettings.Instance.Servers.Any(x => x.PathToExe == path)) { Main.Notify(Dictionary.Translate("Выбранный клиент уже добавлен")); return; }
             #endregion
             #region Сохранение
             var server = new CServer()
@@ -163,9 +164,9 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         #region UpdateAllValues
         public async Task UpdateAllValues()
         {
-            MGH_value.Text = Dictionary.Translate("Добавление сервера");
+            MGH_value.Text = Dictionary.Translate("Добавление клиента");
             MGC_server_name.Placeholder = Dictionary.Translate("Название");
-            MGC_path.Text = Dictionary.Translate("Путь к лаунчеру");
+            MGC_path.Text = Dictionary.Translate("Путь к WoW.exe");
             MGCI_header.Text = Dictionary.Translate("Выберите иконку");
             MGC_save.Text = Dictionary.Translate("Сохранить");
         }
@@ -193,7 +194,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         {
             var dlg = new OpenFileDialog
             {
-                Title = Dictionary.Translate("Выберите исполняемый файл лаунчера"),
+                Title = Dictionary.Translate("Выберите исполняемый файл wow.exe"),
                 Filter = $"{Dictionary.Translate("Исполняемые файлы")} (*.exe)|*.exe",
                 DefaultExt = ".exe",
                 CheckFileExists = true,

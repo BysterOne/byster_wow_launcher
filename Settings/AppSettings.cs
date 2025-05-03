@@ -15,8 +15,17 @@ namespace Launcher.Settings
 
         private static AppSettings? _instance;
 
+        #region События
+        public delegate void LanguageChangedDelegate(ELang newLanguage);
+        public static event LanguageChangedDelegate? LanguageChanged;
+        #endregion
+
+        #region Скрытые
+        private ELang _lang = ELang.Ru;
+        #endregion
+
         #region Параметры
-        public ELang Language { get; set; } = ELang.Ru;
+        public ELang Language { get => _lang; set { _lang = value; LanguageChanged?.Invoke(value); } }
         public string Login { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public ObservableCollection<CServer> Servers { get; set; } = [];

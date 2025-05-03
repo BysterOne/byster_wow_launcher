@@ -69,7 +69,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 #endregion
                 #region Загрузка изображения
                 var img = Subscription.Rotation.Media.FirstOrDefault(x => x.Type == EMediaType.Image);
-                if (img is not null)
+                if (img is not null && !String.IsNullOrEmpty(img.Url) && !img.Url.Contains(".mp4", StringComparison.CurrentCultureIgnoreCase))
                 {
                     var imageSource = ImageControlHelper.GetImageFromCache(img.Url, (int)Math.Ceiling(this.Width), (int)Math.Ceiling(this.Height));
                     if (imageSource is null)

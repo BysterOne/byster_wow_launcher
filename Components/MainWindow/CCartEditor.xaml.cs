@@ -3,7 +3,6 @@ using Launcher.Any;
 using Launcher.Components.MainWindow.Any.CartEditor;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Components.PanelChanger;
-using Launcher.PanelChanger.Enums;
 using Launcher.Settings;
 using Launcher.Windows;
 using System.ComponentModel;

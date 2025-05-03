@@ -13,6 +13,7 @@ using Launcher.PanelChanger.Enums;
 using Launcher.Settings;
 using Launcher.Windows.AnyMain.Enums;
 using Launcher.Windows.AnyMain.Errors;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Media;
@@ -24,11 +25,12 @@ namespace Launcher.Windows
     /// <summary>
     /// Логика взаимодействия для Main.xaml
     /// </summary>
-    public partial class Main : Window, ITransferable
+    public partial class Main : Window, ITranslatable
     {
         public Main()
         {
             InitializeComponent();
+            TranslationHub.Register(this);
 
             Loaded += WLoaded;
         }
@@ -88,6 +90,15 @@ namespace Launcher.Windows
             #region try
             try
             {
+                #region Загружаем информацию о пользователе
+                var tryGetUserInfo = await CApi.GetUserInfo();
+                if (!tryGetUserInfo.IsSuccess)
+                {
+                    throw new UExcept(EInitialization.FailGetUserInfo, $"Не удалось загрузить данные пользователя", tryGetUserInfo.Error);
+                }
+                GProp.User = tryGetUserInfo.Response;
+                UpdateUserDataView();
+                #endregion
                 #region Переключатель страниц магазина и главной
                 EPC_MainPanelChanger = new
                 (
@@ -100,43 +111,44 @@ namespace Launcher.Windows
                     EPanelState.Showen
                 );
                 EPC_MainPanelChanger.ShowElement += PanelChangerShow;
-                EPC_MainPanelChanger.HideElement += PanelChangerHide;
-                var tryInitMainChanger = await EPC_MainPanelChanger.Init();
-                if (!tryInitMainChanger.IsSuccess) throw new UExcept(EInitialization.FailInitPanelChanger, $"Ошибка запуска '{nameof(EPC_MainPanelChanger)}'", tryInitMainChanger.Error);
+                EPC_MainPanelChanger.HideElement += PanelChangerHide;                
                 #endregion
                 #region Обновляем язык
 
                 #endregion
+                #region Создание и ожидание задач
+                var tryInitMainPageTask = MP_main.Initialization();
+                var tryInitShopPageTask = MP_shop.Initialization();
+                var tryInitMainChangerTask = EPC_MainPanelChanger.Init();
 
-                #region Инициализация страниц
+                await Task.WhenAll(tryInitMainPageTask, tryInitShopPageTask);
+                #endregion
+                #region Обработка ответов
+                #region Страницы
                 #region Главная
-                var tryInitMainPage = await MP_main.Initialization();
+                var tryInitMainPage = await tryInitMainPageTask;
                 if (!tryInitMainPage.IsSuccess)
                 {
                     throw new UExcept(EInitialization.FailInitPage, $"Не удалось загрузить страницу Main", tryInitMainPage.Error);
                 }
                 #endregion
                 #region Магазин
-                var tryInitShopPage = await MP_shop.Initialization();
+                var tryInitShopPage = await tryInitShopPageTask;
                 if (!tryInitShopPage.IsSuccess)
                 {
                     throw new UExcept(EInitialization.FailInitPage, $"Не удалось загрузить страницу Shop", tryInitShopPage.Error);
                 }
                 #endregion
                 #endregion
+                #region Переключатель страниц
+                var tryInitMainChanger = await tryInitMainChangerTask;
+                if (!tryInitMainChanger.IsSuccess) throw new UExcept(EInitialization.FailInitPanelChanger, $"Ошибка запуска '{nameof(EPC_MainPanelChanger)}'", tryInitMainChanger.Error);
+                #endregion
+                #endregion               
 
                 #region Открываем главную
                 await ChangeMainPanel(EPC_MainShop.Main);
-                #endregion
-                #region Загружаем информацию о пользователе
-                var tryGetUserInfo = await CApi.GetUserInfo();
-                if (!tryGetUserInfo.IsSuccess)
-                {
-                    throw new UExcept(EInitialization.FailGetUserInfo, $"Не удалось загрузить данные пользователя", tryGetUserInfo.Error);
-                }
-                GProp.User = tryGetUserInfo.Response;
-                UpdateUserDataView();
-                #endregion
+                #endregion              
 
                 return new() { IsSuccess = true };
             }
@@ -191,8 +203,6 @@ namespace Launcher.Windows
         {
             TP_main_page_button.Text = Dictionary.Translate("ГЛАВНАЯ");
             TP_store_page_button.Text = Dictionary.Translate("МАГАЗИН");
-
-            await MP_main.UpdateAllValues();
         }
         #endregion
         #region Notify

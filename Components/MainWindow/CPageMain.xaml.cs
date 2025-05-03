@@ -47,12 +47,13 @@ namespace Launcher.Components.MainWindow
     /// <summary>
     /// Логика взаимодействия для CPageMain.xaml
     /// </summary>
-    public partial class CPageMain : UserControl, ITransferable
+    public partial class CPageMain : UserControl, ITranslatable
     {
         public CPageMain()
         {
             InitializeComponent();
 
+            TranslationHub.Register(this);
             GProp.Subscriptions.CollectionChanged += ECollectionChanged;
         }
 
@@ -168,19 +169,9 @@ namespace Launcher.Components.MainWindow
                 GProp.Subscriptions.Clear();
                 foreach (var sub in tryGetSubscriptions.Response) GProp.Subscriptions.Add(sub);
                 #endregion
-                #region Инициализация компонента списка продуктов
-                //var tryInitProductList = await MP_products_list.Initialization();
-                //if (!tryInitProductList.IsSuccess)
-                //{
-                //    throw new UExcept(EInitialization.FailInitProductList, $"Ошибка инициализации списка продуктов", tryInitProductList.Error);
-                //}
+                #region Обновление языка
+                await UpdateAllValues();
                 #endregion
-                //#region Установка переключателей фильтров
-                //SetupFiltersChangers();
-                //#endregion
-                //#region Первая загрузка фильтров
-                //UpdateFilters(true);
-                //#endregion
 
                 return new() { IsSuccess = true };
             }
@@ -211,7 +202,7 @@ namespace Launcher.Components.MainWindow
         public async Task UpdateAllValues()
         {
             APE_text_block.Text = Dictionary.Translate("На данный момент у Вас нет ротаций. Их можно приобрести в магазине");
-            HoverHint.SetText(LP_addButton, Dictionary.Translate("Добавить сервер"));
+            HoverHint.SetText(LP_addButton, Dictionary.Translate("Добавить клиент WoW"));
         }
         #endregion
         #region LaunchCheat

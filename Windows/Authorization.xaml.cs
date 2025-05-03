@@ -35,11 +35,12 @@ namespace Launcher.Windows
     /// <summary>
     /// Логика взаимодействия для Authorization.xaml
     /// </summary>
-    public partial class Authorization : Window, ITransferable
+    public partial class Authorization : Window, ITranslatable
     {
         public Authorization()
         {
             InitializeComponent();
+            TranslationHub.Register(this);
 
             Loaded += ALoaded;
             //Closing += (a, e) => { Application.Current.Shutdown(); };

@@ -321,7 +321,7 @@ namespace Launcher.Windows
         }
         #endregion
         #region ShowModal
-        public static async Task<UResponse<Any.UDialogBox.EDialogResponse>> ShowModal<T>(T dialog) where T : UIElement, IUDialogBox
+        public static async Task<UResponse<Any.UDialogBox.EDialogResponse>> ShowModal<T>(T dialog, params object[] pars) where T : UIElement, IUDialogBox
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
             var _failinf = $"Не удалось отобразить модальное окно типа {typeof(T).Name}";
@@ -345,7 +345,7 @@ namespace Launcher.Windows
                         mainWindow.modalGrid.Visibility = Visibility.Visible;
                         mainWindow.modalGrid.Children.Add(dialog);
 
-                        var response = await dialog.Show();
+                        var response = await dialog.Show(pars);
                         taskWaiter.SetResult(response);
                         await dialog.Hide();
                         mainWindow.modalGrid.Children.Remove(dialog);

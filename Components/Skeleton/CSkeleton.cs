@@ -101,8 +101,11 @@ namespace Launcher.Components
             Dispatcher.Invoke(() =>
             {
                 var background = (Rectangle)GetTemplateChild("gradientRect");
-                OpacityMonitor.Monitor(background);
-                background.Fill = GetBrush();
+                if (background is not null)
+                {
+                    OpacityMonitor.Monitor(background);
+                    background.Fill = GetBrush();
+                }
             });
         }
 

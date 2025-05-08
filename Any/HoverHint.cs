@@ -5,6 +5,7 @@ using System.Windows.Controls;
 using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
+using System.Windows.Media.Animation;
 using System.Windows.Media.Effects;
 using System.Windows.Shapes;
 
@@ -13,136 +14,177 @@ namespace Launcher.Any
     public sealed class HoverHint
     {
         public static readonly DependencyProperty TextProperty =
-            DependencyProperty.RegisterAttached(
-                "Text", typeof(string), typeof(HoverHint),
-                new PropertyMetadata(null, OnTextChanged));
+        DependencyProperty.RegisterAttached(
+            "Text", typeof(string), typeof(HoverHint),
+            new PropertyMetadata(null, OnTextChanged));
 
         public static string GetText(DependencyObject o) => (string)o.GetValue(TextProperty);
         public static void SetText(DependencyObject o, string v) => o.SetValue(TextProperty, v);
 
-        private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        
+        private static readonly DependencyProperty _currentHintProperty =
+            DependencyProperty.RegisterAttached("_currentHint", typeof(HintAdorner),
+                                                typeof(HoverHint));
+
+       
+        private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs _)
         {
-            Debug.WriteLine($"HoverHint.Text={e.NewValue}");
-            Debug.WriteLine(AdornerLayer.GetAdornerLayer((UIElement)d) == null ? "NO LAYER" : "OK");
             if (d is not UIElement ui) return;
-
-            ui.MouseEnter += (_, __) =>
+            
+            if ((bool)ui.GetValue(_subscribedProperty) == false)
             {
-                var layer = GetWindowAdornerLayer(ui);
-                if (layer == null) return;
-
-                var hint = new HintAdorner(ui, GetText(ui));
-                layer.Add(hint);
-                ui.SetValue(_currentProperty, hint);
-            };
-
-            ui.MouseLeave += (_, __) =>
-            {
-                if (ui.GetValue(_currentProperty) is HintAdorner hint)
-                {
-                    GetWindowAdornerLayer(ui)?.Remove(hint);
-                    ui.ClearValue(_currentProperty);
-                }
-            };
+                ui.MouseEnter += OnEnter;
+                ui.MouseLeave += OnLeave;
+                ui.SetValue(_subscribedProperty, true);
+            }
         }
 
-        private static AdornerLayer? GetWindowAdornerLayer(UIElement owner)
+        private static void OnEnter(object? sender, MouseEventArgs e)
+        {
+            var ui = (UIElement)sender!;
+            var text = GetText(ui);
+            if (string.IsNullOrEmpty(text)) return;
+            
+            if (ui.GetValue(_currentHintProperty) is HintAdorner hExisting)
+            {
+                hExisting.StopAnimation();
+                hExisting.Show();
+                return;
+            }
+
+            var layer = GetWindowLayer(ui);
+            if (layer == null) return;
+
+            var hint = new HintAdorner(ui, text);
+            layer.Add(hint);
+            ui.SetValue(_currentHintProperty, hint);
+
+            hint.Show();
+        }
+
+        private static void OnLeave(object? sender, MouseEventArgs e)
+        {
+            var ui = (UIElement)sender!;
+            if (ui.GetValue(_currentHintProperty) is not HintAdorner hint) return;
+
+            hint.Hide(() =>
+            {
+                GetWindowLayer(ui)?.Remove(hint);
+                ui.ClearValue(_currentHintProperty);
+            });
+        }
+        
+        private static readonly DependencyProperty _subscribedProperty =
+            DependencyProperty.RegisterAttached("_sub", typeof(bool),
+                                                typeof(HoverHint), new PropertyMetadata(false));
+
+        private static AdornerLayer? GetWindowLayer(UIElement owner)
         {
             var window = Window.GetWindow(owner);
-            if (window == null) return null;
-
-            if (window.Content is AdornerDecorator decorator)
-                return decorator.AdornerLayer; 
-            
-            return AdornerLayer.GetAdornerLayer((Visual)window.Content);
+            return window?.Content is Visual root
+                ? AdornerLayer.GetAdornerLayer(root)
+                : null;
         }
-
-        private static readonly DependencyProperty _currentProperty =
-            DependencyProperty.RegisterAttached("_current", typeof(Adorner),
-                                                typeof(HoverHint));
-    }
-
-    sealed class HintAdorner : Adorner
-    {
-        private readonly FrameworkElement _visual;
-
-        public HintAdorner(UIElement adorned, string text) : base(adorned)
+        private sealed class HintAdorner : Adorner
         {
-            _visual = BuildBubble(text);            
-            AddVisualChild(_visual);
-            IsHitTestVisible = false;
-        }
+            private readonly FrameworkElement _bubble;
+            private readonly TranslateTransform _shift = new();
 
-        private static FrameworkElement BuildBubble(string text)
-        {
-            var bubble = new Border
+            public HintAdorner(UIElement adorned, string text) : base(adorned)
             {
-                Child = new TextBlock 
+                _bubble = BuildBubble(text); 
+                _bubble.RenderTransform = _shift;
+
+                AddVisualChild(_bubble);
+                IsHitTestVisible = false;
+                Opacity = 0;
+            }
+
+            #region Слой и его отображение
+            protected override int VisualChildrenCount => 1;
+            protected override Visual GetVisualChild(int _) => _bubble;
+
+            protected override Size MeasureOverride(Size _)
+            {
+                _bubble.Measure(new Size(double.PositiveInfinity, double.PositiveInfinity));
+                var w = AdornedElement.RenderSize.Width + 10 + _bubble.DesiredSize.Width;
+                var h = Math.Max(AdornedElement.RenderSize.Height, _bubble.DesiredSize.Height);
+                return new Size(w, h);
+            }
+
+            protected override Size ArrangeOverride(Size fin)
+            {
+                double x = AdornedElement.RenderSize.Width + 10;
+                double y = (AdornedElement.RenderSize.Height - _bubble.DesiredSize.Height) / 2;
+                _bubble.Arrange(new Rect(new Point(x, y), _bubble.DesiredSize));
+                return fin;
+            }
+
+            protected override Geometry GetLayoutClip(Size _) => null;
+            #endregion
+
+            #region Анимации
+            private static readonly Duration Dur = TimeSpan.FromMilliseconds(180);
+
+            private readonly DoubleAnimation _fadeIn = new(1, Dur) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
+            private readonly DoubleAnimation _fadeOut = new(0, Dur) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn } };
+            private readonly DoubleAnimation _slideIn = new(0, Dur) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseOut } };
+            private readonly DoubleAnimation _slideOut = new(10, Dur) { EasingFunction = new CubicEase { EasingMode = EasingMode.EaseIn } };
+
+            public void Show()
+            {
+                _slideIn.From = 10;  // справа‑налево
+                BeginAnimation(OpacityProperty, _fadeIn, HandoffBehavior.SnapshotAndReplace);
+                _shift.BeginAnimation(TranslateTransform.XProperty, _slideIn, HandoffBehavior.SnapshotAndReplace);
+            }
+
+            public void Hide(Action onDone)
+            {
+                _fadeOut.Completed += One;
+                BeginAnimation(OpacityProperty, _fadeOut, HandoffBehavior.SnapshotAndReplace);
+                _shift.BeginAnimation(TranslateTransform.XProperty, _slideOut, HandoffBehavior.SnapshotAndReplace);
+
+                void One(object? s, EventArgs e)
                 {
-                    Text = text,
-                    FontFamily = (FontFamily)(Functions.GlobalResources()["fontfamily_main"]),
-                    FontSize = 18,
-                    Foreground = (SolidColorBrush)(Functions.GlobalResources()["textcolor_main"]),
-                    Margin = new Thickness(10, 6, 10, 6)
-                },
-                //Background = new SolidColorBrush((Color)ColorConverter.ConvertFromString("#FF2E323C")),
-                Background = new SolidColorBrush(Color.FromArgb(200, 0, 0, 0)),
-                CornerRadius = new CornerRadius(8),
-            };
+                    _fadeOut.Completed -= One;
+                    onDone();
+                }
+            }
 
-            //var arrow = new Path
-            //{
-            //    Data = Geometry.Parse("M0,5 L8,0 L8,10 Z"),
-            //    Fill = bubble.Background,
-            //    Width = 8,
-            //    Height = 10,
-            //    Stretch = Stretch.Fill,
-            //    VerticalAlignment = VerticalAlignment.Center
-            //};
+            public void StopAnimation()
+            {
+                BeginAnimation(OpacityProperty, null);
+                _shift.BeginAnimation(TranslateTransform.XProperty, null);
+            }
+            #endregion
 
-            var grid = new Grid();
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(8) });
-            grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
+            #region Конструктор и стили
+            private static FrameworkElement BuildBubble(string text)
+            {
+                var bubble = new Border
+                {
+                    Child = new TextBlock
+                    {
+                        Text = text,
+                        FontFamily = (FontFamily)Functions.GlobalResources()["fontfamily_main"],
+                        FontSize = 18,
+                        Foreground = (Brush)Functions.GlobalResources()["textcolor_main"],
+                        Margin = new Thickness(10, 6, 10, 6)
+                    },
+                    Background = new SolidColorBrush(Color.FromArgb(230, 0, 0, 0)),
+                    CornerRadius = new CornerRadius(8)
+                };
 
-            //Grid.SetColumn(arrow, 0);
-            Grid.SetColumn(bubble, 1);
-            //grid.Children.Add(arrow);
-            grid.Children.Add(bubble);
+                /* если стрелка не нужна – можно вернуть сразу bubble */
+                var grid = new Grid();
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = new GridLength(8) });
+                grid.ColumnDefinitions.Add(new ColumnDefinition { Width = GridLength.Auto });
 
-            //grid.Effect = new DropShadowEffect
-            //{
-            //    BlurRadius = 10,
-            //    ShadowDepth = 0,
-            //    Color = Colors.Black,
-            //    Opacity = 0.5
-            //};
-
-            return grid;
-        }
-
-        protected override int VisualChildrenCount => 1;
-        protected override Visual GetVisualChild(int i) => _visual;
-        protected override Geometry GetLayoutClip(Size layoutSlotSize) => null;
-
-        protected override Size MeasureOverride(Size _)
-        {
-            _visual.Measure(new Size(double.PositiveInfinity,
-                                     double.PositiveInfinity));
-
-            double w = AdornedElement.RenderSize.Width + 10 + _visual.DesiredSize.Width;
-            double h = Math.Max(AdornedElement.RenderSize.Height,
-                                _visual.DesiredSize.Height);
-
-            return new Size(w, h);
-        }
-
-        protected override Size ArrangeOverride(Size finalSize)
-        {
-            double x = AdornedElement.RenderSize.Width + 10;
-            double y = (AdornedElement.RenderSize.Height - _visual.DesiredSize.Height) / 2;
-
-            _visual.Arrange(new Rect(new Point(x, y), _visual.DesiredSize));
-            return finalSize;
+                Grid.SetColumn(bubble, 1);
+                grid.Children.Add(bubble);
+                return grid;         // корневой визуал
+            }
+            #endregion
         }
     }
 }

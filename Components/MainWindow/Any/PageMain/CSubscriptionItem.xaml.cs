@@ -68,16 +68,16 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 (CGTP_CTR_role.Background as ImageBrush)!.ImageSource = GStatic.GetRotationRoleIcon(rotation.Role);
                 #endregion
                 #region Загрузка изображения
-                var img = Subscription.Rotation.Media.FirstOrDefault(x => x.Type == EMediaType.Image);
-                if (img is not null && !String.IsNullOrEmpty(img.Url) && !img.Url.Contains(".mp4", StringComparison.CurrentCultureIgnoreCase))
+                var img = Subscription.Rotation.Image;
+                if (!String.IsNullOrEmpty(img))
                 {
-                    var imageSource = ImageControlHelper.GetImageFromCache(img.Url, (int)Math.Ceiling(this.Width), (int)Math.Ceiling(this.Height));
+                    var imageSource = ImageControlHelper.GetImageFromCache(img, (int)Math.Ceiling(this.Width), (int)Math.Ceiling(this.Height));
                     if (imageSource is null)
                     {
                         await CG_image_skeleton.ChangeState(true);
                         _ = ImageControlHelper.LoadImageAsync
                         (
-                            img.Url,
+                            img,
                             (int)Math.Ceiling(this.Width),
                             (int)Math.Ceiling(this.Height),
                             new CancellationToken(),
@@ -101,7 +101,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 #region Нижняя панель                
                 CGBP_name.Text = AppSettings.Instance.Language switch { _ => Subscription.Rotation.Name };
 
-                CGBP_expired.Text = Subscription.ExpiredDate.ToLocalTime().ToString("dd.MM.yyyy HH.mm");
+                CGBP_expired.Text = Subscription.ExpiredDate.ToLocalTime().ToString("dd.MM.yyyy HH:mm");
 
                 var timeLeft = Subscription.ExpiredDate - DateTime.UtcNow;
                 if (timeLeft.TotalHours < 12) CGBP_expired.Foreground = SubExpiredComingSoon;

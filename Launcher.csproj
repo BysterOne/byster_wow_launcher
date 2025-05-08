@@ -73,6 +73,7 @@
     <PackageReference Include="NLog" Version="5.4.0" />
     <PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
     <PackageReference Include="RestSharp" Version="112.1.0" />
+    <PackageReference Include="VirtualizingWrapPanel" Version="2.1.2" />
   </ItemGroup>
 
   <ItemGroup>

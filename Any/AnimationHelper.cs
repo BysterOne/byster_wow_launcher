@@ -11,7 +11,7 @@ namespace Launcher.Any
     public static class AnimationHelper
     {
         #region Переменные
-        public static TimeSpan AnimationDuration { get; set; } = TimeSpan.FromMilliseconds(150);
+        public static TimeSpan AnimationDuration { get; set; } = TimeSpan.FromMilliseconds(100);
         #endregion
 
         #region OpacityAnimation

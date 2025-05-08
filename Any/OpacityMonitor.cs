@@ -7,7 +7,7 @@ namespace Launcher.Any
     {
         public static void Monitor(UIElement element, bool isHitTest = true)
         {
-            ArgumentNullException.ThrowIfNull(element);
+            if (element is null) return;
 
             DependencyPropertyDescriptor descriptor = DependencyPropertyDescriptor.FromProperty(UIElement.OpacityProperty, typeof(UIElement));
 

@@ -53,7 +53,7 @@
                 BackColor="Transparent"
                 Icon="/Media/close_icon.png"
                 Text=""
-                BorderRadius="10"
+                BorderRadius="15"
                 HorizontalAlignment="Right"
                 VerticalAlignment="Top"
                 Padding="8"

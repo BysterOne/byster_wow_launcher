@@ -27,6 +27,8 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         {
             InitializeComponent();
             TranslationHub.Register(this);
+
+            this.Opacity = 0;
         }
 
         #region Переменные
@@ -38,7 +40,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
 
         #region Функции
         #region Show
-        public async Task<UResponse<EDialogResponse>> Show()
+        public async Task<UResponse<EDialogResponse>> Show(params object[] pars)
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
             var _failinf = $"Ошибка при показе окна";
@@ -47,8 +49,10 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             try
             {
                 #region Появление окна
-                var animationShow = AnimationHelper.OpacityAnimation(this, 1);
-                animationShow.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
+                var fadeInMiddle = AnimationHelper.OpacityAnimation(middleGrid, 1);
+                var fadeIn = AnimationHelper.OpacityAnimation(this, 1);
+                fadeIn.Completed += (s, e) => { fadeInMiddle.Begin(middleGrid, HandoffBehavior.SnapshotAndReplace, true); };
+                fadeIn.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
                 #endregion
                 #region Установка иконок
                 SetIcons();
@@ -89,6 +93,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             Storyboard.SetTargetProperty(animationHideGrid, new PropertyPath(OpacityProperty));
 
             var animationHide = new DoubleAnimation(0, AnimationHelper.AnimationDuration) { EasingFunction = ease };
+            animationHide.BeginTime = AnimationHelper.AnimationDuration;
             Storyboard.SetTarget(animationHide, this);
             Storyboard.SetTargetProperty(animationHide, new PropertyPath(OpacityProperty));
 

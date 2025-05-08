@@ -102,9 +102,11 @@ namespace Launcher.Components
             #region Анимация ширины декорации
             if (TextBlock.ActualWidth is not 0)
             {
+                var decWidth = Decoration.ActualWidth is double.NaN ? Decoration.Width : Decoration.ActualWidth;
+
                 var widthAnimation = new DoubleAnimation
                 (
-                    active ? Decoration.Width is double.NaN ? TextBlock.ActualWidth : Decoration.Width : Decoration.Width,
+                    active ? Decoration.Width is double.NaN ? TextBlock.ActualWidth : decWidth : decWidth,
                     active ? TextBlock.ActualWidth + TextBlock.Margin.Right - TextBlock.Margin.Left : 0,
                     duration
                 )

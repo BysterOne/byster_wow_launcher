@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Launcher.Components.MainWindow"
     xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:virt="clr-namespace:WpfToolkit.Controls;assembly=VirtualizingWrapPanel"
     mc:Ignorable="d"
     d:DesignHeight="450"
     d:DesignWidth="800">
@@ -13,11 +14,11 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="../../Styles/Global.xaml" />
+                    Source="/Launcher;component/Styles/Global.xaml" />
                 <ResourceDictionary
-                    Source="../../Styles/Pages/ShopPage.xaml" />
+                    Source="/Launcher;component/Styles/Pages/ShopPage.xaml" />
                 <ResourceDictionary
-                    Source="../../Components/ScrollPanel/CScrollPanelStyle.xaml" />
+                    Source="/Launcher;component/Components/ScrollPanel/CScrollPanelStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -35,7 +36,7 @@
                 VirtualizingPanel.VirtualizationMode="Recycling">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <WrapPanel />
+                        <virt:VirtualizingWrapPanel />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>
@@ -44,7 +45,9 @@
                             Product="{Binding}"
                             Width="235"
                             Height="300"
-                            Margin="10" />
+                            Margin="10"
+                            ButtonsPanelMargin="0 0 0 0"
+                            MouseLeftButtonDown="CProductItem_MouseLeftButtonDown"/>
                     </DataTemplate>
                 </ItemsControl.ItemTemplate>
             </ItemsControl>

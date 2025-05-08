@@ -42,6 +42,8 @@
     "Выбранный файл не найден": "Selected file not found",
     "Выберите иконку из доступных": "Choose an icon from the available",
     "Сохранить": "Save",
-    "Выберите исполняемый файл лаунчера": "Select the executable file of the launcher"
+    "Выберите исполняемый файл лаунчера": "Select the executable file of the launcher",
+    "ОПИСАНИЕ": "DESCRIPTION",
+    "РОТАЦИИ": "ROTATIONS"
   }
 }

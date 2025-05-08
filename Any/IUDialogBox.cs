@@ -22,7 +22,7 @@ namespace Launcher.Any
 
     public interface IUDialogBox
     {
-        public Task<UResponse<EDialogResponse>> Show();
+        public Task<UResponse<EDialogResponse>> Show(params object[] p);
 
         public Task Hide();
     }

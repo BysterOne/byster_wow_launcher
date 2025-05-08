@@ -1,4 +1,5 @@
 ﻿using Launcher.Any;
+using Launcher.Components.ScrollPanelAny;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -9,6 +10,11 @@ using System.Windows.Media.Animation;
 
 namespace Launcher.Components
 {
+    namespace ScrollPanelAny
+    {
+        public enum ScrollOrientation { Vertical, Horizontal }
+    }
+
     public class CScrollPanel : ContentControl
     {
         static CScrollPanel()
@@ -17,41 +23,57 @@ namespace Launcher.Components
         }
 
         #region Компоненты
-        private ScrollViewer? _scrollViewer { get; set; } = null;
-        private ScrollBar? _verticalBar { get; set; } = null;
-        private double _targetOffset { get; set; } = 0;
+        private ScrollViewer? _scrollViewer;
+        private ScrollBar? _scrollBar;
+        private double _targetOffset;
         #endregion
 
         #region Свойства
         #region AnimationOffset
-        public static readonly DependencyProperty AnimationOffsetProperty =
-            DependencyProperty.Register(
-                nameof(AnimationOffset),
-                typeof(double),
-                typeof(CScrollPanel),
-                new PropertyMetadata(0d, OnAnimationOffsetChanged));
-
         public double AnimationOffset
         {
             get => (double)GetValue(AnimationOffsetProperty);
             set => SetValue(AnimationOffsetProperty, value);
         }
 
-        private static void OnAnimationOffsetChanged(
-                DependencyObject d, DependencyPropertyChangedEventArgs e)
+        public static readonly DependencyProperty AnimationOffsetProperty =
+            DependencyProperty.Register(nameof(AnimationOffset), typeof(double), typeof(CScrollPanel),
+                new PropertyMetadata(0d, OnAnimationOffsetChanged));
+        private static void OnAnimationOffsetChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is CScrollPanel p && p._scrollViewer != null)
-                p._scrollViewer.ScrollToVerticalOffset((double)e.NewValue);
+            if (d is not CScrollPanel p || p._scrollViewer is null) return;
+
+            double val = (double)e.NewValue;
+            if (p.Orientation == ScrollOrientation.Vertical) p._scrollViewer.ScrollToVerticalOffset(val);
+            else p._scrollViewer.ScrollToHorizontalOffset(val);
+        }
+        #endregion
+        #region Orientation
+        public ScrollOrientation Orientation
+        {
+            get => (ScrollOrientation)GetValue(OrientationProperty);
+            set => SetValue(OrientationProperty, value);
+        }
+
+        public static readonly DependencyProperty OrientationProperty =
+            DependencyProperty.Register(nameof(Orientation), typeof(ScrollOrientation), typeof(CScrollPanel),
+                new PropertyMetadata(ScrollOrientation.Vertical, OnOrientationChanged));     
+
+        private static void OnOrientationChanged(DependencyObject d, DependencyPropertyChangedEventArgs _)
+        {
+            if (d is CScrollPanel p) p.UpdateOrientation();
         }
         #endregion
         #endregion
 
         #region Функции       
         #region ScrollTo
-        public void ScrollTo(int y)
+        public void ScrollTo(double offset)
         {
-            var scroll_viewer = (ScrollViewer)GetTemplateChild("scroll_viewer");
-            scroll_viewer.ScrollToVerticalOffset(y);
+            if (Orientation == ScrollOrientation.Vertical)
+                _scrollViewer?.ScrollToVerticalOffset(offset);
+            else
+                _scrollViewer?.ScrollToHorizontalOffset(offset);
         }
         #endregion
         #region OnApplyTemplate
@@ -71,10 +93,9 @@ namespace Launcher.Components
             {
                 _scrollViewer.MouseEnter += OnScrollViewerMouseEnter;
                 _scrollViewer.MouseLeave += OnScrollViewerMouseLeave;
-                                
-                _verticalBar = GetScrollBar(_scrollViewer, Orientation.Vertical);
-                if (_verticalBar != null) _verticalBar.Opacity = 0;
             }
+
+            UpdateOrientation();
         }
         #endregion
         #region AnimateToOffset
@@ -82,25 +103,42 @@ namespace Launcher.Components
         {
             if (_scrollViewer == null) return;
 
-            var storyboard = new Storyboard
-            {
-                FillBehavior = FillBehavior.HoldEnd
-            };
+            var sb = new Storyboard { FillBehavior = FillBehavior.HoldEnd };
 
             var anim = new DoubleAnimation
             {
                 To = to,
                 Duration = TimeSpan.FromMilliseconds(ms),
-                EasingFunction = new PowerEase() { EasingMode = EasingMode.EaseOut }
+                EasingFunction = new PowerEase { EasingMode = EasingMode.EaseOut }
             };
 
             Storyboard.SetTarget(anim, this);
-            Storyboard.SetTargetProperty(anim,
-                new PropertyPath(AnimationOffsetProperty));
+            Storyboard.SetTargetProperty(anim, new PropertyPath(AnimationOffsetProperty));
 
-            storyboard.Children.Add(anim);
+            sb.Children.Add(anim);
+            sb.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
+        }
+        #endregion
+        #region UpdateOrientation
+        private void UpdateOrientation()
+        {
+            if (_scrollViewer is null) return;
 
-            storyboard.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
+            if (Orientation == ScrollOrientation.Vertical)
+            {
+                _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Auto;
+                _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                _scrollBar = GetScrollBar(_scrollViewer, System.Windows.Controls.Orientation.Vertical);
+            }
+            else
+            {
+                _scrollViewer.HorizontalScrollBarVisibility = ScrollBarVisibility.Auto;
+                _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
+                _scrollBar = GetScrollBar(_scrollViewer, System.Windows.Controls.Orientation.Horizontal);
+            }
+
+            if (_scrollBar != null) _scrollBar.Opacity = 0;
+            _targetOffset = 0;
         }
         #endregion
         #endregion
@@ -117,8 +155,8 @@ namespace Launcher.Components
         #region FadeScrollbar
         private void FadeScrollbar(double to)
         {
-            if (_verticalBar == null) return;
-            AnimationHelper.OpacityAnimation(_verticalBar, to).Begin(_verticalBar, HandoffBehavior.SnapshotAndReplace, true);
+            if (_scrollBar == null) return;
+            AnimationHelper.OpacityAnimation(_scrollBar, to).Begin(_scrollBar, HandoffBehavior.SnapshotAndReplace, true);
         }
         #endregion
         #region OnPreviewMouseWheel
@@ -128,20 +166,25 @@ namespace Launcher.Components
 
             e.Handled = true;
 
-            //const double pixelsPerDelta = 150;
-            //double target = _scrollViewer.VerticalOffset - e.Delta / 120.0 * pixelsPerDelta;
-            //target = Math.Max(0, Math.Min(target, _scrollViewer.ScrollableHeight));
-
-            //double distance = Math.Abs(target - (double)GetValue(AnimationOffsetProperty));
-            //double ms = Math.Clamp(distance * 0.2, 100, 400);
-
-            //AnimateToOffset(target, ms);
-                        
             const double pxPerDelta = 80;
-            _targetOffset = Math.Clamp(_targetOffset - (e.Delta / 120.0 * pxPerDelta), 0, _scrollViewer.ScrollableHeight);
+            double delta = e.Delta / 120.0 * pxPerDelta;
 
-            Debug.WriteLine($"{e.Delta} - {_targetOffset}");
+            if (Orientation == ScrollOrientation.Vertical)
+            {
+                _targetOffset = Math.Clamp(
+                    _targetOffset - delta,
+                    0,
+                    _scrollViewer.ScrollableHeight);
+            }
+            else
+            {
+                _targetOffset = Math.Clamp(
+                    _targetOffset - delta,
+                    0,
+                    _scrollViewer.ScrollableWidth);
+            }
 
+            Debug.WriteLine($"{e.Delta} → {_targetOffset}");
             AnimateToOffset(_targetOffset, 150);
         }
         #endregion
@@ -155,13 +198,12 @@ namespace Launcher.Components
                 var child = VisualTreeHelper.GetChild(parent, i);
 
                 if (child is ScrollBar sb && sb.Orientation == orientation)
-                {
                     return sb;
-                }
 
                 var result = GetScrollBar(child, orientation);
                 if (result != null) return result;
             }
+
             return null;
         }
         #endregion

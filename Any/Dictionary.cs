@@ -104,5 +104,31 @@ namespace Launcher
             };
         }
         #endregion
+        #region Длительность в часах
+        public static string HoursCount(int count)
+        {
+            #region Ru
+            string Ru()
+            {
+                var n = Math.Abs(count) % 100;
+                var n1 = n % 10;
+
+                if (n is >= 11 and <= 14) return "часов";
+                return n1 switch
+                {
+                    1 => "час",
+                    2 or 3 or 4 => "часа",
+                    _ => "часов"
+                };
+            }
+            #endregion
+
+            return AppSettings.Instance.Language switch
+            {
+                ELang.En => $"{count} hour{(count == 1 ? "" : "s")}",
+                _ => $"{count} {Ru()}"
+            };
+        }
+        #endregion
     }
 }

@@ -132,6 +132,9 @@ namespace Launcher.Api.Models
         [JsonProperty("name")]
         public string Name { get; set; } = string.Empty;
 
+        [JsonProperty("image")]
+        public string Image { get; set; } = string.Empty;
+
         [JsonProperty("description")]
         public string Description { get; set; } = string.Empty;
 
@@ -173,7 +176,6 @@ namespace Launcher.Api.Models
     public class Subscription
     {
         [JsonProperty("expired_date")]
-        //[JsonConverter(typeof(IsoDateTimeConverter), DateTimeFormat = "yyyy-MM-dd'T'HH:mm:ss.ffffff")]
         public DateTime ExpiredDate { get; set; }
 
         [JsonProperty("rotation")]

@@ -6,6 +6,7 @@ using Launcher.Any.GlobalEnums;
 using Launcher.Api.Models;
 using Launcher.Cls;
 using Launcher.Components.DialogBox;
+using Launcher.Components.MainWindow.Any.PageMain;
 using Launcher.Settings;
 using Launcher.Windows;
 using Launcher.Windows.AnyMain.Enums;
@@ -29,6 +30,16 @@ namespace Launcher.Components.MainWindow
         #region Переменные
         public static LogBox Pref { get; set; } = new("Product List");
         public ObservableCollection<Product> ProductList { get; set; } = new();
+        #endregion
+
+        #region Обработчики событий
+        #region CProductItem_MouseLeftButtonDown
+        private void CProductItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
+        {
+            var product = ((CProductItem)sender).Product;
+            if (product.IsBundle) _ = Main.ShowModal(new CProductInfoDialogBox(), product);
+        }
+        #endregion
         #endregion
 
         #region Функции
@@ -221,5 +232,6 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #endregion
+        
     }
 }

@@ -20,7 +20,7 @@
     </UserControl.Resources>
     <Grid>
         <Rectangle
-            Fill="{StaticResource back_main}" Opacity="0.95"/>
+            Fill="{StaticResource back_main}" Opacity="0.99"/>
 
         <Grid
             VerticalAlignment="Center"

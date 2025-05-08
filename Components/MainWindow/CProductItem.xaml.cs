@@ -10,6 +10,7 @@ using Launcher.Cls;
 using Launcher.Components.DialogBox;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Components.MainWindow.Any.ProductItem.Errors;
+using Launcher.Components.MainWindow.ProductItemAny;
 using Launcher.Settings;
 using Launcher.Windows;
 using System.ComponentModel;
@@ -22,6 +23,14 @@ using System.Windows.Threading;
 
 namespace Launcher.Components.MainWindow
 {
+    namespace ProductItemAny
+    {
+        public enum EButtonsType
+        {
+            Dynamic,
+            Static,
+        }
+    }
     /// <summary>
     /// Логика взаимодействия для CProductItem.xaml
     /// </summary>
@@ -30,6 +39,8 @@ namespace Launcher.Components.MainWindow
         public CProductItem()
         {
             InitializeComponent();
+
+            Cursor = Cursors.Hand;
 
             this.MouseEnter += EMouseEnter;
             this.MouseLeave += EMouseLeave;
@@ -40,9 +51,28 @@ namespace Launcher.Components.MainWindow
         private bool IsFirstPanelButtonsChange { get; set; } = true;
         public static LogBox Pref { get; set; } = new("Product Item");
         public CCartItem? CartItem { get; set; } = null;
+        
         #endregion
 
         #region Свойства
+        #region ButtonsType
+        public EButtonsType ButtonsType
+        {
+            get => (EButtonsType)GetValue(ButtonsTypeProperty);
+            set => SetValue(ButtonsTypeProperty, value);
+        }
+
+        public static readonly DependencyProperty ButtonsTypeProperty =
+            DependencyProperty.Register(nameof(ButtonsType), typeof(EButtonsType), typeof(CProductItem),
+                new PropertyMetadata(EButtonsType.Dynamic, OnButtonsTypeChanged));
+
+        private static void OnButtonsTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = (CProductItem)d;
+            sender.UpdateView();
+            sender.UpdateButtonsPanelView();
+        }
+        #endregion
         #region Product
         public Product Product 
         { 
@@ -59,6 +89,39 @@ namespace Launcher.Components.MainWindow
             var sender = (d as CProductItem)!;
             if (e.NewValue is not null) _ = sender.SetProductData();
         }
+        #endregion
+        #region ButtonsPanelMargin
+        public Thickness ButtonsPanelMargin
+        {
+            get => (Thickness)GetValue(ButtonsPanelMarginProperty);
+            set => SetValue(ButtonsPanelMarginProperty, value);
+        }
+
+        public static readonly DependencyProperty ButtonsPanelMarginProperty =
+            DependencyProperty.Register(nameof(ButtonsPanelMargin), typeof(Thickness), typeof(CProductItem),
+                new(new Thickness(0, 0, 0, 5)));
+        #endregion
+        #region ButtonsMargin
+        public Thickness ButtonsMargin
+        {
+            get => (Thickness)GetValue(ButtonsMarginProperty);
+            set => SetValue(ButtonsMarginProperty, value);
+        }
+
+        public static readonly DependencyProperty ButtonsMarginProperty =
+            DependencyProperty.Register(nameof(ButtonsMargin), typeof(Thickness), typeof(CProductItem),
+                new (new Thickness(0, 0, 0, 10)));
+        #endregion
+        #region CountInCartBlockMargin
+        public Thickness CountInCartBlockMargin
+        {
+            get => (Thickness)GetValue(CountInCartBlockMarginProperty);
+            set => SetValue(CountInCartBlockMarginProperty, value);
+        }
+
+        public static readonly DependencyProperty CountInCartBlockMarginProperty =
+            DependencyProperty.Register(nameof(CountInCartBlockMargin), typeof(Thickness), typeof(CProductItem),
+                new(new Thickness(0, 0, 0, 15)));
         #endregion
         #endregion
 
@@ -82,12 +145,13 @@ namespace Launcher.Components.MainWindow
         #region CGBPBCT_test_PreviewMouseDoubleClick
         private async void CGBPBCT_test_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            e.Handled = true;
             if (!Product.CanTest) return;
 
             var boxSettings = new BoxSettings
             (
                 Dictionary.Translate("Тест"),
-                Dictionary.Translate("Вы действительно хотите взять на тест данный продукт?"),
+                Dictionary.Translate($"Вы действительно хотите взять на тест данный продукт?\nДлительность: ") + Dictionary.HoursCount(GProp.User.TestDuration),
                 [
                     new (EResponse.Yes, Dictionary.Translate("Да")),
                     new (EResponse.Cancel, Dictionary.Translate("Отмена")),
@@ -129,6 +193,7 @@ namespace Launcher.Components.MainWindow
         #region CGBPBCT_buy_MouseLeftButtonDown
         private void CGBPBCT_buy_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            e.Handled = true;
             if (CartItem is null)
             {
                 GProp.Cart.CartUpdated += ECartUpdated;
@@ -165,21 +230,34 @@ namespace Launcher.Components.MainWindow
         #region CGBPBC_remove_MouseLeftButtonDown
         private void CGBPBC_remove_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            e.Handled = true;
             if (CartItem is not null) GProp.Cart.ChangeCount(Product, (CartItem.Count - 1));
         }
         #endregion
         #region CGBPBC_add_MouseLeftButtonDown
         private void CGBPBC_add_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
+            e.Handled = true;
             if (CartItem is not null) GProp.Cart.ChangeCount(Product, (CartItem.Count + 1));
         }
         #endregion
         #endregion
 
         #region Функции
+        #region GetButtonsHeight
+        private double GetButtonsHeight()
+        {
+            if (CGBP_buttons.ActualHeight is not 0) return CGBP_buttons.ActualHeight;
+            if (CartItem is not null) return 51;
+            else if (Product.CanTest) return 105;
+            else return 55;
+        }
+        #endregion
         #region UpdateView
         private void UpdateView()
         {
+            if (Product is null) return;
+
             if (CartItem is not null)
             {
                 CGBPB_cart_test.Visibility = Visibility.Collapsed;
@@ -199,18 +277,20 @@ namespace Launcher.Components.MainWindow
         private void UpdateButtonsPanelView()
         {
             CGBP_buttons.Margin =
-                this.IsMouseOver ?
-                new Thickness(0, -5, 0, 0) :
-                new Thickness(5, 0, 0, -100);
+                this.IsMouseOver || ButtonsType is EButtonsType.Static ?
+                ButtonsPanelMargin :
+                new Thickness(0, 5, 0, -GetButtonsHeight());
         }
         #endregion
         #region ChangeButtonsPanelState
         public void ChangeButtonsPanelState(bool isActive)
         {
+            if (ButtonsType is EButtonsType.Static) return;
+
             var newThickness =
                 this.IsMouseOver ?
-                new Thickness(0, -5, 0, 0) :
-                new Thickness(5, 0, 0, -100);
+                ButtonsPanelMargin :
+                new Thickness(0, 5, 0, -GetButtonsHeight());
 
             var storyboard = new Storyboard();
             var animation = new ThicknessAnimation(newThickness, AnimationHelper.AnimationDuration)

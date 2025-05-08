@@ -1,16 +1,16 @@
 ﻿<UserControl
-    x:Class="Launcher.Components.MainWindow.CProductItem"
+    x:Class="Launcher.Components.MainWindow.Any.PageShop.CRotationItem"
     xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
     xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
     xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:any="clr-namespace:Launcher.Any"
-    xmlns:local="clr-namespace:Launcher.Components.MainWindow"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow.Any.PageShop"
     xmlns:settings="clr-namespace:Launcher.Settings"
     xmlns:components="clr-namespace:Launcher.Components"
     mc:Ignorable="d"
-    d:DesignHeight="300"
-    d:DesignWidth="235">
+    d:DesignHeight="260"
+    d:DesignWidth="200">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -36,10 +36,10 @@
                     <VisualBrush.Visual>
                         <Border
                             Background="White"
-                            d:Width="235"
-                            d:Height="300"
-                            Width="{Binding Width, RelativeSource={RelativeSource AncestorType={x:Type local:CProductItem}}}"
-                            Height="{Binding Height, RelativeSource={RelativeSource AncestorType={x:Type local:CProductItem}}}"
+                            d:Width="260"
+                            d:Height="200"
+                            Width="{Binding Width, RelativeSource={RelativeSource AncestorType={x:Type local:CRotationItem}}}"
+                            Height="{Binding Height, RelativeSource={RelativeSource AncestorType={x:Type local:CRotationItem}}}"
                             CornerRadius="15" />
                     </VisualBrush.Visual>
                 </VisualBrush>
@@ -82,8 +82,8 @@
                     <Rectangle
                         x:Name="CGTP_background"
                         Fill="#CC000000"
-                        RadiusX="15"
-                        RadiusY="15" />
+                        RadiusX="20"
+                        RadiusY="20" />
                     <!--#endregion-->
                     <!--#region Набор -->
                     <TextBlock
@@ -141,7 +141,7 @@
                             <Border.Background>
                                 <ImageBrush
                                     Stretch="UniformToFill"
-                                    ImageSource="../../Media/Shop/ClassIcons/warlock_icon.png" />
+                                    ImageSource="/Launcher;component/Media/Shop/ClassIcons/warlock_icon.png" />
                             </Border.Background>
                         </Border>
                         <!--#endregion-->
@@ -151,7 +151,7 @@
                             <Border.Background>
                                 <ImageBrush
                                     Stretch="UniformToFill"
-                                    ImageSource="../../Media/Shop/TypesIcons/pve_icon.png" />
+                                    ImageSource="/Launcher;component/Media/Shop/TypesIcons/pve_icon.png" />
                             </Border.Background>
                         </Border>
                         <!--#endregion-->
@@ -161,7 +161,7 @@
                             <Border.Background>
                                 <ImageBrush
                                     Stretch="UniformToFill"
-                                    ImageSource="../../Media/Shop/TypesIcons/pve_icon.png" />
+                                    ImageSource="/Launcher;component/Media/Shop/TypesIcons/pve_icon.png" />
                             </Border.Background>
                         </Border>
                         <!--#endregion-->
@@ -203,11 +203,11 @@
                         </Rectangle.Fill>
                     </Rectangle>
                     <!--#endregion-->
-                    <!--#region Название и цена -->
+                    <!--#region Название -->
                     <Grid
                         Grid.Row="0"
-                        Margin="10 50 10 5"
-                        x:Name="CGBP_name_price">
+                        Margin="10 50 10 10"
+                        x:Name="CGBP_name">
                         <!--#region Разметка -->
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition />
@@ -223,118 +223,17 @@
 
                         <!--#region Название -->
                         <TextBlock
-                            x:Name="CGBP_name"
+                            x:Name="CGBPN_value"
                             Grid.ColumnSpan="2"
                             TextWrapping="Wrap"
                             TextAlignment="Center"
-                            Text="PvP Survival Hunter"
+                            d:Text="PvP Survival Hunter"
                             HorizontalAlignment="Center"
                             FontFamily="{DynamicResource fontfamily_main}"
                             FontSize="22"
                             Foreground="{DynamicResource textcolor_main}"
                             Margin="5 5" />
-                        <!--#endregion-->
-                        <!--#region Длительность -->
-                        <TextBlock
-                            x:Name="CGBP_duration"
-                            Grid.Column="0"
-                            Grid.Row="1"
-                            Text="31 день"
-                            FontFamily="{DynamicResource fontfamily_main}"
-                            FontSize="19"
-                            Foreground="{DynamicResource orange_main}"
-                            Margin="5 2 5 8"
-                            HorizontalAlignment="Center" />
-                        <!--#endregion-->
-                        <!--#region Цена -->
-                        <TextBlock
-                            x:Name="CGBP_price"
-                            Grid.Column="1"
-                            Grid.Row="1"
-                            Text="1 799 RUB"
-                            FontFamily="{DynamicResource fontfamily_main}"
-                            FontSize="19"
-                            Foreground="{DynamicResource orange_main}"
-                            Margin="5 2 5 8"
-                            HorizontalAlignment="Center" />
-                        <!--#endregion-->
-                    </Grid>
-                    <!--#endregion-->
-                    <!--#region Кнопки -->
-                    <Grid
-                        Grid.Row="1"
-                        Margin="{Binding ButtonsPanelMargin, RelativeSource={RelativeSource AncestorType={x:Type local:CProductItem}}}"
-                        x:Name="CGBP_buttons">
-                        <!--#region В корзину или тест -->
-                        <StackPanel
-                            Visibility="Visible"
-                            x:Name="CGBPB_cart_test"
-                            Margin="0 0 0 5">
-                            <!--#region Тест -->
-                            <components:CButton
-                                Text="Тест"
-                                x:Name="CGBPBCT_test"
-                                Style="{DynamicResource ProductItemButtonStyleTest}"
-                                Margin="{Binding ButtonsMargin, RelativeSource={RelativeSource AncestorType={x:Type local:CProductItem}}}"
-                                MouseLeftButtonDown="CGBPBCT_test_MouseLeftButtonDown"/>
-                            <!--#endregion-->
-                            <!--#region В корзину -->
-                            <components:CButton
-                                Text="В корзину"
-                                x:Name="CGBPBCT_buy"
-                                Style="{DynamicResource ProductItemButtonStyleBuy}"
-                                Margin="{Binding ButtonsMargin, RelativeSource={RelativeSource AncestorType={x:Type local:CProductItem}}}"
-                                MouseLeftButtonDown="CGBPBCT_buy_MouseLeftButtonDown"/>
-                            <!--#endregion-->
-                        </StackPanel>
-                        <!--#endregion-->
-                        <!--#region Кол-во -->
-                        <Grid
-                            Visibility="Collapsed"
-                            Margin="{Binding CountInCartBlockMargin, RelativeSource={RelativeSource AncestorType={x:Type local:CProductItem}}}"
-                            x:Name="CGBPB_count"
-                            HorizontalAlignment="Center">
-                            <!--#region Разметка -->
-                            <Grid.ColumnDefinitions>
-                                <ColumnDefinition
-                                    Width="50" />
-                                <ColumnDefinition
-                                    MinWidth="30" />
-                                <ColumnDefinition
-                                    Width="50" />
-                            </Grid.ColumnDefinitions>
-                            <!--#endregion-->
-
-                            <!--#region Уменьшить -->
-                            <components:CButton
-                                Style="{DynamicResource ProductItemCartCountButtonStyle}"
-                                Grid.Column="0"
-                                x:Name="CGBPBC_remove"
-                                Icon="/Launcher;component/Media/minus_icon.png"
-                                MouseLeftButtonDown="CGBPBC_remove_MouseLeftButtonDown"/>
-                            <!--#endregion-->
-                            <!--#region Колво -->
-                            <TextBlock
-                                x:Name="CGBPBC_count"
-                                Text="0"
-                                FontFamily="{DynamicResource fontfamily_main}"
-                                Foreground="{DynamicResource textcolor_main}"
-                                FontSize="22"
-                                TextAlignment="Center"
-                                VerticalAlignment="Center"
-                                Margin="0 0 0 0"
-                                Grid.Column="1" />
-                            <!--#endregion-->
-                            <!--#region Уменьшить -->
-                            <components:CButton
-                                Style="{DynamicResource ProductItemCartCountButtonStyle}"
-                                Grid.Column="2"
-                                x:Name="CGBPBC_add"
-                                Icon="/Launcher;component/Media/plus_icon.png" 
-                                MouseLeftButtonDown="CGBPBC_add_MouseLeftButtonDown"/>
-                            <!--#endregion-->
-                        </Grid>
-                        <!--#endregion-->
+                        <!--#endregion-->                        
                     </Grid>
                     <!--#endregion-->
                 </Grid>

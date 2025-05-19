@@ -1,5 +1,8 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
+	<UsingTask TaskName="KeyExtractorTask"
+			AssemblyFile="$(MSBuildProjectDirectory)\buildTools\KeyExtractorTask.dll" />
+
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
 		<TargetFramework>net9.0-windows</TargetFramework>
@@ -152,6 +155,17 @@
 		<Resource Include="Media\success_payment_icon.png" />
 		<Resource Include="Media\test-back.jpg" />
 		<Resource Include="Localizations\English.json" />
+		<Resource Include="Localizations\keys.json" />
 		<EmbeddedResource Include="NLog.config" />
 	</ItemGroup>
+
+	<ItemGroup>
+	  <Folder Include="buildTools\" />
+	</ItemGroup>
+
+	<Target Name="ExtractTranslateKeys" AfterTargets="Build">
+		<KeyExtractorTask
+		  AssemblyPath="$(TargetPath)"
+		  OutputFile="$(MSBuildProjectDirectory)\Localizations\keys.json" />
+	</Target>
 </Project>

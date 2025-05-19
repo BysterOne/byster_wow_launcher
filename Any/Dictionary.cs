@@ -34,6 +34,20 @@ namespace Launcher
 
         public static List<ULocDictionary> Localizations { get; set; } = [];
 
+        private static List<string> GetKeys()
+        {
+            var uri = new Uri($"pack://application:,,,/Localizations/keys.json", UriKind.Absolute);
+            var resource = Application.GetResourceStream(uri);
+
+            if (resource is null) return [];
+
+            using var reader = new StreamReader(resource.Stream);
+            var jsonObject = JsonConvert.DeserializeObject<List<string>>(reader.ReadToEnd());
+            if (jsonObject is null) return [];
+
+            return jsonObject;
+        }
+
         public static async Task<UResponse> Load()
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
@@ -43,7 +57,7 @@ namespace Launcher
             try
             {
                 var assm = Assembly.GetExecutingAssembly();
-                var reqkeys = TranslateKeyScanner.CollectKeys(assm);
+                var reqkeys = GetKeys();
                 var reqLangs = new List<ELang>() { ELang.En };
 
                 #region Загрузка локальных файлов

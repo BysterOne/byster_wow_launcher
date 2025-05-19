@@ -109,6 +109,8 @@
 		<PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
 		<PackageReference Include="QRCoder" Version="1.6.0" />
 		<PackageReference Include="RestSharp" Version="112.1.0" />
+		<PackageReference Include="Sentry" Version="4.3.0" />
+		<PackageReference Include="Sentry.Profiling" Version="4.3.0" />
 		<PackageReference Include="VirtualizingWrapPanel" Version="2.1.2" />
 	</ItemGroup>
 
@@ -156,6 +158,7 @@
 		<Resource Include="Media\test-back.jpg" />
 		<Resource Include="Localizations\English.json" />
 		<Resource Include="Localizations\keys.json" />
+		<Resource Include="Localizations\Chinese.json" />
 		<EmbeddedResource Include="NLog.config" />
 	</ItemGroup>
 

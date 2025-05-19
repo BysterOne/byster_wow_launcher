@@ -152,6 +152,7 @@
 		<Resource Include="Media\success_payment_icon.png" />
 		<Resource Include="Media\test-back.jpg" />
 		<Resource Include="Localizations\English.json" />
+		<Resource Include="Localizations\Chinese.json" />
 		<EmbeddedResource Include="NLog.config" />
 	</ItemGroup>
 </Project>

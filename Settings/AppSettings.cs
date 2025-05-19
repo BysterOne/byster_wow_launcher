@@ -29,7 +29,7 @@ namespace Launcher.Settings
 
         #region Параметры
         public ELang Language { get => _lang; set { _lang = value; LanguageChanged?.Invoke(value); } }
-        public EServer Server { get; set; } = EServer.Prod;
+        public EServer Server { get; set; } = EServer.Staging;
         public string Login { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public ObservableCollection<CServer> Servers { get; set; } = [];

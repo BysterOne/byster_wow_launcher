@@ -30,11 +30,13 @@ namespace Launcher
 
     public static class Dictionary
     {
-        private static LogBox Pref { get; set; } = new ("Dictionary");
-
+        #region Переменные
+        private static LogBox Pref { get; set; } = new("Dictionary");
         public static List<ULocDictionary> Localizations { get; set; } = [];
-
         public static List<string> Untranslatable { get; set; } = [];
+        private static List<ELang> UsedLanguages { get; set; } = new() { ELang.En, ELang.ZhCn };
+        #endregion
+
 
         #region ReadFromResource
         private static T? ReadFromResource<T>(string path)
@@ -65,22 +67,17 @@ namespace Launcher
             return read is null ? [] : read;
         }
         #endregion
-        #region Load
-        public static async Task<UResponse> Load()
+        #region LoadLocal
+        public static async Task<UResponse> LoadLocal()
         {
+
             var _proc = Pref.CloneAs(Functions.GetMethodName());
-            var _failinf = $"Не удалось загрузить переводы";
+            var _failinf = $"Не удалось загрузить локальные переводы";
 
             #region try
             try
             {
-                var assm = Assembly.GetExecutingAssembly();
-                var reqkeys = GetKeys();
-                Untranslatable = GetUntranslatable();
-                var reqLangs = new List<ELang>() { ELang.En, ELang.ZhCn };
-
-                #region Загрузка локальных файлов
-                foreach (var lang in reqLangs)
+                foreach (var lang in UsedLanguages)
                 {
                     var fileName = lang switch
                     {
@@ -104,9 +101,42 @@ namespace Launcher
                     var jsonObject = JsonConvert.DeserializeObject<LocalDictionary>(reader.ReadToEnd());
                     if (jsonObject is not null) CreateOrUpdateLocalization(lang, jsonObject.Translations);
                 }
-                #endregion
+
+                return new() { IsSuccess = true };
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                Functions.Error(ex, _failinf, _proc);
+                return new(ex.Error);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
+                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
+                return new(uerror);
+            }
+            #endregion
+        }
+        #endregion
+        #region Load
+        public static async Task<UResponse> Load()
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось загрузить переводы";
+
+            #region try
+            try
+            {
+                var assm = Assembly.GetExecutingAssembly();
+                var reqkeys = GetKeys();
+                Untranslatable = GetUntranslatable();
+
                 #region Подгрузка недостоящих ключей
-                foreach (var lang in reqLangs)
+                foreach (var lang in UsedLanguages)
                 {
                     var onlyThisLangKeys = new List<string>();
 

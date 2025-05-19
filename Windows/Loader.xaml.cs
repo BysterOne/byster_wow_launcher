@@ -98,13 +98,13 @@ namespace Launcher.Windows
             ConfigureNLog();
             #endregion
             #region Загрузка словаря
-            //var tryLoadTranslations = await Dictionary.Load();
-            //if (!tryLoadTranslations.IsSuccess)
-            //{
-            //    this.Hide();
-            //    MessageBox.Show("Ошибка инициализации. Приложение будет закрыто.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-            //    Application.Current.Shutdown();
-            //}
+            var tryLoadTranslations = await Dictionary.LoadLocal();
+            if (!tryLoadTranslations.IsSuccess)
+            {
+                this.Hide();
+                MessageBox.Show("Ошибка инициализации. Приложение будет закрыто.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
+            }
             #endregion           
 
             #region Авторизация, если данные сохранены

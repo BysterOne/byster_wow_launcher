@@ -77,6 +77,12 @@ namespace Launcher.Api.Models
 
         [JsonProperty("test_duration")]
         public int TestDuration { get; set; } = 0;
+
+        [JsonProperty("permissions")]
+        public List<string> Permissions { get; set; } = [];
+
+        [JsonProperty("branches")]
+        public List<string> Branches { get; set; } = [];
     }
     #endregion
     #region Product
@@ -169,6 +175,62 @@ namespace Launcher.Api.Models
 
         [JsonProperty("url")]
         public string Url { get; set; } = string.Empty;
+    }
+    #endregion
+    #region ULocDictionary
+    public class ULocDictionary
+    { 
+        public ELang Language { get; set; }         
+        public Dictionary<string, string> Translations { get; set; } = [];
+    }
+    #endregion
+    #region TranslatedDictionary
+    public class TranslatedDictionary
+    {
+        [JsonProperty("language")]
+        public string Language { get; set; } = string.Empty;
+
+        [JsonProperty("translations")]
+        public Dictionary<string, string> Translations { get; set; } = [];
+    }
+    #endregion
+    #region LocalDictionary
+    public class LocalDictionary
+    {
+        [JsonProperty("language")]
+        public string Language { get; set; } = string.Empty;
+
+        [JsonProperty("Associations")]
+        public Dictionary<string, string> Translations { get; set; } = [];
+    }
+    #endregion
+    #region PaymentSystem
+    public class PaymentSystem
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; } = -1;
+
+        [JsonProperty("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonProperty("name_en")]
+        public string NameEn { get; set; } = string.Empty;
+    }
+    #endregion
+    #region PaymentDetails
+    public class PaymentDetails
+    {
+        [JsonProperty("status")]
+        public int Status { get; set; } = -1;
+
+        [JsonProperty("payment_url")]
+        public string PaymentUrl { get; set; } = string.Empty;
+    }
+    #endregion
+    #region PingUpdate
+    public class PingUpdate
+    {
+        // TODO: Разобраться с обновлениями с сервера
     }
     #endregion
 

@@ -1,5 +1,6 @@
 ﻿using Launcher.Any.GlobalEnums;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
+using Launcher.Settings.Enums;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
 using System.IO;
@@ -28,6 +29,7 @@ namespace Launcher.Settings
 
         #region Параметры
         public ELang Language { get => _lang; set { _lang = value; LanguageChanged?.Invoke(value); } }
+        public EServer Server { get; set; } = EServer.Prod;
         public string Login { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public ObservableCollection<CServer> Servers { get; set; } = [];

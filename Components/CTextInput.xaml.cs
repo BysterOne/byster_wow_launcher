@@ -245,7 +245,7 @@ namespace Launcher.Components
             var background_rectangles = grid!.Children.OfType<Rectangle>().ToList();
             if (background_rectangles.Count == 0) return;
             var back_rect = background_rectangles.First();
-            AnimationHelper.OpacityAnimation(back_rect, 0).Begin(back_rect, HandoffBehavior.SnapshotAndReplace, true);
+            AnimationHelper.OpacityAnimationStoryBoard(back_rect, 0).Begin(back_rect, HandoffBehavior.SnapshotAndReplace, true);
         }
         private void N_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
@@ -253,7 +253,7 @@ namespace Launcher.Components
             var background_rectangles = grid!.Children.OfType<Rectangle>().ToList();
             if (background_rectangles.Count == 0) return;
             var back_rect = background_rectangles.First();
-            AnimationHelper.OpacityAnimation(back_rect, 0.2).Begin(back_rect, HandoffBehavior.SnapshotAndReplace, true);
+            AnimationHelper.OpacityAnimationStoryBoard(back_rect, 0.2).Begin(back_rect, HandoffBehavior.SnapshotAndReplace, true);
         }
         private void EPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) => ChangeState(true);
         private void Textbox_GotFocus(object sender, RoutedEventArgs e) => ChangeState(true);

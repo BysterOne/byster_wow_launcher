@@ -2,6 +2,7 @@
 using Cls.Any;
 using Cls.Errors;
 using Cls.Exceptions;
+using Launcher.Any;
 using Launcher.Api;
 using Launcher.Cls;
 using Launcher.Components.MainWindow.Any.PageShop.Errors;
@@ -20,11 +21,12 @@ namespace Launcher.Components.MainWindow
     /// <summary>
     /// Логика взаимодействия для CPageShop.xaml
     /// </summary>
-    public partial class CPageShop : UserControl
+    public partial class CPageShop : UserControl, ITranslatable
     {
         public CPageShop()
         {
             InitializeComponent();
+            TranslationHub.Register(this);
 
             GProp.Cart.CartSumUpdated += ECartSumUpdated;
         }       
@@ -65,6 +67,10 @@ namespace Launcher.Components.MainWindow
                 #region Первая загрузка фильтров
                 UpdateFilters(true);
                 #endregion
+                #region Язык
+                _ = UpdateAllValues();
+                #endregion
+
 
                 return new() { IsSuccess = true };
             }
@@ -221,6 +227,13 @@ namespace Launcher.Components.MainWindow
             #endregion
         }
         #endregion
+        #region UpdateAllValues
+        public async Task UpdateAllValues()
+        {
+            MPBP_buy_button.Text = Dictionary.Translate($"К оплате");
+            MPBP_cart.Text = Dictionary.Translate($"Корзина");
+        }
+        #endregion
         #endregion
 
         #region Обработчики событий
@@ -257,8 +270,10 @@ namespace Launcher.Components.MainWindow
             Main.ChangeCartEditorState(true);
         }
         #endregion
+        #region MPBP_buy_button_MouseDown
+        private void MPBP_buy_button_MouseDown(object sender, MouseButtonEventArgs e) => Main.GoToPayment();
         #endregion
-
+        #endregion
 
     }
 }

@@ -10,6 +10,8 @@ using System.Text;
 using System.Windows;
 using System.Windows.Media.Imaging;
 using System.Windows.Media;
+using System.Drawing;
+using System.IO;
 
 namespace Cls.Any
 {
@@ -140,7 +142,7 @@ namespace Cls.Any
         #region OpenWindow
         public static void OpenWindow<T>(Window inner, T window) where T : Window
         {
-            var animation = AnimationHelper.OpacityAnimation(inner, 0);
+            var animation = AnimationHelper.OpacityAnimationStoryBoard(inner, 0);
             animation.Completed += async (s, e) =>
             {
                 WindowAnimations.ApplyFadeAnimations(ref window);
@@ -177,13 +179,35 @@ namespace Cls.Any
         }
         #endregion
 
-        #region GlobalResources
-        public static ResourceDictionary GlobalResources()
+        #region GetResourceDic
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="path">Путь к словарю. Пример: Style/Global.xaml</param>
+        /// <returns></returns>
+        public static ResourceDictionary GetResourceDic(string path)
         {
             return new ResourceDictionary
             {
-                Source = new Uri($"pack://application:,,,/Styles/Global.xaml", UriKind.RelativeOrAbsolute)
+                Source = new Uri($"pack://application:,,,/{path.Trim('/')}", UriKind.RelativeOrAbsolute)
             };
+        }
+        #endregion
+        #region GlobalResources
+        public static ResourceDictionary GlobalResources() => GetResourceDic("Styles/Global.xaml");
+        #endregion
+        #region ConvertBitmapToBitmapImage
+        public static BitmapImage ConvertBitmapToBitmapImage(Bitmap bitmap)
+        {
+            using var memory = new MemoryStream();
+            bitmap.Save(memory, System.Drawing.Imaging.ImageFormat.Png);
+            memory.Position = 0;
+            var bitmapImage = new BitmapImage();
+            bitmapImage.BeginInit();
+            bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+            bitmapImage.StreamSource = memory;
+            bitmapImage.EndInit();
+            return bitmapImage;
         }
         #endregion
     }

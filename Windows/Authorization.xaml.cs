@@ -2,7 +2,6 @@
 using Cls.Any;
 using Cls.Errors;
 using Cls.Exceptions;
-using Launcher.PanelChanger.Enums;
 using Launcher.Any;
 using Launcher.Any.GlobalEnums;
 using Launcher.Api;
@@ -11,24 +10,13 @@ using Launcher.Api.Models;
 using Launcher.Cls;
 using Launcher.Components;
 using Launcher.Components.PanelChanger;
+using Launcher.PanelChanger.Enums;
 using Launcher.Settings;
 using Launcher.Windows.AnyAuthorization.Enums;
 using Launcher.Windows.AnyAuthorization.Errors;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
 using System.Windows.Input;
-using System.Windows.Media;
 using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
 
 namespace Launcher.Windows
 {
@@ -60,7 +48,7 @@ namespace Launcher.Windows
 
             await Dispatcher.InvokeAsync(() =>
             {
-                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                var animation = AnimationHelper.OpacityAnimationStoryBoard((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
                 animation.Completed += (s, e) => tcs.SetResult(null);
                 animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
             });
@@ -78,7 +66,7 @@ namespace Launcher.Windows
             {
                 element.Visibility = Visibility.Visible;
 
-                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 1, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                var animation = AnimationHelper.OpacityAnimationStoryBoard((FrameworkElement)element, 1, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
                 animation.Completed += (s, e) => tcs.SetResult(null);
                 animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
             });
@@ -393,14 +381,14 @@ namespace Launcher.Windows
             if (newState == ELoaderState.Show)
             {
                 LoaderPanel.Visibility = Visibility.Visible;
-                var animation = AnimationHelper.OpacityAnimation(LoaderPanel, 1);
+                var animation = AnimationHelper.OpacityAnimationStoryBoard(LoaderPanel, 1);
                 animation.Completed += (s, e) => tcs.SetResult(null);
                 animation.Begin(LoaderPanel, HandoffBehavior.SnapshotAndReplace, true);
                 LP_loader.StartAnimation();
             }
             else
             {
-                var animation = AnimationHelper.OpacityAnimation(LoaderPanel, 0);
+                var animation = AnimationHelper.OpacityAnimationStoryBoard(LoaderPanel, 0);
                 animation.Completed += (s, e) => 
                 {
                     Dispatcher.Invoke(() => LoaderPanel.Visibility = Visibility.Hidden); 
@@ -455,7 +443,7 @@ namespace Launcher.Windows
             #region Если выбран тот же язык
             if (newSelectedLanguage == AppSettings.Instance.Language)
             {
-                var animation = AnimationHelper.OpacityAnimation(ChangeLanguagePanel, 0);
+                var animation = AnimationHelper.OpacityAnimationStoryBoard(ChangeLanguagePanel, 0);
                 animation.Completed += (s, e) => ChangeLanguagePanel.Visibility = Visibility.Hidden;
                 animation.Begin(ChangeLanguagePanel, HandoffBehavior.SnapshotAndReplace, true);
 
@@ -463,8 +451,8 @@ namespace Launcher.Windows
             }
             #endregion
             #region Если другой язык
-            var fadeIn = AnimationHelper.OpacityAnimation(this, 1);
-            var fadeOut = AnimationHelper.OpacityAnimation(this, 0);
+            var fadeIn = AnimationHelper.OpacityAnimationStoryBoard(this, 1);
+            var fadeOut = AnimationHelper.OpacityAnimationStoryBoard(this, 0);
 
             fadeOut.Completed += async (e, f) =>
             {
@@ -486,7 +474,7 @@ namespace Launcher.Windows
         {
             ChangeLanguagePanel.Visibility = Visibility.Visible;
             CLP_list.IsOpened = true;
-            AnimationHelper.OpacityAnimation(ChangeLanguagePanel, 1).Begin(ChangeLanguagePanel, HandoffBehavior.SnapshotAndReplace, true);
+            AnimationHelper.OpacityAnimationStoryBoard(ChangeLanguagePanel, 1).Begin(ChangeLanguagePanel, HandoffBehavior.SnapshotAndReplace, true);
         }
         #endregion
         #region LP_button_input_MouseDown

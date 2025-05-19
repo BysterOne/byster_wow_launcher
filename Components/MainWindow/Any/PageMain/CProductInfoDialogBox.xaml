@@ -71,14 +71,14 @@
 
             <!--#region Левая -->
             <Grid
-                Width="260"
-                Height="350">
+                Width="280"
+                Height="380">
                 <mainwindow:CProductItem
                     Product="{Binding Product, RelativeSource={RelativeSource AncestorType={x:Type local:CProductInfoDialogBox}}}"
                     x:Name="MG_product"
                     ButtonsType="Static"
-                    Width="260"
-                    Height="350"
+                    Width="280"
+                    Height="380"
                     ButtonsPanelMargin="0 0 0 10"
                     ButtonsMargin="0 5 0 8"
                     CountInCartBlockMargin="0 2 0 7" />
@@ -89,7 +89,7 @@
             <Grid
                 Grid.Column="1"
                 x:Name="MG_right_panel"
-                Width="400"
+                Width="500"
                 Margin="0 5 0 0">
                 <!--#region Разметка -->
                 <Grid.ColumnDefinitions>
@@ -139,8 +139,7 @@
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
                     Margin="10">
-                    <components:CScrollPanel
-                        Style="{DynamicResource CScrollPanelStyle}">
+                    <components:CScrollPanel>
                         <TextBlock
                             Margin="10 0"
                             FontSize="20"
@@ -160,8 +159,9 @@
                     Grid.Column="0"
                     Grid.ColumnSpan="2"
                     Margin="20 10">
-                    <components:CScrollPanel
-                        Style="{DynamicResource CScrollPanelStyle}"
+                    <components:CScrollPanel 
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
                         Orientation="Horizontal">
                         <ItemsControl
                             ItemsSource="{Binding Product.Rotations, RelativeSource={RelativeSource AncestorType={x:Type local:CProductInfoDialogBox}}}">
@@ -169,7 +169,7 @@
                                 <ItemsPanelTemplate>
                                     <WrapPanel
                                         Orientation="Horizontal" 
-                                        Margin="-15 0 0 0"/>
+                                        Margin="-15 5 0 5"/>
                                 </ItemsPanelTemplate>
                             </ItemsControl.ItemsPanel>
                             <ItemsControl.ItemTemplate>
@@ -177,7 +177,7 @@
                                     <shoppage:CRotationItem
                                         Rotation="{Binding}"
                                         Width="200"
-                                        Height="260"
+                                        Height="280"
                                         Margin="15 0 0 0"/>
                                 </DataTemplate>
                             </ItemsControl.ItemTemplate>

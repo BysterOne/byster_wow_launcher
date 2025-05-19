@@ -1,0 +1,63 @@
+﻿<UserControl
+    x:Class="Launcher.Components.CScrollingTextBlock"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components"
+    xmlns:settings="clr-namespace:Launcher.Settings"
+    mc:Ignorable="d"
+    d:Width="200"
+    d:Height="30">
+    <Grid
+        ClipToBounds="True">
+        <Grid>
+            <Grid
+                x:Name="canvas_block"
+                Margin="{Binding Padding}"
+                d:Margin="10 0 10 0"
+                VerticalAlignment="Center"
+                ClipToBounds="True"
+                d:Height="15">
+                <Grid.OpacityMask>
+                    <LinearGradientBrush
+                        RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
+                        MappingMode="Absolute" StartPoint="0, 1" EndPoint="150, 1">
+                        <GradientStop Offset="0" Color="Transparent"/>
+                        <GradientStop Offset="0" Color="Black"/>
+                        <GradientStop Offset="0.93" Color="Black"/>
+                        <GradientStop Offset="1" Color="Transparent"/>
+                    </LinearGradientBrush>
+                </Grid.OpacityMask>
+                <Grid
+                    x:Name="CB_grid"
+                    Margin="3 0 0 0" 
+                    ClipToBounds="True">
+                    <StackPanel
+                        x:Name="CB_stack_panel"
+                        Orientation="Horizontal">
+                        <TextBlock
+                            x:Name="tb_first"
+                            Text="{Binding Text}"
+                            d:Text="1 25sd 213  dss"
+                            FontSize="{Binding FontSize}"
+                            FontFamily="{Binding FontFamily}"
+                            FontWeight="{Binding FontWeight}"
+                            FontStyle="{Binding FontStyle}"
+                            
+                            TextWrapping="NoWrap" />
+                        <TextBlock
+                            x:Name="tb_second"
+                            Text="{Binding Text}"
+                            FontSize="{Binding FontSize}"
+                            FontFamily="{Binding FontFamily}"
+                            FontWeight="{Binding FontWeight}"
+                            FontStyle="{Binding FontStyle}"
+                            Margin="20 0 0 0"
+                            TextWrapping="NoWrap" />
+                    </StackPanel>
+                </Grid>
+            </Grid>
+        </Grid>
+    </Grid>
+</UserControl>

@@ -1,57 +1,153 @@
 ﻿using Cls;
+using Cls.Any;
+using Cls.Errors;
+using Cls.Exceptions;
+using Launcher.Any;
 using Launcher.Any.GlobalEnums;
+using Launcher.Api;
+using Launcher.Api.Models;
+using Launcher.Cls;
+using Launcher.DictionaryAny;
 using Launcher.Settings;
+using Launcher.Settings.Enums;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
 using System.IO;
 using System.Reflection;
+using System.Runtime.InteropServices.JavaScript;
+using System.Text.Json.Nodes;
+using System.Windows;
 
 namespace Launcher
 {
+    namespace DictionaryAny
+    {
+        public enum ELoad
+        {
+            FailLoadTranslations
+        }
+    }
+
     public static class Dictionary
     {
-        public static List<JObject> Localizations = new List<JObject>();
+        private static LogBox Pref { get; set; } = new ("Dictionary");
 
-        public static void Load()
+        public static List<ULocDictionary> Localizations { get; set; } = [];
+
+        public static async Task<UResponse> Load()
         {
-            var assm_ = Assembly.GetExecutingAssembly();
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось загрузить переводы";
 
-            var dir = "Launcher.Localizations";
-            var filesNames = new List<string>() { "English.json" };
-            Log.Add("Загрузка языковых файлов ...");
-            foreach (var fileName in filesNames)
+            #region try
+            try
             {
-                try
+                var assm = Assembly.GetExecutingAssembly();
+                var reqkeys = TranslateKeyScanner.CollectKeys(assm);
+                var reqLangs = new List<ELang>() { ELang.En };
+
+                #region Загрузка локальных файлов
+                foreach (var lang in reqLangs)
                 {
-                    using (Stream s = assm_.GetManifestResourceStream($"{dir}.{fileName}")!)
-                    using (StreamReader stream = new StreamReader(s))
+                    var fileName = lang switch
                     {
-                        var d_ = JObject.Parse(stream.ReadToEnd());
-                        if (d_ == null) Log.Add($"Ошибка загрузки {fileName}. Файл пустой");
-                        Localizations.Add(d_);
+                        ELang.En => "English.json",
+                        _ => null
+                    };
+
+                    if (fileName is null) continue;
+
+                    var uri = new Uri($"pack://application:,,,/Localizations/{fileName}", UriKind.Absolute);
+                    var resource = Application.GetResourceStream(uri);
+
+                    if (resource is null)
+                    {
+                        _proc.Log($"Файл локализации '{fileName}' не найден");
+                        continue;
+                    }
+
+                    using var reader = new StreamReader(resource.Stream);
+                    var jsonObject = JsonConvert.DeserializeObject<LocalDictionary>(reader.ReadToEnd());
+                    if (jsonObject is not null) CreateOrUpdateLocalization(lang, jsonObject.Translations);
+                }
+                #endregion
+                #region Подгрузка недостоящих ключей
+                foreach (var lang in reqLangs)
+                {
+                    var onlyThisLangKeys = new List<string>();
+
+                    var ownKeys = Localizations.FirstOrDefault(x => x.Language == lang);
+                    if (ownKeys is null) 
+                        onlyThisLangKeys.AddRange(reqkeys);
+                    else 
+                        foreach (var u in reqkeys) 
+                            if (!ownKeys.Translations.ContainsKey(u)) 
+                                onlyThisLangKeys.Add(u);
+
+                    if (onlyThisLangKeys.Count is 0) continue;
+
+                    var tryGetTransl = await CApi.Translate(lang, onlyThisLangKeys);
+                    if (!tryGetTransl.IsSuccess)
+                    {
+                        throw new UExcept(ELoad.FailLoadTranslations, $"Не удалось получить перевод для <{lang}>", tryGetTransl.Error);
+                    }
+
+                    CreateOrUpdateLocalization(lang, tryGetTransl.Response.Translations);
+                }
+                #endregion
+
+                return new() { IsSuccess = true };
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                Functions.Error(ex, _failinf, _proc);
+                return new(ex.Error);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
+                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
+                return new(uerror);
+            }
+            #endregion
+        }
+
+        private static void CreateOrUpdateLocalization(ELang lang, Dictionary<string, string> values)
+        {
+            var locDic = Localizations.FirstOrDefault(x => x.Language == lang);
+            if (locDic is not null)
+            {
+                foreach (var key in values)
+                {
+                    if (!locDic.Translations.ContainsKey(key.Key))
+                    {
+                        locDic.Translations.Add(key.Key, key.Value);
                     }
                 }
-                catch (Exception ex) { Log.Add($"Ошибка загрузки {fileName}. Exception: {ex.Message}"); }
             }
-            Log.Add($"Загрузка языковых файлов завершена. Загружено {Localizations.Count}/{filesNames.Count}");
+
+            Localizations.Add(new ()
+            {
+                Language = lang,
+                Translations = values
+            });
         }
 
         public static string Translate(string key) => Translate(key, AppSettings.Instance.Language);
 
         public static string Translate(string key, ELang lang)
         {
-            string code = "";
-            switch (lang)
-            {
-                case ELang.Ru: return key;
-                case ELang.En: code = "enUS"; break;
-            }
-
-            var haveloc_ = Localizations.FirstOrDefault(x => x["Language"] != null && x["Language"].ToString() == code);
-            if (haveloc_ == null) return "";
-            var dv_ = haveloc_["Associations"]![key];
-            return dv_ != null ? dv_.ToString() : key;
+            var dictionary = Localizations.FirstOrDefault(x => x.Language == lang);
+            if (dictionary is null) return key;
+            
+            return dictionary.Translations[key] ?? key;
         }
 
+        #region GetLanguageName
         public static string GetLanguageName(ELang lang)
         {
             return lang switch
@@ -61,6 +157,18 @@ namespace Launcher
                 _ => "Unknown"
             };
         }
+        #endregion
+        #region GetServerName
+        public static string GetServerName(EServer server)
+        {
+            return server switch
+            {
+                EServer.Prod => "Production",
+                EServer.Staging => "Staging",
+                _ => "Unknown"
+            };
+        }
+        #endregion
 
         #region Колво ротаций
         public static string RotationsCount(int count)

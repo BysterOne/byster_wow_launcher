@@ -93,19 +93,19 @@ namespace Launcher.Windows
         private async Task Init()
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
-
-            #region Так надо
-            await Task.Run(() => Thread.Sleep(1000));
-            #endregion
+            
             #region Настройки логов
             ConfigureNLog();
             #endregion
             #region Загрузка словаря
-            Dictionary.Load();
-            #endregion
-            #region Проверка источника регистрации
-            await CheckReferalSource();
-            #endregion
+            //var tryLoadTranslations = await Dictionary.Load();
+            //if (!tryLoadTranslations.IsSuccess)
+            //{
+            //    this.Hide();
+            //    MessageBox.Show("Ошибка инициализации. Приложение будет закрыто.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+            //    Application.Current.Shutdown();
+            //}
+            #endregion           
 
             #region Авторизация, если данные сохранены
             if 
@@ -137,6 +137,7 @@ namespace Launcher.Windows
             }
             #endregion
             #region В любом другом случае
+            await CheckReferalSource(); 
             OpenAuthorization();
             #endregion
         }

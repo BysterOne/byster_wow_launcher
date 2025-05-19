@@ -148,4 +148,5 @@
             Property="RenderOptions.BitmapScalingMode"
             Value="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}" />
     </Style>
+
 </ResourceDictionary>

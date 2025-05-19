@@ -28,6 +28,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             InitializeComponent();
             TranslationHub.Register(this);
 
+            this.middleGrid.Opacity = 0;
             this.Opacity = 0;
         }
 
@@ -49,8 +50,8 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             try
             {
                 #region Появление окна
-                var fadeInMiddle = AnimationHelper.OpacityAnimation(middleGrid, 1);
-                var fadeIn = AnimationHelper.OpacityAnimation(this, 1);
+                var fadeInMiddle = AnimationHelper.OpacityAnimationStoryBoard(middleGrid, 1);
+                var fadeIn = AnimationHelper.OpacityAnimationStoryBoard(this, 1);
                 fadeIn.Completed += (s, e) => { fadeInMiddle.Begin(middleGrid, HandoffBehavior.SnapshotAndReplace, true); };
                 fadeIn.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
                 #endregion

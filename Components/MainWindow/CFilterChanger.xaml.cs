@@ -48,7 +48,7 @@ namespace Launcher.Components.MainWindow
 
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(CFilterChanger),
-                new PropertyMetadata("", OnTextChanged));
+                new PropertyMetadata("text", OnTextChanged));
 
         private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {

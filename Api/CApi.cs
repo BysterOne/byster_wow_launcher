@@ -2,22 +2,17 @@
 using Cls.Any;
 using Cls.Errors;
 using Cls.Exceptions;
+using Launcher.Any.GlobalEnums;
 using Launcher.Api.Errors;
 using Launcher.Api.Models;
 using Launcher.Cls;
+using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Settings;
 using Launcher.Settings.Enums;
 using Newtonsoft.Json;
 using RestSharp;
-using System;
-using System.Buffers.Text;
-using System.Collections.Generic;
-using System.Linq;
 using System.Net;
 using System.Runtime.CompilerServices;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Input;
 
 namespace Launcher.Api
 {
@@ -30,7 +25,99 @@ namespace Launcher.Api
 
 
         #region Функции
-        #region MyRegion
+        #region ClearCache
+        public static async Task<UResponse<object?>> ClearCache()
+        {
+            return await Request<object?>("/launcher/clear_cache", Method.Post);
+        }
+        #endregion
+        #region RedeemCoupon
+        public static async Task<UResponse<User>> RedeemCoupon(string coupon)
+        {
+            return await Request<User>("/launcher/ping", Method.Post, body: new { coupon_code = coupon });
+        }
+        #endregion
+        #region GetExe
+        public static async Task<UResponse<byte[]>> GetExe()
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось выполнить запрос";
+
+            var endPoint = "/launcher/get_lib";
+
+            #region try
+            try
+            {
+                #region База
+                var createRequest = CreateRequest(endPoint);
+                var client = createRequest.Client!;
+                var request = createRequest.Request;
+                request.Method = Method.Post;
+                #endregion
+                #region Выполнение и обработка
+                var response = await client.ExecuteAsync(request);                
+                if (!response.IsSuccessful || response.RawBytes is null)
+                {
+                    _proc.Log($"response: {response.Content}");
+                    _proc.Log($"status: {response.StatusCode}");
+
+                    throw new UExcept(ERequest.BadRequest, "Ошибка запроса");
+                }
+                #endregion
+                #region Ответ
+                return new(response.RawBytes);
+                #endregion
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                Functions.Error(ex, _failinf, _proc);
+                return new(ex.Error);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
+                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
+                return new(uerror);
+            }
+            #endregion
+        }
+        #endregion
+        #region Ping
+        public static async Task<UResponse<List<PingUpdate>>> Ping()
+        {
+            return await Request<List<PingUpdate>>("/launcher/ping", Method.Get);
+        }
+        #endregion
+        #region Buy
+        public static async Task<UResponse<PaymentDetails>> Buy(List<CCartItem> items, PaymentSystem paymentSystem, double bonuses = 0)
+        {
+            var body = new
+            {
+                items = items.Select(x => new { product_id = x.Product.Id, amount = x.Count }),
+                payment_system_id = paymentSystem.Id,
+                bonuses
+            };
+
+            return await Request<PaymentDetails>("/shop/buy", Method.Post, body: body);
+        }
+        #endregion
+        #region GetPaymentSystems
+        public static async Task<UResponse<List<PaymentSystem>>> GetPaymentSystems()
+        {
+            return await Request<List<PaymentSystem>>("/shop/payment_systems", Method.Get);
+        }
+        #endregion
+        #region Translate
+        public static async Task<UResponse<TranslatedDictionary>> Translate(ELang lang, IEnumerable<string> keys)
+        {
+            return await Request<TranslatedDictionary>("/localization/v1/translate", Method.Post, body: new { language = GStatic.GetLangCode(lang), service = "core", items = keys });
+        }
+        #endregion
+        #region GetUserSubscriptions
         public static async Task<UResponse<List<Subscription>>> GetUserSubscriptions()
         {
             return await Request<List<Subscription>>("/shop/my_subscriptions", Method.Post, body: new { });
@@ -155,7 +242,7 @@ namespace Launcher.Api
                 #region База
                 var options = new RestClientOptions
                 {
-                    BaseUrl = new Uri(GProp.Server switch
+                    BaseUrl = new Uri(AppSettings.Instance.Server switch
                     {
                         EServer.Staging => "https://api.staging.byster.one/",
                         _ => "https://api.byster.one/",

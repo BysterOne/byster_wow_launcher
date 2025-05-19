@@ -15,9 +15,9 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="/Styles/Global.xaml" />
+                    Source="/Launcher;component/Styles/Global.xaml" />
                 <ResourceDictionary
-                    Source="/Components/ScrollPanel/CScrollPanelStyle.xaml" />
+                    Source="/Launcher;component/Components/ScrollPanel/CScrollPanelStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>
@@ -60,7 +60,7 @@
             <components:CButton
                 x:Name="close_button"
                 BackColor="Transparent"
-                Icon="/Media/close_icon.png"
+                Icon="/Launcher;component/Media/close_icon.png"
                 Text=""
                 BorderRadius="10"                
                 HorizontalAlignment="Right"
@@ -100,6 +100,7 @@
                         FontFamily="{DynamicResource fontfamily_main}"
                         Foreground="{DynamicResource textcolor_main}"
                         FontSize="22"
+                        x:Name="CIP_value"
                         VerticalAlignment="Center"
                         HorizontalAlignment="Center" />
                 </Grid>
@@ -162,7 +163,8 @@
                     MinWidth="180"
                     FontFamily="{DynamicResource fontfamily_main}"
                     FontSize="20"
-                    Grid.Column="2" />
+                    Grid.Column="2"
+                    MouseDown="buy_button_MouseDown"/>
                 <!--#endregion-->
             </StackPanel>
             <!--#endregion-->

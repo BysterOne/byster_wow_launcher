@@ -1,5 +1,7 @@
-﻿using System.Windows;
+﻿using Launcher.Any;
+using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -14,12 +16,38 @@ namespace Launcher.Components
         public CButton()
         {
             InitializeComponent();
+
+            this.Cursor = Cursors.Hand;
             this.Focusable = true;
             this.DataContext = this;
             this.PreviewMouseLeftButtonDown += ThisClicked;
         }
 
+        #region Переменные
+        private Brush NonEnabledBrush => new SolidColorBrush((Color)ColorConverter.ConvertFromString($"#28292b"));
+        #endregion
+
         #region Параметры
+        #region IsEnabled
+        public new bool IsEnabled
+        {
+            get => (bool)GetValue(IsEnabledProperty);
+            set { SetValue(IsEnabledProperty, value); }
+        }
+
+        public static new readonly DependencyProperty IsEnabledProperty =
+            DependencyProperty.Register("IsEnabled", typeof(bool), typeof(CButton),
+                new PropertyMetadata(true, OnIsEnabledChanged));
+
+        private static void OnIsEnabledChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is CButton sender)
+            {
+                sender.Cursor = (bool)e.NewValue ? Cursors.Hand : Cursors.Arrow;
+                sender.ChangeEnabledState();
+            }
+        }
+        #endregion
         #region FontSize
         public static readonly new DependencyProperty FontSizeProperty 
             = DependencyProperty.Register( "FontSize", typeof(double), typeof(CButton),
@@ -32,14 +60,14 @@ namespace Launcher.Components
         }
         #endregion
         #region BorderRadius
-        public double BorderRadius
+        public CornerRadius BorderRadius
         {
-            get { return (double)GetValue(BorderRadiusProperty); }
+            get { return (CornerRadius)GetValue(BorderRadiusProperty); }
             set { SetValue(BorderRadiusProperty, value); }
         }
         public static readonly DependencyProperty BorderRadiusProperty =
-            DependencyProperty.Register("BorderRadius", typeof(double), typeof(CButton),
-                new PropertyMetadata((double)25));
+            DependencyProperty.Register("BorderRadius", typeof(CornerRadius), typeof(CButton),
+                new PropertyMetadata(new CornerRadius(25)));
         #endregion
         #region Gap
         public double Gap
@@ -151,19 +179,11 @@ namespace Launcher.Components
         #region События
         private void N_MouseLeave(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            var grid = sender as Grid;
-            var background_rectangles = grid!.Children.OfType<Rectangle>().ToList();
-            if (background_rectangles.Count == 0) return;
-            var back_rect = background_rectangles.First();
-            ChangeOpacity(back_rect, 0);
+            ChangeOpacity(back, 0);
         }
         private void N_MouseEnter(object sender, System.Windows.Input.MouseEventArgs e)
         {
-            var grid = sender as Grid;
-            var background_rectangles = grid!.Children.OfType<Rectangle>().ToList();
-            if (background_rectangles.Count == 0) return;
-            var back_rect = background_rectangles.First();
-            ChangeOpacity(back_rect, 0.2);
+            ChangeOpacity(back, 1);
         }
         private void ThisClicked(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
@@ -171,11 +191,52 @@ namespace Launcher.Components
         }
         #endregion
 
+        #region Переопределение событий для IsEnabled
+        #region OnMouseLeftButtonDown
+        protected override void OnMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            if (IsEnabled)
+                base.OnMouseLeftButtonDown(e);
+            else
+                e.Handled = true;
+        }
+        #endregion
+        #region OnMouseLeftButtonUp
+        protected override void OnMouseLeftButtonUp(MouseButtonEventArgs e)
+        {
+            if (IsEnabled)
+                base.OnMouseLeftButtonUp(e);
+            else
+                e.Handled = true;
+        }
+        #endregion
+        #region OnMouseDoubleClick
+        protected override void OnMouseDoubleClick(MouseButtonEventArgs e)
+        {
+            if (IsEnabled)
+                base.OnMouseDoubleClick(e);
+            else
+                e.Handled = true;
+        }
+        #endregion
+        #region OnPreviewMouseLeftButtonDown
+        protected override void OnPreviewMouseLeftButtonDown(MouseButtonEventArgs e)
+        {
+            if (IsEnabled)
+                base.OnPreviewMouseLeftButtonDown(e);
+            else 
+                e.Handled = true;
+        }
+        #endregion
+        #endregion
+
 
         #region Анимация
         #region ChangeOpacity
         public void ChangeOpacity(UIElement element, double opacity)
         {
+            if (!IsEnabled) return;
+
             Dispatcher.BeginInvoke(() =>
             {
                 var dur_ = new Duration(TimeSpan.FromMilliseconds(200));
@@ -185,6 +246,33 @@ namespace Launcher.Components
             });
         }
         #endregion
-        #endregion       
+        #region ChangeEnabledState
+        public void ChangeEnabledState()
+        {
+            var storyboard = new Storyboard();
+            var ease = new PowerEase() { EasingMode = EasingMode.EaseInOut };
+
+            back_main_nonenabled.Background = NonEnabledBrush;
+
+            var opacityTextAnim = new DoubleAnimation(IsEnabled ? 1 : 0.7, AnimationHelper.AnimationDuration) { EasingFunction = ease };
+            Storyboard.SetTarget(opacityTextAnim, text);
+            Storyboard.SetTargetProperty(opacityTextAnim, new PropertyPath(UIElement.OpacityProperty));
+
+            var opBackMainNonEn = new DoubleAnimation(IsEnabled ? 0 : 1, AnimationHelper.AnimationDuration) { EasingFunction = ease };
+            Storyboard.SetTarget(opBackMainNonEn, back_main_nonenabled);
+            Storyboard.SetTargetProperty(opBackMainNonEn, new PropertyPath(UIElement.OpacityProperty));
+
+            var opBackMainOp = new DoubleAnimation(IsEnabled ? 1 : 0, AnimationHelper.AnimationDuration) { EasingFunction = ease };
+            Storyboard.SetTarget(opBackMainOp, back_main);
+            Storyboard.SetTargetProperty(opBackMainOp, new PropertyPath(UIElement.OpacityProperty));
+
+            storyboard.Children.Add(opacityTextAnim);
+            storyboard.Children.Add(opBackMainNonEn);
+            storyboard.Children.Add(opBackMainOp);
+
+            storyboard.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
+        }
+        #endregion
+        #endregion
     }
 }

@@ -1,0 +1,94 @@
+﻿<UserControl x:Class="Launcher.Components.CMediaItem"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow.Any"
+    xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:settings="clr-namespace:Launcher.Settings"
+    mc:Ignorable="d"
+    d:DesignHeight="200"
+    d:DesignWidth="350">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Components/Skeleton/CSkeletonStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <!--#region Маска -->
+        <Grid.OpacityMask>
+            <VisualBrush>
+                <VisualBrush.Visual>
+                    <Border
+                        Background="Black"
+                        d:Width="350"
+                        d:Height="200"
+                        Width="{Binding RelativeSource={RelativeSource AncestorType={x:Type components:CMediaItem}}, Path=ActualWidth}"
+                        Height="{Binding RelativeSource={RelativeSource AncestorType={x:Type components:CMediaItem}}, Path=ActualHeight}"
+                        CornerRadius="15" />
+                </VisualBrush.Visual>
+            </VisualBrush>
+        </Grid.OpacityMask>
+        <!--#endregion-->
+
+        <components:CSkeleton
+            Padding="0"
+            x:Name="Skeleton">
+
+            <Grid>
+                <!--#region Изображение -->
+                <Border
+                    x:Name="BackgroundBorder"
+                    CornerRadius="15"
+                    ClipToBounds="True">
+                    <Border.Background>
+                        <ImageBrush
+                            x:Name="BB_image_brush"
+                            Stretch="UniformToFill"
+                            ImageSource="/Launcher;component/Media/test-back.jpg" />
+                    </Border.Background>
+                </Border>
+                <!--#endregion-->
+
+                <!--#region Hover слой для картинки -->
+                <Grid
+                    x:Name="ImageHover"
+                    Opacity="0">
+                    <Rectangle
+                        Fill="Black"
+                        Opacity="0.6"
+                        RadiusX="15"
+                        RadiusY="15" />
+                    <Image
+                        Source="/Launcher;component/Media/full_size_icon.png"
+                        Height="50"
+                        Opacity="0.8"
+                        RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}" />
+                </Grid>
+                <!--#endregion-->
+                <!--#region Hover слой для видео -->
+                <Grid
+                    x:Name="VideoHover"
+                    Opacity="1">
+                    <Rectangle
+                        x:Name="VideoRect"
+                        Fill="Black"
+                        Opacity="0.5"
+                        RadiusX="15"
+                        RadiusY="15" />
+                    <Image
+                        x:Name="VideoIcon"
+                        Source="/Launcher;component/Media/play_video_icon.png"
+                        Width="50"
+                        Opacity="0.9" />
+                </Grid>
+                <!--#endregion-->
+            </Grid>
+        </components:CSkeleton>
+    </Grid>
+</UserControl>

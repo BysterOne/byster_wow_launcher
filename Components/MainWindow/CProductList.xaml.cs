@@ -36,8 +36,10 @@ namespace Launcher.Components.MainWindow
         #region CProductItem_MouseLeftButtonDown
         private void CProductItem_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e)
         {
+            GProp.GWatch.Start();
             var product = ((CProductItem)sender).Product;
             if (product.IsBundle) _ = Main.ShowModal(new CProductInfoDialogBox(), product);
+            else _ = Main.ShowModal(new CRotationInfoDialogBox(), product);
         }
         #endregion
         #endregion

@@ -16,6 +16,7 @@ namespace Launcher.Any
         {
             Ok, 
             Closed,
+            ErrorOccurred
         }
     }
     #endregion

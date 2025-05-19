@@ -1,5 +1,6 @@
 ﻿using Launcher.Any;
 using Launcher.Components.ScrollPanelAny;
+using System.ComponentModel;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
@@ -12,7 +13,59 @@ namespace Launcher.Components
 {
     namespace ScrollPanelAny
     {
+        #region ScrollOrientation
         public enum ScrollOrientation { Vertical, Horizontal }
+        #endregion
+        #region ScrollPanelStep
+        [TypeConverter(typeof(ScrollPanelStepConverter))]
+        public readonly struct ScrollPanelStep
+        {
+            public double Value { get; }
+            public bool IsAuto { get; }
+
+            private ScrollPanelStep(double value, bool isAuto)
+            {
+                Value = value;
+                IsAuto = isAuto;
+            }
+
+            public static readonly ScrollPanelStep Auto = new(double.NaN, true);
+
+            public static implicit operator ScrollPanelStep(double val) => new ScrollPanelStep(val, false);
+
+            public static explicit operator double(ScrollPanelStep ml)
+            {
+                if (ml.IsAuto)
+                    throw new InvalidOperationException("Auto не имеет числового значения");
+                return ml.Value;
+            }
+        }
+
+        public sealed class ScrollPanelStepConverter : TypeConverter
+        {
+            public override bool CanConvertFrom(ITypeDescriptorContext ctx, Type srcType) =>
+                srcType == typeof(string) || base.CanConvertFrom(ctx, srcType);
+
+            public override object? ConvertFrom(ITypeDescriptorContext ctx,
+                                                System.Globalization.CultureInfo culture,
+                                                object value)
+            {
+                if (value is string s)
+                {
+                    s = s.Trim();
+                    if (string.Equals(s, "Auto", StringComparison.OrdinalIgnoreCase))
+                        return ScrollPanelStep.Auto;
+
+                    if (double.TryParse(s.Replace(',', '.'), System.Globalization.NumberStyles.Float,
+                                        System.Globalization.CultureInfo.InvariantCulture, out var d))
+                        return (ScrollPanelStep)d;
+
+                    throw new FormatException($"Не удалось разобрать ScrollPanelStep из «{s}».");
+                }
+                return base.ConvertFrom(ctx, culture, value);
+            }
+        }
+        #endregion
     }
 
     public class CScrollPanel : ContentControl
@@ -29,6 +82,31 @@ namespace Launcher.Components
         #endregion
 
         #region Свойства
+        #region ScrollStep
+        public ScrollPanelStep ScrollStep
+        {
+            get => (ScrollPanelStep)GetValue(ScrollStepProperty);
+            set => SetValue(ScrollStepProperty, value);
+        }
+
+        public static readonly DependencyProperty ScrollStepProperty =
+            DependencyProperty.Register(nameof(ScrollStep), typeof(ScrollPanelStep), typeof(CScrollPanel), 
+                new (ScrollPanelStep.Auto, OnScrollStepChanged));
+
+        private static void OnScrollStepChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is CScrollPanel p)
+            {
+                var newValue = (ScrollPanelStep)e.NewValue;
+                if (!newValue.IsAuto)
+                {
+                    var steps = (int)(p.AnimationOffset / newValue.Value);
+                    var newOffset = steps * newValue.Value;
+                    p.AnimateToOffset(newOffset, 150);
+                }
+            }
+        }
+        #endregion
         #region AnimationOffset
         public double AnimationOffset
         {
@@ -156,7 +234,19 @@ namespace Launcher.Components
         private void FadeScrollbar(double to)
         {
             if (_scrollBar == null) return;
-            AnimationHelper.OpacityAnimation(_scrollBar, to).Begin(_scrollBar, HandoffBehavior.SnapshotAndReplace, true);
+            AnimationHelper.OpacityAnimationStoryBoard(_scrollBar, to).Begin(_scrollBar, HandoffBehavior.SnapshotAndReplace, true);
+        }
+        #endregion
+        #region CalcNewStepOffset
+        private static double CalcNewStepOffset(double step, double offset)
+        {
+            return (int)(offset / step) * step;
+        }
+        #endregion
+        #region ToLastStep
+        private static double ToLastStep(double step, double offset)
+        {
+            return offset - (int)(offset / step) * step;
         }
         #endregion
         #region OnPreviewMouseWheel
@@ -167,19 +257,29 @@ namespace Launcher.Components
             e.Handled = true;
 
             const double pxPerDelta = 80;
-            double delta = e.Delta / 120.0 * pxPerDelta;
+            double toLastStep = ToLastStep(ScrollStep.Value, _targetOffset);
+            double delta = 
+                ScrollStep.IsAuto ?
+                    e.Delta / 120.0 * pxPerDelta :
+                    Math.CopySign(ScrollStep.Value, e.Delta);
+            double newTargetOffset =
+                ScrollStep.IsAuto ?
+                    _targetOffset - delta :
+                    toLastStep == 0 ?
+                        _targetOffset - delta :
+                        _targetOffset - (Math.Sign(e.Delta) is 1 ? toLastStep : delta);
 
             if (Orientation == ScrollOrientation.Vertical)
             {
                 _targetOffset = Math.Clamp(
-                    _targetOffset - delta,
+                    newTargetOffset,
                     0,
                     _scrollViewer.ScrollableHeight);
             }
             else
             {
                 _targetOffset = Math.Clamp(
-                    _targetOffset - delta,
+                    newTargetOffset,
                     0,
                     _scrollViewer.ScrollableWidth);
             }

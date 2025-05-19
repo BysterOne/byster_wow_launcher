@@ -20,19 +20,24 @@
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
-    <Border
-        Background="{Binding BackColor}"
-        CornerRadius="{Binding BorderRadius}"
+    <Border        
         ClipToBounds="True">
         <Grid
             MouseLeave="N_MouseLeave"
-            MouseEnter="N_MouseEnter"
-            Cursor="Hand">
-            <Rectangle
-                Fill="Black"
+            MouseEnter="N_MouseEnter">
+            <Border 
+                x:Name="back_main"
+                Background="{Binding BackColor}"
+                CornerRadius="{Binding BorderRadius}" />
+            <Border
+                x:Name="back_main_nonenabled"
+                CornerRadius="{Binding BorderRadius}" />
+
+            <Border
+                x:Name="back"
+                Background="#3F000000"
                 Opacity="0"
-                RadiusX="{Binding BorderRadius}"
-                RadiusY="{Binding BorderRadius}" />
+                CornerRadius="{Binding BorderRadius}" />
             <Grid
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center">

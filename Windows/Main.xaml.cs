@@ -8,14 +8,17 @@ using Launcher.Api;
 using Launcher.Cls;
 using Launcher.Components;
 using Launcher.Components.DialogBox;
+using Launcher.Components.MainWindow;
 using Launcher.Components.PanelChanger;
 using Launcher.PanelChanger.Enums;
 using Launcher.Settings;
+using Launcher.Settings.Enums;
 using Launcher.Windows.AnyMain.Enums;
 using Launcher.Windows.AnyMain.Errors;
 using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
@@ -30,17 +33,18 @@ namespace Launcher.Windows
         public Main()
         {
             InitializeComponent();
+
             TranslationHub.Register(this);
 
             Loaded += WLoaded;
+            this.PreviewKeyDown += EPreviewKeyDown;
+            GProp.LauncherUpdateEvent += ELauncherUpdateEvent;
         }
 
         #region Переменные
         public static LogBox Pref { get; set; } = new("Main");
         private CPanelChanger<EPC_MainShop> EPC_MainPanelChanger { get; set; }
-        #endregion
-
-        
+        #endregion        
 
         #region Анимации
         #region PanelChangerHide
@@ -51,7 +55,7 @@ namespace Launcher.Windows
 
             await Dispatcher.InvokeAsync(() =>
             {
-                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                var animation = AnimationHelper.OpacityAnimationStoryBoard((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
                 animation.Completed += (s, e) => { Panel.SetZIndex(element, -1); tcs.SetResult(null); };
                 animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
             });
@@ -70,7 +74,7 @@ namespace Launcher.Windows
             {
                 element.Visibility = Visibility.Visible;
 
-                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 1, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                var animation = AnimationHelper.OpacityAnimationStoryBoard((FrameworkElement)element, 1, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
                 animation.Completed += (s, e) => tcs.SetResult(null);
                 animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
             });
@@ -90,6 +94,13 @@ namespace Launcher.Windows
             #region try
             try
             {
+                #region Запуск пинг-помощника
+                CPingHelper.Start();
+                #endregion
+                #region Загрузка словаря
+                var tryLoadTranslations = await Dictionary.Load();
+                if (!tryLoadTranslations.IsSuccess) throw new UExcept(EInitialization.FailLoadTranslations, $"Ошибка загрузка словарей", tryLoadTranslations.Error);
+                #endregion
                 #region Загружаем информацию о пользователе
                 var tryGetUserInfo = await CApi.GetUserInfo();
                 if (!tryGetUserInfo.IsSuccess)
@@ -111,17 +122,18 @@ namespace Launcher.Windows
                     EPanelState.Showen
                 );
                 EPC_MainPanelChanger.ShowElement += PanelChangerShow;
-                EPC_MainPanelChanger.HideElement += PanelChangerHide;                
+                EPC_MainPanelChanger.HideElement += PanelChangerHide;
                 #endregion
                 #region Обновляем язык
-
+                _ = UpdateAllValues();
                 #endregion
                 #region Создание и ожидание задач
                 var tryInitMainPageTask = MP_main.Initialization();
                 var tryInitShopPageTask = MP_shop.Initialization();
+                var tryInitMdHelper = MdHelper.BuildDocMarkdigAsync("#m#", (r) => { });
                 var tryInitMainChangerTask = EPC_MainPanelChanger.Init();
 
-                await Task.WhenAll(tryInitMainPageTask, tryInitShopPageTask);
+                await Task.WhenAll(tryInitMainPageTask, tryInitShopPageTask, tryInitMdHelper);
                 #endregion
                 #region Обработка ответов
                 #region Страницы
@@ -243,7 +255,7 @@ namespace Launcher.Windows
                 else mainWindow.LP_fill.Fill = new SolidColorBrush(Color.FromArgb(254, 9, 12, 22));
 
                 mainWindow.LoaderPanel.Visibility = Visibility.Visible;
-                var animation = AnimationHelper.OpacityAnimation(mainWindow.LoaderPanel, 1);
+                var animation = AnimationHelper.OpacityAnimationStoryBoard(mainWindow.LoaderPanel, 1);
                 animation.Completed += (s, e) => tcs.SetResult(null);
                 animation.Begin(mainWindow.LoaderPanel, HandoffBehavior.SnapshotAndReplace, true);
                 mainWindow.LP_loader.StartAnimation();
@@ -252,7 +264,7 @@ namespace Launcher.Windows
             #region Скрытие
             else
             {
-                var animation = AnimationHelper.OpacityAnimation(mainWindow.LoaderPanel, 0);
+                var animation = AnimationHelper.OpacityAnimationStoryBoard(mainWindow.LoaderPanel, 0);
                 animation.Completed += (s, e) =>
                 {
                     mainWindow.Dispatcher.Invoke(() => mainWindow.LoaderPanel.Visibility = Visibility.Hidden);
@@ -383,7 +395,7 @@ namespace Launcher.Windows
             if (show)
             {
                 mainWindow.CartEditor.Visibility = Visibility.Visible;
-                AnimationHelper.OpacityAnimation(mainWindow.CartEditor, 1).
+                AnimationHelper.OpacityAnimationStoryBoard(mainWindow.CartEditor, 1).
                     Begin(mainWindow.CartEditor, HandoffBehavior.SnapshotAndReplace, true);
                 mainWindow.CartEditor.IsShowed = true;
             }
@@ -391,12 +403,27 @@ namespace Launcher.Windows
             #region Скрыть
             else
             {
-                var anim = AnimationHelper.OpacityAnimation(mainWindow.CartEditor, 0);
+                var anim = AnimationHelper.OpacityAnimationStoryBoard(mainWindow.CartEditor, 0);
                 anim.Completed += (s, e) => mainWindow.Dispatcher.Invoke(() => mainWindow.CartEditor.Visibility = Visibility.Hidden);
                 anim.Begin(mainWindow.CartEditor, HandoffBehavior.SnapshotAndReplace, true);
                 mainWindow.CartEditor.IsShowed = false;
             }
             #endregion
+        }
+        #endregion
+        #region GoToPayment
+        public static async void GoToPayment()
+        {
+            if (GProp.Cart.Items.Count is 0)
+            {
+                Notify(Dictionary.Translate("Ваша корзина пуста"));
+                return;
+            }            
+
+            _ = Main.ShowModal(new CPayDialogBox());
+
+            await Task.Run(() => Thread.Sleep(300));
+            Main.ChangeCartEditorState(false);
         }
         #endregion
         #endregion
@@ -443,8 +470,50 @@ namespace Launcher.Windows
                 _ = ChangeMainPanel(EPC_MainShop.Shop);
         }
         #endregion
+        #region ELauncherUpdateEvent
+        private async Task ELauncherUpdateEvent(ELauncherUpdate updates)
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName()).AddTrace($"{ELauncherUpdate.User}");
+
+            if (updates.HasFlag(ELauncherUpdate.User))
+            {
+                var tryGetUserInfo = await CApi.GetUserInfo();
+                if (!tryGetUserInfo.IsSuccess)
+                {
+                    var exec = new UExcept(EInitialization.FailGetUserInfo, $"Не удалось загрузить данные пользователя", tryGetUserInfo.Error);
+                    Functions.Error(exec, exec.Error, "Ошибка загрузки данных пользователя", _proc);
+                }
+                else
+                {
+                    GProp.User = tryGetUserInfo.Response;
+                    UpdateUserDataView();
+                }
+            }                
+        }
         #endregion
-
-
+        #region EPreviewKeyDown
+        private async void EPreviewKeyDown(object sender, KeyEventArgs e)
+        {
+            switch (e.Key)
+            {
+                case Key.F5:
+                    {
+                        await Loader(ELoaderState.Show);
+                        await GProp.Update(ELauncherUpdate.User | ELauncherUpdate.Shop | ELauncherUpdate.Subscriptions);
+                        await Task.Run(() => Thread.Sleep(300));
+                        await Loader(ELoaderState.Hide);
+                    }
+                    break;
+                default: base.OnKeyDown(e); break;
+            }
+        }
+        #endregion
+        #region TPIS_settings_MouseLeftButtonDown
+        private void TPIS_settings_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            _ = Main.ShowModal(new CSettingsDialogBox());
+        }
+        #endregion
+        #endregion
     }
 }

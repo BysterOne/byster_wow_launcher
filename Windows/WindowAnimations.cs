@@ -33,20 +33,20 @@ namespace Launcher.Windows
         private static void ALoaded(object sender, RoutedEventArgs e)
         {
             var window = sender as Window;
-            AnimationHelper.OpacityAnimation(window!, 1, LocalAnimationDuration).Begin(window, HandoffBehavior.SnapshotAndReplace, true);
+            AnimationHelper.OpacityAnimationStoryBoard(window!, 1, LocalAnimationDuration).Begin(window, HandoffBehavior.SnapshotAndReplace, true);
         }
        
         private static void AClosing(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             var window = sender as Window;
-            AnimationHelper.OpacityAnimation(window!, 0, LocalAnimationDuration).Begin(window, HandoffBehavior.SnapshotAndReplace, true);
+            AnimationHelper.OpacityAnimationStoryBoard(window!, 0, LocalAnimationDuration).Begin(window, HandoffBehavior.SnapshotAndReplace, true);
         }
 
         private static void AClosingWithApp(object? sender, System.ComponentModel.CancelEventArgs e)
         {
             e.Cancel = true;
             var window = sender as Window;
-            var storyboard = AnimationHelper.OpacityAnimation(window!, 0, LocalAnimationDuration);
+            var storyboard = AnimationHelper.OpacityAnimationStoryBoard(window!, 0, LocalAnimationDuration);
             storyboard.Completed += (s, a) => { Application.Current.Shutdown(); };
             storyboard.Begin(window, HandoffBehavior.SnapshotAndReplace, true);
         }
@@ -58,18 +58,18 @@ namespace Launcher.Windows
 
             if (window.WindowState == WindowState.Normal)
             {
-                AnimationHelper.OpacityAnimation(window!, 1, LocalAnimationDuration).Begin(window, HandoffBehavior.SnapshotAndReplace, true);
+                AnimationHelper.OpacityAnimationStoryBoard(window!, 1, LocalAnimationDuration).Begin(window, HandoffBehavior.SnapshotAndReplace, true);
             }
             else if (window.WindowState == WindowState.Minimized)
             {
-                AnimationHelper.OpacityAnimation(window!, 0, LocalAnimationDuration).Begin(window, HandoffBehavior.SnapshotAndReplace, true);
+                AnimationHelper.OpacityAnimationStoryBoard(window!, 0, LocalAnimationDuration).Begin(window, HandoffBehavior.SnapshotAndReplace, true);
             }
         }
 
         private static void OnMinimizeWindow(object sender, ExecutedRoutedEventArgs e)
         {
             var window = sender as Window;
-            var storyboard = AnimationHelper.OpacityAnimation(window!, 0, LocalAnimationDuration);
+            var storyboard = AnimationHelper.OpacityAnimationStoryBoard(window!, 0, LocalAnimationDuration);
             storyboard.Completed += (s, a) =>
             {
                 SystemCommands.MinimizeWindow(window);

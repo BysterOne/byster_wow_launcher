@@ -1,5 +1,5 @@
 {
-  "Language": "enUS",
+  "Language": "en",
   "Associations": {
     "Все": "All",
     "Воин": "Warrior",
@@ -44,6 +44,10 @@
     "Сохранить": "Save",
     "Выберите исполняемый файл лаунчера": "Select the executable file of the launcher",
     "ОПИСАНИЕ": "DESCRIPTION",
-    "РОТАЦИИ": "ROTATIONS"
+    "РОТАЦИИ": "ROTATIONS",
+    "Русский": "Русский",
+    "Production": "Production",
+    "English": "English",
+    "Staging": "Staging"
   }
 }

@@ -1,0 +1,203 @@
+﻿<UserControl
+    x:Class="Launcher.Components.MainWindow.Any.PageMain.CRotationInfoDialogBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:md="clr-namespace:Markdig.Wpf;assembly=Markdig.Wpf"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow.Any.PageMain"
+    xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:shoppage="clr-namespace:Launcher.Components.MainWindow.Any.PageShop"
+    xmlns:settings="clr-namespace:Launcher.Settings"
+    xmlns:mainwindow="clr-namespace:Launcher.Components.MainWindow"
+    mc:Ignorable="d"
+    d:DesignHeight="450"
+    d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Main.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Components/Skeleton/CSkeletonStyle.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Components/ScrollPanel/CScrollPanelStyle.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Pages/ShopPage.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/MarkdownStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <!--#region Фон -->
+        <Rectangle
+            Fill="{StaticResource back_main}"
+            Opacity="0.99" />
+        <!--#endregion-->
+
+        <!--#region Центральный блок -->
+        <Grid
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            x:Name="middleGrid"
+            MinWidth="150">
+            <!--#region Разметка -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition />
+            </Grid.ColumnDefinitions>
+            <!--#endregion-->
+            <!--#region Фон -->
+            <Rectangle
+                Grid.ColumnSpan="2"
+                Fill="{DynamicResource back_second}"
+                RadiusX="19"
+                RadiusY="19"
+                Margin="0 2" />
+            <!--#endregion-->
+            <!--#region Кнопка закрытия -->
+            <components:CButton
+                Grid.Column="1"
+                x:Name="MG_close_button"
+                BackColor="Transparent"
+                Icon="/Media/close_icon.png"
+                Text=""
+                BorderRadius="5 20 5 10"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Padding="6"
+                Margin="0 2 0 0"
+                MouseLeftButtonDown="MG_close_button_MouseLeftButtonDown" />
+            <!--#endregion-->
+
+            <!--#region Левая -->
+            <Grid
+                Width="280"
+                Height="380">
+                <mainwindow:CProductItem
+                    x:Name="MG_product"
+                    ButtonsType="Static"
+                    Width="280"
+                    Height="380"
+                    ViewType="{Binding ViewType, RelativeSource={RelativeSource AncestorType={x:Type local:CRotationInfoDialogBox}}}"
+                    ButtonsPanelMargin="0 0 0 15"
+                    ButtonsMargin="0 5 0 8"
+                    CountInCartBlockMargin="0 4 0 10" />
+            </Grid>
+            <!--#endregion-->
+
+            <!--#region Правая -->
+            <Grid
+                Grid.Column="1"
+                x:Name="MG_right_panel"
+                Width="500"
+                Margin="0 5 0 0">
+                <!--#region Разметка -->
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <!--#endregion-->
+                <!--#region Переключатели -->
+                <!--#region Описание -->
+                <components:CMainPageButton
+                    Grid.Column="0"
+                    Grid.Row="0"
+                    Style="{DynamicResource TopPanel_MainPageButtonStyle}"
+                    Text="ОПИСАНИЕ"
+                    HorizontalAlignment="Right"
+                    IsActive="True"
+                    x:Name="MGRP_description"
+                    FontSize="22"
+                    Margin="0 0 5 0"
+                    MouseDown="MGRP_description_MouseDown" />
+                <!--#endregion-->
+                <!--#region Галерея -->
+                <components:CMainPageButton
+                    Grid.Column="1"
+                    Grid.Row="0"
+                    Style="{DynamicResource TopPanel_MainPageButtonStyle}"
+                    Text="ГАЛЕРЕЯ"
+                    IsActive="False"
+                    Margin="5 0 0 0"
+                    HorizontalAlignment="Left"
+                    x:Name="MGRP_galery"
+                    FontSize="22"
+                    MouseDown="MGRP_galery_MouseDown" />
+                <!--#endregion-->
+                <!--#endregion-->
+                <!--#region Панели -->
+                <!--#region Описание -->
+                <Grid
+                    x:Name="MGRP_description_panel"
+                    Grid.Row="1"
+                    Grid.Column="0"
+                    Grid.ColumnSpan="2"
+                    Margin="10 5 10 10">
+                    <components:CSkeleton
+                        x:Name="MGRPDP_skeleton">
+                        <components:CScrollPanel
+                            MaxHeight="310">
+                            <FlowDocumentScrollViewer
+                                VerticalScrollBarVisibility="Disabled"
+                                x:Name="MGRPDP_markdown"
+                                Margin="5 0 15 5" />
+                        </components:CScrollPanel>
+                    </components:CSkeleton>
+                </Grid>
+                <!--#endregion-->
+                <!--#region Галерея -->
+                <Grid
+                    x:Name="MGRP_galery_panel"
+                    Grid.Row="1"
+                    Grid.ColumnSpan="2">
+                    <!--#region Список -->
+                    <components:CMediaList
+                        MaxHeight="310"
+                        Margin="10 0 15 0"
+                        HorizontalAlignment="Center"
+                        VerticalAlignment="Center"
+                        x:Name="MGRPGP_list" />
+                    <!--#endregion-->
+                    <!--#region Если галерея пустая -->
+                    <Grid
+                        x:Name="MGRPGP_no_media">
+                        <StackPanel
+                            VerticalAlignment="Center"
+                            HorizontalAlignment="Center">
+                            <!--#region Иконка -->
+                            <Image
+                                Source="/Launcher;component/Media/no_items_icon.png"
+                                Height="60"/>
+                            <!--#endregion-->
+                            <!--#region Текст-->
+                            <TextBlock
+                                x:Name="MGRPGPNM_text"
+                                Text="Для этого товара нет изображений"
+                                Foreground="{DynamicResource textcolor_main}"
+                                FontFamily="{DynamicResource fontfamily_main}"
+                                FontSize="18" 
+                                Margin="0 15 0 0"/>
+                            <!--#endregion-->
+                        </StackPanel>
+                    </Grid>
+                    <!--#endregion-->
+                </Grid>
+                <!--#endregion-->
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
+
+        </Grid>
+        <!--#endregion-->
+    </Grid>
+</UserControl>

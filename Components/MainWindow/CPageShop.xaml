@@ -13,11 +13,11 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="../../Styles/Global.xaml" />
+                    Source="/Launcher;component/Styles/Global.xaml" />
                 <ResourceDictionary
-                    Source="../../Styles/Pages/ShopPage.xaml" />
+                    Source="/Launcher;component/Styles/Pages/ShopPage.xaml" />
                 <ResourceDictionary
-                    Source="../../Components/ScrollPanel/CScrollPanelStyle.xaml" />
+                    Source="/Launcher;component/Components/ScrollPanel/CScrollPanelStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -114,7 +114,9 @@
                     MinWidth="180"
                     FontFamily="{DynamicResource fontfamily_main}"
                     FontSize="20"
-                    Grid.Column="2" />
+                    Grid.Column="2" 
+                    x:Name="MPBP_buy_button"
+                    MouseDown="MPBP_buy_button_MouseDown"/>
                 <!--#endregion-->
                 <!--#region Корзина -->
                 <components:CButton
@@ -128,7 +130,7 @@
                     FontFamily="{DynamicResource fontfamily_main}"
                     FontSize="20"
                     Grid.Column="3"
-                    Icon="/Media/cart_icon.png"
+                    Icon="/Launcher;component/Media/cart_icon.png"
                     IconWidth="25"
                     Gap="3"
                     MouseLeftButtonDown="MPBP_cart_MouseLeftButtonDown"/>

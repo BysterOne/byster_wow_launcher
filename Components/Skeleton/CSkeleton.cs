@@ -47,7 +47,7 @@ namespace Launcher.Components
 
         public static readonly new DependencyProperty BackgroundProperty =
             DependencyProperty.Register(nameof(Background), typeof(SolidColorBrush), typeof(CSkeleton),
-                new PropertyMetadata(new SolidColorBrush(Color.FromArgb(0xFF, 0x45, 0x45, 0x47))));
+                new PropertyMetadata(new SolidColorBrush((Color)ColorConverter.ConvertFromString("#1d262e"))));
         #endregion
         #region LoaderOpacity
         public double LoaderOpacity
@@ -76,7 +76,7 @@ namespace Launcher.Components
         private LinearGradientBrush GetBrush()
         {
             var fcolor = Background.Color;
-            var scolor = Color.FromArgb(0xFF, 0x98, 0x98, 0x98);
+            var scolor = (Color)ColorConverter.ConvertFromString("#404c57");
 
             var stops = new GradientStopCollection()
             {
@@ -103,7 +103,7 @@ namespace Launcher.Components
                 var background = (Rectangle)GetTemplateChild("gradientRect");
                 if (background is not null)
                 {
-                    OpacityMonitor.Monitor(background);
+                    OpacityMonitor.Monitor(background, isHitTest: false);
                     background.Fill = GetBrush();
                 }
             });
@@ -130,6 +130,8 @@ namespace Launcher.Components
             #region try
             try
             {
+                var rect = (Rectangle)GetTemplateChild("gradientRect");
+                if (visible) rect.Visibility = Visibility.Visible;
                 if (visible) _ = Dispatcher.InvokeAsync(() => Animation(true));
 
                 var tcs = new TaskCompletionSource<bool>();
@@ -145,6 +147,7 @@ namespace Launcher.Components
                 storyboard.Children.Add(animation);
                 storyboard.Completed += (sender, e) =>
                 {
+                    if (!visible && rect is not null) rect.Visibility = Visibility.Hidden;  
                     tcs.SetResult(true);
                 };
                 storyboard.RemoveRequested += (sender, e) => Debugger.Break();

@@ -16,11 +16,11 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="../../Styles/Global.xaml" />
+                    Source="/Launcher;component/Styles/Global.xaml" />
                 <ResourceDictionary
-                    Source="../../Styles/Pages/MainPage.xaml" />
+                    Source="/Launcher;component/Styles/Pages/MainPage.xaml" />
                 <ResourceDictionary
-                    Source="../../Components/ScrollPanel/CScrollPanelStyle.xaml" />
+                    Source="/Launcher;component/Components/ScrollPanel/CScrollPanelStyle.xaml" />
             </ResourceDictionary.MergedDictionaries>
         </ResourceDictionary>
     </UserControl.Resources>
@@ -56,7 +56,7 @@
                 Width="60"
                 Text=""
                 BorderRadius="35"
-                Icon="/Media/plus_icon.png"
+                Icon="/Launcher;component/Media/plus_icon.png"
                 MouseLeftButtonDown="LP_addButton_MouseLeftButtonDown" />
             <!--#endregion-->
             <components:CScrollPanel
@@ -135,8 +135,10 @@
             <!--#region Список продуктов -->
             <components:CScrollPanel
                 Opacity="0"
+                Margin="3 3 5 3"
                 x:Name="AP_items"
-                Visibility="Hidden">
+                Visibility="Hidden"
+                ScrollStep="304">
                 <ItemsControl
                     ItemsSource="{Binding Source={x:Static settings:GProp.Subscriptions}}">
                     <ItemsControl.ItemsPanel>
@@ -148,9 +150,9 @@
                         <DataTemplate>
                             <mainPage:CSubscriptionItem
                                 Subscription="{Binding}"
-                                Width="235"
-                                Height="300"
-                                Margin="10" />
+                                Width="220"
+                                Height="290"
+                                Margin="7" />
                         </DataTemplate>
                     </ItemsControl.ItemTemplate>
                 </ItemsControl>
@@ -173,6 +175,8 @@
                 BorderRadius="10"
                 FontFamily="{DynamicResource fontfamily_main}"
                 FontSize="24"
+                any:HoverHint.Placement="Top"
+                IsEnabled="False"
                 MouseLeftButtonDown="launch_button_MouseLeftButtonDown"
                 />
         </Grid>

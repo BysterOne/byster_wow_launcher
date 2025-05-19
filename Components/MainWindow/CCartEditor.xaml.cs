@@ -24,11 +24,12 @@ namespace Launcher.Components.MainWindow
     /// <summary>
     /// Логика взаимодействия для CartEditor.xaml
     /// </summary>
-    public partial class CCartEditor : UserControl
+    public partial class CCartEditor : UserControl, ITranslatable
     {
         public CCartEditor()
         {
             InitializeComponent();
+            TranslationHub.Register(this);
 
             GProp.Cart.CartUpdated += ECartUpdated;
             GProp.Cart.CartSumUpdated += ECartSumUpdated;
@@ -45,6 +46,7 @@ namespace Launcher.Components.MainWindow
             PanelChanger.HideElement += PanelChangerHide;
             PanelChanger.ShowElement += PanelChangerShow;
             _ = PanelChanger.Init();
+            _ = UpdateAllValues();
         }
 
         #region Переменные
@@ -62,7 +64,7 @@ namespace Launcher.Components.MainWindow
 
             await Dispatcher.InvokeAsync(() =>
             {
-                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                var animation = AnimationHelper.OpacityAnimationStoryBoard((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
                 animation.Completed += (s, e) => tcs.SetResult(null);
                 animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
             });
@@ -80,7 +82,7 @@ namespace Launcher.Components.MainWindow
             {
                 element.Visibility = Visibility.Visible;
 
-                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 1, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                var animation = AnimationHelper.OpacityAnimationStoryBoard((FrameworkElement)element, 1, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
                 animation.Completed += (s, e) => tcs.SetResult(null);
                 animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
             });
@@ -107,6 +109,20 @@ namespace Launcher.Components.MainWindow
         #endregion
         #region close_button_MouseLeftButtonDown
         private void close_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => Main.ChangeCartEditorState(false);
+        #endregion
+        #region buy_button_MouseDown
+        private void buy_button_MouseDown(object sender, MouseButtonEventArgs e) => Main.GoToPayment();
+        #endregion
+        #endregion
+
+        #region Функции
+        #region UpdateAllValues
+        public async Task UpdateAllValues()
+        {
+            MPH_text.Text = Dictionary.Translate("Корзина");
+            buy_button.Text = Dictionary.Translate("К оплате");
+            CIP_value.Text = Dictionary.Translate($"В данный момент корзина пустая");
+        }
         #endregion
         #endregion
     }

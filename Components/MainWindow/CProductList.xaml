@@ -24,9 +24,9 @@
     </UserControl.Resources>
     <Grid>
         <components:CScrollPanel
-       x:Name="SrollPanel"
-            Style="{DynamicResource CScrollPanelStyle}"
-            HorizontalAlignment="Center">
+            x:Name="SrollPanel"
+            HorizontalAlignment="Center"
+            ScrollStep="320">
             <ItemsControl
                 x:Name="List"
                 Margin="0 0 10 0"
@@ -46,6 +46,7 @@
                             Width="235"
                             Height="300"
                             Margin="10"
+                            Cursor="Hand"
                             ButtonsPanelMargin="0 0 0 0"
                             MouseLeftButtonDown="CProductItem_MouseLeftButtonDown"/>
                     </DataTemplate>

@@ -51,7 +51,7 @@
             <Grid
                 x:Name="modalGrid"
                 Visibility="Collapsed"
-                Panel.ZIndex="995">
+                Panel.ZIndex="994">
 
             </Grid>
             <!--#endregion-->
@@ -93,7 +93,7 @@
             <!--#region Лоадер -->
             <Grid
                 x:Name="LoaderPanel"
-                Panel.ZIndex="10"
+                Panel.ZIndex="995"
                 Visibility="Hidden"
                 Opacity="0">
                 <Rectangle
@@ -197,8 +197,9 @@
                     <!--#endregion-->
                     <!--#region Настройки -->
                     <components:CButton
+                        x:Name="TPIS_settings"
                         Width="40"
-                        Height="40"
+                        Height="40"    
                         Text=""
                         BorderRadius="10"
                         BackColor="Transparent"
@@ -206,7 +207,8 @@
                         Padding="0"
                         IconHeight="36"
                         IconWidth="36"
-                        VerticalAlignment="Center" />
+                        VerticalAlignment="Center"
+                        MouseLeftButtonDown="TPIS_settings_MouseLeftButtonDown" />
                     <!--#endregion-->
                 </StackPanel>
                 <!--#endregion-->
@@ -219,13 +221,12 @@
                 Margin="0 105 0 0">
                 <!--#region Главная -->
                 <pages:CPageMain
-                    Opacity="0"
-                    Visibility="Hidden"
                     x:Name="MP_main"
                     Margin="10 0 0 0" />
                 <!--#endregion-->
                 <!--#region Магазин -->
                 <pages:CPageShop
+                    Opacity="0"
                     x:Name="MP_shop"
                     Margin="2 0 0 0" />
                 <!--#endregion-->

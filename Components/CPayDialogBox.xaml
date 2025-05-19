@@ -1,0 +1,306 @@
+﻿<UserControl
+    x:Class="Launcher.Components.CPayDialogBox"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components"
+    xmlns:components="clr-namespace:Launcher.Components"
+    xmlns:shoppage="clr-namespace:Launcher.Components.MainWindow.Any.PageShop"
+    xmlns:settings="clr-namespace:Launcher.Settings"
+    xmlns:mainwindow="clr-namespace:Launcher.Components.MainWindow"
+    mc:Ignorable="d"
+    d:DesignHeight="600"
+    d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Main.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Authorization.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Components/Skeleton/CSkeletonStyle.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Pages/ShopPage.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <!--#region Фон -->
+        <Rectangle
+            Fill="{StaticResource back_main}" />
+        <!--#endregion-->
+
+        <!--#region Центральный блок -->
+        <Grid
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center"
+            x:Name="middleGrid"
+            Width="350"
+            MinHeight="480">
+            <!--#region Фон -->
+            <Rectangle
+                Fill="{DynamicResource back_second}"
+                RadiusX="19"
+                RadiusY="19" />
+            <!--#endregion-->
+            <!--#region Кнопка закрытия -->
+            <components:CButton
+                Grid.Column="1"
+                x:Name="MG_close_button"
+                BackColor="Transparent"
+                Icon="/Media/close_icon.png"
+                Text=""
+                BorderRadius="10"
+                HorizontalAlignment="Right"
+                VerticalAlignment="Top"
+                Padding="8"
+                MouseLeftButtonDown="MG_close_button_MouseLeftButtonDown"
+                Panel.ZIndex="2" />
+            <!--#endregion-->
+
+            <!--#region Контент -->
+            <Grid
+                x:Name="MG_content" VerticalAlignment="Center">
+                <!--#region Лоадер -->
+                <Grid
+                    x:Name="MGC_loader_panel"
+                    Visibility="Visible">
+                    <Rectangle
+                        Fill="{DynamicResource back_second}"
+                        RadiusX="19"
+                        RadiusY="19" />
+
+                    <components:CLoader
+                        x:Name="MGCLP_loader"
+                        ForeColor="{DynamicResource orange_main}"
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Height="30" />
+                </Grid>
+                <!--#endregion-->
+                <!--#region Данные корзины и метод оплаты -->
+                <Grid
+                    x:Name="MGC_cart_and_method"
+                    Visibility="Hidden">
+                    <StackPanel>
+                        <!--#region Заголовок -->
+                        <TextBlock
+                            x:Name="MGCCAM_header"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            Foreground="{DynamicResource textcolor_main}"
+                            Text="Оформление заказа"
+                            HorizontalAlignment="Center"
+                            FontSize="22"
+                            Margin="0 15 0 10" />
+                        <!--#endregion-->
+                        <!--#region Граница -->
+                        <Rectangle
+                            Fill="#CCFFFFFF"
+                            RadiusX="3"
+                            RadiusY="3"
+                            Width="120"
+                            Height="5"
+                            Margin="0 -5 0 10" />
+                        <!--#endregion-->
+                        <!--#region Таблица информации о корзине -->
+                        <Grid
+                            Margin="15 0 15 0">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition />
+                                <ColumnDefinition
+                                    Width="Auto"
+                                    MinWidth="100" />
+                            </Grid.ColumnDefinitions>
+                            <Grid.RowDefinitions>
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                                <RowDefinition />
+                            </Grid.RowDefinitions>
+
+                            <!--#region Колво товаров -->
+                            <TextBlock
+                                Grid.Row="0"
+                                x:Name="MGCCAM_count"
+                                Text="Кол-во товаров"
+                                Style="{DynamicResource PayTextBlockHeaderStyle}" />
+                            <TextBlock
+                                Text="19"
+                                Grid.Row="0"
+                                x:Name="MGCCAM_count_value"
+                                Style="{DynamicResource PayTextBlockValueStyle}" />
+                            <!--#endregion-->
+                            <!--#region Использовать бонусы -->
+                            <TextBlock
+                                Grid.Row="1"
+                                x:Name="MGCCAM_use_bonuses"
+                                Text="Использовать бонусы"
+                                Style="{DynamicResource PayTextBlockHeaderStyle}" />
+                            <mainwindow:CFilterChanger
+                                Grid.Column="1"
+                                Grid.Row="1"
+                                x:Name="MGCCAM_use_bonuses_changer"
+                                VerticalAlignment="Center"
+                                HorizontalAlignment="Center"
+                                Clicked="MGCCAM_use_bonuses_changer_Clicked"
+                                Text="" />
+                            <!--#endregion-->
+                            <!--#region Сумма корзины -->
+                            <TextBlock
+                                Grid.Row="2"
+                                Text="Сумма"
+                                x:Name="MGCCAM_sum"
+                                Style="{DynamicResource PayTextBlockHeaderStyle}" />
+                            <TextBlock
+                                Grid.Row="2"
+                                Text="100 RUB"
+                                x:Name="MGCCAM_sum_value"
+                                Style="{DynamicResource PayTextBlockValueStyle}" />
+                            <!--#endregion-->
+                        </Grid>
+                        <!--#endregion-->
+                        <!--#region Метод оплаты -->
+                        <TextBlock
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            Foreground="{DynamicResource textcolor_main}"
+                            Text="Метод"
+                            x:Name="MGCCAM_payment_method"
+                            HorizontalAlignment="Center"
+                            FontSize="22"
+                            FontWeight="DemiBold"
+                            Margin="0 5 0 5" />
+                        <!--#endregion-->
+                        <!--#region Список методов оплаты -->
+                        <components:CList
+                            Background="#FF211F27"
+                            SelectorColor="#0CFFFFFF"
+                            BorderRadius="10"
+                            x:Name="MGCCAM_methods_list"
+                            Foreground="{DynamicResource textcolor_main}"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            Margin="15 10 15 15"
+                            IsOpened="False" />
+                        <!--#endregion-->
+                        <!--#region Кнопка оплаты -->
+                        <components:CButton
+                            Text="Оплатить"
+                            x:Name="MGCCAM_pay"
+                            Style="{DynamicResource FormButtonStyle}"
+                            BackColor="{DynamicResource green_main}"
+                            BorderRadius="12"
+                            Margin="5 10 5 20"
+                            Width="300"
+                            MouseDown="MGCCAM_pay_MouseDown" />
+                        <!--#endregion-->
+                    </StackPanel>
+                </Grid>
+                <!--#endregion-->
+                <!--#region Ошибка -->
+                <Grid
+                    x:Name="MGC_error"
+                    Visibility="Hidden">
+                    <Rectangle
+                        Fill="{DynamicResource back_second}"
+                        RadiusX="19"
+                        RadiusY="19" />
+
+                    <!--#region Текст и кнопка -->
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center"
+                        Margin="0 0 0 -20">
+                        <!--#region Текст -->
+                        <TextBlock
+                            x:Name="MGCE_text"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            Foreground="{DynamicResource textcolor_main}"
+                            FontSize="18"
+                            Text="Произошла ошибка"
+                            TextWrapping="Wrap"
+                            TextAlignment="Center"
+                            MaxWidth="300" />
+                        <!--#endregion-->
+                        <!--#region Кнопка -->
+                        <components:CButton
+                            Text="Ok"
+                            BorderRadius="10"
+                            Padding="0"
+                            Width="120"
+                            Height="36"
+                            Margin="10 15 10 0"
+                            MouseLeftButtonDown="MG_close_button_MouseLeftButtonDown" />
+                        <!--#endregion-->
+                    </StackPanel>
+                    <!--#endregion-->
+                </Grid>
+                <!--#endregion-->
+                <!--#region Оплата -->
+                <Grid
+                    x:Name="MGC_payment_info"
+                    Visibility="Hidden">
+                    <StackPanel
+                        VerticalAlignment="Center"
+                        HorizontalAlignment="Center">
+                        <!--#region Иконка успешной оплаты -->
+                        <Image
+                            x:Name="MGCPI_success_icon"
+                            Source="/Launcher;component/Media/success_payment_icon.png"
+                            Width="120"
+                            Margin="0 0 0 0" 
+                            Visibility="Collapsed"
+                            RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"/>
+                        <!--#endregion-->
+                        <!--#region Qr-код -->
+                        <Grid
+                            x:Name="MGCPI_qr_code"
+                            HorizontalAlignment="Center"
+                            Margin="0 0 0 15">
+                            <Rectangle
+                                Fill="White"
+                                RadiusX="15"
+                                RadiusY="15" />
+                            <Image
+                                x:Name="MGCPI_qr_code_image"
+                                MaxWidth="200"
+                                MaxHeight="200"
+                                RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
+                                Margin="10" />
+                        </Grid>
+                        <!--#endregion-->
+                        <!--#region Текст -->
+                        <TextBlock
+                            x:Name="MGCPI_text"
+                            Text="Перейдите на сайт платежной системы и завершите платеж. После оплаты закройте данное окно"
+                            TextWrapping="Wrap"
+                            TextAlignment="Center"
+                            Foreground="{DynamicResource textcolor_main}"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            FontSize="20"
+                            Margin="10 5 10 15" />
+                        <!--#endregion-->
+                        <!--#region Открыть в браузере -->
+                        <components:CButton
+                            x:Name="MGCPI_button"
+                            Text="Открыть в браузере"
+                            Icon="/Launcher;component/Media/href-icon.png"
+                            BorderRadius="12"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            FontSize="20"
+                            BackColor="{DynamicResource green_main}"
+                            Foreground="{DynamicResource textcolor_main}"
+                            Margin="10 10 10 0"
+                            MouseLeftButtonDown="MGCPI_button_MouseLeftButtonDown"/>
+                        <!--#endregion-->
+                    </StackPanel>
+                </Grid>
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+    </Grid>
+</UserControl>

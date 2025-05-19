@@ -72,6 +72,7 @@ namespace Launcher.Components
         public List<CListItem> Items { get; set; } = new();
         public List<CListItem> ShowenItems { get; set; } = new();
         private Dictionary<Grid, CListItem> ItemsComponents { get; set; } = [];
+        private Dictionary<Grid, CScrollingTextBlock> ItemsScrollingComponents { get; set; } = [];
         #endregion
 
         #region Параметры     
@@ -225,7 +226,7 @@ namespace Launcher.Components
         }
         #endregion
         #region LoadItems
-        public async Task<UResponse> LoadItems(List<CListItem> items)
+        public async Task<UResponse> LoadItems(List<CListItem> items, int selectedIndex = 0)
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName()).AddTrace("item");
             var _failinf = $"Не удалось загрузить элементы";
@@ -246,7 +247,7 @@ namespace Launcher.Components
                 foreach (var item in Items) ShowenItems.Add(new CListItem(item.Id, Dictionary.Translate(item.Name)));
                 #endregion
                 #region Выбор первого элемента
-                SelectedItem = Items[0];
+                SelectedItem = selectedIndex >= 0 && selectedIndex < ShowenItems.Count ? Items[selectedIndex] : Items[0];
                 #endregion
 
                 return new() { IsSuccess = true };
@@ -319,33 +320,44 @@ namespace Launcher.Components
         private void UpdateViewModel()
         {
             ItemsComponents = [];
+            ItemsScrollingComponents = [];
             items.Children.Clear();
 
             var first = ShowenItems.First(x => x.Id == SelectedItem!.Id);
             var selectedItemComponent = CreateItemObject(first);
-            items.Children.Add(selectedItemComponent);
-            ItemsComponents.Add(selectedItemComponent, SelectedItem!);
+            items.Children.Add(selectedItemComponent.Item1);
+            ItemsComponents.Add(selectedItemComponent.Item1, SelectedItem!);
+            ItemsScrollingComponents.Add(selectedItemComponent.Item1, selectedItemComponent.Item2);
 
             foreach (var item in ShowenItems)
             {
                 if (item.Id != SelectedItem!.Id)
                 {
                     var itemComponent = CreateItemObject(item);
-                    items.Children.Add(itemComponent);
-                    ItemsComponents.Add(itemComponent, item);
+                    items.Children.Add(itemComponent.Item1);
+                    ItemsComponents.Add(itemComponent.Item1, item);
+                    ItemsScrollingComponents.Add(itemComponent.Item1, itemComponent.Item2);
                 }
             }
         }
         #endregion
         #region CreateItemObject
-        private Grid CreateItemObject(CListItem item)
+        private (Grid, CScrollingTextBlock) CreateItemObject(CListItem item)
         {
             Grid grid = new Grid();
             grid.DataContext = this;
 
-            Rectangle background = new() { Fill = new SolidColorBrush(Colors.White), Opacity = 0 };
-            grid.Children.Add(background);
+            CScrollingTextBlock textBlock = new CScrollingTextBlock()
+            {
+                Text = item.Name,
+                FontSize = 20,
+                FontWeight = this.FontWeight,
+                Foreground = this.Foreground,
+                ScrollingType = EScrollingType.Scrolling,
+                Padding = new Thickness(10, 0, 10, 0)
+            };
 
+            #region Настройка высоты
             Binding heightBinding = new("ElementHeight")
             {
                 RelativeSource = new RelativeSource
@@ -353,39 +365,37 @@ namespace Launcher.Components
                     AncestorType = typeof(CList)
                 }
             };
+            textBlock.SetBinding(FrameworkElement.HeightProperty, heightBinding);
             grid.SetBinding(FrameworkElement.HeightProperty, heightBinding);
-
-            TextBlock textBlock = new TextBlock
-            {
-                Text = item.Name,
-                TextAlignment = TextAlignment.Center,
-                VerticalAlignment = VerticalAlignment.Center
-            };
-
-            Binding foregroundBinding = new("Foreground")
-            {
-                ElementName = "root"
-            };
-            textBlock.SetBinding(TextBlock.ForegroundProperty, foregroundBinding);
-
-            Binding fontSizeBinding = new("FontSize")
-            {
-                ElementName = "root"
-            };
-            textBlock.SetBinding(TextBlock.FontSizeProperty, fontSizeBinding);
-
+            #endregion
+            #region Для выбора по площади
+            Rectangle background = new() { Fill = new SolidColorBrush(Colors.White), Opacity = 0 };
+            grid.Children.Add(background);
+            #endregion
+            #region Стили
+            #region Foreground
+            Binding foregroundBinding = new("Foreground") { ElementName = "root" };
+            textBlock.SetBinding(CScrollingTextBlock.ForegroundProperty, foregroundBinding);
+            #endregion           
+            #region FontFamily
+            Binding fontFamilyBinding = new("FontFamily") { ElementName = "root" };
+            textBlock.SetBinding(CScrollingTextBlock.FontFamilyProperty, fontFamilyBinding);
+            #endregion
+            #endregion
+            #region Добавление
             grid.Children.Add(textBlock);
+            #endregion
 
             grid.MouseEnter += ItemMouseEnter;
             grid.PreviewMouseLeftButtonDown += ItemClick;
 
-            return grid;
+            return new(grid, textBlock);
         }
         #endregion
         #region ChangeState
         public async Task ChangeState(bool open)
         {
-            var duration = AnimationHelper.AnimationDuration;
+            var duration = TimeSpan.FromMilliseconds(200);
             var function = new PowerEase() { EasingMode = EasingMode.EaseInOut };
             var storyboard = new Storyboard();
 
@@ -397,6 +407,12 @@ namespace Launcher.Components
                 Storyboard.SetTarget(animationHeight, this);
                 Storyboard.SetTargetProperty(animationHeight, new PropertyPath(HeightProperty));
                 storyboard.Children.Add(animationHeight);
+
+                foreach (var scrollingTextBlock in ItemsScrollingComponents)
+                {
+                    var textBlock = scrollingTextBlock.Value;
+                    textBlock.StartScrolling();
+                }
             }
             else
             {
@@ -405,6 +421,12 @@ namespace Launcher.Components
                 Storyboard.SetTargetProperty(animationHeight, new PropertyPath(HeightProperty));
                 storyboard.Children.Add(animationHeight);
                 _ = MoveSelector(0);
+
+                foreach (var scrollingTextBlock in ItemsScrollingComponents)
+                {
+                    var textBlock = scrollingTextBlock.Value;
+                    textBlock.StopScrolling();
+                }
             }
 
             IsOpened = open;

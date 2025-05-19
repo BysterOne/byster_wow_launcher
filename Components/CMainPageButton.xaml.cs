@@ -56,7 +56,12 @@ namespace Launcher.Components
         }
         public static readonly DependencyProperty TextProperty =
             DependencyProperty.Register("Text", typeof(string), typeof(CMainPageButton),
-                new PropertyMetadata(""));
+                new PropertyMetadata("", OnTextChanged));
+
+        private static void OnTextChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is CMainPageButton sender) sender.ChangeState(sender.IsActive);
+        }
         #endregion
         #region Foreground
         public new SolidColorBrush Foreground

@@ -12,5 +12,15 @@ namespace Launcher.Settings.Enums
         Prod,
         Staging
     }
-	#endregion
+    #endregion
+    #region ELauncherUpdate
+    [Flags]
+    public enum ELauncherUpdate
+    {
+        User,
+        Shop,
+        Subscriptions
+    }
+    #endregion
+
 }

@@ -22,14 +22,14 @@ namespace Launcher.Styles
         private void WindowControlButtonStyle_MouseEnter(object sender, MouseEventArgs e)
         {
             var button = (CButton)sender;    
-            (AnimationHelper.OpacityAnimation(button, 1)).Begin(button, HandoffBehavior.SnapshotAndReplace, true);
+            (AnimationHelper.OpacityAnimationStoryBoard(button, 1)).Begin(button, HandoffBehavior.SnapshotAndReplace, true);
         }
         #endregion
         #region WindowControlButtonStyle_MouseLeave
         private void WindowControlButtonStyle_MouseLeave(object sender, MouseEventArgs e)
         {
             var button = (CButton)sender;
-            (AnimationHelper.OpacityAnimation(button, 0.8)).Begin(button, HandoffBehavior.SnapshotAndReplace, true);
+            (AnimationHelper.OpacityAnimationStoryBoard(button, 0.8)).Begin(button, HandoffBehavior.SnapshotAndReplace, true);
         }
         #endregion
         #region MinimizeWindowControlButtonStyle_MouseDown

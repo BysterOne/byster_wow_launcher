@@ -11,7 +11,8 @@ namespace Launcher.Windows.AnyMain.Errors
     {
         FailInitPanelChanger,
         FailGetUserInfo,
-        FailInitPage
+        FailInitPage,
+        FailLoadTranslations
     }
     #endregion
     #region EShowModal

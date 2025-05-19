@@ -35,7 +35,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
 
         public enum EShow
         {
-            NoObjectOfTheRequiredType
+            NoObjectOfTheRequiredType,
         }
     }
 
@@ -82,7 +82,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
 
             await Dispatcher.InvokeAsync(() =>
             {
-                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                var animation = AnimationHelper.OpacityAnimationStoryBoard((FrameworkElement)element, 0, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
                 animation.Completed += (s, e) => { Panel.SetZIndex(element, -1); tcs.SetResult(null); };
                 animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
             });
@@ -101,7 +101,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             {
                 element.Visibility = Visibility.Visible;
 
-                var animation = AnimationHelper.OpacityAnimation((FrameworkElement)element, 1, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
+                var animation = AnimationHelper.OpacityAnimationStoryBoard((FrameworkElement)element, 1, UseAnimation ? duration : TimeSpan.FromMilliseconds(1));
                 animation.Completed += (s, e) => tcs.SetResult(null);
                 animation.Begin((FrameworkElement)element, HandoffBehavior.SnapshotAndReplace, true);
             });
@@ -137,10 +137,13 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 var product = pars.OfType<Api.Models.Product>().FirstOrDefault();
                 if (product is null) throw new UExcept(EShow.NoObjectOfTheRequiredType, $"Требуется объект типа {typeof(Api.Models.Product).FullName}");
                 Product = product;
-                #endregion             
+                #endregion
+                #region Язык
+                _ = UpdateAllValues();
+                #endregion
                 #region Анимация появления
-                var fadeInMiddle = AnimationHelper.OpacityAnimation(middleGrid, 1);
-                var fadeIn = AnimationHelper.OpacityAnimation(this, 1);
+                var fadeInMiddle = AnimationHelper.OpacityAnimationStoryBoard(middleGrid, 1);
+                var fadeIn = AnimationHelper.OpacityAnimationStoryBoard(this, 1);
                 fadeIn.Completed += (s, e) => { fadeInMiddle.Begin(middleGrid, HandoffBehavior.SnapshotAndReplace, true); };
                 fadeIn.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
                 #endregion
@@ -173,10 +176,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                     throw new UExcept(EInitialization.FailInitPanelChanger, $"Ошибка инициализации панели {nameof(PanelChanger)}");
                 }
                 #endregion
-                #region Язык
-                await UpdateAllValues();
-                #endregion
-                               
+                     
 
                 return new(await TaskCompletion.Task);
             }
@@ -245,9 +245,10 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         {
             MGRP_description.Text = Dictionary.Translate("ОПИСАНИЕ");
             MGRP_rotations.Text = Dictionary.Translate("РОТАЦИИ");
+
+            await MG_product.UpdateAllValues();
         }
         #endregion
-
         #endregion
 
         

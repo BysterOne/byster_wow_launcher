@@ -48,8 +48,23 @@ namespace Launcher.Any
                 using (var client = new HttpClient())
                     data = await client.GetByteArrayAsync(imageUrl, cancellationToken);
 
-                var original = await LoadBitmapAsync(data, targetWidth, targetHeight);
-                result = ResizeUniformToFill(original, targetWidth, targetHeight);
+                if (targetWidth <= 0 || targetHeight <= 0)
+                {
+                    using (var stream = new MemoryStream(data))
+                    {
+                        result = BitmapFrame.Create(
+                            stream,
+                            BitmapCreateOptions.IgnoreImageCache,
+                            BitmapCacheOption.OnLoad
+                        );
+                    }
+                }
+                else
+                {
+                    var original = await LoadBitmapAsync(data, targetWidth, targetHeight);
+                    result = ResizeUniformToFill(original, targetWidth, targetHeight);
+                }
+                
                 SaveToFile(result, cacheFile);
             }
 

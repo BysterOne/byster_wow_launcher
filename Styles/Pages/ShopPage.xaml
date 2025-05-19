@@ -7,7 +7,9 @@
     xmlns:any="clr-namespace:Launcher.Any">
     <ResourceDictionary.MergedDictionaries>
         <ResourceDictionary
-            Source="../../Styles/Global.xaml" />
+            Source="/Launcher;component/Styles/Global.xaml" />
+        <ResourceDictionary
+            Source="/Launcher;component/Styles/Global.xaml" />
     </ResourceDictionary.MergedDictionaries>
 
     <Style
@@ -121,30 +123,7 @@
                 </ControlTemplate>
             </Setter.Value>
         </Setter>
-    </Style>
-    <Style
-        x:Key="CScrollPanelStyle"
-        TargetType="{x:Type l:CScrollPanel}">
-        <Setter
-            Property="Template">
-            <Setter.Value>
-                <ControlTemplate
-                    TargetType="{x:Type l:CScrollPanel}">
-                    <ScrollViewer
-                        x:Name="scroll_viewer"
-                        any:ScrollViewerExtensions.ScrollFactor="1"
-                        CanContentScroll="True"
-                        HorizontalScrollBarVisibility="Disabled"
-                        ScrollViewer.IsDeferredScrollingEnabled="True"
-                        Style="{DynamicResource ScrollViewerStyle}"
-                        VerticalScrollBarVisibility="Auto">
-                        <ContentPresenter
-                            Content="{TemplateBinding Content}" />
-                    </ScrollViewer>
-                </ControlTemplate>
-            </Setter.Value>
-        </Setter>
-    </Style>
+    </Style>    
     <Style
         x:Key="FilterChangerClaessesStyle"
         TargetType="{x:Type MainWindow:CFilterChanger}">
@@ -163,9 +142,6 @@
         <Setter
             Property="Margin"
             Value="10 2" />
-        <Setter
-            Property="Icon"
-            Value="/Launcher;component/Media/TEST_warrior_icon.png" />
 
         <Setter
             Property="Template">

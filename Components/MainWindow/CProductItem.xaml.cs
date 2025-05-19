@@ -30,17 +30,22 @@ namespace Launcher.Components.MainWindow
             Dynamic,
             Static,
         }
+
+        public enum EViewType
+        {
+            Buy,
+            InfoOnly
+        }
     }
     /// <summary>
     /// Логика взаимодействия для CProductItem.xaml
     /// </summary>
-    public partial class CProductItem : UserControl
+    public partial class CProductItem : UserControl, ITranslatable
     {
         public CProductItem()
         {
             InitializeComponent();
-
-            Cursor = Cursors.Hand;
+            TranslationHub.Register(this);
 
             this.MouseEnter += EMouseEnter;
             this.MouseLeave += EMouseLeave;
@@ -51,10 +56,28 @@ namespace Launcher.Components.MainWindow
         private bool IsFirstPanelButtonsChange { get; set; } = true;
         public static LogBox Pref { get; set; } = new("Product Item");
         public CCartItem? CartItem { get; set; } = null;
-        
+
         #endregion
 
         #region Свойства
+        #region ViewType
+        public EViewType ViewType
+        {
+            get => (EViewType)GetValue(ViewTypeProperty);
+            set => SetValue(ViewTypeProperty, value);
+        }
+
+        public static readonly DependencyProperty ViewTypeProperty =
+            DependencyProperty.Register(nameof(ViewType), typeof(EViewType), typeof(CProductItem),
+                new PropertyMetadata(EViewType.Buy, OnViewTypeChanged));
+
+        private static void OnViewTypeChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            var sender = (CProductItem)d;
+            sender.UpdateView();
+            sender.UpdateButtonsPanelView();
+        }
+        #endregion
         #region ButtonsType
         public EButtonsType ButtonsType
         {
@@ -137,10 +160,10 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #region EMouseEnter
-        private void EMouseEnter(object sender, MouseEventArgs e) => ChangeButtonsPanelState(true);
+        private void EMouseEnter(object sender, MouseEventArgs e) => ChangeButtonsPanelState();
         #endregion
         #region EMouseLeave
-        private void EMouseLeave(object sender, MouseEventArgs e) => ChangeButtonsPanelState(false);
+        private void EMouseLeave(object sender, MouseEventArgs e) => ChangeButtonsPanelState();
         #endregion
         #region CGBPBCT_test_PreviewMouseDoubleClick
         private async void CGBPBCT_test_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
@@ -194,11 +217,7 @@ namespace Launcher.Components.MainWindow
         private void CGBPBCT_buy_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
             e.Handled = true;
-            if (CartItem is null)
-            {
-                GProp.Cart.CartUpdated += ECartUpdated;
-                GProp.Cart.AddItem(Product);
-            } 
+            if (CartItem is null) GProp.Cart.AddItem(Product);            
         }
         #endregion
         #region ECartUpdated
@@ -218,9 +237,8 @@ namespace Launcher.Components.MainWindow
                     break;
                 case ListChangedType.ItemDeleted:
                     CartItem = null;
-                    GProp.Cart.CartUpdated -= ECartUpdated;
                     UpdateView();
-                    UpdateButtonsPanelView();                    
+                    UpdateButtonsPanelView();
                     break;
                 default:
                     break;
@@ -258,6 +276,11 @@ namespace Launcher.Components.MainWindow
         {
             if (Product is null) return;
 
+            CGBP_buttons.Visibility = ViewType is EViewType.Buy ? Visibility.Visible : Visibility.Collapsed;
+            CGBP_duration.Visibility = ViewType is EViewType.Buy ? Visibility.Visible : Visibility.Collapsed;
+            CGBP_price.Visibility = ViewType is EViewType.Buy ? Visibility.Visible : Visibility.Collapsed;
+            //CGBP_name_price.Margin = ViewType is EViewType.Buy ? new (10, 50, 10, 5) : new (10, 50, 10, ButtonsMargin.Bottom + 15);
+
             if (CartItem is not null)
             {
                 CGBPB_cart_test.Visibility = Visibility.Collapsed;
@@ -276,16 +299,21 @@ namespace Launcher.Components.MainWindow
         #region UpdateButtonsPanelView
         private void UpdateButtonsPanelView()
         {
-            CGBP_buttons.Margin =
+            CGBP_buttons.SetValue
+            (  
+                MarginProperty, 
+
                 this.IsMouseOver || ButtonsType is EButtonsType.Static ?
                 ButtonsPanelMargin :
-                new Thickness(0, 5, 0, -GetButtonsHeight());
+                new Thickness(0, 5, 0, -GetButtonsHeight())
+            );
         }
         #endregion
         #region ChangeButtonsPanelState
-        public void ChangeButtonsPanelState(bool isActive)
+        public void ChangeButtonsPanelState()
         {
             if (ButtonsType is EButtonsType.Static) return;
+            if (ViewType is not EViewType.Buy) return;
 
             var newThickness =
                 this.IsMouseOver ?
@@ -295,13 +323,14 @@ namespace Launcher.Components.MainWindow
             var storyboard = new Storyboard();
             var animation = new ThicknessAnimation(newThickness, AnimationHelper.AnimationDuration)
             {
-                EasingFunction = new PowerEase() { EasingMode = EasingMode.EaseInOut }
+                EasingFunction = new PowerEase() { EasingMode = EasingMode.EaseInOut },
             };
-
+            
             Storyboard.SetTarget(animation, CGBP_buttons);
             Storyboard.SetTargetProperty(animation, new PropertyPath(Grid.MarginProperty));
 
             storyboard.Children.Add(animation);
+            storyboard.Completed += (_, __) => { storyboard.Stop(CGBP_buttons); CGBP_buttons.Margin = (Thickness)animation.To!;  };
 
             storyboard.Begin(CGBP_buttons, HandoffBehavior.SnapshotAndReplace, true);   
         }
@@ -350,9 +379,12 @@ namespace Launcher.Components.MainWindow
             #region try
             try
             {
+                #region Обновление языка
+                _ = UpdateAllValues();
+                #endregion
                 #region Проверка наличия в корзине
                 CartItem = GProp.Cart.GetItem(Product);
-                if (CartItem is not null) { GProp.Cart.CartUpdated += ECartUpdated; }
+                GProp.Cart.CartUpdated += ECartUpdated;
                 #endregion
                 #region Верхняя панель
                 CGTP_background.RadiusX = Product.IsBundle ? 14 : 20;
@@ -378,7 +410,7 @@ namespace Launcher.Components.MainWindow
                 var imageSource = ImageControlHelper.GetImageFromCache(Product.ImageUrl, (int)Math.Ceiling(this.Width), (int)Math.Ceiling(this.Height));
                 if (imageSource is null) 
                 {
-                    await CG_image_skeleton.ChangeState(true);
+                    _ = CG_image_skeleton.ChangeState(true, false);
                     _ = ImageControlHelper.LoadImageAsync
                     (
                         Product.ImageUrl, 
@@ -433,6 +465,23 @@ namespace Launcher.Components.MainWindow
             #endregion
         }
         #endregion
-        #endregion        
+        #region UpdateAllValues
+        public async Task UpdateAllValues()
+        {
+            if (Product is not null)
+            {
+                CGBP_name.Text = AppSettings.Instance.Language switch
+                {
+                    ELang.En => Product.NameEn,
+                    _ => Product.Name
+                };
+                CGBP_duration.Text = Dictionary.DaysCount(Product.Duration);
+            }
+
+            CGBPBCT_test.Text = Dictionary.Translate($"Тест");
+            CGBPBCT_buy.Text = Dictionary.Translate($"В корзину");
+        }
+        #endregion
+        #endregion
     }
 }

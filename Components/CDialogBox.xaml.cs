@@ -85,7 +85,7 @@ namespace Launcher.Components
                     bComponent.Margin = new Thickness(5, 0, 5, 0);
                     bComponent.MinWidth = 100;
                     bComponent.Padding = new Thickness(10, 5, 10, 5);
-                    bComponent.BorderRadius = 20;
+                    bComponent.BorderRadius = new CornerRadius(20);
 
                     bComponent.Text =
                         !String.IsNullOrWhiteSpace(button.Text) ?
@@ -106,8 +106,8 @@ namespace Launcher.Components
                 #region Анимация появления
                 await Dispatcher.InvokeAsync(() =>
                 {
-                    var fadeInMiddle = AnimationHelper.OpacityAnimation(middleGrid, 1);
-                    var fadeIn = AnimationHelper.OpacityAnimation(this, 1);
+                    var fadeInMiddle = AnimationHelper.OpacityAnimationStoryBoard(middleGrid, 1);
+                    var fadeIn = AnimationHelper.OpacityAnimationStoryBoard(this, 1);
                     fadeIn.Completed += (s, e) => { fadeInMiddle.Begin(middleGrid, HandoffBehavior.SnapshotAndReplace, true); };
                     fadeIn.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
                 });
@@ -142,10 +142,10 @@ namespace Launcher.Components
             var ts = new TaskCompletionSource<object>();
             await Dispatcher.InvokeAsync(() =>
             {
-                var fadeOut = AnimationHelper.OpacityAnimation(this, 0);
+                var fadeOut = AnimationHelper.OpacityAnimationStoryBoard(this, 0);
                 fadeOut.Completed += (s, e) => { ts.SetResult(true); };               
 
-                var fadeOutMiddle = AnimationHelper.OpacityAnimation(middleGrid, 0);
+                var fadeOutMiddle = AnimationHelper.OpacityAnimationStoryBoard(middleGrid, 0);
                 fadeOutMiddle.Completed += (s, e) => { fadeOut.Begin(this, HandoffBehavior.SnapshotAndReplace, true); };
                 fadeOutMiddle.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
             });

@@ -1,4 +1,6 @@
 ﻿using Cls.Any;
+using Launcher.Any;
+using Launcher.Any.GlobalEnums;
 using Launcher.Windows.AnyMain.Enums;
 using System;
 using System.Collections.Generic;
@@ -12,14 +14,24 @@ namespace Launcher.Settings
 {
     class GStatic
     {
+        #region Переменные
+        public static Dictionary<ELang, string> Langs = new Dictionary<ELang, string>
+        {
+           { ELang.Ru, "ru" },
+           { ELang.En, "en" },
+        };    
+        #endregion
+
+
         #region GetServerIcon
         public static ImageSource? GetServerIcon(EServerIcon serverIcon)
         {
             var name = serverIcon switch
             {         
-                EServerIcon.Test1 => "server_icon_test_1.png",
-                EServerIcon.Test2 => "server_icon_test_2.jpg",
-                EServerIcon.Test3 => "server_icon_test_3.jpg",
+                EServerIcon.Sirus => "server_sirus.png",
+                EServerIcon.Circle => "server_circle.png",
+                EServerIcon.Warmane => "server_warmane.png",
+                EServerIcon.WarmaneDuplicate => "server_warmane_1.png",
                 _ => "null_image_icon.png"
             };
 
@@ -116,6 +128,12 @@ namespace Launcher.Settings
 
             return BitmapFrame.Create(Functions.GetSourceFromResource($"Media/Shop/RolesIcons/{name}"));
         }
+        #endregion
+        #region GetLangCode
+        public static string GetLangCode(ELang lang) => Langs[lang];
+        #endregion
+        #region GetLangFromCode
+        public static ELang? GetLangFromCode(string lang) => Langs.GetKeyOrNull(lang);
         #endregion
     }
 }

@@ -4,9 +4,12 @@ using Cls.Errors;
 using Cls.Exceptions;
 using Launcher.Any;
 using Launcher.Cls;
+using Launcher.Components.MainWindow.Any.PageMain;
 using Launcher.Settings;
+using Launcher.Windows;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Threading;
 using Rotation = Launcher.Api.Models.Rotation;
@@ -21,7 +24,10 @@ namespace Launcher.Components.MainWindow.Any.PageShop
         public CRotationItem()
         {
             InitializeComponent();
-        }
+
+            this.Cursor = Cursors.Hand;
+            this.MouseLeftButtonDown += EMouseLeftButtonDown;
+        }       
 
         #region Переменные
         public static LogBox Pref { get; set; } = new("Rotation Item");
@@ -108,6 +114,12 @@ namespace Launcher.Components.MainWindow.Any.PageShop
             }
             #endregion
         }
+        #endregion
+        #endregion
+
+        #region Обработчики событий
+        #region EMouseLeftButtonDown
+        private void EMouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) => _ = Main.ShowModal(new CRotationInfoDialogBox(), Rotation);        
         #endregion
         #endregion
     }

@@ -1,7 +1,6 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
 
-	<UsingTask TaskName="KeyExtractorTask"
-			AssemblyFile="$(MSBuildProjectDirectory)\buildTools\KeyExtractorTask.dll" />
+	<UsingTask TaskName="KeyExtractorTask" AssemblyFile="$(MSBuildProjectDirectory)\buildTools\KeyExtractorTask.dll" />
 
 	<PropertyGroup>
 		<OutputType>WinExe</OutputType>
@@ -20,6 +19,7 @@
 
 	<ItemGroup>
 		<None Remove="Localizations\English.json" />
+		<None Remove="Localizations\untranslatable.json" />
 		<None Remove="Media\behind_icon.png" />
 		<None Remove="Media\cart_icon.png" />
 		<None Remove="Media\close_icon.png" />
@@ -92,6 +92,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<Resource Include="Localizations\untranslatable.json" />
 		<Resource Include="Media\behind_icon.png" />
 		<Resource Include="Media\forward_icon.png" />
 		<Resource Include="Media\full_size_icon.png" />
@@ -167,8 +168,6 @@
 	</ItemGroup>
 
 	<Target Name="ExtractTranslateKeys" AfterTargets="Build">
-		<KeyExtractorTask
-		  AssemblyPath="$(TargetPath)"
-		  OutputFile="$(MSBuildProjectDirectory)\Localizations\keys.json" />
+		<KeyExtractorTask AssemblyPath="$(TargetPath)" OutputFile="$(MSBuildProjectDirectory)\Localizations\keys.json" />
 	</Target>
 </Project>

@@ -180,7 +180,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 (
                     AppSettings.Instance.Language switch 
                     { 
-                        ELang.En => rotation.DescriptionEn,
+                        ELang.En or ELang.ZhCn => rotation.DescriptionEn,
                         _ => rotation.Description
                     }, 
                     async (doc) =>

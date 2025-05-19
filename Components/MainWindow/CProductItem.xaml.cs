@@ -437,7 +437,7 @@ namespace Launcher.Components.MainWindow
                 #region Данные
                 CGBP_name.Text = AppSettings.Instance.Language switch
                 {
-                    ELang.En => Product.NameEn,
+                    ELang.En or ELang.ZhCn => Product.NameEn,
                     _ => Product.Name
                 };
                 CGBP_duration.Text = Dictionary.DaysCount(Product.Duration);
@@ -472,7 +472,7 @@ namespace Launcher.Components.MainWindow
             {
                 CGBP_name.Text = AppSettings.Instance.Language switch
                 {
-                    ELang.En => Product.NameEn,
+                    ELang.En or ELang.ZhCn => Product.NameEn,
                     _ => Product.Name
                 };
                 CGBP_duration.Text = Dictionary.DaysCount(Product.Duration);

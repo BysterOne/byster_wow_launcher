@@ -122,7 +122,7 @@ namespace Launcher.Components.MainWindow.Any.CartEditor
                 #region Данные
                 product_name.Text = AppSettings.Instance.Language switch
                 {
-                    ELang.En => Item.Product.NameEn,
+                    ELang.En or ELang.ZhCn => Item.Product.NameEn,                    
                     _ => Item.Product.Name
                 };
                 #endregion

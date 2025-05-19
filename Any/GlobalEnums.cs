@@ -9,7 +9,8 @@ namespace Launcher.Any.GlobalEnums
     public enum ELang
     {
         Ru,
-        En
+        En,
+        ZhCn
     }
 
     public enum ELoaderState

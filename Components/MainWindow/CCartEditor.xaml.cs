@@ -45,9 +45,8 @@ namespace Launcher.Components.MainWindow
             );
             PanelChanger.HideElement += PanelChangerHide;
             PanelChanger.ShowElement += PanelChangerShow;
-            _ = PanelChanger.Init();
-            _ = UpdateAllValues();
-        }
+            _ = PanelChanger.Init();            
+        }       
 
         #region Переменные
         public bool IsShowed { get; set; } = false;

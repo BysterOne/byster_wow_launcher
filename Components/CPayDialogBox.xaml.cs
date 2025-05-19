@@ -213,7 +213,7 @@ namespace Launcher.Components
                                 item.Id, 
                                 AppSettings.Instance.Language switch
                                 {
-                                    ELang.En => item.NameEn,
+                                    ELang.En or ELang.ZhCn => item.NameEn,
                                     _ => item.Name  
                                 }
                             )

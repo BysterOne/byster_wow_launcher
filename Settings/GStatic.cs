@@ -19,6 +19,7 @@ namespace Launcher.Settings
         {
            { ELang.Ru, "ru" },
            { ELang.En, "en" },
+           { ELang.ZhCn, "zh" },
         };    
         #endregion
 

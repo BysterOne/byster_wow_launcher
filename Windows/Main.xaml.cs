@@ -156,7 +156,10 @@ namespace Launcher.Windows
                 var tryInitMainChanger = await tryInitMainChangerTask;
                 if (!tryInitMainChanger.IsSuccess) throw new UExcept(EInitialization.FailInitPanelChanger, $"Ошибка запуска '{nameof(EPC_MainPanelChanger)}'", tryInitMainChanger.Error);
                 #endregion
-                #endregion               
+                #endregion
+                #region Обновляем язык у редкатора корзины
+                _ = CartEditor.UpdateAllValues();
+                #endregion
 
                 #region Открываем главную
                 await ChangeMainPanel(EPC_MainShop.Main);

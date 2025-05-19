@@ -34,20 +34,38 @@ namespace Launcher
 
         public static List<ULocDictionary> Localizations { get; set; } = [];
 
-        private static List<string> GetKeys()
+        public static List<string> Untranslatable { get; set; } = [];
+
+        #region ReadFromResource
+        private static T? ReadFromResource<T>(string path)
         {
-            var uri = new Uri($"pack://application:,,,/Localizations/keys.json", UriKind.Absolute);
+            var uri = new Uri($"pack://application:,,,/{path}", UriKind.Absolute);
             var resource = Application.GetResourceStream(uri);
 
-            if (resource is null) return [];
+            if (resource is null) return default(T);
 
             using var reader = new StreamReader(resource.Stream);
-            var jsonObject = JsonConvert.DeserializeObject<List<string>>(reader.ReadToEnd());
-            if (jsonObject is null) return [];
+            var jsonObject = JsonConvert.DeserializeObject<T>(reader.ReadToEnd());
+            if (jsonObject is null) return default(T);
 
             return jsonObject;
         }
-
+        #endregion
+        #region GetKeys
+        private static List<string> GetUntranslatable()
+        {
+            var read = ReadFromResource<List<string>>("Localizations/untranslatable.json");
+            return read is null ? [] : read;
+        }
+        #endregion
+        #region GetKeys
+        private static List<string> GetKeys()
+        {
+            var read = ReadFromResource<List<string>>("Localizations/keys.json");
+            return read is null ? [] : read;
+        }
+        #endregion
+        #region Load
         public static async Task<UResponse> Load()
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
@@ -58,7 +76,8 @@ namespace Launcher
             {
                 var assm = Assembly.GetExecutingAssembly();
                 var reqkeys = GetKeys();
-                var reqLangs = new List<ELang>() { ELang.En };
+                Untranslatable = GetUntranslatable();
+                var reqLangs = new List<ELang>() { ELang.En, ELang.ZhCn };
 
                 #region Загрузка локальных файлов
                 foreach (var lang in reqLangs)
@@ -66,6 +85,7 @@ namespace Launcher
                     var fileName = lang switch
                     {
                         ELang.En => "English.json",
+                        ELang.ZhCn => "Chinese.json",
                         _ => null
                     };
 
@@ -91,11 +111,11 @@ namespace Launcher
                     var onlyThisLangKeys = new List<string>();
 
                     var ownKeys = Localizations.FirstOrDefault(x => x.Language == lang);
-                    if (ownKeys is null) 
+                    if (ownKeys is null)
                         onlyThisLangKeys.AddRange(reqkeys);
-                    else 
-                        foreach (var u in reqkeys) 
-                            if (!ownKeys.Translations.ContainsKey(u)) 
+                    else
+                        foreach (var u in reqkeys)
+                            if (!ownKeys.Translations.ContainsKey(u))
                                 onlyThisLangKeys.Add(u);
 
                     if (onlyThisLangKeys.Count is 0) continue;
@@ -129,6 +149,8 @@ namespace Launcher
             }
             #endregion
         }
+        #endregion
+
 
         private static void CreateOrUpdateLocalization(ELang lang, Dictionary<string, string> values)
         {
@@ -155,10 +177,14 @@ namespace Launcher
 
         public static string Translate(string key, ELang lang)
         {
+            var isUntranslatable = Untranslatable.Any(x => x.Equals(key, StringComparison.CurrentCultureIgnoreCase));
+            if (isUntranslatable) return key;
+
             var dictionary = Localizations.FirstOrDefault(x => x.Language == lang);
             if (dictionary is null) return key;
-            
-            return dictionary.Translations[key] ?? key;
+
+            var hasValue = dictionary.Translations.TryGetValue(key, out string? translated);
+            return hasValue ? translated! : key;
         }
 
         #region GetLanguageName
@@ -168,6 +194,7 @@ namespace Launcher
             {
                 ELang.Ru => "Русский",
                 ELang.En => "English",
+                ELang.ZhCn => "中文",
                 _ => "Unknown"
             };
         }
@@ -201,6 +228,7 @@ namespace Launcher
             return AppSettings.Instance.Language switch
             {
                 ELang.En => $"{count} rotations",
+                ELang.ZhCn => $"{count} 次轮换",
                 _ => $"{count} {Ru()}"
             };
         }
@@ -222,6 +250,7 @@ namespace Launcher
             return AppSettings.Instance.Language switch
             {
                 ELang.En => $"{count} day{(count == 1 ? "" : "s")}",
+                ELang.ZhCn => $"{count} 天",
                 _ => $"{count} {Ru()}"
             };
         }
@@ -248,6 +277,7 @@ namespace Launcher
             return AppSettings.Instance.Language switch
             {
                 ELang.En => $"{count} hour{(count == 1 ? "" : "s")}",
+                ELang.ZhCn => $"{count} 小时",
                 _ => $"{count} {Ru()}"
             };
         }

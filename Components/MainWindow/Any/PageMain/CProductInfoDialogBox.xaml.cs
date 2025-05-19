@@ -153,7 +153,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 #region Описание
                 MGRPDP_textblock.Text = AppSettings.Instance.Language switch
                 {
-                    ELang.En => product.DescriptionEn,
+                    ELang.En or ELang.ZhCn => product.DescriptionEn,
                     _ => product.Description
                 };
                 #endregion

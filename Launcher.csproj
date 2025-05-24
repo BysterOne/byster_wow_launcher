@@ -14,7 +14,7 @@
 		<IncludeNativeLibrariesForSelfExtract>true</IncludeNativeLibrariesForSelfExtract>
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
-		<ApplicationIcon>byster.ico</ApplicationIcon>
+		<ApplicationIcon>byster_icon.ico</ApplicationIcon>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -91,7 +91,7 @@
 	</ItemGroup>
 
 	<ItemGroup>
-	  <Content Include="byster.ico" />
+	  <Content Include="byster_icon.ico" />
 	</ItemGroup>
 
 	<ItemGroup>

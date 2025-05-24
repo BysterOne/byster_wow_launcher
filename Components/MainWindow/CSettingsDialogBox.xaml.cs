@@ -10,7 +10,6 @@ using Launcher.Cls;
 using Launcher.Components.MainWindow.SettingsDialogBoxAny;
 using Launcher.Components.PanelChanger;
 using Launcher.PanelChanger.Enums;
-using Launcher.PanelChanger.Errors;
 using Launcher.Settings;
 using Launcher.Settings.Enums;
 using Launcher.Windows;

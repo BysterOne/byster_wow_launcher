@@ -284,7 +284,7 @@ namespace Launcher.Components
         #region passwordbox_PasswordChanged
         private void passwordbox_PasswordChanged(object sender, RoutedEventArgs e)
         {
-            SetValue(TextProperty, passwordbox.Password.Trim());
+            if (InputType is EInputType.Password) SetValue(TextProperty, passwordbox.Password.Trim());
         }
         #endregion
         #region ChangeState
@@ -390,6 +390,9 @@ namespace Launcher.Components
             var function = new PowerEase() { EasingMode = EasingMode.EaseInOut };
 
             var storyboard = new Storyboard();
+
+            var v = GetValue(TextProperty);
+            var vt = Text;
 
             if (!String.IsNullOrWhiteSpace(Text))
             {

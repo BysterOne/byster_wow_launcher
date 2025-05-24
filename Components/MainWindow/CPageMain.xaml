@@ -41,30 +41,36 @@
             x:Name="LeftPanel"
             HorizontalAlignment="Left"
             Grid.Column="0"
-            Margin="10 0 10 0">
+            Width="250"
+            Margin="10 0 15 0">
             <!--#region Разметка -->
             <Grid.RowDefinitions>
                 <RowDefinition
                     Height="Auto" />
                 <RowDefinition />
+                <RowDefinition Height="Auto"/>
             </Grid.RowDefinitions>
             <!--#endregion-->
             <!--#region Кнопка добавления сервера -->
             <components:CButton
                 x:Name="LP_addButton"
-                Height="60"
-                Width="60"
+                Height="50"
+                Width="250"
                 Text=""
-                BorderRadius="35"
+                BorderRadius="12"
+                BackColor="#0CFFFFFF"
                 Icon="/Launcher;component/Media/plus_icon.png"
                 MouseLeftButtonDown="LP_addButton_MouseLeftButtonDown" />
             <!--#endregion-->
-            <components:CScrollPanel
-                Grid.Row="1">
-                <StackPanel
-                    Margin="0 7 0 5">
+            <!--#region Список серверов -->
+            <Grid x:Name="LP_servers_panel" Grid.Row="1">
+                <!--#region Сервера -->
+                <components:CScrollPanel
+                    Grid.Row="1"
+                    x:Name="LPSP_servers"
+                    Margin="0 12 0 5">
                     <ItemsControl
-                        x:Name="LP_servers">
+                        x:Name="LP_servers_control">
                         <!--#region Разметка -->
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
@@ -77,15 +83,55 @@
                             <DataTemplate>
                                 <mainPage:CServerItem
                                     Server="{Binding}"
-                                    Width="60"
+                                    Width="250"
                                     Height="60"
-                                    Margin="0 0 0 5" />
+                                    Margin="0 0 0 10" />
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                         <!--#endregion-->
                     </ItemsControl>
-                </StackPanel>
-            </components:CScrollPanel>
+                </components:CScrollPanel>
+                <!--#endregion-->
+                <!--#region Нет серверов -->
+                <Grid x:Name="LPSP_no_items">
+                    <StackPanel VerticalAlignment="Center" HorizontalAlignment="Center">
+                        <Image Source="/Launcher;component/Media/servers_icon.png"
+                            RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
+                            Height="80"/>
+                        <TextBlock 
+                            x:Name="LPSPNI_value"
+                            Text="Для запуска Byster добавьте хотя бы один клиент игры, нажав на кнопку выше"
+                            Foreground="{DynamicResource textcolor_main}"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            FontSize="18"
+                            TextWrapping="Wrap"
+                            TextAlignment="Center"
+                            Margin="5 5 5 5"/>
+                    </StackPanel>
+                </Grid>
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
+            <!--#region Запуск -->
+            <Grid
+                Grid.Row="2"
+                Grid.ColumnSpan="2"
+                Margin="0 15 0 15 ">
+                <components:CButton
+                    x:Name="launch_button"
+                    Text="Запустить"
+                    Height="50"
+                    Width="250"
+                    BackColor="{DynamicResource green_main}"
+                    HorizontalAlignment="Center"
+                    BorderRadius="10"
+                    FontFamily="{DynamicResource fontfamily_main}"
+                    FontSize="24"
+                    any:HoverHint.Placement="Top"
+                    IsEnabled="False"
+                    MouseLeftButtonDown="launch_button_MouseLeftButtonDown" />
+            </Grid>
+            <!--#endregion-->
         </Grid>
         <!--#endregion-->
         <!--#region Подписки -->
@@ -96,7 +142,7 @@
             <!--#region Фон -->
             <Border
                 Background="{DynamicResource back_second}"
-                CornerRadius="15 0 0 15" />
+                CornerRadius="15 0 0 0" />
             <!--#endregion-->
             <!--#region Пусто -->
             <Grid
@@ -112,7 +158,7 @@
                 </Grid.RowDefinitions>
                 <!--#region Картинка -->
                 <Image
-                    Source="../../Media/no_items_icon.png"
+                    Source="/Launcher;component/Media/no_items_icon.png"
                     Width="110"
                     RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                     Grid.Row="0" />
@@ -135,7 +181,7 @@
             <!--#region Список продуктов -->
             <components:CScrollPanel
                 Opacity="0"
-                Margin="3 3 5 3"
+                Margin="3 3 5 8"
                 x:Name="AP_items"
                 Visibility="Hidden"
                 ScrollStep="304">
@@ -150,7 +196,7 @@
                         <DataTemplate>
                             <mainPage:CSubscriptionItem
                                 Subscription="{Binding}"
-                                Width="220"
+                                Width="230"
                                 Height="290"
                                 Margin="7" />
                         </DataTemplate>
@@ -160,26 +206,6 @@
             <!--#endregion-->
         </Grid>
         <!--#endregion-->
-        <!--#region Запуск -->
-        <Grid
-            Grid.Row="1"
-            Grid.ColumnSpan="2"
-            Margin="15">
-            <components:CButton
-                x:Name="launch_button"
-                Text="Запустить"
-                Height="50"
-                Width="250"
-                BackColor="{DynamicResource green_main}"
-                HorizontalAlignment="Center"
-                BorderRadius="10"
-                FontFamily="{DynamicResource fontfamily_main}"
-                FontSize="24"
-                any:HoverHint.Placement="Top"
-                IsEnabled="False"
-                MouseLeftButtonDown="launch_button_MouseLeftButtonDown"
-                />
-        </Grid>
-        <!--#endregion-->
+        
     </Grid>
 </UserControl>

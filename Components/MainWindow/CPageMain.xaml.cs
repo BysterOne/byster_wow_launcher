@@ -49,6 +49,13 @@ namespace Launcher.Components.MainWindow
             SubscriptionsList
         }
         #endregion
+        #region EPC_Servers
+        public enum EPC_Servers
+        {
+            NoServers,
+            ServersList
+        }
+        #endregion
     }
     #endregion
     /// <summary>
@@ -66,11 +73,13 @@ namespace Launcher.Components.MainWindow
             GProp.LauncherUpdateEvent += ELauncherUpdateEvent;
             GProp.Subscriptions.CollectionChanged += ECollectionChanged;
             GProp.SelectedServerChanged += ESelectedServerChanged;
-        }
+            AppSettings.Instance.Servers.CollectionChanged += EServers_CollectionChanged;
+        }        
 
         #region Переменные
         public static LogBox Pref { get; set; } = new("Main Page");
         private CPanelChanger<EPC_Subscription> PanelChanger { get; set; }
+        private CPanelChanger<EPC_Servers> ServersPanelChanger { get; set; }
         #endregion
 
         #region Обработчики событий
@@ -82,7 +91,7 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #region ECollectionChanged
-        private void ECollectionChanged(object? sender, System.Collections.Specialized.NotifyCollectionChangedEventArgs e)
+        private void ECollectionChanged(object? sender, NotifyCollectionChangedEventArgs e)
         {
             if (e.Action is NotifyCollectionChangedAction.Add || e.Action is NotifyCollectionChangedAction.Remove)
             {
@@ -93,6 +102,9 @@ namespace Launcher.Components.MainWindow
                     _ = PanelChanger.ChangePanel(EPC_Subscription.SubscriptionsList);
             }
         }
+        #endregion
+        #region EServers_CollectionChanged
+        private void EServers_CollectionChanged(object? sender, NotifyCollectionChangedEventArgs e) => CheckServersCollection();
         #endregion
         #region launch_button_MouseLeftButtonDown
         private void launch_button_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) => LaunchCheat();
@@ -194,7 +206,8 @@ namespace Launcher.Components.MainWindow
                         new(EPC_Subscription.NoSubscriptions, AP_empty),
                         new(EPC_Subscription.SubscriptionsList, AP_items)
                     ],
-                    EPC_Subscription.NoSubscriptions
+                    EPC_Subscription.NoSubscriptions,
+                    IsHitTestMonitor: false
                 );
                 PanelChanger.ShowElement += PanelChangerShow;
                 PanelChanger.HideElement += PanelChangerHide;
@@ -204,8 +217,27 @@ namespace Launcher.Components.MainWindow
                     throw new UExcept(EInitialization.FailLoadPanelChanger, $"Ошибка загрузки панели типа {nameof(EPC_Subscription)}", initPanelChanger.Error);
                 }
                 #endregion
+                #region Инициация переключателя панелей
+                ServersPanelChanger = new
+                (
+                    LP_servers_panel,
+                    [
+                        new(EPC_Servers.NoServers, LPSP_no_items),
+                        new(EPC_Servers.ServersList, LPSP_servers)
+                    ],
+                    EPC_Servers.NoServers
+                );
+                ServersPanelChanger.ShowElement += PanelChangerShow;
+                ServersPanelChanger.HideElement += PanelChangerHide;
+                var initServersPanelChanger = await ServersPanelChanger.Init();
+                if (!initServersPanelChanger.IsSuccess)
+                {
+                    throw new UExcept(EInitialization.FailLoadPanelChanger, $"Ошибка загрузки панели типа {nameof(EPC_Servers)}", initServersPanelChanger.Error);
+                }
+                #endregion
                 #region Делаем привязку серверов из настроек
-                LP_servers.SetBinding(ItemsControl.ItemsSourceProperty, new Binding() { Source = AppSettings.Instance.Servers });
+                LP_servers_control.SetBinding(ItemsControl.ItemsSourceProperty, new Binding() { Source = AppSettings.Instance.Servers });
+                _ = CheckServersCollection(false);
                 #endregion
                 #region Загрузка списка ротаций
                 var tryGetSubscriptions = await CApi.GetUserSubscriptions();
@@ -347,7 +379,8 @@ namespace Launcher.Components.MainWindow
         public async Task UpdateAllValues()
         {
             APE_text_block.Text = Dictionary.Translate("На данный момент у Вас нет ротаций. Их можно приобрести в магазине");
-            HoverHint.SetText(LP_addButton, Dictionary.Translate("Добавить клиент WoW"));
+            LPSPNI_value.Text = Dictionary.Translate("Для запуска Byster добавьте хотя бы один клиент игры, нажав на кнопку выше");
+            HoverHint.SetText(LP_addButton, Dictionary.Translate("Добавить клиент игры"));
 
             UpdateLaunchButtonState(null);
         }
@@ -362,6 +395,14 @@ namespace Launcher.Components.MainWindow
 
                 _ = Task.Run(() => LaunchExeHelper.Launch(GProp.SelectedServer));
             }
+        }
+        #endregion
+        #region CheckServersCollection
+        private async Task CheckServersCollection(bool isUseAnimation = true)
+        {
+            var count = AppSettings.Instance.Servers.Count;
+            var newPanel = count is 0 ? EPC_Servers.NoServers : EPC_Servers.ServersList;
+            if (ServersPanelChanger.SelectedPanel != newPanel) await ServersPanelChanger.ChangePanel(newPanel, UseAnimation: isUseAnimation);
         }
         #endregion
         #endregion

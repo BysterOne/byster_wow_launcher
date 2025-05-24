@@ -1,7 +1,11 @@
 ﻿using Cls.Any;
 using Launcher.Any;
+using Launcher.Components.DialogBox;
+using Launcher.Components.MainWindow.Any.PageMain.AddServerDialogBoxAny;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Settings;
+using Launcher.Windows;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -23,7 +27,11 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             Cursor = Cursors.Hand;
             MouseLeftButtonDown += EMouseLeftButtonDown;
             GProp.SelectedServerChanged += ESelectedServerChanged;
-        }      
+
+            this.MouseEnter += EMouseEnter;
+            this.MouseLeave += EMouseLeave;
+        }
+
 
         #region Свойства
         #region IsSelected
@@ -57,42 +65,84 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         private static void OnServerChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var sender = (CServerItem)d;
-            sender.SetServer((CServer)e.NewValue);
+            sender.SetServer();
         }
         #endregion
         #endregion
 
         #region Функции
         #region SetServer
-        private void SetServer(CServer server)
+        private void SetServer()
         {
             #region Ставим иконку
-            border.Background = new ImageBrush() { ImageSource = GStatic.GetServerIcon(server.Icon) };
+            border.Background = new ImageBrush() { ImageSource = GStatic.GetServerIcon(Server.Icon) };
             #endregion
             #region Проверка на выбранный
-            IsSelected = GProp.SelectedServer is not null && GProp.SelectedServer.Id == server.Id;
+            IsSelected = GProp.SelectedServer is not null && GProp.SelectedServer.Id == Server.Id;
             #endregion
-            #region Подсказка
-            HoverHint.SetText(this, server.Name);
+            #region Ставим текст
+            ServerName.Text = Server.Name;
             #endregion
         }
         #endregion
         #region UpdateSelectedView
         public void UpdateSelectedView()
         {
-            var story = new Storyboard();
-            var newColor = IsSelected ? ((SolidColorBrush)Functions.GlobalResources()["orange_main"]).Color : Color.FromArgb(0, 255, 255, 255);
-            var animation = new ColorAnimation(newColor, AnimationHelper.AnimationDuration)
+            var opcityAnim = AnimationHelper.OpacityAnimationStoryBoard(Selection_Background, IsSelected ? 0.2 : 0);
+            opcityAnim.Begin(border, HandoffBehavior.SnapshotAndReplace, true);
+        }
+        #endregion
+        #region ChangeHoverState
+        private void ChangeHoverState()
+        {
+            var storyboard = new Storyboard();
+            var ease = new PowerEase() { EasingMode = EasingMode.EaseInOut };
+
+            var nameFullWidth = this.ActualWidth - 65;
+            var needFreeWidth = (nameFullWidth - ServerName.ActualWidth) - ButtonsPanel.ActualWidth;
+            var newHideOffset = (ServerName.ActualWidth + needFreeWidth) / ServerName.ActualWidth;
+            var newOffset = this.IsMouseOver ? needFreeWidth < 0 ? newHideOffset : 5 : 5;
+
+            var gradientStopAnim = new DoubleAnimation(newOffset, AnimationHelper.AnimationDuration) { EasingFunction = ease };
+            Storyboard.SetTarget(gradientStopAnim, ServerName);
+            Storyboard.SetTargetProperty(gradientStopAnim, new PropertyPath("OpacityMask.GradientStops[1].Offset"));
+            storyboard.Children.Add(gradientStopAnim);
+
+            ButtonsPanel.IsHitTestVisible = this.IsMouseOver;
+            var animationOpacity = AnimationHelper.DoubleAnimation
+            (
+                ButtonsPanel, this.IsMouseOver ? 1 : 0,
+                new PropertyPath(UIElement.OpacityProperty),
+                duration: AnimationHelper.AnimationDuration
+            );
+            storyboard.Children.Add(animationOpacity);
+
+            storyboard.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
+        }
+        #endregion
+        #region RemoveItem
+        private async Task RemoveItem()
+        {
+            var accept = await Main.ShowModal(new BoxSettings
+            (
+                Dictionary.Translate("Удаление"),
+                Dictionary.Translate($"Вы точно хотите удалить данный клиент игры?"),
+                [
+                    new(EResponse.Cancel, Dictionary.Translate("Отмена")),
+                    new(EResponse.Yes, Dictionary.Translate("Да")),
+                ]
+            ));
+
+            if (!accept.IsSuccess || accept.Response is EResponse.Cancel) return;
+
+            _ = Task.Run(() =>
             {
-                EasingFunction = new PowerEase() { EasingMode = EasingMode.EaseInOut }
-            };
-
-            Storyboard.SetTarget(animation, border);
-            Storyboard.SetTargetProperty(animation, new PropertyPath("(Border.BorderBrush).(SolidColorBrush.Color)"));
-
-            story.Children.Add(animation);
-
-            story.Begin(border, HandoffBehavior.SnapshotAndReplace, true);
+                Dispatcher.BeginInvoke(() =>
+                {
+                    AppSettings.Instance.Servers.Remove(Server);
+                    AppSettings.Save();
+                });
+            });
         }
         #endregion
         #endregion
@@ -111,9 +161,32 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             {
                 if (server.Id == Server.Id) IsSelected = true;
                 else IsSelected = false;
-            }          
+            }
+        }
+        #endregion
+        #region EMouseEnter
+        private void EMouseEnter(object sender, MouseEventArgs e) => ChangeHoverState();
+        #endregion
+        #region EMouseLeave
+        private void EMouseLeave(object sender, MouseEventArgs e) => ChangeHoverState();
+        #endregion
+        #region BP_edit_MouseLeftButtonDown
+        private async void BP_edit_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            await Main.ShowModal(new CAddServerDialogBox(), EShowType.EditServer, Server);
+            SetServer();
+        }
+        #endregion
+        #region BP_remove_MouseLeftButtonDown
+        private void BP_remove_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            e.Handled = true;
+            _ = RemoveItem(); 
         }
         #endregion
         #endregion
+
+
     }
 }

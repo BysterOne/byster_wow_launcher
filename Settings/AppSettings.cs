@@ -14,7 +14,7 @@ namespace Launcher.Settings
         public static string CacheFolder { get => Path.Combine(RootFolder, "cache"); }
         public static string TempBin { get => Path.Combine(RootFolder, "tempBin"); }
         public static string SettingsFilePath { get => Path.Combine(RootFolder, "settings.json"); }
-        public static BitmapScalingMode GlobalBitmapScalingMode { get; set; } = BitmapScalingMode.Fant;
+        public static BitmapScalingMode GlobalBitmapScalingMode { get; set; } = BitmapScalingMode.HighQuality;
 
         private static AppSettings? _instance;
 

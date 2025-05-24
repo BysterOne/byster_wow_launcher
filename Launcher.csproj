@@ -23,6 +23,7 @@
 		<None Remove="Media\behind_icon.png" />
 		<None Remove="Media\cart_icon.png" />
 		<None Remove="Media\close_icon.png" />
+		<None Remove="Media\edit_icon.png" />
 		<None Remove="Media\forward_icon.png" />
 		<None Remove="Media\full_size_icon.png" />
 		<None Remove="Media\href-icon.png" />
@@ -52,6 +53,7 @@
 		<None Remove="Media\ServersIcons\server_sirus.png" />
 		<None Remove="Media\ServersIcons\server_warmane.png" />
 		<None Remove="Media\ServersIcons\server_warmane_1.png" />
+		<None Remove="Media\servers_icon.png" />
 		<None Remove="Media\settings_icon.png" />
 		<None Remove="Media\Shop\ClassIcons\any_icon.png" />
 		<None Remove="Media\Shop\ClassIcons\death_knight_icon.png" />
@@ -94,6 +96,7 @@
 	<ItemGroup>
 		<Resource Include="Localizations\untranslatable.json" />
 		<Resource Include="Media\behind_icon.png" />
+		<Resource Include="Media\edit_icon.png" />
 		<Resource Include="Media\forward_icon.png" />
 		<Resource Include="Media\full_size_icon.png" />
 		<Resource Include="Media\href-icon.png" />
@@ -135,6 +138,7 @@
 		<Resource Include="Media\ServersIcons\server_sirus.png" />
 		<Resource Include="Media\ServersIcons\server_warmane.png" />
 		<Resource Include="Media\ServersIcons\server_warmane_1.png" />
+		<Resource Include="Media\servers_icon.png" />
 		<Resource Include="Media\settings_icon.png" />
 		<Resource Include="Media\Shop\ClassIcons\any_icon.png" />
 		<Resource Include="Media\Shop\ClassIcons\death_knight_icon.png" />

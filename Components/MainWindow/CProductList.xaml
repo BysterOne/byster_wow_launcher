@@ -36,7 +36,8 @@
                 VirtualizingPanel.VirtualizationMode="Recycling">
                 <ItemsControl.ItemsPanel>
                     <ItemsPanelTemplate>
-                        <virt:VirtualizingWrapPanel />
+                        <!--<virt:VirtualizingWrapPanel />-->
+                        <WrapPanel />
                     </ItemsPanelTemplate>
                 </ItemsControl.ItemsPanel>
                 <ItemsControl.ItemTemplate>

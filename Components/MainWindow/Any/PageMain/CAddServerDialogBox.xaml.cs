@@ -5,8 +5,10 @@ using Cls.Exceptions;
 using Launcher.Any;
 using Launcher.Any.UDialogBox;
 using Launcher.Cls;
+using Launcher.Components.MainWindow.Any.PageMain.AddServerDialogBoxAny;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Settings;
+using Launcher.Settings.Enums;
 using Launcher.Windows;
 using Launcher.Windows.AnyMain.Enums;
 using Microsoft.Win32;
@@ -18,6 +20,20 @@ using System.Windows.Media.Animation;
 
 namespace Launcher.Components.MainWindow.Any.PageMain
 {
+    namespace AddServerDialogBoxAny
+    {
+        public enum EShowType
+        {
+            AddServer, 
+            EditServer,
+        }
+
+        public enum EShow
+        {
+            IncorrectArguments,
+        }
+    }
+
     /// <summary>
     /// Логика взаимодействия для CAddServerDialogBox.xaml
     /// </summary>
@@ -37,6 +53,8 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         private TaskCompletionSource<EDialogResponse> TaskCompletionSource { get; set; } = new();
         private List<CFilterChanger> IconsChangers { get; set; } = [];
         private CFilterChanger SelectedIcon { get; set; }
+        private EShowType ShowType { get; set; } = EShowType.AddServer;
+        private CServer Server { get; set; }
         #endregion
 
         #region Функции
@@ -49,6 +67,16 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             #region try
             try
             {
+                #region Получение параметров
+                EShowType? showType = pars.Length > 0 ? pars[0] is EShowType ? (EShowType)pars[0] : null : null;
+                CServer? server = pars.Length > 1 ? pars[1] is CServer se ? se : null : null;
+                if (showType is not null && showType is EShowType.EditServer)
+                {
+                    if (server is null) throw new UExcept(EShow.IncorrectArguments, $"Для {EShowType.EditServer} типа требуется параметр типа {typeof(CServer).Name}");
+                    ShowType = EShowType.EditServer;
+                    Server = server;
+                }
+                #endregion
                 #region Появление окна
                 var fadeInMiddle = AnimationHelper.OpacityAnimationStoryBoard(middleGrid, 1);
                 var fadeIn = AnimationHelper.OpacityAnimationStoryBoard(this, 1);
@@ -60,6 +88,14 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 #endregion
                 #region Обновление текстов
                 await UpdateAllValues();
+                #endregion
+
+                #region Если обновление
+                if (ShowType is EShowType.EditServer)
+                {
+                    MGC_server_name.Text = Server.Name;
+                    MGC_path.Text = Server.PathToExe;
+                }
                 #endregion
 
                 return new(await TaskCompletionSource.Task);
@@ -135,34 +171,47 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 MGCI_icons_panel.Children.Add(changer);
             }
 
-            SelectedIcon = IconsChangers[0];
+            SelectedIcon = ShowType is EShowType.EditServer && Server is not null ? IconsChangers.First(x => (EServerIcon)x.Value == Server.Icon) : IconsChangers[0];
             SelectedIcon.IsActive = true;
         }
         #endregion
-        #region AddServer
-        private void AddServer(string? name, string? path, EServerIcon? icon)
+        #region AddOrEditServer
+        private void AddOrEditServer(string? name, string? path, EServerIcon? icon)
         {
             #region Проверки
             if (String.IsNullOrWhiteSpace(name)) { Main.Notify(Dictionary.Translate("Укажите название клиента")); return; }
             if (String.IsNullOrWhiteSpace(path)) { Main.Notify(Dictionary.Translate("Укажите путь к wow.exe")); return; }
             if (!File.Exists(path)) { Main.Notify(Dictionary.Translate("Выбранный файл не найден")); return; }            
             if (icon is null) { Main.Notify(Dictionary.Translate("Выберите иконку из доступных")); return; }
-            if (AppSettings.Instance.Servers.Any(x => x.PathToExe == path)) { Main.Notify(Dictionary.Translate("Выбранный клиент уже добавлен")); return; }
+            if (ShowType is EShowType.AddServer && AppSettings.Instance.Servers.Any(x => x.PathToExe == path)) { Main.Notify(Dictionary.Translate("Выбранный клиент уже добавлен")); return; }
             #endregion
             #region Сохранение
-            var server = new CServer()
+            if (ShowType is EShowType.AddServer)
             {
-                Id = Guid.NewGuid().ToString(),
-                Name = name!,
-                PathToExe = path!,
-                Icon = (EServerIcon)icon!
-            };
-            AppSettings.Instance.Servers.Add(server);
-            AppSettings.Save();
-            #endregion
-            #region Выбор нового сервера как основного
-            GProp.SelectedServer = server;
-            #endregion
+                var server = new CServer()
+                {
+                    Id = Guid.NewGuid().ToString(),
+                    Name = name!,
+                    PathToExe = path!,
+                    Icon = (EServerIcon)icon!
+                };
+                AppSettings.Instance.Servers.Add(server);
+                AppSettings.Save();
+
+                GProp.SelectedServer = server;
+            }
+            else
+            {
+                var p = AppSettings.Instance.Servers.FirstOrDefault(x => x.Id == Server.Id);
+                if (p is not null)
+                {
+                    p.Name = name!;
+                    p.PathToExe = path!;
+                    p.Icon = (EServerIcon)icon!;
+                    AppSettings.Save();
+                }                
+            }
+            #endregion            
             #region Скрытие
             TaskCompletionSource.SetResult(EDialogResponse.Ok);
             #endregion
@@ -171,7 +220,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         #region UpdateAllValues
         public async Task UpdateAllValues()
         {
-            MGH_value.Text = Dictionary.Translate("Добавление клиента");
+            MGH_value.Text = ShowType is EShowType.AddServer ? Dictionary.Translate("Добавление клиента") : Dictionary.Translate("Редактирование клиента");
             MGC_server_name.Placeholder = Dictionary.Translate("Название");
             MGC_path.Text = Dictionary.Translate("Путь к WoW.exe");
             MGCI_header.Text = Dictionary.Translate("Выберите иконку");
@@ -214,7 +263,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         #endregion
         #region MGC_save_MouseLeftButtonDown
         private void MGC_save_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => 
-            AddServer
+            AddOrEditServer
             (
                 MGC_server_name.Text.Trim(),
                 MGC_path.Text.Trim(),

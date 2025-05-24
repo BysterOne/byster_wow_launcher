@@ -56,9 +56,9 @@ namespace Launcher.Windows.AnyMain.Enums
 
     public enum EServerIcon
     {
-        Sirus,
-        Circle,
         Warmane,
+        Sirus,
+        Circle,        
         WarmaneDuplicate
     }
 }

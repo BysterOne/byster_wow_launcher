@@ -15,8 +15,7 @@
                         x:Name="scroll_viewer"
                         VerticalScrollBarVisibility="Auto"
                         HorizontalScrollBarVisibility="Auto"
-                        CanContentScroll="True"
-                        ScrollViewer.IsDeferredScrollingEnabled="True">
+                        CanContentScroll="True">
                         <ContentPresenter
                             Content="{TemplateBinding Content}" />
                     </ScrollViewer>

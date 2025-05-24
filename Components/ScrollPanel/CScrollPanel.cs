@@ -75,10 +75,13 @@ namespace Launcher.Components
             DefaultStyleKeyProperty.OverrideMetadata(typeof(CScrollPanel), new FrameworkPropertyMetadata(typeof(CScrollPanel)));
         }
 
-        #region Компоненты
+        #region Переменные
         private ScrollViewer? _scrollViewer;
         private ScrollBar? _scrollBar;
         private double _targetOffset;
+        private bool _syncFromScroll;
+        private bool _syncFromAnim;
+        private double pxPerDelta = 80;
         #endregion
 
         #region Свойства
@@ -121,9 +124,18 @@ namespace Launcher.Components
         {
             if (d is not CScrollPanel p || p._scrollViewer is null) return;
 
+            if (p._syncFromScroll) return;
+
+            p._syncFromAnim = true;
+
             double val = (double)e.NewValue;
-            if (p.Orientation == ScrollOrientation.Vertical) p._scrollViewer.ScrollToVerticalOffset(val);
-            else p._scrollViewer.ScrollToHorizontalOffset(val);
+
+            if (p.Orientation == ScrollOrientation.Vertical)
+                p._scrollViewer.ScrollToVerticalOffset(val);
+            else
+                p._scrollViewer.ScrollToHorizontalOffset(val);
+
+            p._syncFromAnim = false;
         }
         #endregion
         #region Orientation
@@ -163,6 +175,7 @@ namespace Launcher.Components
             {
                 _scrollViewer.MouseEnter -= OnScrollViewerMouseEnter;
                 _scrollViewer.MouseLeave -= OnScrollViewerMouseLeave;
+                _scrollViewer.ScrollChanged -= OnScrollViewerScrollChanged;
             }
 
             _scrollViewer = GetTemplateChild("scroll_viewer") as ScrollViewer;
@@ -171,6 +184,7 @@ namespace Launcher.Components
             {
                 _scrollViewer.MouseEnter += OnScrollViewerMouseEnter;
                 _scrollViewer.MouseLeave += OnScrollViewerMouseLeave;
+                _scrollViewer.ScrollChanged += OnScrollViewerScrollChanged;
             }
 
             UpdateOrientation();
@@ -182,6 +196,8 @@ namespace Launcher.Components
             if (_scrollViewer == null) return;
 
             var sb = new Storyboard { FillBehavior = FillBehavior.HoldEnd };
+
+            Debug.WriteLine($"Scroll to: {to}");
 
             var anim = new DoubleAnimation
             {
@@ -214,9 +230,64 @@ namespace Launcher.Components
                 _scrollViewer.VerticalScrollBarVisibility = ScrollBarVisibility.Disabled;
                 _scrollBar = GetScrollBar(_scrollViewer, System.Windows.Controls.Orientation.Horizontal);
             }
+            HookThumbEvents();
 
             if (_scrollBar != null) _scrollBar.Opacity = 0;
             _targetOffset = 0;
+        }
+        #endregion
+        #region GetScrollBar
+        private static ScrollBar? GetScrollBar(DependencyObject? parent, Orientation orientation)
+        {
+            if (parent == null) return null;
+
+            if (parent is FrameworkElement fe) fe.ApplyTemplate();
+
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+
+                if (child is ScrollBar sb && sb.Orientation == orientation)
+                    return sb;
+
+                var result = GetScrollBar(child, orientation);
+                if (result != null) return result;
+            }
+
+            return null;
+        }
+        #endregion
+        #region FindThumb
+        private static Thumb? FindThumb(DependencyObject parent)
+        {
+            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            {
+                var child = VisualTreeHelper.GetChild(parent, i);
+                if (child is Thumb t) return t;
+
+                var found = FindThumb(child);
+                if (found != null) return found;
+            }
+            return null;
+        }
+        #endregion
+        #region HookThumbEvents
+        private void HookThumbEvents()
+        {
+            if (_scrollBar == null) return;
+
+            _scrollBar.RemoveHandler(Thumb.DragCompletedEvent,
+                new DragCompletedEventHandler(OnThumbDragCompleted));
+
+            if (VisualTreeHelper.GetChildrenCount(_scrollBar) == 0)
+                _scrollBar.ApplyTemplate();
+
+            Thumb? thumb = FindThumb(_scrollBar);
+            if (thumb != null)
+            {
+                thumb.AddHandler(Thumb.DragCompletedEvent,
+                    new DragCompletedEventHandler(OnThumbDragCompleted), true);
+            }
         }
         #endregion
         #endregion
@@ -249,14 +320,18 @@ namespace Launcher.Components
             return offset - (int)(offset / step) * step;
         }
         #endregion
+        #region ToNextStep
+        private static double ToNextStep(double step, double offset)
+        {
+            return offset - ((int)(offset / step) + 1) * step;
+        }
+        #endregion
         #region OnPreviewMouseWheel
         protected override void OnPreviewMouseWheel(MouseWheelEventArgs e)
         {
             if (_scrollViewer == null) return;
-
             e.Handled = true;
 
-            const double pxPerDelta = 80;
             double toLastStep = ToLastStep(ScrollStep.Value, _targetOffset);
             double delta = 
                 ScrollStep.IsAuto ?
@@ -284,27 +359,51 @@ namespace Launcher.Components
                     _scrollViewer.ScrollableWidth);
             }
 
-            Debug.WriteLine($"{e.Delta} → {_targetOffset}");
+            AnimateToOffset(_targetOffset, 150);
+        }
+        #endregion        
+        #region OnThumbDragCompleted
+        private void OnThumbDragCompleted(object? sender, DragCompletedEventArgs e)
+        {
+            if (_scrollViewer == null) return;
+            if (ScrollStep.IsAuto) return;
+
+            double currentOffset =
+                Orientation == ScrollOrientation.Vertical ?
+                _scrollViewer.VerticalOffset :
+                _scrollViewer.HorizontalOffset;
+
+            double toLastStep = ToLastStep(ScrollStep.Value, currentOffset);
+            double toNextStep = ToNextStep(ScrollStep.Value, currentOffset);
+            var delta = Math.Abs(toNextStep) < toLastStep ? toNextStep : toLastStep;
+            double newTargetOffset = currentOffset - delta;
+
+            double limit = Orientation == ScrollOrientation.Vertical
+                ? _scrollViewer.ScrollableHeight
+                : _scrollViewer.ScrollableWidth;
+
+            if (currentOffset == limit) return;
+            _targetOffset = Math.Clamp(newTargetOffset, 0, limit);
+            
+
             AnimateToOffset(_targetOffset, 150);
         }
         #endregion
-        #region GetScrollBar
-        private static ScrollBar? GetScrollBar(DependencyObject? parent, Orientation orientation)
+        #region OnScrollViewerScrollChanged
+        private void OnScrollViewerScrollChanged(object? sender, ScrollChangedEventArgs e)
         {
-            if (parent == null) return null;
+            if (_syncFromAnim) return;
 
-            for (int i = 0; i < VisualTreeHelper.GetChildrenCount(parent); i++)
+            double offset = Orientation == ScrollOrientation.Vertical
+                ? e.VerticalOffset
+                : e.HorizontalOffset;
+
+            if (!AnimationOffset.Equals(offset))
             {
-                var child = VisualTreeHelper.GetChild(parent, i);
-
-                if (child is ScrollBar sb && sb.Orientation == orientation)
-                    return sb;
-
-                var result = GetScrollBar(child, orientation);
-                if (result != null) return result;
+                _syncFromScroll = true;
+                SetCurrentValue(AnimationOffsetProperty, offset);
+                _syncFromScroll = false;
             }
-
-            return null;
         }
         #endregion
         #endregion

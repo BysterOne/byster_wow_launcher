@@ -85,7 +85,7 @@
                 Grid.Row="1"
                 Width="300"
                 Margin="15 5 15 15">
-                <!--#region Название сервер -->
+                <!--#region Название сервера -->
                 <components:CTextInput
                     x:Name="MGC_server_name"
                     BackColor="#19FFFFFF"

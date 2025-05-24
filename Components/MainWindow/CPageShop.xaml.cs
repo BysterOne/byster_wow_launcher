@@ -232,6 +232,23 @@ namespace Launcher.Components.MainWindow
         {
             MPBP_buy_button.Text = Dictionary.Translate($"К оплате");
             MPBP_cart.Text = Dictionary.Translate($"Корзина");
+
+            #region Типы
+            var types = FP_stack_panel.Children.OfType<CFilterChanger>().Where(x => x.Value.GetType() == typeof(ERotationType));
+            foreach (var type in types) type.Text = GStatic.GetRotationTypeName((ERotationType)type.Value);
+            #endregion
+            #region Набор
+            var bundle = FP_stack_panel.Children.OfType<CFilterChanger>().FirstOrDefault(x => x.Value is EProductsType.Bundle);
+            if (bundle is not null) bundle.Text = Dictionary.Translate("Набор");
+            #endregion
+            #region Классы
+            var classes = FP_stack_panel.Children.OfType<CFilterChanger>().Where(x => x.Value.GetType() == typeof(ERotationClass));
+            foreach (var class_v in classes)
+                if ((ERotationClass)class_v.Value is ERotationClass.Any)
+                    class_v.Text = Dictionary.Translate("Все");
+                else
+                    class_v.Text = GStatic.GetRotationClassName((ERotationClass)class_v.Value);
+            #endregion
         }
         #endregion
         #endregion

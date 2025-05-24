@@ -109,7 +109,6 @@ namespace Launcher.Windows
             await Task.WhenAll(CopyRegToFile(), CopyConfigFolderAndClearAppData());
             #endregion
 
-
             #region Авторизация, если данные сохранены
             if
             (

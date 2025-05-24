@@ -6,44 +6,178 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:settings="clr-namespace:Launcher.Settings"
     xmlns:local="clr-namespace:Launcher.Components.MainWindow.Any.PageMain"
+    xmlns:components="clr-namespace:Launcher.Components"
     mc:Ignorable="d"
     d:Height="60"
-    d:Width="60">
+    d:Width="200">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
                     Source="/Styles/Global.xaml" />
             </ResourceDictionary.MergedDictionaries>
+            <!--#region Кнопки редактирования/удаления -->
+            <Style
+                x:Key="ButtonStyle"
+                TargetType="{x:Type components:CButton}">
+                <Setter
+                    Property="Width"
+                    Value="36" />
+                <Setter
+                    Property="BackColor"
+                    Value="#0CFFFFFF" />
+                <Setter
+                    Property="Text"
+                    Value="" />
+                <Setter
+                    Property="Height"
+                    Value="36" />
+                <Setter
+                    Property="Padding"
+                    Value="0" />
+                <Setter
+                    Property="BorderRadius"
+                    Value="10" />
+                <Setter
+                    Property="IconHeight"
+                    Value="24" />
+                <Setter
+                    Property="IconWidth"
+                    Value="24" />
+                <Setter
+                    Property="Margin"
+                    Value="5 0 2 0" />
+
+                <!--Text=""
+BorderRadius="8"
+Height="40"
+Width="40"
+BackColor="Transparent"
+Margin="5 0 5 0"-->
+            </Style>
+            <!--#endregion-->
         </ResourceDictionary>
     </UserControl.Resources>
     <Grid>
+        <!--#region Фон -->
         <Border
-            CornerRadius="35"
-            BorderThickness="3"
-            x:Name="border"
-            RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}">
-            <Border.BorderBrush>
-                <SolidColorBrush x:Name="border_brush"
-                    Color="#00000000"
-                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}" />
-            </Border.BorderBrush>
-            <Border.OpacityMask>
-                <VisualBrush>
-                    <VisualBrush.Visual>
-                        <Border
-                            Width="60"
-                            Height="60"
-                            CornerRadius="35"
-                            Background="Black" />
-                    </VisualBrush.Visual>
-                </VisualBrush>
-            </Border.OpacityMask>
+            Background="#0CFFFFFF"
+            CornerRadius="12" />
+        <!--#endregion-->
+
+        <!--#region Фон выделения -->
+        <Border
+            x:Name="Selection_Background"
+            CornerRadius="12"
+            Opacity="0">
             <Border.Background>
-                <ImageBrush
-                    ImageSource="/Media/Shop/ClassIcons/mage_icon.png"
-                    RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"/>
+                <LinearGradientBrush>
+                    <GradientStop
+                        Color="#ffba03"
+                        Offset="0" />
+                    <GradientStop
+                        Color="Red"
+                        Offset="1" />
+                </LinearGradientBrush>
             </Border.Background>
         </Border>
+        <!--#endregion-->
+
+        <!--#region Основной блок -->
+        <Grid
+            Margin="5">
+            <!--#region Разметка -->
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition />
+                <ColumnDefinition
+                    Width="Auto" />
+                <ColumnDefinition
+                    Width="Auto" />
+            </Grid.ColumnDefinitions>
+            <!--#endregion-->
+
+            <!--#region Иконка -->
+            <Border
+                Width="50"
+                Height="50"
+                CornerRadius="35"
+                x:Name="border"
+                BorderThickness="3"
+                RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}">
+                <Border.OpacityMask>
+                    <VisualBrush>
+                        <VisualBrush.Visual>
+                            <Border
+                                Width="50"
+                                Height="50"
+                                CornerRadius="35"
+                                Background="Black" />
+                        </VisualBrush.Visual>
+                    </VisualBrush>
+                </Border.OpacityMask>
+                <Border.Background>
+                    <ImageBrush
+                        ImageSource="/Media/Shop/ClassIcons/mage_icon.png"
+                        RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}" />
+                </Border.Background>
+            </Border>
+            <!--#endregion-->
+            <!--#region Название -->
+            <TextBlock
+                x:Name="ServerName"
+                Grid.Column="1"
+                d:Text="Warrior"
+                HorizontalAlignment="Left"
+                FontFamily="{DynamicResource fontfamily_main}"
+                Foreground="{DynamicResource textcolor_main}"
+                VerticalAlignment="Center"
+                Margin="10 0 5 0"
+                FontSize="20"
+                TextTrimming="CharacterEllipsis">
+                <TextBlock.OpacityMask>
+                    <LinearGradientBrush>
+                        <GradientStop
+                            Color="White"
+                            Offset="0" />
+                        <GradientStop
+                            x:Name="TextBlock_GradientStop"
+                            Color="Transparent"
+                            Offset="5" />
+                    </LinearGradientBrush>
+                </TextBlock.OpacityMask>
+            </TextBlock>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+        <!--#region Панель кнопок -->
+        <Grid
+            x:Name="ButtonsPanel"
+            Opacity="0"
+            IsHitTestVisible="False"
+            HorizontalAlignment="Right">
+            <StackPanel
+                Margin="0 0 8 0"
+                Orientation="Horizontal">
+                <!--#region Кнопка редактирования -->
+                <components:CButton
+                    Style="{DynamicResource ButtonStyle}"
+                    Grid.Column="2"
+                    x:Name="BP_edit"
+                    MouseLeftButtonDown="BP_edit_MouseLeftButtonDown"
+                    Icon="/Launcher;component/Media/edit_icon.png" />
+                <!--#endregion-->
+                <!--#region Кнопка удаления -->
+                <components:CButton
+                    Style="{DynamicResource ButtonStyle}"
+                    Grid.Column="3"
+                    x:Name="BP_remove"
+                    MouseLeftButtonDown="BP_remove_MouseLeftButtonDown"
+                    Icon="/Launcher;component/Media/remove_icon.png" />
+                <!--#endregion-->
+            </StackPanel>
+        </Grid>
+        <!--#endregion-->
     </Grid>
 </UserControl>

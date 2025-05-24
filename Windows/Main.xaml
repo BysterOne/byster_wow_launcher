@@ -144,11 +144,11 @@
                     <!--#region Лого -->
                     <Image
                         RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
-                        MaxWidth="200"
+                        MaxWidth="250"
                         MaxHeight="70"
                         HorizontalAlignment="Left"
-                        Source="/Media/logo_full.png"
-                        Margin="18 0 20 0" />
+                        Source="/Launcher;component/Media/logo_full.png"
+                        Margin="18 0 0 0" />
                     <!--#endregion-->
                     <!--#region Главная -->
                     <components:CMainPageButton

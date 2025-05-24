@@ -147,8 +147,8 @@
             <Image
                 RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                 MaxWidth="200"
-                MaxHeight="80"
-                Source="/Media/logo_full.png"
+                MaxHeight="100"
+                Source="/Launcher;component/Media/logo.png"
                 Margin="0 0 0 25" />
             <!--#endregion-->
             <!--#region Логин -->
@@ -198,8 +198,8 @@
             <Image
                 RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                 MaxWidth="200"
-                MaxHeight="80"
-                Source="/Media/logo_full.png"
+                MaxHeight="100"
+                Source="/Launcher;component/Media/logo.png"
                 Margin="0 0 0 25" />
             <!--#endregion-->
             <!--#region Логин -->

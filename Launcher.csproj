@@ -29,6 +29,7 @@
 		<None Remove="Media\href-icon.png" />
 		<None Remove="Media\in_development_icon.png" />
 		<None Remove="Media\language.png" />
+		<None Remove="Media\logo.png" />
 		<None Remove="Media\logo_full.png" />
 		<None Remove="Media\Main\folder_icon.png" />
 		<None Remove="Media\minimize_icon.png" />
@@ -101,6 +102,7 @@
 		<Resource Include="Media\full_size_icon.png" />
 		<Resource Include="Media\href-icon.png" />
 		<Resource Include="Media\in_development_icon.png" />
+		<Resource Include="Media\logo.png" />
 		<Resource Include="Media\Main\folder_icon.png" />
 	</ItemGroup>
 

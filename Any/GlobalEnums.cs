@@ -24,4 +24,26 @@ namespace Launcher.Any.GlobalEnums
         Rub,
         Usd
     }
+
+    [Flags]
+    public enum EUserPermissions
+    {        
+        None,
+        ToggleEncrypt,
+        AdminSiteAccess,
+        CanToggleCompilation,
+        ClosedServer,
+        CanToggleVmprotect,
+        ExternalDeveloper,
+        DoNotBan,
+        Tester
+    }
+
+    public enum EBranch
+    {
+        Master,
+        Dev,
+        Test,
+        NewThread
+    }
 }

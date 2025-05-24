@@ -55,26 +55,15 @@
             </Setter.Value>
         </Setter>
     </Style>
-    <Style x:Key="PayTextBlockHeaderStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="TextWrapping" Value="NoWrap"/>
-        <Setter Property="TextTrimming" Value="None"/>
-        <Setter Property="FontFamily" Value="{DynamicResource fontfamily_main}"/>
-        <Setter Property="Foreground" Value="{DynamicResource textcolor_main}"/>
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="FontWeight" Value="Normal"/>
-        <Setter Property="Margin" Value="10 9 10 9"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-    </Style>
-    <Style x:Key="PayTextBlockValueStyle" TargetType="{x:Type TextBlock}">
-        <Setter Property="TextWrapping" Value="NoWrap"/>
-        <Setter Property="Grid.Column" Value="1"/>
-        <Setter Property="FontFamily" Value="{DynamicResource fontfamily_main}"/>
-        <Setter Property="Foreground" Value="{DynamicResource textcolor_main}"/>
-        <Setter Property="FontSize" Value="20"/>
-        <Setter Property="HorizontalAlignment" Value="Center"/>
-        <Setter Property="VerticalAlignment" Value="Center"/>
-    </Style>
-    <Style x:Key="SettingsButtonStyle" TargetType="{x:Type Components:CButton}">       
+    <Style
+        x:Key="PayTextBlockHeaderStyle"
+        TargetType="{x:Type TextBlock}">
+        <Setter
+            Property="TextWrapping"
+            Value="NoWrap" />
+        <Setter
+            Property="TextTrimming"
+            Value="None" />
         <Setter
             Property="FontFamily"
             Value="{DynamicResource fontfamily_main}" />
@@ -84,11 +73,96 @@
         <Setter
             Property="FontSize"
             Value="20" />
-        <Setter Property="BorderRadius" Value="8" />
-        <Setter Property="BackColor"
+        <Setter
+            Property="FontWeight"
+            Value="Normal" />
+        <Setter
+            Property="Margin"
+            Value="5 9 10 9" />
+        <Setter
+            Property="VerticalAlignment"
+            Value="Center" />
+    </Style>
+    <Style
+        x:Key="PayTextBlockValueStyle"
+        TargetType="{x:Type TextBlock}">
+        <Setter
+            Property="TextWrapping"
+            Value="NoWrap" />
+        <Setter
+            Property="Grid.Column"
+            Value="1" />
+        <Setter
+            Property="FontFamily"
+            Value="{DynamicResource fontfamily_main}" />
+        <Setter
+            Property="Foreground"
+            Value="{DynamicResource textcolor_main}" />
+        <Setter
+            Property="FontSize"
+            Value="20" />
+        <Setter
+            Property="HorizontalAlignment"
+            Value="Center" />
+        <Setter
+            Property="VerticalAlignment"
+            Value="Center" />
+    </Style>
+    <Style
+        x:Key="SettingsButtonStyle"
+        TargetType="{x:Type Components:CButton}">
+        <Setter
+            Property="FontFamily"
+            Value="{DynamicResource fontfamily_main}" />
+        <Setter
+            Property="Foreground"
+            Value="{DynamicResource textcolor_main}" />
+        <Setter
+            Property="FontSize"
+            Value="20" />
+        <Setter
+            Property="BorderRadius"
+            Value="8" />
+        <Setter
+            Property="BackColor"
             Value="#11FFFFFF" />
-        <Setter Property="Width" Value="200" />
-        <Setter Property="Margin" Value="8 10" />
+        <Setter
+            Property="Width"
+            Value="204" />
+        <Setter
+            Property="Margin"
+            Value="4 10" />
 
+    </Style>
+    <Style
+        x:Key="CSettingsListStyle"
+        TargetType="{x:Type Components:CList}">
+        <Setter
+            Property="VerticalAlignment"
+            Value="Center" />
+        <Setter
+            Property="HorizontalAlignment"
+            Value="Right" />
+        <Setter
+            Property="Width"
+            Value="250" />
+        <Setter
+            Property="FontFamily"
+            Value="{DynamicResource fontfamily_main}" />
+        <Setter
+            Property="FontSize" Value="18" />
+        <Setter
+            Property="Background"
+            Value="#FF2B2E35" />
+        <Setter
+            Property="SelectorColor"
+            Value="#660B0413" />
+        <Setter
+            Property="BorderRadius" Value="8" />
+        <Setter
+            Property="ElementHeight" Value="44" />
+        <Setter
+            Property="IsOpened"
+            Value="False" />
     </Style>
 </ResourceDictionary>

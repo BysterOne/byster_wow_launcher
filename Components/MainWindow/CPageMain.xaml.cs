@@ -5,6 +5,7 @@ using Cls.Exceptions;
 using Launcher.Any;
 using Launcher.Any.LaunchExeHelperAny;
 using Launcher.Api;
+using Launcher.Api.Models;
 using Launcher.Cls;
 using Launcher.Components.DialogBox;
 using Launcher.Components.MainWindow.Any.PageMain;
@@ -16,6 +17,7 @@ using Launcher.Settings;
 using Launcher.Settings.Enums;
 using Launcher.Windows;
 using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Data;
@@ -103,22 +105,29 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #region ELauncherUpdateEvent
-        private async Task ELauncherUpdateEvent(ELauncherUpdate updates)
+        private async Task ELauncherUpdateEvent(ELauncherUpdate updates, object? data = null)
         {
-            var _proc = Pref.CloneAs(Functions.GetMethodName()).AddTrace($"{ELauncherUpdate.Subscriptions}");
+            var _proc = Pref.CloneAs(Functions.GetMethodName()).AddTrace($"{ELauncherUpdate.Subscriptions}");            
 
             if (updates.HasFlag(ELauncherUpdate.Subscriptions))
             {
+                #region Если есть данные
+                if (data is List<Subscription> subs)
+                {
+                    GProp.UpdateSubscriptions(subs);
+                    return;
+                }
+                #endregion
+                #region Если надо загрузить
                 var tryGetSubscriptions = await CApi.GetUserSubscriptions();
                 if (!tryGetSubscriptions.IsSuccess)
                 {
                     var except = new UExcept(EInitialization.FailLoadSubscriptions, $"Ошибка загрузки ротаций пользователей", tryGetSubscriptions.Error);
                     Functions.Error(except, except.Error, "Ошибка загрузки ротаций", _proc);
+                    return;
                 }
-                else
-                {
-                    GProp.UpdateSubscriptions(tryGetSubscriptions.Response);
-                }
+                GProp.UpdateSubscriptions(tryGetSubscriptions.Response);
+                #endregion
             }
         }
         #endregion
@@ -234,7 +243,7 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #region UpdateLaunchButtonState
-        private async void UpdateLaunchButtonState(LaunchItem? item)
+        private void UpdateLaunchButtonState(LaunchItem? item)
         {
             if (GProp.SelectedServer is not null)
             {
@@ -300,7 +309,7 @@ namespace Launcher.Components.MainWindow
                             }
                             #endregion
                             #region Разрешаем заново запустить
-                            await Task.Run(() =>
+                            _ = Task.Run(() =>
                             {
                                 Thread.Sleep(2000);
                                 Dispatcher.Invoke(() =>

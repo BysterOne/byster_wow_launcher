@@ -3,34 +3,32 @@ using Cls.Any;
 using Cls.Enums;
 using Cls.Errors;
 using Cls.Exceptions;
-using Launcher.Any;
 using Launcher.Api;
 using Launcher.Api.Models;
 using Launcher.Cls;
 using Launcher.Settings;
 using Launcher.Windows.AnyLoader.Errors;
+using Launcher.Windows.LoaderAny;
+using Microsoft.Win32;
+using Newtonsoft.Json;
 using NLog;
 using NLog.Config;
-using System;
-using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Reflection;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
-using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Animation;
-using System.Windows.Media.Imaging;
 using System.Xml;
 
 namespace Launcher.Windows
 {
+    namespace LoaderAny
+    {
+        public enum ELoader
+        {
+            FailCopyRegToFile,
+            FailCopyConfigFolderAndClear,
+        }
+    }
     /// <summary>
     /// Логика взаимодействия для Loader.xaml
     /// </summary>
@@ -105,10 +103,15 @@ namespace Launcher.Windows
                 MessageBox.Show("Ошибка инициализации. Приложение будет закрыто.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
                 Application.Current.Shutdown();
             }
-            #endregion           
+            #endregion
+
+            #region Задачи
+            await Task.WhenAll(CopyRegToFile(), CopyConfigFolderAndClearAppData());
+            #endregion
+
 
             #region Авторизация, если данные сохранены
-            if 
+            if
             (
                 !String.IsNullOrWhiteSpace(AppSettings.Instance.Login) &&
                 !String.IsNullOrWhiteSpace(AppSettings.Instance.Password)
@@ -182,6 +185,106 @@ namespace Launcher.Windows
                     }
                 };
             }
+        }
+        #endregion
+        #region CopyRegToFile
+        private async Task CopyRegToFile()
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось скопировать данные с реестра";
+
+            #region try
+            try
+            {
+                using (RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"Software\Byster"))
+                {
+                    if (key is not null)
+                    {
+                        #region Собираем данные
+                        var dict = new Dictionary<string, object?>();
+                        foreach (var valueName in key.GetValueNames()) dict[valueName] = key.GetValue(valueName);
+                        var json = JsonConvert.SerializeObject(dict, Newtonsoft.Json.Formatting.Indented);
+                        #endregion
+                        #region Сохраняем
+                        var pathToSave = Path.Combine(AppSettings.RootFolder, "reg_config.json");
+                        Directory.CreateDirectory(AppSettings.RootFolder);
+                        await File.WriteAllTextAsync(pathToSave, json);
+                        #endregion
+                        #region Удаляем раздел
+                        using (RegistryKey? parent = Registry.CurrentUser.OpenSubKey("Software", writable: true))
+                        {
+                            if (parent is not null && parent.OpenSubKey("Byster") is not null)
+                            {
+                                parent.DeleteSubKeyTree("Byster");
+                            }
+                        }
+                        #endregion
+                    }
+                }
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                var glerror = new UError(ELoader.FailCopyRegToFile, _failinf, ex.Error);
+                Functions.Error(ex, glerror, glerror.Message, _proc);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
+                var glerror = new UError(ELoader.FailCopyRegToFile, $"{_failinf}: исключение", uerror);
+                Functions.Error(ex, glerror, glerror.Message, _proc);
+            }
+            #endregion
+        }
+        #endregion
+        #region CopyConfigFolderAndClearAppData
+        private async Task CopyConfigFolderAndClearAppData()
+        {
+            await Task.Run(() => { return; });
+
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось скопировать папку конфига и очистить другие папки";
+
+            #region try
+            try
+            {
+                var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterConfig");
+                var newConfigPath = Path.Combine(AppSettings.RootFolder, "config");
+                var mediaPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterImages");
+
+                #region Копируем и удаляем конфиг папку
+                if (Directory.Exists(configPath))
+                {
+                    Functions.CopyDirectory(configPath, newConfigPath);
+                    Directory.Delete(configPath, true);
+                }
+                #endregion
+                #region Удаляем папку медиа
+                if (Directory.Exists(mediaPath))
+                {
+                    Directory.Delete(mediaPath, true);
+                }
+                #endregion
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                var glerror = new UError(ELoader.FailCopyConfigFolderAndClear, _failinf, ex.Error);
+                Functions.Error(ex, glerror, glerror.Message, _proc);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
+                var glerror = new UError(ELoader.FailCopyConfigFolderAndClear, $"{_failinf}: исключение", uerror);
+                Functions.Error(ex, glerror, glerror.Message, _proc);
+            }
+            #endregion
         }
         #endregion
         #endregion

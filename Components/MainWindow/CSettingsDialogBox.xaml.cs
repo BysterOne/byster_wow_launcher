@@ -34,7 +34,15 @@ namespace Launcher.Components.MainWindow
         {
             FailInitPanelChanger,
             FailLoadLangList,
-            FailLoadServersList
+            FailLoadServersList,
+            FailLoadBranchList
+        }
+
+        public enum EToggle
+        {
+            Compilation,
+            VMProtect,
+            Encryption
         }
     }
     /// <summary>
@@ -47,7 +55,7 @@ namespace Launcher.Components.MainWindow
             InitializeComponent();
 
             TranslationHub.Register(this);
-            GProp.LauncherUpdateEvent += ELauncherUpdateEvent;
+            GProp.LauncherDataUpdatedEvent += ELauncherUpdatedEvent;
         }        
 
         #region Переменные
@@ -58,8 +66,8 @@ namespace Launcher.Components.MainWindow
         #endregion
 
         #region Обработчики событий
-        #region ELauncherUpdateEvent
-        private async Task ELauncherUpdateEvent(ELauncherUpdate updates)
+        #region ELauncherUpdatedEvent
+        private async Task ELauncherUpdatedEvent(ELauncherUpdate updates, object? data)
         {
             if (updates.HasFlag(ELauncherUpdate.User)) await Dispatcher.InvokeAsync(() => UpdateUserPermissions());
         }
@@ -127,6 +135,32 @@ namespace Launcher.Components.MainWindow
         #endregion
         #region MGBP_advanced_MouseDown
         private void MGBP_advanced_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) => ChangePanel(EPC_Panels.Advanced);
+        #endregion
+        #region EBranchList_NewSelectedItem
+        private void EBranchList_NewSelectedItem(CList.CListItem item)
+        {
+            var branch = (EBranch)item.Id;
+
+            if (branch == AppSettings.Instance.Branch) return;
+
+            AppSettings.Instance.Branch = branch;
+            AppSettings.Save();
+        }
+        #endregion
+        #region EEncryption_SelectedIndexChanged
+        private void EEncryption_SelectedIndexChanged(object sender, int newIndex) => _ = TryChangeToggle(EToggle.Encryption, newIndex);
+        #endregion
+        #region EVMProtect_SelectedIndexChanged
+        private void EVMProtect_SelectedIndexChanged(object sender, int newIndex) => _ = TryChangeToggle(EToggle.VMProtect, newIndex);
+        #endregion
+        #region ECompilation_SelectedIndexChanged
+        private void ECompilation_SelectedIndexChanged(object sender, int newIndex) => _ = TryChangeToggle(EToggle.Compilation, newIndex);
+        #endregion
+        #region MGPM_admin_panel_button_MouseLeftButtonDown
+        private void MGPM_admin_panel_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Process.Start(new ProcessStartInfo { FileName = $"https://admin.byster.one/", UseShellExecute = true });
+        }
         #endregion
         #endregion
 
@@ -206,6 +240,21 @@ namespace Launcher.Components.MainWindow
                 PanelChanger.HideElement += PanelChangerHide;
                 var tryInitPanelChangerTask = PanelChanger.Init();
                 #endregion
+                #region Шифрование
+                MGPMTEP_value.SetSelectedIndexFast(GProp.User.Encryption ? 1 : 0);
+                MGPMTEP_value.SelectedIndexChanged += EEncryption_SelectedIndexChanged;
+                #endregion
+                #region VMProtect
+                MGPMVP_value.SetSelectedIndexFast(GProp.User.VMProtect ? 1 : 0);
+                MGPMVP_value.SelectedIndexChanged += EVMProtect_SelectedIndexChanged;
+                #endregion
+                #region Компиляция
+                MGPMCP_value.SetSelectedIndexFast(GProp.User.Compilation ? 1 : 0);
+                MGPMCP_value.SelectedIndexChanged += ECompilation_SelectedIndexChanged;
+                #endregion
+                #region Обновление разрешения пользователя
+                UpdateUserPermissions();
+                #endregion
                 #region Установка списка языков
                 var LangList = new List<CList.CListItem>();
                 foreach (var lang in Enum.GetValues<ELang>())
@@ -222,21 +271,35 @@ namespace Launcher.Components.MainWindow
                 }
                 var tryLoadServerListTask = MGPM_server_list.LoadItems(serversList, serversList.IndexOf(serversList.First(x => x.Id == (int)AppSettings.Instance.Server)));
                 #endregion
+                #region Установка списка веток
+                var branchesList = new List<CList.CListItem>();
+                foreach (var branch in GProp.User.Branches)
+                {
+                    branchesList.Add(new((int)branch, GStatic.BranchStrings[branch].ToUpper()));
+                }
+                var tryLoadBranchListTask =
+                    branchesList.Count > 0 ?
+                    MGPM_branch_list.LoadItems(branchesList, branchesList.IndexOf(branchesList.First(x => x.Id == (int)AppSettings.Instance.Branch))) :
+                    new Task(() => { return; });
+                #endregion
                 #region Ожидаем завершения задача
                 await Task.WhenAll
                 (
                     tryInitPanelChangerTask,
                     tryLoadLangListTask,
-                    tryLoadServerListTask
+                    tryLoadServerListTask,
+                    tryLoadBranchListTask
                 );
                 #endregion
                 #region Обработчик ответов
+                #region Панели
                 var tryInitPanelChanger = await tryInitPanelChangerTask;
                 if (!tryInitPanelChanger.IsSuccess)
                 {
                     throw new UExcept(EShow.FailInitPanelChanger, $"Ошибка инициализации панели {nameof(PanelChanger)}");
                 }
-
+                #endregion
+                #region Список доступных языков
                 var tryLoadLangList = await tryLoadLangListTask;
                 if (!tryLoadLangList.IsSuccess)
                 {
@@ -244,7 +307,8 @@ namespace Launcher.Components.MainWindow
                     Functions.Error(uerror, uerror.Message, _proc);
                 }
                 MGPM_localization_list.NewSelectedItem += ELocalizationList_NewSelectedItem;
-
+                #endregion
+                #region Список доступных серверов
                 var tryLoadServerList = await tryLoadServerListTask;
                 if (!tryLoadServerList.IsSuccess)
                 {
@@ -253,11 +317,21 @@ namespace Launcher.Components.MainWindow
                 }
                 MGPM_server_list.NewSelectedItem += EServerList_NewSelectedItem;
                 #endregion
-
-
-                #region Обновление разрешения пользователя
-                UpdateUserPermissions();
+                #region Список доступных веток
+                if (tryLoadBranchListTask is Task<UResponse> task)
+                {
+                    var tryLoadBranchList = await task;
+                    if (!tryLoadBranchList.IsSuccess)
+                    {
+                        var uerror = new UError(EShow.FailLoadBranchList, $"Не удалось загрузить ветки в список", tryLoadBranchList.Error);
+                        Functions.Error(uerror, uerror.Message, _proc);
+                    }
+                    MGPM_branch_list.NewSelectedItem += EBranchList_NewSelectedItem;
+                }
                 #endregion
+                #endregion               
+
+                
 
                 IsInit = false;
 
@@ -311,23 +385,49 @@ namespace Launcher.Components.MainWindow
         #region UpdateAllValues
         public async Task UpdateAllValues()
         {
-            MGBP_main.Text = Dictionary.Translate($"ОСНОВНЫЕ");
-            MGBP_advanced.Text = Dictionary.Translate($"РАСШИРЕННЫЕ");
+            MGHH_value.Text = Dictionary.Translate($"Настройки");
+            MGPMCP_header.Text = Dictionary.Translate($"Компиляция");
+            MGHBP_main.Text = Dictionary.Translate($"ОСНОВНЫЕ");
+            MGHBP_advanced.Text = Dictionary.Translate($"РАСШИРЕННЫЕ");
             MGPA_text.Text = Dictionary.Translate($"Данный раздел находиться в разработке");
             MGPM_redeem.Placeholder = Dictionary.Translate($"Погасить купон");
             MGPM_clear_cache.Text = Dictionary.Translate($"Очистить кэш");
             MGPM_change_password.Text = Dictionary.Translate($"Сменить пароль");
             MGPM_server_header.Text = Dictionary.Translate($"Сервер");
+            MGPM_branch_header.Text = Dictionary.Translate($"Ветка");
             MGPM_localization_header.Text = Dictionary.Translate($"Локализация");
         }
         #endregion
         #region UpdateUserPermissions
         private void UpdateUserPermissions()
         {
-            // TODO: Реализовать обновление прав пользователя
-
-            //var canChangeToggleEncrypt = GProp.User.Permissions.Contains($"shop.toggle_encrypt");
-            //MGPM_toggle_encryption_panel.Visibility = canChangeToggleEncrypt ? Visibility.Visible : Visibility.Collapsed;
+            var perms = GProp.User.Permissions;
+            
+            #region Выбор сервера
+            var aviableChooseServer = perms.HasFlag(EUserPermissions.Tester) || perms.HasFlag(EUserPermissions.ExternalDeveloper);
+            MGPM_server_panel.Visibility = aviableChooseServer ? Visibility.Visible : Visibility.Collapsed;
+            #endregion
+            #region Расширенные настройки
+            var aviableAdvanced = GProp.User.Permissions.HasFlag(EUserPermissions.ExternalDeveloper);
+            MGH_buttons_panel.Visibility = aviableAdvanced ? Visibility.Visible : Visibility.Collapsed;
+            MGH_header.Visibility = aviableAdvanced ? Visibility.Collapsed : Visibility.Visible;
+            #endregion
+            #region Шифрование
+            var aviableToggle = 
+                GProp.User.Branches.Contains(EBranch.Test) && 
+                (
+                    perms.HasFlag(EUserPermissions.ToggleEncrypt) ||
+                    perms.HasFlag(EUserPermissions.ExternalDeveloper)
+                );
+            MGPM_toggle_encryption_panel.Visibility = aviableToggle ? Visibility.Visible : Visibility.Collapsed;
+            #endregion
+            #region Ветки
+            var aviableBranches = GProp.User.Branches.Count > 1;
+            MGPM_branch_panel.Visibility = aviableBranches ? Visibility.Visible: Visibility.Collapsed;
+            #endregion
+            #region Админ панель
+            MGPM_admin_panel_button.Visibility = perms.HasFlag(EUserPermissions.AdminSiteAccess) ? Visibility.Visible : Visibility.Collapsed;
+            #endregion
         }
         #endregion
         #region TryRedeemCupon
@@ -356,27 +456,65 @@ namespace Launcher.Components.MainWindow
             if (!tryRedeem.IsSuccess)
             {
                 Main.Notify(Dictionary.Translate($"Не удалось очистить кэш"));
+                await Main.Loader(ELoaderState.Hide);
                 return;
             }
 
             Main.Notify(Dictionary.Translate($"Кэш успешно очищен"));
-
             await Main.Loader(ELoaderState.Hide);
+        }
+        #endregion
+        #region TryChangeToggle
+        private async Task TryChangeToggle(EToggle toggle, int newValue)
+        {
+            await Main.Loader(ELoaderState.Show);
+
+            var tryExecute = toggle switch
+            {
+                EToggle.Compilation => await CApi.ToggleEncryption(newValue is 1),
+                EToggle.VMProtect => await CApi.ToggleVMProtect(newValue is 1),
+                EToggle.Encryption => await CApi.ToggleEncryption(newValue is 1),
+                _ => throw new NotImplementedException()
+            };
+            if (!tryExecute.IsSuccess)
+            {
+                switch (toggle)
+                {
+                    case EToggle.Compilation: MGPMCP_value.SelectedIndex = GProp.User.Compilation ? 1 : 0; break;
+                    case EToggle.VMProtect: MGPMVP_value.SelectedIndex = GProp.User.VMProtect ? 1 : 0; break;
+                    case EToggle.Encryption: MGPMTEP_value.SelectedIndex = GProp.User.Encryption ? 1 : 0; break;
+                }
+                
+                Main.Notify(Dictionary.Translate($"Не удалось переключить"));
+                await Main.Loader(ELoaderState.Hide);
+                return;
+            }
+
+            switch (toggle)
+            {
+                case EToggle.Compilation: GProp.User.Compilation = newValue is 1; break;
+                case EToggle.VMProtect: GProp.User.VMProtect = newValue is 1; break;
+                case EToggle.Encryption: GProp.User.Encryption = newValue is 1; break;
+            }
+
+            _ = GProp.Update(ELauncherUpdate.User, tryExecute.Response);
+            _ = Main.Loader(ELoaderState.Hide);
         }
         #endregion
         #region ChangePanel
         private async void ChangePanel(EPC_Panels panel)
         {
-            MGBP_main.IsActive = panel is EPC_Panels.Main;
-            MGBP_advanced.IsActive = panel is EPC_Panels.Advanced;
+            MGHBP_main.IsActive = panel is EPC_Panels.Main;
+            MGHBP_advanced.IsActive = panel is EPC_Panels.Advanced;
 
             await PanelChanger.ChangePanel(panel);
         }
+
+
+
         #endregion
+
         #endregion
-
-
-
 
         
     }

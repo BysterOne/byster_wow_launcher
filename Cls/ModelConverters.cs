@@ -1,6 +1,8 @@
 ﻿using Launcher.Any.GlobalEnums;
+using Launcher.Settings;
 using Launcher.Windows.AnyMain.Enums;
 using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,6 +11,67 @@ using System.Threading.Tasks;
 
 namespace Launcher.Cls.ModelConverters
 {
+    #region BranchesConverter
+    public class BranchesConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType) => objectType == typeof(EBranch);
+
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.StartArray)
+            {
+                JArray arr = JArray.Load(reader);
+                var branches = new List<EBranch>();
+                var list = arr.Select(x => x.ToString()).ToList();
+
+                foreach (var branch in list)
+                {
+                    EBranch? has = GStatic.BranchStrings.FirstOrDefault
+                        (x => x.Value.Equals(branch, StringComparison.CurrentCultureIgnoreCase)).Key;
+                    if (GStatic.BranchStrings.ContainsValue(branch))
+                        branches.Add((EBranch)has);
+                }
+                return branches;
+            }
+            throw new JsonSerializationException("Данный параметр принимает только Array<string>");
+        }
+
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) { }
+    }
+    #endregion
+    #region UserPermissionsConverter
+    public class UserPermissionsConverter : JsonConverter
+    {
+        public override bool CanConvert(Type objectType) => objectType == typeof(EUserPermissions);
+
+        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.String)
+            {                
+                throw new JsonSerializationException($"Данный параметр принимает только Array<string>");
+            }
+            else if (reader.TokenType == JsonToken.StartArray)
+            {
+                int combined = 0;
+                JArray arr = JArray.Load(reader);
+                var permissions = EUserPermissions.None;
+                var list = arr.Select(x => x.ToString()).ToList();
+
+                foreach (var permission in list)
+                {
+                    EUserPermissions? has = GStatic.PermissionsStrings.FirstOrDefault
+                        (x => x.Value.Equals(permission, StringComparison.CurrentCultureIgnoreCase)).Key;
+                    if (GStatic.PermissionsStrings.ContainsValue(permission)) 
+                        permissions |= (EUserPermissions)has;
+                }
+                return permissions;
+            }
+            throw new JsonSerializationException("Данный параметр принимает только Array<string>");
+        }
+
+        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) { }
+    }
+    #endregion
     #region CurrencyConverter
     public class CurrencyConverter : JsonConverter
     {

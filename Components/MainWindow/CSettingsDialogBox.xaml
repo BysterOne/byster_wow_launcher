@@ -36,9 +36,7 @@
         <Grid
             VerticalAlignment="Center"
             HorizontalAlignment="Center"
-            x:Name="middleGrid"
-            Width="700"
-            MinHeight="480">
+            x:Name="middleGrid">
             <!--#region Разметка -->
             <Grid.RowDefinitions>
                 <RowDefinition
@@ -68,40 +66,67 @@
                 Panel.ZIndex="2" />
             <!--#endregion-->
 
-            <!--#region Переключатели -->
-            <StackPanel
-                x:Name="MG_buttons_panel"
-                Orientation="Horizontal"
+            <!--#region Заголовок -->
+            <Grid x:Name="MG_header"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center">
-                <!--#region Основные -->
-                <components:CMainPageButton
-                    Grid.Column="0"
-                    Grid.Row="0"
-                    Style="{DynamicResource TopPanel_MainPageButtonStyle}"
-                    Text="ОСНОВНЫЕ"
-                    HorizontalAlignment="Right"
-                    IsActive="True"
-                    x:Name="MGBP_main"
-                    FontSize="22"
-                    Margin="0 0 5 0"
-                    MouseDown="MGBP_main_MouseDown" />
+                <!--#region Переключатели -->
+                <StackPanel
+                    x:Name="MGH_buttons_panel"
+                    Orientation="Horizontal" 
+                    Visibility="Collapsed">
+                    <!--#region Основные -->
+                    <components:CMainPageButton
+                        Grid.Column="0"
+                        Grid.Row="0"
+                        Style="{DynamicResource TopPanel_MainPageButtonStyle}"
+                        Text="ОСНОВНЫЕ"
+                        HorizontalAlignment="Right"
+                        IsActive="True"
+                        x:Name="MGHBP_main"
+                        FontSize="22"
+                        Margin="0 0 5 0"
+                        MouseDown="MGBP_main_MouseDown" />
+                    <!--#endregion-->
+                    <!--#region Расширенные -->
+                    <components:CMainPageButton
+                        Grid.Column="1"
+                        Grid.Row="0"
+                        Style="{DynamicResource TopPanel_MainPageButtonStyle}"
+                        Text="РАСШИРЕННЫЕ"
+                        IsActive="False"
+                        Margin="5 0 0 0"
+                        HorizontalAlignment="Left"
+                        x:Name="MGHBP_advanced"
+                        FontSize="22"
+                        MouseDown="MGBP_advanced_MouseDown" />
+                    <!--#endregion-->
+                </StackPanel>
                 <!--#endregion-->
-                <!--#region Расширенные -->
-                <components:CMainPageButton
-                    Grid.Column="1"
-                    Grid.Row="0"
-                    Style="{DynamicResource TopPanel_MainPageButtonStyle}"
-                    Text="РАСШИРЕННЫЕ"
-                    IsActive="False"
-                    Margin="5 0 0 0"
-                    HorizontalAlignment="Left"
-                    x:Name="MGBP_advanced"
-                    FontSize="22"
-                    MouseDown="MGBP_advanced_MouseDown" />
+                <!--#region Текст -->
+                <StackPanel x:Name="MGH_header" Margin="0 5 0 0">
+                    <!--#region Текст -->
+                    <TextBlock
+                        Text="Настройки" 
+                        FontSize="22"
+                        x:Name="MGHH_value"
+                        FontWeight="DemiBold"
+                        Foreground="{DynamicResource textcolor_main}"
+                        FontFamily="{DynamicResource fontfamily_main}"/>
+                    <!--#endregion-->
+                    <!--#region Полоска -->
+                    <Rectangle
+                        Fill="White"
+                        Height="5"
+                        RadiusX="2"
+                        RadiusY="2"
+                        Margin="15 3 15 0"/>
+                    <!--#endregion-->
+                </StackPanel>
                 <!--#endregion-->
-            </StackPanel>
+            </Grid>
             <!--#endregion-->
+
             <!--#region Панели -->
             <Grid
                 x:Name="MG_panels"
@@ -110,7 +135,7 @@
                 <Grid
                     x:Name="MGP_main">
                     <StackPanel
-                        Margin="10 5 10 10"
+                        Margin="20 5 20 20"
                         HorizontalAlignment="Center">
                         <!--#region Кэш и пароль -->
                         <StackPanel
@@ -119,7 +144,8 @@
                             <components:CButton
                                 x:Name="MGPM_change_password"
                                 Style="{DynamicResource SettingsButtonStyle}"
-                                Text="Сменить пароль" />
+                                Text="Сменить пароль"
+                                Cursor="Hand" />
                             <!--#endregion-->
                             <!--#region Очистка кэша -->
                             <components:CButton
@@ -135,8 +161,9 @@
                             x:Name="MGPM_redeem"
                             Icon="/Launcher;component/Media/redeemcode_icon.png"
                             BackColor="#11FFFFFF"
-                            Margin="10"
+                            Width="416"
                             Height="50"
+                            Margin="0"
                             BorderRadius="8"
                             Placeholder="Погасить купон"
                             PlaceholderColor="#FFCCCCCC" 
@@ -148,7 +175,7 @@
                             <Grid
                                 x:Name="MGPM_server_panel"
                                 Panel.ZIndex="5"
-                                Margin="10 15 10 0">
+                                Margin="6 15 6 0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition
                                         SharedSizeGroup="shared_main"
@@ -171,29 +198,17 @@
                                     Margin="0 0 0 0"
                                     Width="250"
                                     HorizontalAlignment="Right">
-                                    <components:CList
-                                        x:Name="MGPM_server_list"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Right"
-                                        Width="250"
-                                        FontFamily="{DynamicResource fontfamily_main}"
-                                        FontSize="18"
-                                        Background="#FF2B2E35"
-                                        SelectorColor="#05FFFFFF"
-                                        BorderRadius="6"
-                                        ElementHeight="46"
-                                        IsOpened="False" 
-                                       />
+                                    <components:CList Style="{DynamicResource CSettingsListStyle}"
+                                        x:Name="MGPM_server_list"/>
                                 </Canvas>
                                 <!--#endregion-->
-
                             </Grid>
                             <!--#endregion-->
                             <!--#region Локализация -->
                             <Grid
                                 x:Name="MGPM_localization_panel"
                                 Panel.ZIndex="4"
-                                Margin="10 15 10 0">
+                                Margin="6 15 6 0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition
                                         SharedSizeGroup="shared_main"
@@ -217,17 +232,42 @@
                                     HorizontalAlignment="Right">
                                     <components:CList
                                         x:Name="MGPM_localization_list"
-                                        VerticalAlignment="Center"
-                                        HorizontalAlignment="Right"
-                                        Width="250"
-                                        FontFamily="{DynamicResource fontfamily_main}"
-                                        FontSize="18"
-                                        Background="#FF2B2E35"
-                                        SelectorColor="#05FFFFFF"
-                                        BorderRadius="6"
-                                        ElementHeight="46"
-                                        IsOpened="False">
+                                        Style="{DynamicResource CSettingsListStyle}">
                                     </components:CList>
+                                </Canvas>
+                                <!--#endregion-->
+                            </Grid>
+                            <!--#endregion-->
+                            <!--#region Ветка -->
+                            <Grid
+                                x:Name="MGPM_branch_panel"
+                                Panel.ZIndex="3"
+                                Margin="6 15 6 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition
+                                        SharedSizeGroup="shared_main"
+                                        Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <!--#region Текст -->
+                                <TextBlock
+                                    Grid.Row="2"
+                                    Text="Ветка"
+                                    x:Name="MGPM_branch_header"
+                                    Style="{DynamicResource PayTextBlockHeaderStyle}"
+                                    Margin="15 10 10 10" />
+                                <!--#endregion-->
+                                <!--#region Список -->
+                                <Canvas
+                                    Grid.Column="1"
+                                    Panel.ZIndex="12"
+                                    Margin="0 0 0 0"
+                                    Width="250"
+                                    HorizontalAlignment="Right">
+                                    <components:CList
+                                        x:Name="MGPM_branch_list"
+                                        Style="{DynamicResource CSettingsListStyle}"/>
                                 </Canvas>
                                 <!--#endregion-->
                             </Grid>
@@ -235,9 +275,8 @@
                             <!--#region Шифрование -->
                             <Grid
                                 x:Name="MGPM_toggle_encryption_panel"
-                                Panel.ZIndex="4"
-                                Margin="10 15 10 0"
-                                Visibility="Collapsed">
+                                Panel.ZIndex="2"
+                                Margin="6 15 6 0">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition
                                         SharedSizeGroup="shared_main"
@@ -253,9 +292,97 @@
                                     Margin="15 10 10 10" />
                                 <!--#endregion-->
                                 <!--#region Переключатель -->
-                                
+                                <components:CToggleSwitch 
+                                x:Name="MGPMTEP_value"
+                                    Grid.Column="1"
+                                    Width="250"
+                                    BorderRadius="12"
+                                    HorizontalAlignment="Right"
+                                    FirstItem="✘"
+                                    SecondItem="✓"
+                                    BackColor="#FF2B2E35"
+                                    />
                                 <!--#endregion-->
                             </Grid>
+                            <!--#endregion-->
+                            <!--#region Компиляция -->
+                            <Grid
+                                x:Name="MGPM_compilation_panel"
+                                Panel.ZIndex="2"
+                                Margin="6 15 6 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition
+                                        SharedSizeGroup="shared_main"
+                                        Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <!--#region Текст -->
+                                <TextBlock
+                                    Text="Компиляция"
+                                    x:Name="MGPMCP_header"
+                                    Style="{DynamicResource PayTextBlockHeaderStyle}"
+                                    Margin="15 10 10 10" />
+                                <!--#endregion-->
+                                <!--#region Переключатель -->
+                                <components:CToggleSwitch
+                                    x:Name="MGPMCP_value"
+                                    Grid.Column="1"
+                                    Width="250"
+                                    BorderRadius="12"
+                                    HorizontalAlignment="Right"
+                                    FirstItem="✘"
+                                    SecondItem="✓"
+                                    BackColor="#FF2B2E35" />
+                                <!--#endregion-->
+                            </Grid>
+                            <!--#endregion-->
+                            <!--#region VMProtect -->
+                            <Grid
+                                x:Name="MGPM_vmprotect_panel"
+                                Panel.ZIndex="2"
+                                Margin="6 15 6 0">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition
+                                        SharedSizeGroup="shared_main"
+                                        Width="Auto" />
+                                    <ColumnDefinition />
+                                </Grid.ColumnDefinitions>
+
+                                <!--#region Текст -->
+                                <TextBlock
+                                    Text="VMProtect"
+                                    x:Name="MGPMVP_header"
+                                    Style="{DynamicResource PayTextBlockHeaderStyle}"
+                                    Margin="15 10 10 10" />
+                                <!--#endregion-->
+                                <!--#region Переключатель -->
+                                <components:CToggleSwitch
+                                    x:Name="MGPMVP_value"
+                                    Grid.Column="1"
+                                    Width="250"
+                                    BorderRadius="12"
+                                    HorizontalAlignment="Right"
+                                    FirstItem="✘"
+                                    SecondItem="✓"
+                                    BackColor="#FF2B2E35" />
+                                <!--#endregion-->
+                            </Grid>
+                            <!--#endregion-->                            
+                            <!--#region Кнопка для открытия админ панели -->
+                            <components:CButton
+                                x:Name="MGPM_admin_panel_button"
+                                Margin="15 20 15 0"
+                                BorderRadius="8"
+                                MinWidth="200"
+                                Text="Админ панель"
+                                BackColor="#11FFFFFF" 
+                                FontFamily="{DynamicResource fontfamily_main}"
+                                Foreground="{DynamicResource textcolor_main}"
+                                FontSize="20"
+                                Icon="/Launcher;component/Media/href-icon.png"
+                                IconHeight="26"
+                                MouseLeftButtonDown="MGPM_admin_panel_button_MouseLeftButtonDown"/>
                             <!--#endregion-->
                         </StackPanel>
                         <!--#endregion-->

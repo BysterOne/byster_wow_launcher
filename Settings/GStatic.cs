@@ -21,6 +21,26 @@ namespace Launcher.Settings
            { ELang.En, "en" },
            { ELang.ZhCn, "zh" },
         };    
+
+        public static Dictionary<EUserPermissions, string> PermissionsStrings = new Dictionary<EUserPermissions, string>
+        {
+            { EUserPermissions.ToggleEncrypt, "shop.toggle_encrypt" },
+            { EUserPermissions.AdminSiteAccess, "launcher.admin_site_access" },
+            { EUserPermissions.CanToggleCompilation, "launcher.can_toggle_compilation" },
+            { EUserPermissions.ClosedServer, "shop.closed_server" },
+            { EUserPermissions.CanToggleVmprotect, "launcher.can_toggle_vmprotect" },
+            { EUserPermissions.ExternalDeveloper, "shop.external_developer" },
+            { EUserPermissions.DoNotBan, "protection.donotban" },
+            { EUserPermissions.Tester, "shop.tester" },
+        };
+
+        public static Dictionary<EBranch, string> BranchStrings = new Dictionary<EBranch, string>
+        {
+            { EBranch.Test, "test" },
+            { EBranch.Dev, "dev" },
+            { EBranch.NewThread, "new-thread" },
+            { EBranch.Master, "master" }
+        };
         #endregion
 
 

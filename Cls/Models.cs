@@ -75,14 +75,22 @@ namespace Launcher.Api.Models
         [JsonProperty("encryption")]
         public bool Encryption { get; set; } = false;
 
+        [JsonProperty("vmprotect")]
+        public bool VMProtect { get; set; } = false;
+
+        [JsonProperty("compilation")]
+        public bool Compilation { get; set; } = false;
+
         [JsonProperty("test_duration")]
         public int TestDuration { get; set; } = 0;
 
         [JsonProperty("permissions")]
-        public List<string> Permissions { get; set; } = [];
+        [JsonConverter(typeof(UserPermissionsConverter))]
+        public EUserPermissions Permissions { get; set; }
 
         [JsonProperty("branches")]
-        public List<string> Branches { get; set; } = [];
+        [JsonConverter(typeof(BranchesConverter))]
+        public List<EBranch> Branches { get; set; } = [];
     }
     #endregion
     #region Product

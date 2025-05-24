@@ -1,0 +1,74 @@
+﻿<UserControl x:Class="Launcher.Components.CToggleSwitch"
+             xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+             xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+             xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+             xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+             xmlns:local="clr-namespace:Launcher.Components"
+             xmlns:any="clr-namespace:Launcher.Any"
+             mc:Ignorable="d" 
+             d:DesignHeight="50" d:DesignWidth="200">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Global.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+
+            <any:HalfWidthConverter x:Key="HalfWidthConverter" />
+            <Style
+                x:Key="TextBlockStyle"
+                TargetType="{x:Type TextBlock}">
+                <Setter Property="FontSize" Value="18" />
+                <Setter Property="VerticalAlignment" Value="Center" />
+                <Setter Property="HorizontalAlignment" Value="Center" />
+                <Setter Property="FontFamily" Value="{DynamicResource fontfamily_main}" />                
+                <Setter Property="Foreground" Value="{DynamicResource textcolor_main}" />
+            </Style>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <Border
+            d:Background="#19FFFFFF"
+            d:CornerRadius="15"
+            Background="{Binding BackColor}"
+            CornerRadius="{Binding BorderRadius}">
+            <!--#region Контент -->
+            <Grid>
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition />
+                    <ColumnDefinition />
+                </Grid.ColumnDefinitions>
+
+                <!--#region Переключатель -->
+                <Border
+                    x:Name="switch_background"
+                    Grid.ColumnSpan="2"
+                    d:Background="#330C0C0C"
+                    d:CornerRadius="15"
+                    HorizontalAlignment="Left"
+                    Background="{Binding ToggleColor}"
+                    CornerRadius="{Binding BorderRadius}"
+                    Width="{Binding ActualWidth, RelativeSource={RelativeSource AncestorType=UserControl}, Converter={StaticResource HalfWidthConverter}}"
+                    />
+                <!--#endregion-->
+                <!--#region Первый -->
+                <TextBlock 
+                    Grid.Column="0"
+                    d:Text="first"
+                    Text="{Binding FirstItem}"
+                    FontSize="{Binding FontSize}"
+                    Style="{DynamicResource TextBlockStyle}"/>
+                <!--#endregion-->
+                <!--#region Второй -->
+                <TextBlock
+                    Grid.Column="1"
+                    d:Text="second"
+                    Text="{Binding SecondItem}"
+                    FontSize="{Binding FontSize}"
+                    Style="{DynamicResource TextBlockStyle}"/>
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
+        </Border>
+    </Grid>
+</UserControl>

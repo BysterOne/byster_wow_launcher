@@ -10,7 +10,7 @@ namespace Launcher.Settings
 {
     public class AppSettings
     {
-        public static string RootFolder { get => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "local"); }
+        public static string RootFolder { get => Path.Combine(AppDomain.CurrentDomain.BaseDirectory, "data"); }
         public static string CacheFolder { get => Path.Combine(RootFolder, "cache"); }
         public static string TempBin { get => Path.Combine(RootFolder, "tempBin"); }
         public static string SettingsFilePath { get => Path.Combine(RootFolder, "settings.json"); }
@@ -30,6 +30,7 @@ namespace Launcher.Settings
         #region Параметры
         public ELang Language { get => _lang; set { _lang = value; LanguageChanged?.Invoke(value); } }
         public EServer Server { get; set; } = EServer.Staging;
+        public EBranch Branch { get; set; } = EBranch.Master;
         public string Login { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public ObservableCollection<CServer> Servers { get; set; } = [];

@@ -13,6 +13,7 @@ using Newtonsoft.Json;
 using RestSharp;
 using System.Net;
 using System.Runtime.CompilerServices;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
 namespace Launcher.Api
 {
@@ -25,6 +26,24 @@ namespace Launcher.Api
 
 
         #region Функции
+        #region ToggleCompilation
+        public static async Task<UResponse<User>> ToggleVMProtect(bool enable)
+        {
+            return await Request<User>("/launcher/toggle_vmprotect", Method.Post, body: new { enable });
+        }
+        #endregion
+        #region ToggleCompilation
+        public static async Task<UResponse<User>> ToggleCompilation(bool enable)
+        {
+            return await Request<User>("/launcher/toggle_compilation", Method.Post, body: new { enable });
+        }
+        #endregion
+        #region ToggleEncryption
+        public static async Task<UResponse<User>> ToggleEncryption(bool enable)
+        {
+            return await Request<User>("/launcher/toggle_encryption", Method.Post, body: new { enable });
+        }
+        #endregion
         #region ClearCache
         public static async Task<UResponse<object?>> ClearCache()
         {
@@ -53,6 +72,7 @@ namespace Launcher.Api
                 var client = createRequest.Client!;
                 var request = createRequest.Request;
                 request.Method = Method.Post;
+                request.AddBody(JsonConvert.SerializeObject(new { branch = GStatic.BranchStrings[AppSettings.Instance.Branch] }, GProp.JsonSeriSettings));
                 #endregion
                 #region Выполнение и обработка
                 var response = await client.ExecuteAsync(request);                

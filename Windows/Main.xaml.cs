@@ -5,6 +5,7 @@ using Cls.Exceptions;
 using Launcher.Any;
 using Launcher.Any.GlobalEnums;
 using Launcher.Api;
+using Launcher.Api.Models;
 using Launcher.Cls;
 using Launcher.Components;
 using Launcher.Components.DialogBox;
@@ -474,23 +475,34 @@ namespace Launcher.Windows
         }
         #endregion
         #region ELauncherUpdateEvent
-        private async Task ELauncherUpdateEvent(ELauncherUpdate updates)
+        private async Task ELauncherUpdateEvent(ELauncherUpdate updates, object? data)
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName()).AddTrace($"{ELauncherUpdate.User}");
 
             if (updates.HasFlag(ELauncherUpdate.User))
             {
+                #region Если есть данные
+                if (data is User user)
+                {
+                    GProp.User = user;
+                    _ = GProp.SendUpdated(ELauncherUpdate.User);
+                    UpdateUserDataView();
+                    return;
+                }
+                #endregion
+                #region Если нет
                 var tryGetUserInfo = await CApi.GetUserInfo();
                 if (!tryGetUserInfo.IsSuccess)
                 {
                     var exec = new UExcept(EInitialization.FailGetUserInfo, $"Не удалось загрузить данные пользователя", tryGetUserInfo.Error);
                     Functions.Error(exec, exec.Error, "Ошибка загрузки данных пользователя", _proc);
+                    return;
                 }
-                else
-                {
-                    GProp.User = tryGetUserInfo.Response;
-                    UpdateUserDataView();
-                }
+
+                GProp.User = tryGetUserInfo.Response;
+                _ = GProp.SendUpdated(ELauncherUpdate.User);
+                UpdateUserDataView();
+                #endregion
             }                
         }
         #endregion

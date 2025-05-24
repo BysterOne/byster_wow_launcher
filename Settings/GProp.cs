@@ -30,8 +30,9 @@ namespace Launcher.Settings
         public delegate void SelectedServerChangedDelegate(CServer? server);
         public static event SelectedServerChangedDelegate? SelectedServerChanged;
 
-        public delegate Task LauncherUpdateEventDelegate(ELauncherUpdate updates);
+        public delegate Task LauncherUpdateEventDelegate(ELauncherUpdate updates, object? data = null);
         public static event LauncherUpdateEventDelegate? LauncherUpdateEvent;
+        public static event LauncherUpdateEventDelegate? LauncherDataUpdatedEvent;
         #endregion
 
         #region Функции
@@ -62,9 +63,15 @@ namespace Launcher.Settings
         }
         #endregion
         #region Update
-        public static async Task Update(ELauncherUpdate updates)
+        public static async Task Update(ELauncherUpdate updates, object? data = null)
         {
-            if (LauncherUpdateEvent is not null) await LauncherUpdateEvent.Invoke(updates);
+            if (LauncherUpdateEvent is not null) await LauncherUpdateEvent.Invoke(updates, data);
+        }
+        #endregion
+        #region SendUpdated
+        public static async Task SendUpdated(ELauncherUpdate updates, object? data = null)
+        {
+            if (LauncherDataUpdatedEvent is not null) await LauncherDataUpdatedEvent.Invoke(updates, data);
         }
         #endregion
         #endregion

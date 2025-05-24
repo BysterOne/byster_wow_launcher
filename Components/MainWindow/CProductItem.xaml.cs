@@ -200,7 +200,7 @@ namespace Launcher.Components.MainWindow
                     #region Скрываем прелоадер и показываем ответ
                     await Task.Run(() => Thread.Sleep(300));
                     await Main.Loader(ELoaderState.Hide);
-                    Main.Notify(Dictionary.Translate("Отлично! Теперь можете приступить к тестированию"));
+                    Main.Notify(Dictionary.Translate("Тест успешно выдан! Перейдите на главную и нажмите Запустить для запуска Byster"));
                     #endregion
                 }
                 else

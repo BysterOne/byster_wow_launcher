@@ -153,12 +153,12 @@ namespace Launcher.Components
             DependencyProperty.Register(nameof(SelectedItem), typeof(CListItem), ElementType,
                 new PropertyMetadata(null, OnSelectedItemChanged));
 
-        private static async void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        private static void OnSelectedItemChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
             var control = (CList)d;
 
             control.IsNewSelected = true;
-            await control.ChangeState(false);
+            _ = control.ChangeState(false);
             control.UpdateViewModel();
             control.IsNewSelected = false;
 

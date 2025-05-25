@@ -87,6 +87,7 @@
 		<None Remove="Media\Shop\warrior_icon.png" />
 		<None Remove="Media\success_payment_icon.png" />
 		<None Remove="Media\test-back.jpg" />
+		<None Remove="Media\view_pass_icon.png" />
 		<None Remove="NLog.config" />
 	</ItemGroup>
 
@@ -166,6 +167,7 @@
 		<Resource Include="Localizations\English.json" />
 		<Resource Include="Localizations\keys.json" />
 		<Resource Include="Localizations\Chinese.json" />
+		<Resource Include="Media\view_pass_icon.png" />
 		<EmbeddedResource Include="NLog.config" />
 	</ItemGroup>
 

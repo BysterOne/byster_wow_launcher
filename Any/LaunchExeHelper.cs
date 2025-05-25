@@ -133,7 +133,7 @@ namespace Launcher.Any
                 var psi = new ProcessStartInfo
                 {
                     FileName = pathExe,
-                    Arguments = server.PathToExe,
+                    Arguments = $"\"{server.PathToExe}\"",
                     UseShellExecute = true,
                     Verb = "runas"
                 };
@@ -170,8 +170,6 @@ namespace Launcher.Any
                 SetError(server, Dictionary.Translate($"Во время запуска произошла неизвестная ошибка. Попробуйте позже"));
             }
             #endregion
-
-
         }
         #endregion
         #region SetError
@@ -201,8 +199,5 @@ namespace Launcher.Any
         }
         #endregion
         #endregion
-
-
-
     }
 }

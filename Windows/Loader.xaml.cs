@@ -27,6 +27,12 @@ namespace Launcher.Windows
         {
             FailCopyRegToFile,
             FailCopyConfigFolderAndClear,
+            FailCheckLauncherUpdates,
+        }
+
+        public enum ECheckLauncherUpdates
+        {
+            FailGetServerVersion
         }
     }
     /// <summary>
@@ -95,13 +101,14 @@ namespace Launcher.Windows
             #region Настройки логов
             ConfigureNLog();
             #endregion
+            #region Проверка версии
+            await CheckLauncherUpdates();
+            #endregion
             #region Загрузка словаря
             var tryLoadTranslations = await Dictionary.LoadLocal();
             if (!tryLoadTranslations.IsSuccess)
             {
-                this.Hide();
-                MessageBox.Show("Ошибка инициализации. Приложение будет закрыто.", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
-                Application.Current.Shutdown();
+                
             }
             #endregion
 
@@ -143,7 +150,15 @@ namespace Launcher.Windows
             OpenAuthorization();
             #endregion
         }
-        #endregion        
+        #endregion
+        #region CriticalError
+        private void CriticalError()
+        {
+            this.Hide();
+            MessageBox.Show(Dictionary.Translate("Ошибка инициализации. Приложение будет закрыто"), Dictionary.Translate("Ошибка"), MessageBoxButton.OK, MessageBoxImage.Error);
+            Application.Current.Shutdown();
+        }
+        #endregion
         #region OpenMainWindow
         private void OpenMainWindow() => Application.Current.Dispatcher.Invoke(() => Functions.OpenWindow(this, new Main()));        
         #endregion
@@ -282,6 +297,47 @@ namespace Launcher.Windows
                 var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
                 var glerror = new UError(ELoader.FailCopyConfigFolderAndClear, $"{_failinf}: исключение", uerror);
                 Functions.Error(ex, glerror, glerror.Message, _proc);
+            }
+            #endregion
+        }
+        #endregion
+        #region CheckLauncherUpdates
+        private async Task CheckLauncherUpdates()
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось проверить и/или обновить лаунчер";
+
+            #region try
+            try
+            {
+                #region Текущая версия
+                var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                Pref.Log($"Version: {currentVersion}");
+                #endregion
+                #region Версия сервера
+                //var tryGetVersion = await CApi.GetServerVersion();
+                //if (!tryGetVersion.IsSuccess)
+                //{
+                //    throw new UExcept(ECheckLauncherUpdates.FailGetServerVersion, $"Не удалось получить актуальную версию", tryGetVersion.Error);
+                //}
+                #endregion
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                var glerror = new UError(ELoader.FailCheckLauncherUpdates, _failinf, ex.Error);
+                Functions.Error(ex, glerror, glerror.Message, _proc);
+                CriticalError();
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
+                var glerror = new UError(ELoader.FailCheckLauncherUpdates, $"{_failinf}: исключение", uerror);
+                Functions.Error(ex, glerror, glerror.Message, _proc);
+                CriticalError();
             }
             #endregion
         }

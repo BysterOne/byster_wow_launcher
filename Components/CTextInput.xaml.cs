@@ -1,10 +1,12 @@
-﻿using Launcher.Any;
+﻿using Cls.Any;
+using Launcher.Any;
 using System.Text.RegularExpressions;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
 using System.Windows.Shapes;
 using System.Windows.Threading;
 
@@ -26,6 +28,7 @@ namespace Launcher.Components
             InitializeComponent();
             this.Focusable = true;
             this.DataContext = this;
+            this.MouseLeave += EMouseLeave;
 
             textbox.PreviewTextInput += Textbox_PreviewTextInput;
             textbox.GotFocus += Textbox_GotFocus;
@@ -39,7 +42,9 @@ namespace Launcher.Components
 
             TextChangedTimer.Tick += TimeChangedTextTick;
             TextChangedTimer.Interval = TimeSpan.Zero;
-        }        
+        }
+
+        
 
         private static Type ElementType = typeof(CTextInput);
 
@@ -52,6 +57,7 @@ namespace Launcher.Components
         #endregion
 
         #region Переменные
+        private bool IsShowPassword { get; set; }
         private bool IsActive { get; set; }
         private DispatcherTimer TextChangedTimer { get; set; } = new DispatcherTimer();
         public TimeSpan TextChangedDelay
@@ -80,11 +86,15 @@ namespace Launcher.Components
             {
                 case EInputType.Text:
                     obj.textbox.Visibility = Visibility.Visible;
-                    obj.passwordbox.Visibility = Visibility.Collapsed;
+                    obj.passwordbox.Visibility = Visibility.Hidden;
+                    obj.image.Cursor = null;
                     break;
                 case EInputType.Password:
-                    obj.textbox.Visibility = Visibility.Collapsed;
+                    obj.textbox.Visibility = Visibility.Hidden;
                     obj.passwordbox.Visibility = Visibility.Visible;
+                    obj.IconHeight = 26;
+                    obj.image.Cursor = Cursors.Hand;
+                    obj.Icon = new BitmapImage(Functions.GetSourceFromResource("Media/view_pass_icon.png"));
                     break;
             }
         }
@@ -266,6 +276,32 @@ namespace Launcher.Components
             
             if (!InputRegex.IsMatch(e.Text)) e.Handled = true;
         }
+
+        private void image_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            if (InputType is EInputType.Password && !String.IsNullOrWhiteSpace(Text))
+            {
+                IsShowPassword = true;                
+                ChangePassword();
+            }
+        }
+
+        private void image_MouseUp(object sender, MouseButtonEventArgs e)
+        {
+            if (InputType is EInputType.Password)
+            {
+                IsShowPassword = false;
+                ChangePassword();
+            }
+        }
+        private void EMouseLeave(object sender, MouseEventArgs e)
+        {
+            if (InputType is EInputType.Password && IsShowPassword)
+            {
+                IsShowPassword = false;
+                ChangePassword();
+            }
+        }
         #endregion
 
         #region TimeChangedTextTick
@@ -381,6 +417,15 @@ namespace Launcher.Components
             storyboard.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
         }
         #endregion
+        #region ChangePassword
+        private void ChangePassword()
+        {
+            textbox.Opacity = IsShowPassword ? 1 : 0;
+            textbox.Visibility = IsShowPassword ? Visibility.Visible : Visibility.Hidden;
+            passwordbox.Opacity = IsShowPassword ? 0 : 1;
+            passwordbox.Visibility = IsShowPassword ? Visibility.Hidden : Visibility.Visible;
+        }
+        #endregion
         #region ChangedText
         public void ChangedText(bool isInternally = false)
         {
@@ -466,8 +511,6 @@ namespace Launcher.Components
         {
             this.Focus();
         }
-        #endregion
-
-        
+        #endregion        
     }
 }

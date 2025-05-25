@@ -27,6 +27,12 @@ namespace Launcher.Api
 
         #region Функции
         #region ToggleCompilation
+        public static async Task<UResponse<string>> GetServerVersion()
+        {
+            return await Request<string>("/launcher/check_updates", Method.Get);
+        }
+        #endregion
+        #region ToggleCompilation
         public static async Task<UResponse<User>> ToggleVMProtect(bool enable)
         {
             return await Request<User>("/launcher/toggle_vmprotect", Method.Post, body: new { enable });

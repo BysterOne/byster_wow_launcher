@@ -13,7 +13,7 @@
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
                 <ResourceDictionary
-                    Source="../Styles/Global.xaml" />
+                    Source="/Launcher;component/Styles/Global.xaml" />
             </ResourceDictionary.MergedDictionaries>
 
         </ResourceDictionary>

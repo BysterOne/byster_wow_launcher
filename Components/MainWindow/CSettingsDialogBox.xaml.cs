@@ -161,6 +161,12 @@ namespace Launcher.Components.MainWindow
             Process.Start(new ProcessStartInfo { FileName = $"https://admin.byster.one/", UseShellExecute = true });
         }
         #endregion
+        #region MGPM_change_password_MouseDown
+        private void MGPM_change_password_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            _ = Main.ShowModal(new CChangePasswordDialogBox());
+        }
+        #endregion
         #endregion
 
         #region Анимации
@@ -508,6 +514,7 @@ namespace Launcher.Components.MainWindow
 
             await PanelChanger.ChangePanel(panel);
         }
+
 
 
 

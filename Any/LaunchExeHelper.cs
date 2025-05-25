@@ -92,7 +92,7 @@ namespace Launcher.Any
                 if (!Directory.Exists(AppSettings.TempBin)) Directory.CreateDirectory(AppSettings.TempBin);
                 #endregion
                 #region Скачиваем
-                var exeBytes = await CApi.GetExe();
+                var exeBytes = await CApi.GetByster();
                 if (!exeBytes.IsSuccess)
                 {
                     throw new UExcept(ELaunch.FailLoadExe, $"Не удалось скачать файл", exeBytes.Error);

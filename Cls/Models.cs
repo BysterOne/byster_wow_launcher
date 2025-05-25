@@ -241,6 +241,13 @@ namespace Launcher.Api.Models
         // TODO: Разобраться с обновлениями с сервера
     }
     #endregion
+    #region CVersion
+    public class CVersion
+    {
+        [JsonProperty("version")]
+        public string Version { get; set; } = string.Empty;
+    }
+    #endregion
 
     #region Subscription
     public class Subscription

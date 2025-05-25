@@ -145,7 +145,8 @@
                                 x:Name="MGPM_change_password"
                                 Style="{DynamicResource SettingsButtonStyle}"
                                 Text="Сменить пароль"
-                                Cursor="Hand" />
+                                Cursor="Hand"
+                                MouseDown="MGPM_change_password_MouseDown"/>
                             <!--#endregion-->
                             <!--#region Очистка кэша -->
                             <components:CButton

@@ -27,9 +27,15 @@ namespace Launcher.Api
 
         #region Функции
         #region ToggleCompilation
-        public static async Task<UResponse<string>> GetServerVersion()
+        public static async Task<UResponse<object?>> ChangePassword(string newPassword)
         {
-            return await Request<string>("/launcher/check_updates", Method.Get);
+            return await Request<object?> ("/launcher/change_password", Method.Post, body: new { new_password = newPassword });
+        }
+        #endregion
+        #region ToggleCompilation
+        public static async Task<UResponse<CVersion>> GetServerVersion()
+        {
+            return await Request<CVersion>("/launcher/check_updates", Method.Get);
         }
         #endregion
         #region ToggleCompilation
@@ -62,13 +68,23 @@ namespace Launcher.Api
             return await Request<User>("/launcher/ping", Method.Post, body: new { coupon_code = coupon });
         }
         #endregion
+        #region GetLauncher
+        public static async Task<UResponse<byte[]>> GetLauncher()
+        {
+            return await GetExe("/launcher/download");
+        }
+        #endregion
+        #region GetByster 
+        public static async Task<UResponse<byte[]>> GetByster()
+        {
+            return await GetExe("/launcher/get_lib");
+        }
+        #endregion
         #region GetExe
-        public static async Task<UResponse<byte[]>> GetExe()
+        private static async Task<UResponse<byte[]>> GetExe(string endPoint)
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
             var _failinf = $"Не удалось выполнить запрос";
-
-            var endPoint = "/launcher/get_lib";
 
             #region try
             try
@@ -223,7 +239,7 @@ namespace Launcher.Api
                 #region Отправка
                 var response = await client.ExecuteAsync(request);
                 var data = response.Content != null ? JsonConvert.DeserializeObject<T>(response.Content.ToString()) : null;
-                if (!response.IsSuccessStatusCode || response.Content is null)
+                if (!response.IsSuccessStatusCode || (response.Content is null && typeof(T) != typeof(string)))
                 {
                     _proc.Log($"response: {response.Content}");
                     _proc.Log($"status: {response.StatusCode}");

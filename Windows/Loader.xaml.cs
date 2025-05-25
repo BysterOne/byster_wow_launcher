@@ -32,7 +32,9 @@ namespace Launcher.Windows
 
         public enum ECheckLauncherUpdates
         {
-            FailGetServerVersion
+            FailGetServerVersion,
+            CurrentVersionIsEmpty,
+            FailGetLauncher
         }
     }
     /// <summary>
@@ -312,14 +314,55 @@ namespace Launcher.Windows
             {
                 #region Текущая версия
                 var currentVersion = Assembly.GetExecutingAssembly().GetName().Version;
+                if (currentVersion is null)
+                {
+                    throw new UExcept(ECheckLauncherUpdates.CurrentVersionIsEmpty, $"Пустое значение текущей версии");
+                }
                 Pref.Log($"Version: {currentVersion}");
                 #endregion
                 #region Версия сервера
-                //var tryGetVersion = await CApi.GetServerVersion();
-                //if (!tryGetVersion.IsSuccess)
-                //{
-                //    throw new UExcept(ECheckLauncherUpdates.FailGetServerVersion, $"Не удалось получить актуальную версию", tryGetVersion.Error);
-                //}
+                return;
+                var tryGetVersion = await CApi.GetServerVersion();
+                if (!tryGetVersion.IsSuccess)
+                {
+                    throw new UExcept(ECheckLauncherUpdates.FailGetServerVersion, $"Не удалось получить актуальную версию", tryGetVersion.Error);
+                }
+                Pref.Log($"Server version: {tryGetVersion.Response.Version}");
+                #endregion
+                #region Сравнение и обновление
+                if (tryGetVersion.Response.Version != currentVersion.ToString())
+                {
+                    #region Скачивание
+                    _proc.Log($"Обновление...");
+                    var getNewLauncher = await CApi.GetLauncher();
+                    if (!getNewLauncher.IsSuccess)
+                    {
+                        throw new UExcept(ECheckLauncherUpdates.FailGetLauncher, $"Не удалось загрузить новый лаунчер", getNewLauncher.Error);
+                    }
+                    #endregion
+                    #region Сохранение
+                    Directory.CreateDirectory(AppSettings.TempBin);
+                    var name = $"BysterUpdates.exe";
+                    var pathToUpdater = Path.Combine(AppSettings.TempBin, name);
+                    await File.WriteAllBytesAsync(pathToUpdater, getNewLauncher.Response);
+                    #endregion
+                    #region Путь к данному экземпляру
+                    string filePath = Process.GetCurrentProcess().MainModule!.FileName;
+                    string thisExePath = Path.ChangeExtension(filePath, ".exe");
+                    #endregion
+                    #region Запуск
+                    ProcessStartInfo info = new ProcessStartInfo();
+                    info.Arguments = $"/C choice /C Y /N /D Y /T 1 & del \"{thisExePath}\" & rename \"{pathToUpdater}\" \"{thisExePath}\" & \"{thisExePath}\"";
+                    info.WindowStyle = ProcessWindowStyle.Hidden;
+                    info.CreateNoWindow = true;
+                    info.FileName = "cmd.exe";
+                    info.Verb = "runas";
+                    Process.Start(info);
+                    #endregion
+                    #region Выход
+                    Application.Current.Shutdown();
+                    #endregion
+                }
                 #endregion
             }
             #endregion

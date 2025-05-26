@@ -35,7 +35,7 @@ namespace Launcher.Api
         #region ToggleCompilation
         public static async Task<UResponse<CVersion>> GetServerVersion()
         {
-            return await Request<CVersion>("/launcher/check_updates", Method.Get);
+            return await Request<CVersion>("/launcher/v2/check_updates", Method.Get);
         }
         #endregion
         #region ToggleCompilation
@@ -71,17 +71,17 @@ namespace Launcher.Api
         #region GetLauncher
         public static async Task<UResponse<byte[]>> GetLauncher()
         {
-            return await GetExe("/launcher/download");
+            return await GetExe("/launcher/download", Method.Get);
         }
         #endregion
         #region GetByster 
         public static async Task<UResponse<byte[]>> GetByster()
         {
-            return await GetExe("/launcher/get_lib");
+            return await GetExe("/launcher/get_lib", Method.Post);
         }
         #endregion
         #region GetExe
-        private static async Task<UResponse<byte[]>> GetExe(string endPoint)
+        private static async Task<UResponse<byte[]>> GetExe(string endPoint, Method method)
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
             var _failinf = $"Не удалось выполнить запрос";
@@ -93,7 +93,7 @@ namespace Launcher.Api
                 var createRequest = CreateRequest(endPoint);
                 var client = createRequest.Client!;
                 var request = createRequest.Request;
-                request.Method = Method.Post;
+                request.Method = method;
                 request.AddBody(JsonConvert.SerializeObject(new { branch = GStatic.BranchStrings[AppSettings.Instance.Branch] }, GProp.JsonSeriSettings));
                 #endregion
                 #region Выполнение и обработка
@@ -114,16 +114,14 @@ namespace Launcher.Api
             #region UExcept
             catch (UExcept ex)
             {
-                Functions.Error(ex, _failinf, _proc);
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                return new(uex);
             }
             #endregion
         }
@@ -238,12 +236,21 @@ namespace Launcher.Api
                 #endregion
                 #region Отправка
                 var response = await client.ExecuteAsync(request);
+                if (!response.IsSuccessStatusCode)
+                {
+                    _proc.Log($"Response: {response.ErrorException?.Message}");
+                    _proc.Log($"Status: {response.StatusCode}");
+                    _proc.Log($"Exception: {response.Content}");
+                    var uex = new UExcept(ERequest.FailExecuteRequest, $"Не удалось выполнить запрос");
+                    uex.Data["Response"] = response.Content;
+                    uex.Data["StatusCode"] = response.StatusCode;
+                    uex.Data["ErrorException"] = response.ErrorException?.Message;
+                    throw uex;
+                }
+
                 var data = response.Content != null ? JsonConvert.DeserializeObject<T>(response.Content.ToString()) : null;
                 if (!response.IsSuccessStatusCode || (response.Content is null && typeof(T) != typeof(string)))
                 {
-                    _proc.Log($"response: {response.Content}");
-                    _proc.Log($"status: {response.StatusCode}");
-
                     var error = response.Content != null ? JsonConvert.DeserializeObject<RError>(response.Content!.ToString()) : null;
 
                     throw response.StatusCode switch
@@ -261,16 +268,15 @@ namespace Launcher.Api
             #region UExcept
             catch (UExcept ex)
             {
-                Functions.Error(ex, _failinf, _proc);
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                return new(uex);
             }
             #endregion
         }

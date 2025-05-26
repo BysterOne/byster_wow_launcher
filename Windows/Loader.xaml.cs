@@ -3,9 +3,12 @@ using Cls.Any;
 using Cls.Enums;
 using Cls.Errors;
 using Cls.Exceptions;
+using Launcher.Any;
+using Launcher.Any.LaunchExeHelperAny;
 using Launcher.Api;
 using Launcher.Api.Models;
 using Launcher.Cls;
+using Launcher.Components.Skeleton;
 using Launcher.Settings;
 using Launcher.Windows.AnyLoader.Errors;
 using Launcher.Windows.LoaderAny;
@@ -13,6 +16,7 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using NLog;
 using NLog.Config;
+using Sentry.Protocol;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -28,6 +32,7 @@ namespace Launcher.Windows
             FailCopyRegToFile,
             FailCopyConfigFolderAndClear,
             FailCheckLauncherUpdates,
+            FailCheckReferalSource,
         }
 
         public enum ECheckLauncherUpdates
@@ -35,6 +40,11 @@ namespace Launcher.Windows
             FailGetServerVersion,
             CurrentVersionIsEmpty,
             FailGetLauncher
+        }
+
+        public enum EInit
+        {
+            FailLoadDictionary,
         }
     }
     /// <summary>
@@ -68,97 +78,123 @@ namespace Launcher.Windows
         private async Task CheckReferalSource()
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
-            var filename = Path.GetFileName(Process.GetCurrentProcess().MainModule!.FileName);
-            var tryGetRefSource = await CApi.GetReferralSource(filename);
-            if (!tryGetRefSource.IsSuccess) 
-            {
-                var uerror = 
-                    new UError
-                    (
-                        ECheckReferalSource.FailApiExecuteRequest,
-                        $"Реферальный код и/или источник не обнаружен",
-                        tryGetRefSource.Error
-                    );
-                Functions.Error(uerror, uerror.Message, _proc);
-                return;
-            }
+            var _failinf = $"Не удалось определить источник";
 
-            var response = tryGetRefSource.Response;
-            if 
-            (
-                !String.IsNullOrWhiteSpace(response.ReferralCode) && 
-                response.RegisterSource != -1
-            )
+            #region try
+            try
             {
-                GProp.ReferralSource = tryGetRefSource.Response;
-                _proc.Log($"RefCode: {response.ReferralCode}, RefSource: {response.ReferralCode}");
+                var filename = Path.GetFileName(Process.GetCurrentProcess().MainModule!.FileName);
+                var tryGetRefSource = await CApi.GetReferralSource(filename);
+                if (!tryGetRefSource.IsSuccess)
+                {
+                   throw new UExcept(ECheckReferalSource.FailApiExecuteRequest,$"Реферальный код и/или источник не обнаружен", tryGetRefSource.Error);
+                }
+
+                var response = tryGetRefSource.Response;
+                if
+                (
+                    !String.IsNullOrWhiteSpace(response.ReferralCode) &&
+                    response.RegisterSource != -1
+                )
+                {
+                    GProp.ReferralSource = tryGetRefSource.Response;
+                    _proc.Log($"RefCode: {response.ReferralCode}, RefSource: {response.ReferralCode}");
+                }
             }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uex = new UExcept(ELoader.FailCheckReferalSource, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
+            }
+            #endregion
         }
         #endregion
         #region Init
         private async Task Init()
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
-            
-            #region Настройки логов
-            ConfigureNLog();
-            #endregion
-            #region Проверка версии
-            await CheckLauncherUpdates();
-            #endregion
-            #region Загрузка словаря
-            var tryLoadTranslations = await Dictionary.LoadLocal();
-            if (!tryLoadTranslations.IsSuccess)
-            {
-                
-            }
-            #endregion
+            var _failinf = $"Не удалось инициализировать лаунчер";
 
-            #region Задачи
-            await Task.WhenAll(CopyRegToFile(), CopyConfigFolderAndClearAppData());
-            #endregion
-
-            #region Авторизация, если данные сохранены
-            if
-            (
-                !String.IsNullOrWhiteSpace(AppSettings.Instance.Login) &&
-                !String.IsNullOrWhiteSpace(AppSettings.Instance.Password)
-            )
+            #region try
+            try
             {
-                #region Запрос
-                var tryLogin = await CApi.Login
-                (
-                    new LoginRequestBody
-                    {
-                        Login = AppSettings.Instance.Login,
-                        Password = AppSettings.Instance.Password
-                    }
-                );
-                if (tryLogin.IsSuccess) 
+                #region Настройки логов
+                ConfigureNLog();
+                #endregion
+                #region Проверка версии
+                await CheckLauncherUpdates();
+                #endregion
+                #region Загрузка словаря
+                var tryLoadTranslations = await Dictionary.LoadLocal();
+                if (!tryLoadTranslations.IsSuccess)
                 {
-                    #region Сохраняем данные
-                    CApi.Session = tryLogin.Response.Session;
-                    #endregion
-                    #region Главное окно
-                    OpenMainWindow();
-                    #endregion
-                    return; 
+                    throw new UExcept(EInit.FailLoadDictionary, $"Не удалось загрузить словари", tryLoadTranslations.Error);
                 }
+                #endregion
+                #region Задачи
+                await Task.WhenAll(CopyRegToFile(), CopyConfigFolderAndClearAppData());
+                #endregion
+                #region Авторизация, если данные сохранены
+                if
+                (
+                    !String.IsNullOrWhiteSpace(AppSettings.Instance.Login) &&
+                    !String.IsNullOrWhiteSpace(AppSettings.Instance.Password)
+                )
+                {
+                    #region Запрос
+                    var tryLogin = await CApi.Login
+                    (
+                        new LoginRequestBody
+                        {
+                            Login = AppSettings.Instance.Login,
+                            Password = AppSettings.Instance.Password
+                        }
+                    );
+                    if (tryLogin.IsSuccess)
+                    {
+                        #region Сохраняем данные
+                        CApi.Session = tryLogin.Response.Session;
+                        #endregion
+                        #region Главное окно
+                        OpenMainWindow();
+                        #endregion
+                        return;
+                    }
+                    #endregion
+                }
+                #endregion
+                #region В любом другом случае
+                await CheckReferalSource();
+                OpenAuthorization();
                 #endregion
             }
             #endregion
-            #region В любом другом случае
-            await CheckReferalSource(); 
-            OpenAuthorization();
+            #region UExcept
+            catch (UExcept ex)
+            {
+                Functions.Error(ex, ex.Message, _proc);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+            }
             #endregion
         }
         #endregion
         #region CriticalError
         private void CriticalError()
         {
-            this.Hide();
-            MessageBox.Show(Dictionary.Translate("Ошибка инициализации. Приложение будет закрыто"), Dictionary.Translate("Ошибка"), MessageBoxButton.OK, MessageBoxImage.Error);
-            Application.Current.Shutdown();
+            Dispatcher.Invoke(() =>
+            {
+                this.Hide();
+                MessageBox.Show(Dictionary.Translate("Ошибка инициализации. Приложение будет закрыто"), Dictionary.Translate("Ошибка"), MessageBoxButton.OK, MessageBoxImage.Error);
+                Application.Current.Shutdown();
+            });            
         }
         #endregion
         #region OpenMainWindow
@@ -238,20 +274,12 @@ namespace Launcher.Windows
                     }
                 }
             }
-            #endregion
-            #region UExcept
-            catch (UExcept ex)
-            {
-                var glerror = new UError(ELoader.FailCopyRegToFile, _failinf, ex.Error);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
-            }
-            #endregion
+            #endregion            
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                var glerror = new UError(ELoader.FailCopyRegToFile, $"{_failinf}: исключение", uerror);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+                var uex = new UExcept(ELoader.FailCopyRegToFile, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
             }
             #endregion
         }
@@ -286,19 +314,11 @@ namespace Launcher.Windows
                 #endregion
             }
             #endregion
-            #region UExcept
-            catch (UExcept ex)
-            {
-                var glerror = new UError(ELoader.FailCopyConfigFolderAndClear, _failinf, ex.Error);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
-            }
-            #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                var glerror = new UError(ELoader.FailCopyConfigFolderAndClear, $"{_failinf}: исключение", uerror);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+                var uex = new UExcept(ELoader.FailCopyConfigFolderAndClear, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
             }
             #endregion
         }
@@ -321,7 +341,6 @@ namespace Launcher.Windows
                 Pref.Log($"Version: {currentVersion}");
                 #endregion
                 #region Версия сервера
-                return;
                 var tryGetVersion = await CApi.GetServerVersion();
                 if (!tryGetVersion.IsSuccess)
                 {
@@ -330,6 +349,10 @@ namespace Launcher.Windows
                 Pref.Log($"Server version: {tryGetVersion.Response.Version}");
                 #endregion
                 #region Сравнение и обновление
+                #if DEBUG
+                return; // Отключаем обновление в режиме отладки
+                #endif
+
                 if (tryGetVersion.Response.Version != currentVersion.ToString())
                 {
                     #region Скачивание
@@ -341,9 +364,10 @@ namespace Launcher.Windows
                     }
                     #endregion
                     #region Сохранение
-                    Directory.CreateDirectory(AppSettings.TempBin);
+                    var currentFolder = AppContext.BaseDirectory;
+                    Directory.CreateDirectory(currentFolder);
                     var name = $"BysterUpdates.exe";
-                    var pathToUpdater = Path.Combine(AppSettings.TempBin, name);
+                    var pathToUpdater = Path.Combine(currentFolder, name);
                     await File.WriteAllBytesAsync(pathToUpdater, getNewLauncher.Response);
                     #endregion
                     #region Путь к данному экземпляру
@@ -366,20 +390,11 @@ namespace Launcher.Windows
                 #endregion
             }
             #endregion
-            #region UExcept
-            catch (UExcept ex)
-            {
-                var glerror = new UError(ELoader.FailCheckLauncherUpdates, _failinf, ex.Error);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
-                CriticalError();
-            }
-            #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                var glerror = new UError(ELoader.FailCheckLauncherUpdates, $"{_failinf}: исключение", uerror);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+                var uex = new UExcept(ELoader.FailCheckLauncherUpdates, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
                 CriticalError();
             }
             #endregion

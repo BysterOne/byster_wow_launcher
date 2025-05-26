@@ -135,7 +135,7 @@ namespace Launcher.Components.MainWindow
                 if (!tryGetSubscriptions.IsSuccess)
                 {
                     var except = new UExcept(EInitialization.FailLoadSubscriptions, $"Ошибка загрузки ротаций пользователей", tryGetSubscriptions.Error);
-                    Functions.Error(except, except.Error, "Ошибка загрузки ротаций", _proc);
+                    Functions.Error(except, "Ошибка загрузки ротаций", _proc);
                     return;
                 }
                 GProp.UpdateSubscriptions(tryGetSubscriptions.Response);
@@ -261,15 +261,15 @@ namespace Launcher.Components.MainWindow
             #region UExcept
             catch (UExcept ex)
             {
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                return new(uex);
             }
             #endregion
         }

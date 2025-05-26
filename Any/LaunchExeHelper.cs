@@ -16,6 +16,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Threading;
+using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Launcher.Any
 {
@@ -153,20 +154,10 @@ namespace Launcher.Any
                 #endregion
             }
             #endregion
-            #region UExcept
-            catch (UExcept ex)
-            {
-                Functions.Error(ex, _failinf, _proc);
-
-                SetError(server, Dictionary.Translate($"Во время запуска произошла неизвестная ошибка. Попробуйте позже"));
-            }
-            #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-
+                Functions.Error(ex, _failinf, _proc);
                 SetError(server, Dictionary.Translate($"Во время запуска произошла неизвестная ошибка. Попробуйте позже"));
             }
             #endregion

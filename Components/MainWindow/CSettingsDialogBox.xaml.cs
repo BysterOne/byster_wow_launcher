@@ -308,8 +308,7 @@ namespace Launcher.Components.MainWindow
                 var tryLoadLangList = await tryLoadLangListTask;
                 if (!tryLoadLangList.IsSuccess)
                 {
-                    var uerror = new UError(EShow.FailLoadLangList, $"Не удалось загрузить языки в список", tryLoadLangList.Error);
-                    Functions.Error(uerror, uerror.Message, _proc);
+                    throw new UExcept(EShow.FailLoadLangList, $"Не удалось загрузить языки в список", tryLoadLangList.Error);
                 }
                 MGPM_localization_list.NewSelectedItem += ELocalizationList_NewSelectedItem;
                 #endregion
@@ -317,8 +316,7 @@ namespace Launcher.Components.MainWindow
                 var tryLoadServerList = await tryLoadServerListTask;
                 if (!tryLoadServerList.IsSuccess)
                 {
-                    var uerror = new UError(EShow.FailLoadServersList, $"Не удалось загрузить сервера в список", tryLoadServerList.Error);
-                    Functions.Error(uerror, uerror.Message, _proc);
+                    throw new UExcept(EShow.FailLoadServersList, $"Не удалось загрузить сервера в список", tryLoadServerList.Error);
                 }
                 MGPM_server_list.NewSelectedItem += EServerList_NewSelectedItem;
                 #endregion
@@ -328,8 +326,7 @@ namespace Launcher.Components.MainWindow
                     var tryLoadBranchList = await task;
                     if (!tryLoadBranchList.IsSuccess)
                     {
-                        var uerror = new UError(EShow.FailLoadBranchList, $"Не удалось загрузить ветки в список", tryLoadBranchList.Error);
-                        Functions.Error(uerror, uerror.Message, _proc);
+                        throw new UExcept(EShow.FailLoadBranchList, $"Не удалось загрузить ветки в список", tryLoadBranchList.Error);
                     }
                     MGPM_branch_list.NewSelectedItem += EBranchList_NewSelectedItem;
                 }
@@ -346,16 +343,15 @@ namespace Launcher.Components.MainWindow
             #region UExcept
             catch (UExcept ex)
             {
-                Functions.Error(ex, _failinf, _proc);
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                return new(uex);
             }
             #endregion
         }        

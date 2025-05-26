@@ -118,8 +118,8 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
             }
             #endregion
         }

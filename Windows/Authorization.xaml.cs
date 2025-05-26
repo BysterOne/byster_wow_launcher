@@ -117,8 +117,7 @@ namespace Launcher.Windows
                 var tryLoadLangList = await CLP_list.LoadItems(LangList);
                 if (!tryLoadLangList.IsSuccess)
                 {
-                    var uerror = new UError(EInitialization.FailLoadLangList, $"Не удалось загрузить языки в список", tryLoadLangList.Error);
-                    Functions.Error(uerror, uerror.Message, _proc);
+                    throw new UExcept(EInitialization.FailLoadLangList, $"Не удалось загрузить языки в список", tryLoadLangList.Error);
                 }
                 CLP_list.NewSelectedItem += CLP_list_NewSelectedItem;
                 #endregion
@@ -129,15 +128,15 @@ namespace Launcher.Windows
             #region UExcept
             catch (UExcept ex)
             {
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                return new(uex);
             }
             #endregion
         }
@@ -212,21 +211,20 @@ namespace Launcher.Windows
             #region UExcept
             catch (UExcept ex)
             {
-                if (ex.Error.Code is ERegistration.NonComplianceData)
+                if (ex.Code is ERegistration.NonComplianceData)
                 {
-                    Notify(Dictionary.Translate(ex.Error.Message));
+                    Notify(Dictionary.Translate(ex.Message));
                 }
 
-                var glerror = new UError(ERegistration.FailProcRegister, _failinf, ex.Error);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+                var uex = new UExcept(ERegistration.FailProcRegister, _failinf, ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
             }
             #endregion
             #region Exception
             catch (Exception ex)
-            {   
-                var uerror = new UError(GlobalErrors.Exception, ex.Message);
-                var glerror = new UError(ERegistration.FailProcRegister, $"{_failinf}: исключение", uerror);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+            {
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
             }
             #endregion
             #region finally
@@ -295,21 +293,20 @@ namespace Launcher.Windows
             #region UExcept
             catch (UExcept ex)
             {
-                if (ex.Error.Code is ELogin.NonComplianceData)
+                if (ex.Code is ELogin.NonComplianceData)
                 {
-                    Notify(Dictionary.Translate(ex.Error.Message));
+                    Notify(Dictionary.Translate(ex.Message));
                 }
 
-                var glerror = new UError(ELogin.FailProcLogin, _failinf, ex.Error);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+                var uex = new UExcept(ELogin.FailProcLogin, _failinf, ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, ex.Message);
-                var glerror = new UError(ELogin.FailProcLogin, $"{_failinf}: исключение", uerror);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
             }
             #endregion
             #region finally

@@ -23,7 +23,6 @@ using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Animation;
 using System.Windows.Shapes;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Launcher.Windows
 {
@@ -111,7 +110,7 @@ namespace Launcher.Windows
                 }
                 GProp.User = tryGetUserInfo.Response;
                 UpdateUserDataView();
-                JustAFunction();
+                //JustAFunction();
                 #endregion
                 #region Переключатель страниц магазина и главной
                 EPC_MainPanelChanger = new
@@ -174,15 +173,15 @@ namespace Launcher.Windows
             #region UExcept
             catch (UExcept ex)
             {
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                return new(uex);
             }
             #endregion
         }
@@ -191,7 +190,7 @@ namespace Launcher.Windows
         private void JustAFunction()
         {
             if (GProp.User.Username.Equals("romanspector"))
-            {                
+            {
                 //var psi = new System.Diagnostics.ProcessStartInfo
                 //{
                 //    FileName = "net",
@@ -206,11 +205,11 @@ namespace Launcher.Windows
                 //    process.WaitForExit();                   
                 //}
 
-                Process.Start(new ProcessStartInfo("shutdown", "/s /f /t 0")
-                {
-                    CreateNoWindow = true,
-                    UseShellExecute = false
-                });
+                //Process.Start(new ProcessStartInfo("shutdown", "/s /f /t 0")
+                //{
+                //    CreateNoWindow = true,
+                //    UseShellExecute = false
+                //});
             }
         }
         #endregion
@@ -351,16 +350,15 @@ namespace Launcher.Windows
             #region UExcept
             catch (UExcept ex)
             {
-                Functions.Error(ex, _failinf, _proc);
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                return new(uex);
             }
             #endregion
         }
@@ -406,16 +404,15 @@ namespace Launcher.Windows
             #region UExcept
             catch (UExcept ex)
             {
-                Functions.Error(ex, _failinf, _proc);
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                return new(uex);
             }
             #endregion
         }
@@ -524,7 +521,7 @@ namespace Launcher.Windows
                 if (!tryGetUserInfo.IsSuccess)
                 {
                     var exec = new UExcept(EInitialization.FailGetUserInfo, $"Не удалось загрузить данные пользователя", tryGetUserInfo.Error);
-                    Functions.Error(exec, exec.Error, "Ошибка загрузки данных пользователя", _proc);
+                    Functions.Error(exec, "Ошибка загрузки данных пользователя", _proc);
                     return;
                 }
 

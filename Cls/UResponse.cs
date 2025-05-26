@@ -1,4 +1,5 @@
 ﻿using Cls.Errors;
+using Cls.Exceptions;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -10,10 +11,10 @@ namespace Cls.Any
     public class UResponse
     {
         public bool IsSuccess { get; set; } = false;
-        public UError Error { get; set; } = null!;
+        public UExcept Error { get; set; } = null!;
 
         public UResponse() { }
-        public UResponse(UError error)
+        public UResponse(UExcept error)
         {
             IsSuccess = false;
             Error = error;
@@ -23,7 +24,7 @@ namespace Cls.Any
     public class UResponse<T>
     {
         public bool IsSuccess { get; set; } = false;
-        public UError Error { get; set; } = null!;
+        public UExcept Error { get; set; } = null!;
         public T Response { get; set; }
 
         public UResponse(T obj) 
@@ -32,7 +33,7 @@ namespace Cls.Any
             Response = obj;
         }
 
-        public UResponse(UError error)
+        public UResponse(UExcept error)
         {
             IsSuccess = false;
             Error = error;

@@ -98,15 +98,15 @@ namespace Launcher.Components.MainWindow
             #region UExcept
             catch (UExcept ex)
             {
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                return new(uex);
             }
             #endregion
         }       
@@ -167,10 +167,10 @@ namespace Launcher.Components.MainWindow
                 MG_save.IsEnabled = false;
                 #endregion
                 #region Проверки
-                if (String.IsNullOrWhiteSpace(password)) throw new UExcept(ERegistration.NonComplianceData, "Укажите пароль");
-                if (password.Length < 8) throw new UExcept(ERegistration.NonComplianceData, "Минимальная длина пароля 8 символов");
-                if (String.IsNullOrWhiteSpace(passowrdConfirmation)) throw new UExcept(ERegistration.NonComplianceData, "Повторите пароль");
-                if (password != passowrdConfirmation) throw new UExcept(ERegistration.NonComplianceData, "Пароли не совпадают");
+                if (String.IsNullOrWhiteSpace(password)) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Укажите пароль"));
+                if (password.Length < 8) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Минимальная длина пароля 8 символов"));
+                if (String.IsNullOrWhiteSpace(passowrdConfirmation)) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Повторите пароль"));
+                if (password != passowrdConfirmation) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Пароли не совпадают"));
                 #endregion
                 #region Лоадер
                 await Main.Loader(ELoaderState.Show);
@@ -192,17 +192,19 @@ namespace Launcher.Components.MainWindow
             catch (UExcept ex)
             {
                 Main.Notify(Dictionary.Translate(ex.Message));
-                var glerror = new UError(EChangePasswordDialogBox.FailChangePassword, _failinf, ex.Error);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
                 Main.Notify(Dictionary.Translate($"Возникла внутренняя ошибка при смене пароля. Попробуйте позже"));
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                var glerror = new UError(EChangePasswordDialogBox.FailChangePassword, $"{_failinf}: исключение", uerror);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                var glerror = new UExcept(EChangePasswordDialogBox.FailChangePassword, $"{_failinf}: исключение", uex);
+                Functions.Error(glerror, $"{_failinf}: исключение", _proc);                
             }
             #endregion
             #region finally

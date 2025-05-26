@@ -243,16 +243,15 @@ namespace Launcher.Components
             #region UExcept
             catch (UExcept ex)
             {
-                Functions.Error(ex, _failinf, _proc);
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                return new(uex);
             }
             #endregion
         }
@@ -386,16 +385,15 @@ namespace Launcher.Components
             #region UExcept
             catch (UExcept ex)
             {
-                Functions.Error(ex, ex.Error, _failinf, _proc);
+                Functions.Error(ex, _failinf, _proc);
                 Error(Dictionary.Translate($"Не удалось выполнить покупку. Попробуйте позже или обратитесь в поддержку"));
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(GlobalErrors.Exception, $"Исключение: {ex.Message}");
-                var glerror = new UError(EPayDialogBox.FailProcessingBuy, $"{_failinf}: исключение", uerror);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
                 Error(Dictionary.Translate($"Не удалось выполнить покупку. Попробуйте позже или обратитесь в поддержку"));
             }
             #endregion

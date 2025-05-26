@@ -3,6 +3,7 @@ using Cls.Any;
 using Cls.Errors;
 using Cls.Exceptions;
 using Launcher.Any;
+using Launcher.Cls;
 using Launcher.Components.Skeleton;
 using System.Diagnostics;
 using System.Runtime.CompilerServices;
@@ -159,16 +160,15 @@ namespace Launcher.Components
             #region UExcept
             catch (UExcept ex)
             {
-                var glerror = new UError(ESkeleton.FailChangeState, _failinf, ex.Error);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+                var uex = new UExcept(ESkeleton.FailChangeState, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(EChange.Exception, $"Исключение: {ex.Message}");
-                var glerror = new UError(ESkeleton.FailChangeState, $"{_failinf}: исключение", uerror);
-                Functions.Error(ex, glerror, glerror.Message, _proc);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                Functions.Error(uex, $"{_failinf}: исключение", _proc);
             }
             #endregion
         }

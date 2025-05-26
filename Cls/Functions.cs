@@ -12,6 +12,7 @@ using System.Windows.Media.Imaging;
 using System.Windows.Media;
 using System.Drawing;
 using System.IO;
+using Sentry.Protocol;
 
 namespace Cls.Any
 {
@@ -82,25 +83,17 @@ namespace Cls.Any
         #region Error - Разные конструкторы ошибок
         public static void Error(UExcept exception, string message, LogBox proc)
         {
+            SentryExtensions.SendException(exception);
+
             proc.Log(message, Enums.ELogType.Error);
-            exception.Error.ToLog(proc);
-            proc.Log($"trace -> {exception.StackTrace}", Enums.ELogType.Trace);
-        }
-        public static void Error(UError error, string message, LogBox proc)
-        {
-            proc.Log(message, Enums.ELogType.Error);
-            error.ToLog(proc);
-        }
-        public static void Error(Exception exception, UError error, string message, LogBox proc)
-        {
-            proc.Log(message, Enums.ELogType.Error);
-            error.ToLog(proc);
-            proc.Log($"error -> {exception.Message}", Enums.ELogType.Error);
-            proc.Log($"trace -> {exception.StackTrace?.Replace("\n", "")}", Enums.ELogType.Trace);
-            if (exception.InnerException is not null) { SaveInnerException(exception.InnerException, proc, 0); }
+            exception.ToLog(proc);            
         }
         public static void Error(Exception exception, string message, LogBox proc)
         {
+            if (exception is UExcept ex) { Error(ex, message, proc); return; }
+            
+            SentryExtensions.SendException(exception);
+
             proc.Log(message, Enums.ELogType.Message);
             proc.Log($"error -> {exception.Message}", Enums.ELogType.Error);
             proc.Log($"trace -> {exception.StackTrace?.Replace("\n", "")}", Enums.ELogType.Trace);

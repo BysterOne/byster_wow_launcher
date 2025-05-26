@@ -3,6 +3,7 @@ using Cls.Any;
 using Cls.Errors;
 using Cls.Exceptions;
 using Launcher.Any;
+using Launcher.Cls;
 using Launcher.Components.DialogBox;
 using System.Windows;
 using System.Windows.Controls;
@@ -122,16 +123,14 @@ namespace Launcher.Components
             #region UExcept
             catch (UExcept ex)
             {
-                Functions.Error(ex, _failinf, _proc);
-                return new(ex.Error);
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uerror = new UError(EShow.Exception, $"Исключение: {ex.Message}");
-                Functions.Error(ex, uerror, $"{_failinf}: исключение", _proc);
-                return new(uerror);
+                var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                return new(uex);
             }
             #endregion
         }

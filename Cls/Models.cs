@@ -246,6 +246,9 @@ namespace Launcher.Api.Models
     {
         [JsonProperty("version")]
         public string Version { get; set; } = string.Empty;
+
+        [JsonProperty("hash")]
+        public string Hash { get; set; } = string.Empty;
     }
     #endregion
 

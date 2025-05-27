@@ -16,10 +16,13 @@ namespace Launcher
             DispatcherUnhandledException += App_DispatcherUnhandledException;
             SentrySdk.Init(o =>
             {
-                o.Dsn = "https://6c3217f76f7106e660083d117fb16c21@o4509390529822720.ingest.us.sentry.io/4509390537490432";                
-                o.Debug = true;
-                o.EnableTracing = true;
-                o.TracesSampleRate = 1.0;                
+                o.Dsn = "https://cd2f7190be9b3e31d3014ededfda7614@sentry.byster.one/19";                
+                o.TracesSampleRate = 1.0;
+                o.ProfilesSampleRate = 1.0;
+                o.IsGlobalModeEnabled = true;
+                o.SendDefaultPii = true;
+                o.CaptureFailedRequests = true;
+                o.AddProfilingIntegration();
             });
         }
 
@@ -31,7 +34,6 @@ namespace Launcher
         }
         private void Application_Startup(object sender, StartupEventArgs e)
         {
-            SentrySdk.CaptureMessage($"App launched");
             var loader = new Loader();
             WindowAnimations.ApplyFadeAnimations(ref loader);
             loader.Show();

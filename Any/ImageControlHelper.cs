@@ -6,6 +6,7 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using Sentry;
 
 namespace Launcher.Any
 {
@@ -45,7 +46,7 @@ namespace Launcher.Any
             else
             {
                 byte[] data;
-                using (var client = new HttpClient())
+                using (var client = new HttpClient(new SentryHttpMessageHandler()))
                     data = await client.GetByteArrayAsync(imageUrl, cancellationToken);
 
                 if (targetWidth <= 0 || targetHeight <= 0)

@@ -462,27 +462,13 @@ namespace Launcher.Windows
                     string thisExePath = Path.ChangeExtension(filePath, ".exe");
                     #endregion
                     #region Запуск
-                    Thread update_thread = new Thread(() => 
-                    {
-                        string dir = Path.GetDirectoryName(thisExePath);
-                        string exeName = Path.GetFileName(thisExePath);
-                        string updaterName = Path.GetFileName(pathToUpdater);
-
-                        ProcessStartInfo info = new ProcessStartInfo();
-                        info.Arguments = 
-                            $"/C choice /C Y /N /D Y /T 1 & " +
-                            $"cd /d \"{dir}\" & " +
-                            $"del \"{exeName}\" & " +
-                            $"rename \"{updaterName}\" \"{exeName}\" & " +
-                            $"\"{exeName}\"";
-
-                        info.WindowStyle = ProcessWindowStyle.Normal;
-                        info.CreateNoWindow = false;
-                        info.FileName = "cmd.exe";
-                        info.Verb = "runas";
-                        Process.Start(info);
-                    });
-                    update_thread.Start();                    
+                    ProcessStartInfo info = new ProcessStartInfo();
+                    info.Arguments = $"/C choice /C Y /N /D Y /T 1 & del \"{thisExePath}\" & rename \"{pathToUpdater}\" \"{thisExePath}\" & \"{thisExePath}\"";
+                    info.WindowStyle = ProcessWindowStyle.Hidden;
+                    info.CreateNoWindow = true;
+                    info.FileName = "cmd.exe";
+                    info.Verb = "runas";
+                    Process.Start(info);
                     #endregion
                     #region Выход
                     Dispatcher.Invoke(() => Application.Current.Shutdown());

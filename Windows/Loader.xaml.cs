@@ -39,12 +39,14 @@ namespace Launcher.Windows
         {
             FailGetServerVersion,
             CurrentVersionIsEmpty,
-            FailGetLauncher
+            FailGetLauncher,
+            LauncherUpdateRequired
         }
 
         public enum EInit
         {
             FailLoadDictionary,
+            FailCheckLauncherUpdates,
         }
     }
     /// <summary>
@@ -124,7 +126,12 @@ namespace Launcher.Windows
                 ConfigureNLog();
                 #endregion
                 #region Проверка версии
-                await CheckLauncherUpdates();
+                var tryCheckVersion = await CheckLauncherUpdates();
+                if (!tryCheckVersion.IsSuccess)
+                {
+                    if (tryCheckVersion.Error.Code is ECheckLauncherUpdates.LauncherUpdateRequired) return;
+                    throw new UExcept(EInit.FailCheckLauncherUpdates, $"Не удалось проверить обновления для лаунчера", tryCheckVersion.Error);
+                }
                 #endregion
                 #region Загрузка словаря
                 var tryLoadTranslations = await Dictionary.LoadLocal();
@@ -175,6 +182,7 @@ namespace Launcher.Windows
             catch (UExcept ex)
             {
                 Functions.Error(ex, ex.Message, _proc);
+                CriticalError();
             }
             #endregion
             #region Exception
@@ -182,6 +190,7 @@ namespace Launcher.Windows
             {
                 var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
                 Functions.Error(uex, $"{_failinf}: исключение", _proc);
+                CriticalError();
             }
             #endregion
         }
@@ -324,7 +333,7 @@ namespace Launcher.Windows
         }
         #endregion
         #region CheckLauncherUpdates
-        private async Task CheckLauncherUpdates()
+        private async Task<UResponse> CheckLauncherUpdates()
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
             var _failinf = $"Не удалось проверить и/или обновить лаунчер";
@@ -349,11 +358,11 @@ namespace Launcher.Windows
                 Pref.Log($"Server version: {tryGetVersion.Response.Version}");
                 #endregion
                 #region Сравнение и обновление
+                var isDebug = false;
                 #if DEBUG
-                return; // Отключаем обновление в режиме отладки
+                isDebug = true; // Отключаем обновление в режиме отладки
                 #endif
-
-                if (tryGetVersion.Response.Version != currentVersion.ToString())
+                if (tryGetVersion.Response.Version != currentVersion.ToString() && !isDebug)
                 {
                     #region Скачивание
                     _proc.Log($"Обновление...");
@@ -386,16 +395,25 @@ namespace Launcher.Windows
                     #region Выход
                     Application.Current.Shutdown();
                     #endregion
+                    #region Ошибка для обновления
+                    throw new UExcept(ECheckLauncherUpdates.LauncherUpdateRequired, $"Обновление лаунчера");
+                    #endregion
                 }
                 #endregion
+
+                return new() { IsSuccess = true };
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                return new(ex);
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                var uex = new UExcept(ELoader.FailCheckLauncherUpdates, _failinf, ex);
-                Functions.Error(uex, uex.Message, _proc);
-                CriticalError();
+                return new(new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex));
             }
             #endregion
         }

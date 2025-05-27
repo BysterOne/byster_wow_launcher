@@ -393,7 +393,7 @@ namespace Launcher.Windows
                     Process.Start(info);
                     #endregion
                     #region Выход
-                    Application.Current.Shutdown();
+                    Dispatcher.Invoke(() => Application.Current.Shutdown());
                     #endregion
                     #region Ошибка для обновления
                     throw new UExcept(ECheckLauncherUpdates.LauncherUpdateRequired, $"Обновление лаунчера");

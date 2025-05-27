@@ -180,6 +180,7 @@
 		<KeyExtractorTask AssemblyPath="$(TargetPath)" OutputFile="$(MSBuildProjectDirectory)\Localizations\keys.json" />
 	</Target>
 
+	<!-- <PropertyGroup Condition="'$(Configuration)' == 'Release'"> -->
 	<PropertyGroup Condition="'$(CI)' == 'true'">
 		<SentryOrg>byster</SentryOrg>
 		<SentryProject>launcher-wow</SentryProject>

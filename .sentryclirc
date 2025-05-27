@@ -1,0 +1,6 @@
+[auth]
+token=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
+[defaults]
+url=https://sentry.byster.one
+project=launcher-wow
+org=byster

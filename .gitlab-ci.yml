@@ -27,7 +27,7 @@ build:
        - bin/Release/net9.0-windows/win-x64/publish/*.pdb
      expire_in: 1 hour
   script:
-  - 'dotnet publish -v d /property:WarningLevel=0'
+  - 'dotnet publish -v n /property:WarningLevel=0'
 
 deploy:
   stage: deploy

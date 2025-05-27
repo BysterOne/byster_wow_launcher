@@ -26,6 +26,7 @@ build:
        - bin/Release/net9.0-windows/win-x64/publish/*.pdb
      expire_in: 1 hour
   script:
+  - 'dotnet build -c Release'
   - 'dotnet publish'
 
 deploy:

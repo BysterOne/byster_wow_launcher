@@ -15,6 +15,7 @@
 		<GenerateAssemblyInfo>false</GenerateAssemblyInfo>
 		<ApplicationManifest>app.manifest</ApplicationManifest>
 		<ApplicationIcon>byster_icon.ico</ApplicationIcon>
+		<EmbedAllSources>True</EmbedAllSources>
 	</PropertyGroup>
 
 	<ItemGroup>
@@ -116,8 +117,8 @@
 		<PackageReference Include="NLog.Extensions.Logging" Version="5.4.0" />
 		<PackageReference Include="QRCoder" Version="1.6.0" />
 		<PackageReference Include="RestSharp" Version="112.1.0" />
-		<PackageReference Include="Sentry" Version="4.3.0" />
-		<PackageReference Include="Sentry.Profiling" Version="4.3.0" />
+		<PackageReference Include="Sentry" Version="5.8.0" />
+		<PackageReference Include="Sentry.Profiling" Version="5.8.0" />
 		<PackageReference Include="VirtualizingWrapPanel" Version="2.1.2" />
 	</ItemGroup>
 
@@ -178,4 +179,13 @@
 	<Target Name="ExtractTranslateKeys" AfterTargets="Build">
 		<KeyExtractorTask AssemblyPath="$(TargetPath)" OutputFile="$(MSBuildProjectDirectory)\Localizations\keys.json" />
 	</Target>
+
+	<PropertyGroup Condition="'$(CI)' == 'true'">
+		<SentryOrg>byster</SentryOrg>
+		<SentryProject>launcher-wow</SentryProject>
+		<SentryUrl>https://sentry.byster.one</SentryUrl>
+		<SentryCreateRelease>true</SentryCreateRelease>
+		<SentrySetCommits>true</SentrySetCommits>
+		<SentryUploadSymbols>true</SentryUploadSymbols>
+	</PropertyGroup>
 </Project>

@@ -78,7 +78,7 @@
             Value="Normal" />
         <Setter
             Property="Margin"
-            Value="5 9 10 9" />
+            Value="15 10 10 10" />
         <Setter
             Property="VerticalAlignment"
             Value="Center" />

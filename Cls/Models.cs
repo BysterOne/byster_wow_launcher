@@ -89,8 +89,7 @@ namespace Launcher.Api.Models
         public EUserPermissions Permissions { get; set; }
 
         [JsonProperty("branches")]
-        [JsonConverter(typeof(BranchesConverter))]
-        public List<EBranch> Branches { get; set; } = [];
+        public List<string> Branches { get; set; } = [];
     }
     #endregion
     #region Product
@@ -249,6 +248,14 @@ namespace Launcher.Api.Models
 
         [JsonProperty("hash")]
         public string Hash { get; set; } = string.Empty;
+    }
+    #endregion
+    #region COldConfig
+    public class COldConfig
+    {
+        public string Login { get; set; } = string.Empty;
+        public string Password { get; set; } = string.Empty;
+        public bool Console { get; set; } = false;
     }
     #endregion
 

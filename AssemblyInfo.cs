@@ -16,5 +16,5 @@ using System.Windows;
 [assembly: AssemblyCompany("Byster")]
 [assembly: AssemblyProduct("Byster")]
 
-[assembly: AssemblyVersion("5.0.0.2")]
-[assembly: AssemblyFileVersion("5.0.0.2")]
+[assembly: AssemblyVersion("5.0.0.3")]
+[assembly: AssemblyFileVersion("5.0.0.3")]

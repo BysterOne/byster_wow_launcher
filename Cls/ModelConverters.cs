@@ -11,6 +11,32 @@ using System.Threading.Tasks;
 
 namespace Launcher.Cls.ModelConverters
 {
+    #region BoolAsIntJsonConverter
+    public class BoolAsIntJsonConverter : JsonConverter<bool>
+    {
+        public override void WriteJson(JsonWriter writer, bool value, JsonSerializer serializer)
+        {
+            writer.WriteValue(value ? 1 : 0);
+        }
+
+        public override bool ReadJson(JsonReader reader, Type objectType, bool existingValue, bool hasExistingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Integer)
+            {
+                return Convert.ToInt32(reader.Value) != 0;
+            }
+            if (reader.TokenType == JsonToken.String)
+            {
+                return reader.Value.ToString() == "true";
+            }
+            if (reader.TokenType == JsonToken.Boolean)
+            {
+                return (bool)reader.Value;
+            }
+            throw new JsonSerializationException($"Unexpected token {reader.TokenType} when parsing boolean.");
+        }
+    }
+    #endregion
     #region BranchesConverter
     public class BranchesConverter : JsonConverter
     {

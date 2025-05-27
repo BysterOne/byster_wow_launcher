@@ -94,7 +94,7 @@ namespace Launcher.Api
                 var client = createRequest.Client!;
                 var request = createRequest.Request;
                 request.Method = method;
-                request.AddBody(JsonConvert.SerializeObject(new { branch = GStatic.BranchStrings[AppSettings.Instance.Branch] }, GProp.JsonSeriSettings));
+                request.AddBody(JsonConvert.SerializeObject(new { branch = AppSettings.Instance.Branch }, GProp.JsonSeriSettings));
                 #endregion
                 #region Выполнение и обработка
                 var response = await client.ExecuteAsync(request);                

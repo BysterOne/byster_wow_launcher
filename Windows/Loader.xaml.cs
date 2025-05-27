@@ -47,6 +47,7 @@ namespace Launcher.Windows
         {
             FailLoadDictionary,
             FailCheckLauncherUpdates,
+            FailSyncConfigs,
         }
     }
     /// <summary>
@@ -140,8 +141,16 @@ namespace Launcher.Windows
                     throw new UExcept(EInit.FailLoadDictionary, $"Не удалось загрузить словари", tryLoadTranslations.Error);
                 }
                 #endregion
+                #region Синхронизация настроек
+                var trySyncSettings = await SyncConfigs();
+                if (!trySyncSettings.IsSuccess)
+                {
+                    var uex = new UExcept(EInit.FailSyncConfigs, $"Не удалось синхронизировать конфиги", trySyncSettings.Error);
+                    Functions.Error(uex, uex.Message, _proc);
+                }
+                #endregion
                 #region Задачи
-                await Task.WhenAll(CopyRegToFile(), CopyConfigFolderAndClearAppData());
+                await Task.WhenAll(CopyConfigFolderAndClearAppData());
                 #endregion
                 #region Авторизация, если данные сохранены
                 if
@@ -248,6 +257,75 @@ namespace Launcher.Windows
             }
         }
         #endregion
+        #region SyncConfigs
+        private async Task<UResponse> SyncConfigs()
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось синхронизировать настройки";
+
+            #region try
+            try
+            {
+                #region Если уже есть файл
+                var oldConfigsPath = Path.Combine(AppSettings.RootFolder, "reg_config.json");
+                if (File.Exists(oldConfigsPath))
+                {
+                    var oldObj = JsonConvert.DeserializeObject<COldConfig>(File.ReadAllText(oldConfigsPath));
+                    if (oldObj is not null)
+                    {
+                        if (String.IsNullOrWhiteSpace(AppSettings.Instance.Login)) AppSettings.Instance.Login = oldObj.Login;
+                        if (String.IsNullOrWhiteSpace(AppSettings.Instance.Password)) AppSettings.Instance.Password = oldObj.Password;
+                        AppSettings.Instance.Console = true;
+                        AppSettings.Save();
+
+                        try { File.Delete(oldConfigsPath); } catch { }
+
+                        return new() { IsSuccess = true };
+                    }                   
+                }
+                #endregion
+                #region В ином случае смотрим реестр
+                using (RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"Software\Byster"))
+                {
+                    if (key is not null)
+                    {
+                        foreach (var valueName in key.GetValueNames())
+                        {
+                            switch (valueName.ToLower())
+                            {
+                                case "login": AppSettings.Instance.Login = key.GetValue(valueName)!.ToString()!; break;
+                                case "password": AppSettings.Instance.Password = key.GetValue(valueName)!.ToString()!; break;
+                            }
+                        }
+                        AppSettings.Instance.Console = true;
+                        AppSettings.Save();
+                        return new() { IsSuccess = true };
+                    }
+                }
+                #endregion
+                #region await
+                await Task.Run(() => { return; });
+                #endregion
+
+                return new() { IsSuccess = true };
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                return new(ex);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uerror = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);               
+                return new(uerror);
+            }
+            #endregion
+        }
+        #endregion
+
         #region CopyRegToFile
         private async Task CopyRegToFile()
         {
@@ -272,13 +350,13 @@ namespace Launcher.Windows
                         await File.WriteAllTextAsync(pathToSave, json);
                         #endregion
                         #region Удаляем раздел
-                        using (RegistryKey? parent = Registry.CurrentUser.OpenSubKey("Software", writable: true))
-                        {
-                            if (parent is not null && parent.OpenSubKey("Byster") is not null)
-                            {
-                                parent.DeleteSubKeyTree("Byster");
-                            }
-                        }
+                        //using (RegistryKey? parent = Registry.CurrentUser.OpenSubKey("Software", writable: true))
+                        //{
+                        //    if (parent is not null && parent.OpenSubKey("Byster") is not null)
+                        //    {
+                        //        parent.DeleteSubKeyTree("Byster");
+                        //    }
+                        //}
                         #endregion
                     }
                 }

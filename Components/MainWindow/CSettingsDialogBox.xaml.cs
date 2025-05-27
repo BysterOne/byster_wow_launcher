@@ -138,9 +138,9 @@ namespace Launcher.Components.MainWindow
         #region EBranchList_NewSelectedItem
         private void EBranchList_NewSelectedItem(CList.CListItem item)
         {
-            var branch = (EBranch)item.Id;
+            var branch = GProp.User.Branches[(int)item.Id];
 
-            if (branch == AppSettings.Instance.Branch) return;
+            if (branch.ToLower() == AppSettings.Instance.Branch) return;
 
             AppSettings.Instance.Branch = branch;
             AppSettings.Save();
@@ -280,11 +280,16 @@ namespace Launcher.Components.MainWindow
                 var branchesList = new List<CList.CListItem>();
                 foreach (var branch in GProp.User.Branches)
                 {
-                    branchesList.Add(new((int)branch, GStatic.BranchStrings[branch].ToUpper()));
+                    branchesList.Add(new(GProp.User.Branches.IndexOf(branch), branch.ToUpper()));
                 }
+                var selected = 
+                    GProp.User.Branches.Any(x => x.Equals(AppSettings.Instance.Branch, StringComparison.CurrentCultureIgnoreCase)) ?
+                    branchesList.IndexOf(branchesList.First(x => x.Name.Equals(AppSettings.Instance.Branch, StringComparison.CurrentCultureIgnoreCase))) : 
+                    0;
+
                 var tryLoadBranchListTask =
                     branchesList.Count > 0 ?
-                    MGPM_branch_list.LoadItems(branchesList, branchesList.IndexOf(branchesList.First(x => x.Id == (int)AppSettings.Instance.Branch))) :
+                    MGPM_branch_list.LoadItems(branchesList, selected) :
                     new Task(() => { return; });
                 #endregion
                 #region Ожидаем завершения задача
@@ -415,7 +420,7 @@ namespace Launcher.Components.MainWindow
             #endregion
             #region Шифрование
             var aviableToggle = 
-                GProp.User.Branches.Contains(EBranch.Test) && 
+                GProp.User.Branches.Contains("test") && 
                 (
                     perms.HasFlag(EUserPermissions.ToggleEncrypt) ||
                     perms.HasFlag(EUserPermissions.ExternalDeveloper)

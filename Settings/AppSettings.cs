@@ -1,4 +1,5 @@
 ﻿using Launcher.Any.GlobalEnums;
+using Launcher.Cls.ModelConverters;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Settings.Enums;
 using Newtonsoft.Json;
@@ -30,10 +31,14 @@ namespace Launcher.Settings
         #region Параметры
         public ELang Language { get => _lang; set { _lang = value; LanguageChanged?.Invoke(value); } }
         public EServer Server { get; set; } = EServer.Staging;
-        public EBranch Branch { get; set; } = EBranch.Master;
+        public string Branch { get; set; } = "master";
+
+        [JsonConverter(typeof(BoolAsIntJsonConverter))]
+        public bool Console { get; set; } = false;
+
         public string Login { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public ObservableCollection<CServer> Servers { get; set; } = [];
+        public ObservableCollection<CServer> Servers { get; set; } = [];        
         #endregion
 
         public static AppSettings Instance

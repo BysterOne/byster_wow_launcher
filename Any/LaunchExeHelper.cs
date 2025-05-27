@@ -1,22 +1,14 @@
 ﻿using Cls;
 using Cls.Any;
-using Cls.Errors;
 using Cls.Exceptions;
 using Launcher.Any.LaunchExeHelperAny;
 using Launcher.Api;
 using Launcher.Cls;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Settings;
-using System;
-using System.Collections.Concurrent;
-using System.Collections.Generic;
+using PEFile;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System.Windows.Threading;
-using static System.Runtime.InteropServices.JavaScript.JSType;
 
 namespace Launcher.Any
 {
@@ -37,6 +29,8 @@ namespace Launcher.Any
         public enum ELaunch
         {
             FailLoadExe,
+            FailGetLibVersion,
+            FailRunExe,
         }
 
         public class LaunchItem
@@ -90,47 +84,87 @@ namespace Launcher.Any
                 UpdateStatus(server, ELaunchState.Downloading);
                 #endregion
                 #region Наличие папки
-                if (!Directory.Exists(AppSettings.TempBin)) Directory.CreateDirectory(AppSettings.TempBin);
+                await Task.Run(() => Thread.Sleep(300));
+                UpdateStatus(server, ELaunchState.Verifying);
+
+                VerifyFolders();
+                var saveDir = GProp.User.VMProtect ? AppSettings.ProtectedFolder : AppSettings.UnprotectedFolder;
                 #endregion
+                #region Получение версии
+                var tryGetLibVersion = await CApi.GetLibVersion();
+                if (!tryGetLibVersion.IsSuccess)
+                {
+                    throw new UExcept(ELaunch.FailGetLibVersion, $"Не удалось получить версию либы", tryGetLibVersion.Error);
+                }
+                var currentVersion = tryGetLibVersion.Response.Version;
+                #endregion
+                #region Проверка наличия файла
+                var fileDir = Path.Combine(saveDir, currentVersion);
+                if (Directory.Exists(fileDir))
+                {
+                    var exeFile = Directory.GetFiles(fileDir, "*.exe").FirstOrDefault();
+                    if (exeFile is not null)
+                    {
+                        var tryRun = await Run(server, exeFile);
+                        if (!tryRun.IsSuccess) throw new UExcept(ELaunch.FailRunExe, $"Не удалось запустить исполняемый файл", tryRun.Error);
+                        return;
+                    }
+                }
+                #endregion
+                #region Установка
                 #region Скачиваем
-                var exeBytes = await CApi.GetByster();
+                var exeBytes = await CApi.GetLib();
                 if (!exeBytes.IsSuccess)
                 {
                     throw new UExcept(ELaunch.FailLoadExe, $"Не удалось скачать файл", exeBytes.Error);
                 }
                 #endregion
-                #region Проверяем установлен ли уже
+                #region Сохраняем
+                Directory.CreateDirectory(fileDir);
+                var pathName = $"{Functions.GetMd5Hash(GProp.User.Username + Guid.NewGuid().ToString())[..12]}.exe";
+                var pathExe = Path.Combine(fileDir, pathName);
+
                 await Task.Run(() => Thread.Sleep(300));
-                UpdateStatus(server, ELaunchState.Verifying);
+                UpdateStatus(server, ELaunchState.Saving);
 
-                var needSave = true;
-                var pathName = $"{Functions.GetMd5Hash(GProp.User.Username)[13..]}.exe";
-                var pathExe = Path.Combine(AppSettings.TempBin, pathName);
-                if (File.Exists(pathExe))
-                {
-                    #region Сравниваем
-                    var downloadedHash = Functions.GetMd5Hash(exeBytes.Response);
-
-                    byte[] localBytes = await File.ReadAllBytesAsync(pathExe);
-                    var localHash = Functions.GetMd5Hash(localBytes);
-
-                    if (string.Equals(localHash, downloadedHash, StringComparison.OrdinalIgnoreCase)) needSave = false;
-                    #endregion
-                }
-                #endregion
-                #region Если надо сохранить/обновить
-                if (needSave)
-                {
-                    await Task.Run(() => Thread.Sleep(300));
-                    UpdateStatus(server, ELaunchState.Saving);
-
-                    await File.WriteAllBytesAsync(pathExe, exeBytes.Response);
-                }
+                await File.WriteAllBytesAsync(pathExe, exeBytes.Response);
                 #endregion
                 #region Запускаем
+                var tryRunExe = await Run(server, pathExe);
+                if (!tryRunExe.IsSuccess) throw new UExcept(ELaunch.FailRunExe, $"Не удалось запустить исполняемый файл", tryRunExe.Error);
+                #endregion
+                #endregion
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                Functions.Error(ex, _failinf, _proc);
+                SetError(server, Dictionary.Translate($"Во время запуска произошла неизвестная ошибка. Попробуйте позже"));
+            }
+            #endregion
+            #region finally
+            finally
+            {
+                RemoveItem(server);
+            }
+            #endregion
+        }
+        #endregion
+        #region Run
+        private static async Task<UResponse> Run(CServer server, string pathExe)
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось выполнить запуск";
+
+            #region try
+            try
+            {
+                #region Статус
                 await Task.Run(() => Thread.Sleep(300));
                 UpdateStatus(server, ELaunchState.Launching);
-
+                #endregion
+                #region Запуск процесса
                 var psi = new ProcessStartInfo
                 {
                     FileName = pathExe,
@@ -145,22 +179,28 @@ namespace Launcher.Any
                     UpdateStatus(server, ELaunchState.Launched);
                 }
                 #endregion
-
+                #region Статус
                 await Task.Run(() => Thread.Sleep(300));
                 UpdateStatus(server, ELaunchState.Launched);
-
-                #region Удаляем
-                RemoveItem(server);
                 #endregion
+
+                return new() { IsSuccess = true };
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                Functions.Error(ex, _failinf, _proc);
-                SetError(server, Dictionary.Translate($"Во время запуска произошла неизвестная ошибка. Попробуйте позже"));
+                var uerror = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
+                return new(uerror);
             }
             #endregion
+        }
+        #endregion
+        #region VerifyFolders
+        public static void VerifyFolders()
+        {
+            if (GProp.User.VMProtect && Directory.Exists(AppSettings.UnprotectedFolder))
+                    try { Directory.Delete(AppSettings.UnprotectedFolder, true); } catch (Exception ex) { Debugger.Break(); }
         }
         #endregion
         #region SetError

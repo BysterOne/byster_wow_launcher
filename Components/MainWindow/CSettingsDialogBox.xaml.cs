@@ -68,7 +68,17 @@ namespace Launcher.Components.MainWindow
         #region ELauncherUpdatedEvent
         private async Task ELauncherUpdatedEvent(ELauncherUpdate updates, object? data)
         {
-            if (updates.HasFlag(ELauncherUpdate.User)) await Dispatcher.InvokeAsync(() => UpdateUserPermissions());
+            if (updates.HasFlag(ELauncherUpdate.User))
+            {
+                await Dispatcher.InvokeAsync(() =>
+                {
+                    UpdateUserPermissions();
+
+                    MGPMCP_value.SelectedIndex = GProp.User.Compilation ? 1 : 0;
+                    MGPMTEP_value.SelectedIndex = GProp.User.Encryption ? 1 : 0;
+                    MGPMVP_value.SelectedIndex = GProp.User.VMProtect ? 1 : 0;
+                });               
+            }
         }
         #endregion
         #region ELocalizationList_NewSelectedItem
@@ -410,21 +420,29 @@ namespace Launcher.Components.MainWindow
             var perms = GProp.User.Permissions;
             
             #region Выбор сервера
-            var aviableChooseServer = perms.HasFlag(EUserPermissions.Tester) || perms.HasFlag(EUserPermissions.ExternalDeveloper);
+            var aviableChooseServer = 
+                perms.HasFlag(EUserPermissions.Tester) || 
+                perms.HasFlag(EUserPermissions.ExternalDeveloper) || 
+                perms.HasFlag(EUserPermissions.Superuser);
             MGPM_server_panel.Visibility = aviableChooseServer ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Расширенные настройки
-            var aviableAdvanced = GProp.User.Permissions.HasFlag(EUserPermissions.ExternalDeveloper);
+            var aviableAdvanced = 
+                GProp.User.Permissions.HasFlag(EUserPermissions.ExternalDeveloper) ||
+                perms.HasFlag(EUserPermissions.Superuser);
             MGH_buttons_panel.Visibility = aviableAdvanced ? Visibility.Visible : Visibility.Collapsed;
             MGH_header.Visibility = aviableAdvanced ? Visibility.Collapsed : Visibility.Visible;
             #endregion
             #region Шифрование
             var aviableToggle = 
-                GProp.User.Branches.Contains("test") && 
                 (
-                    perms.HasFlag(EUserPermissions.ToggleEncrypt) ||
-                    perms.HasFlag(EUserPermissions.ExternalDeveloper)
-                );
+                    GProp.User.Branches.Contains("test") && 
+                    (
+                        perms.HasFlag(EUserPermissions.ToggleEncrypt) ||
+                        perms.HasFlag(EUserPermissions.ExternalDeveloper)
+                    )
+                ) ||
+                perms.HasFlag(EUserPermissions.Superuser);
             MGPM_toggle_encryption_panel.Visibility = aviableToggle ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Ветки
@@ -432,7 +450,10 @@ namespace Launcher.Components.MainWindow
             MGPM_branch_panel.Visibility = aviableBranches ? Visibility.Visible: Visibility.Collapsed;
             #endregion
             #region Админ панель
-            MGPM_admin_panel_button.Visibility = perms.HasFlag(EUserPermissions.AdminSiteAccess) ? Visibility.Visible : Visibility.Collapsed;
+            var aviableAdminPanel =
+                perms.HasFlag(EUserPermissions.AdminSiteAccess) ||
+                perms.HasFlag(EUserPermissions.Superuser);
+            MGPM_admin_panel_button.Visibility = aviableAdminPanel ? Visibility.Visible : Visibility.Collapsed;
             #endregion
         }
         #endregion
@@ -494,14 +515,7 @@ namespace Launcher.Components.MainWindow
                 Main.Notify(Dictionary.Translate($"Не удалось переключить"));
                 await Main.Loader(ELoaderState.Hide);
                 return;
-            }
-
-            switch (toggle)
-            {
-                case EToggle.Compilation: GProp.User.Compilation = newValue is 1; break;
-                case EToggle.VMProtect: GProp.User.VMProtect = newValue is 1; break;
-                case EToggle.Encryption: GProp.User.Encryption = newValue is 1; break;
-            }
+            }            
 
             _ = GProp.Update(ELauncherUpdate.User, tryExecute.Response);
             _ = Main.Loader(ELoaderState.Hide);

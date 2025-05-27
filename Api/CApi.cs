@@ -74,8 +74,14 @@ namespace Launcher.Api
             return await GetExe("/launcher/download", Method.Get);
         }
         #endregion
-        #region GetByster 
-        public static async Task<UResponse<byte[]>> GetByster()
+        #region GetLibVersion
+        public static async Task<UResponse<CVersion>> GetLibVersion()
+        {
+            return await Request<CVersion>("/launcher/v2/get_lib_version", Method.Post, body: new { branch = AppSettings.Instance.Branch });
+        }
+        #endregion
+        #region GetLib 
+        public static async Task<UResponse<byte[]>> GetLib()
         {
             return await GetExe("/launcher/get_lib", Method.Post);
         }
@@ -294,7 +300,8 @@ namespace Launcher.Api
                     {
                         EServer.Staging => "https://api.staging.byster.one/",
                         _ => "https://api.byster.one/",
-                    })
+                    }),
+                    FollowRedirects = true,
                 };
                 #endregion
                 client = new RestClient(options);

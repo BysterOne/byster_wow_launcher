@@ -266,25 +266,7 @@ namespace Launcher.Windows
             #region try
             try
             {
-                #region Если уже есть файл
-                var oldConfigsPath = Path.Combine(AppSettings.RootFolder, "reg_config.json");
-                if (File.Exists(oldConfigsPath))
-                {
-                    var oldObj = JsonConvert.DeserializeObject<COldConfig>(File.ReadAllText(oldConfigsPath));
-                    if (oldObj is not null)
-                    {
-                        if (String.IsNullOrWhiteSpace(AppSettings.Instance.Login)) AppSettings.Instance.Login = oldObj.Login;
-                        if (String.IsNullOrWhiteSpace(AppSettings.Instance.Password)) AppSettings.Instance.Password = oldObj.Password;
-                        AppSettings.Instance.Console = true;
-                        AppSettings.Save();
-
-                        try { File.Delete(oldConfigsPath); } catch { }
-
-                        return new() { IsSuccess = true };
-                    }                   
-                }
-                #endregion
-                #region В ином случае смотрим реестр
+                #region Смотрим реестр
                 using (RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"Software\Byster"))
                 {
                     if (key is not null)

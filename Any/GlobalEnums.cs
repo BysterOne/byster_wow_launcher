@@ -29,6 +29,7 @@ namespace Launcher.Any.GlobalEnums
     public enum EUserPermissions
     {        
         None,
+        Superuser,
         ToggleEncrypt,
         AdminSiteAccess,
         CanToggleCompilation,
@@ -36,7 +37,7 @@ namespace Launcher.Any.GlobalEnums
         CanToggleVmprotect,
         ExternalDeveloper,
         DoNotBan,
-        Tester
+        Tester,
     }
 
     public enum EBranch

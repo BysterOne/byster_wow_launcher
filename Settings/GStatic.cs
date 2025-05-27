@@ -24,6 +24,7 @@ namespace Launcher.Settings
 
         public static Dictionary<EUserPermissions, string> PermissionsStrings = new Dictionary<EUserPermissions, string>
         {
+            { EUserPermissions.Superuser, "superuser" },
             { EUserPermissions.ToggleEncrypt, "shop.toggle_encrypt" },
             { EUserPermissions.AdminSiteAccess, "launcher.admin_site_access" },
             { EUserPermissions.CanToggleCompilation, "launcher.can_toggle_compilation" },

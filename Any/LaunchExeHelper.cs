@@ -168,7 +168,7 @@ namespace Launcher.Any
                 var psi = new ProcessStartInfo
                 {
                     FileName = pathExe,
-                    Arguments = $"\"{server.PathToExe}\"",
+                    Arguments = $"\"{server.PathToExe}\" \"{AppDomain.CurrentDomain.BaseDirectory}\"",
                     UseShellExecute = true,
                     Verb = "runas"
                 };

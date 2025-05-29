@@ -439,7 +439,7 @@ namespace Launcher.Components.MainWindow
             MGPMTC_header.Text = Dictionary.Translate($"Консоль");
             MGHBP_main.Text = Dictionary.Translate($"ОСНОВНЫЕ");
             MGHBP_advanced.Text = Dictionary.Translate($"РАСШИРЕННЫЕ");
-            MGPM_redeem.Placeholder = Dictionary.Translate($"Погасить купон");
+            MGPM_redeem.Placeholder = Dictionary.Translate($"Активировать купон");
             MGPM_clear_cache.Text = Dictionary.Translate($"Очистить кэш");
             MGPM_change_password.Text = Dictionary.Translate($"Сменить пароль");
             MGPM_server_header.Text = Dictionary.Translate($"Сервер");
@@ -484,6 +484,12 @@ namespace Launcher.Components.MainWindow
                 perms.HasFlag(EUserPermissions.CanToggleCompilation) ||
                 perms.HasFlag(EUserPermissions.Superuser);
             MGPM_compilation_panel.Visibility = AvailableToggleCompilation ? Visibility.Visible : Visibility.Collapsed;
+            #endregion
+            #region Компиляция
+            var AvailableToggleVMProtect =
+                perms.HasFlag(EUserPermissions.CanToggleVmprotect) ||
+                perms.HasFlag(EUserPermissions.Superuser);
+            MGPM_vmprotect_panel.Visibility = AvailableToggleVMProtect ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Ветки
             var AvailableBranches = GProp.User.Branches.Count > 1;
@@ -576,7 +582,6 @@ namespace Launcher.Components.MainWindow
 
             if (panel is EPC_Panels.Main) MGPA_git.Width = 150;
         }
-
         #endregion
 
         #endregion

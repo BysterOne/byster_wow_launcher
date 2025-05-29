@@ -12,6 +12,7 @@ using Launcher.Settings.Enums;
 using Newtonsoft.Json;
 using RestSharp;
 using System.Net;
+using System.Net.Http;
 using System.Runtime.CompilerServices;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.Tab;
 
@@ -307,10 +308,10 @@ namespace Launcher.Api
                         EServer.Staging => "https://api.staging.byster.one/",
                         _ => "https://api.byster.one/",
                     }),
-                    FollowRedirects = true,
+                    FollowRedirects = true,                    
                 };
                 #endregion
-                client = new RestClient(options);
+                client = new RestClient(new HttpClient(new SentryHttpMessageHandler()), options);
             }
             var request = new RestRequest(requestUrl);
             if (!String.IsNullOrWhiteSpace(Session)) request.AddHeader("Authorization", Session);

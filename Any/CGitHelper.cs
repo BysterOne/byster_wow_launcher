@@ -126,6 +126,8 @@ namespace Launcher.Any
                 _ = RunNextAsync();
                 #endregion
 
+                await Task.Run(() => { return; });
+
                 return new() { IsSuccess = true };
             }
             #endregion
@@ -207,46 +209,33 @@ namespace Launcher.Any
                 GitTaskStatusChanged?.Invoke(completion, task);
                 #endregion
 
-            }
-            #endregion
-            #region UExcept
-            catch (UExcept ex)
-            {
-                var uex = new UExcept(EGitHelper.FailProcessTaskAsync, $"{_failinf}: ошибка", ex);
-                Functions.Error(uex, uex.Message, _proc);
+                #region Иммитация
+                await Task.Run(() => Thread.Sleep(1000));
+                #endregion
+
+                #region Успешное выполнение
+                task.State = EGitTaskState.Finished;
+                GitTaskStatusChanged?.Invoke(completion, task);
+                #endregion
             }
             #endregion
             #region Exception
             catch (Exception ex)
             {
-                
-            }
-            #endregion
+                var uex = new UExcept(EGitHelper.FailProcessTaskAsync, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
 
-
-            await _taskSlim.WaitAsync();
-            try
-            {
-                task.State = EGitTaskState.Processing;
-                GitTaskStatusChanged?.Invoke(completion, task);
-
-                // Иммитация 
-                await Task.Run(() => Thread.Sleep(1000));
-                var isSuccess = true;
-
-                task.State = isSuccess ? EGitTaskState.Finished : EGitTaskState.ErrorOccurred;
-                GitTaskStatusChanged?.Invoke(completion, task);
-            }
-            catch (Exception ex)
-            {
                 task.State = EGitTaskState.ErrorOccurred;
                 GitTaskStatusChanged?.Invoke(completion, task);
             }
+            #endregion
+            #region finally
             finally
             {
                 _taskSlim.Release();
                 onCompleted();
             }
+            #endregion
         }
         #endregion
         #endregion

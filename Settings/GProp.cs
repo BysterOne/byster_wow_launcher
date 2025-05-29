@@ -15,12 +15,21 @@ namespace Launcher.Settings
         public static User User { get; set; } = null!;
         public static List<Product> Products { get; set; } = [];
         public static List<PaymentSystem> PaymentSystems { get; set; } = [];
+        public static List<CGitDirectory> GitRepositories { get; set; } = [];
         public static ObservableCollection<Subscription> Subscriptions { get; set; } = [];
         public static CFilters Filters { get; set; } = new();
         public static Cart Cart { get; set; } = new();
         public static CServer? SelectedServer { get => _selectedServer; set { _selectedServer = value; SelectedServerChanged?.Invoke(value); } }
         public static RReferralSource? ReferralSource { get; set; } = null;
-        public static JsonSerializerSettings JsonSeriSettings { get => new() { NullValueHandling = NullValueHandling.Ignore }; }
+        public static JsonSerializerSettings JsonSeriSettings 
+        { 
+            get => 
+                new() 
+                { 
+                    NullValueHandling = NullValueHandling.Ignore, 
+                    Formatting = Formatting.Indented
+                }; 
+        }
 
         // ДЛЯ ТЕСТА
         public static Stopwatch GWatch { get; set; } = new Stopwatch();

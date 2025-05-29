@@ -13,11 +13,21 @@ namespace Launcher.Any
         #region SendException
         public static void SendException(UExcept ex)
         {
+            #if DEBUG
+            return;
+            #endif
+
             var sentryEvent = new SentryEvent(ex);
             sentryEvent.SetExtra("Advanced Data", ex.GetFullInfo(""));
             SentrySdk.CaptureEvent(sentryEvent);
         }
-        public static void SendException(Exception ex) => SentrySdk.CaptureException(ex);
+        public static void SendException(Exception ex)
+        {
+            #if DEBUG
+            return;
+            #endif
+            SentrySdk.CaptureException(ex);
+        }
         #endregion
     }
 }

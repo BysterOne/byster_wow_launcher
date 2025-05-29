@@ -33,6 +33,7 @@
 		<None Remove="Media\logo.png" />
 		<None Remove="Media\logo_full.png" />
 		<None Remove="Media\Main\folder_icon.png" />
+		<None Remove="Media\Main\update_icon.png" />
 		<None Remove="Media\minimize_icon.png" />
 		<None Remove="Media\minus_icon.png" />
 		<None Remove="Media\no_items_icon.png" />
@@ -127,6 +128,7 @@
 		<Resource Include="Media\close_icon.png" />
 		<Resource Include="Media\language.png" />
 		<Resource Include="Media\logo_full.png" />
+		<Resource Include="Media\Main\update_icon.png" />
 		<Resource Include="Media\minimize_icon.png" />
 		<Resource Include="Media\minus_icon.png" />
 		<Resource Include="Media\no_items_icon.png" />

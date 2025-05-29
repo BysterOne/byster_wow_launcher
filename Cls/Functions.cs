@@ -13,6 +13,7 @@ using System.Windows.Media;
 using System.Drawing;
 using System.IO;
 using Sentry.Protocol;
+using System.Collections.ObjectModel;
 
 namespace Cls.Any
 {
@@ -86,12 +87,12 @@ namespace Cls.Any
             SentryExtensions.SendException(exception);
 
             proc.Log(message, Enums.ELogType.Error);
-            exception.ToLog(proc);            
+            exception.ToLog(proc);
         }
         public static void Error(Exception exception, string message, LogBox proc)
         {
             if (exception is UExcept ex) { Error(ex, message, proc); return; }
-            
+
             SentryExtensions.SendException(exception);
 
             proc.Log(message, Enums.ELogType.Message);
@@ -167,7 +168,7 @@ namespace Cls.Any
 
         #region GetSourceFromResource
         public static Uri GetSourceFromResource(string resourceName)
-        {            
+        {
             return new Uri("pack://application:,,,/" + resourceName, UriKind.RelativeOrAbsolute);
         }
         #endregion
@@ -219,6 +220,44 @@ namespace Cls.Any
             {
                 string destDir = Path.Combine(destinationDir, Path.GetFileName(dir));
                 CopyDirectory(dir, destDir);
+            }
+        }
+        #endregion
+        #region Обновление коллекции
+        public static void SyncCollections<T>(ObservableCollection<T> target, IList<T> updatedList, Func<T, int> keySelector)
+        {
+            var updatedDict = updatedList.ToDictionary(keySelector);
+
+            for (int i = target.Count - 1; i >= 0; i--)
+            {
+                var item = target[i];
+                if (!updatedDict.ContainsKey(keySelector(item)))
+                    target.RemoveAt(i);
+            }
+
+            for (int i = 0; i < updatedList.Count; i++)
+            {
+                var newItem = updatedList[i];
+                int id = keySelector(newItem);
+
+                int existingIndex = target
+                    .Select(keySelector)
+                    .ToList()
+                    .IndexOf(id);
+
+                if (existingIndex >= 0)
+                {
+                    if (!EqualityComparer<T>.Default.Equals(target[existingIndex], newItem) || existingIndex != i)
+                    {
+                        target[existingIndex] = newItem;
+                        if (existingIndex != i)
+                            target.Move(existingIndex, i);
+                    }
+                }
+                else
+                {
+                    target.Insert(i, newItem);
+                }
             }
         }
         #endregion

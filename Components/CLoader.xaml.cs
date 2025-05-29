@@ -23,7 +23,7 @@ namespace Launcher.Components
     /// </summary>
     public partial class CLoader : UserControl
     {
-        private static int CountBlocks { get; set; } = 13;
+        public int CountBlocks { get; set; } = 13;
         private static Size StartBlockSize { get; set; } = new Size(8, 8);
         private static double EndBlockHeight { get; set; } = 30;
 

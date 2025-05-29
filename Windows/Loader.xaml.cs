@@ -126,6 +126,12 @@ namespace Launcher.Windows
                 #region Настройки логов
                 ConfigureNLog();
                 #endregion
+                #region Установка username если есть
+                if (!String.IsNullOrEmpty(AppSettings.Instance.Login))
+                {
+                    SentrySdk.ConfigureScope(scope => scope.User = new SentryUser() { Username = AppSettings.Instance.Login });
+                }
+                #endregion
                 #region Проверка версии
                 var tryCheckVersion = await CheckLauncherUpdates();
                 if (!tryCheckVersion.IsSuccess)
@@ -364,8 +370,8 @@ namespace Launcher.Windows
             #region try
             try
             {
-                var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterConfig");
-                var newConfigPath = Path.Combine(AppSettings.RootFolder, "config");
+                var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterConfig", "configs");
+                var newConfigPath = Path.Combine(AppSettings.RootFolder, "config", "configs");
                 var mediaPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterImages");
 
                 #region Копируем и удаляем конфиг папку

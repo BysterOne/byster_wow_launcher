@@ -1,0 +1,161 @@
+﻿<UserControl
+    x:Class="Launcher.Components.MainWindow.CGitDirectories"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components.MainWindow"
+    xmlns:component="clr-namespace:Launcher.Components"
+    mc:Ignorable="d"
+    Height="Auto"
+    d:DesignHeight="450"
+    d:DesignWidth="800">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Components/ScrollPanel/CScrollPanelStyle.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid
+        x:Name="MainGrid">
+        <!--#region Фон -->
+        <Border
+            Background="{DynamicResource back_second}" />
+        <!--#endregion-->
+
+        <!--#region Прелоадер -->
+        <component:CLoader
+            x:Name="Preloader"
+            Visibility="Hidden"
+            ForeColor="{DynamicResource orange_main}"
+            VerticalAlignment="Center"
+            HorizontalAlignment="Center" />
+        <!--#endregion-->
+        <!--#region Панель -->
+        <StackPanel
+            VerticalAlignment="Center"
+            x:Name="ContentPanel"
+            MinWidth="500">
+            <!--#region Выбор директории -->
+            <Grid
+                x:Name="SelectDirectory"
+                Visibility="Collapsed">
+                <!--#region Выбор папки -->
+                <Grid
+                    x:Name="TP_select_folder_panel"
+                    HorizontalAlignment="Center"
+                    Width="350">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition />
+                        <ColumnDefinition
+                            Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition
+                            Height="Auto" />
+                        <RowDefinition
+                            Height="Auto" />
+                    </Grid.RowDefinitions>
+
+                    <!--#region Путь -->
+                    <Grid>
+                        <Rectangle
+                            Fill="#19FFFFFF"
+                            RadiusX="10"
+                            RadiusY="10"
+                            Height="50" />
+                        <TextBlock
+                            x:Name="TPSFP_path"
+                            Grid.Column="0"
+                            Foreground="#FFBBBBBB"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            FontSize="20"
+                            VerticalAlignment="Center"
+                            Margin="15 0 15 0" />
+                    </Grid>
+                    <!--#endregion-->
+                    <!--#region Кнопка -->
+                    <component:CButton
+                        Grid.Column="1"
+                        Margin="8 0 0 0"
+                        x:Name="TPSFP_button"
+                        BorderRadius="12"
+                        Text=""
+                        Width="50"
+                        Height="50"
+                        Icon="/Launcher;component/Media/Main/folder_icon.png"
+                        Padding="0"
+                        IconHeight="32"
+                        IconWidth="32"
+                        FontFamily="{DynamicResource fontfamily_main}"
+                        Foreground="{DynamicResource textcolor_main}"
+                        MouseLeftButtonDown="TPSFP_button_MouseLeftButtonDown" />
+                    <!--#endregion-->
+
+                    <!--#region Текст при первом выборе -->
+                    <TextBlock
+                        Grid.Row="1"
+                        x:Name="TPSFP_text"
+                        Grid.ColumnSpan="2"
+                        HorizontalAlignment="Center"
+                        TextAlignment="Center"
+                        TextWrapping="Wrap"
+                        Text="Для начала работы выберите папку, где будут храниться директории"
+                        FontSize="20"
+                        Margin="0 15 0 0"
+                        FontFamily="{DynamicResource fontfamily_main}"
+                        Foreground="{DynamicResource textcolor_main}" />
+                    <!--#endregion-->
+                </Grid>
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
+            <!--#region Основной блок -->
+            <Grid
+                x:Name="CenterPanel"
+                Margin="0 0 0 0"
+                Grid.IsSharedSizeScope="True">
+                <!--#region Разметка -->
+                <Grid.RowDefinitions>
+                    <RowDefinition
+                        Height="Auto" />
+                    <RowDefinition />
+                </Grid.RowDefinitions>
+                <!--#endregion-->
+                <!--#region Верхняя панель -->
+
+                <!--#endregion-->
+                <!--#region Список -->
+                <component:CScrollPanel
+                    MaxHeight="500">
+                    <ItemsControl
+                        x:Name="test_itemsControl"
+                        ItemsSource="{Binding Repositories}">
+                        <ItemsControl.ItemsPanel>
+                            <ItemsPanelTemplate>
+                                <VirtualizingStackPanel
+                                    Margin="10 0 18 0" />
+                            </ItemsPanelTemplate>
+                        </ItemsControl.ItemsPanel>
+                        <ItemsControl.ItemTemplate>
+                            <DataTemplate>
+                                <local:CGitItem
+                                    Height="60"
+                                    GitLib="{Binding}"
+                                    Margin="0 0 0 8"
+                                    Width="900"/>
+                            </DataTemplate>
+                        </ItemsControl.ItemTemplate>
+                    </ItemsControl>
+                </component:CScrollPanel>
+                <!--#endregion-->
+            </Grid>
+            <!--#endregion-->
+        </StackPanel>
+        <!--#endregion-->
+    </Grid>
+</UserControl>

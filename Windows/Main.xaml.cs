@@ -109,6 +109,7 @@ namespace Launcher.Windows
                     throw new UExcept(EInitialization.FailGetUserInfo, $"Не удалось загрузить данные пользователя", tryGetUserInfo.Error);
                 }
                 GProp.User = tryGetUserInfo.Response;
+                SentrySdk.ConfigureScope(scope => scope.User = new SentryUser() { Username = GProp.User.Username });
                 UpdateUserDataView();
                 #endregion
                 #region Переключатель страниц магазина и главной
@@ -527,6 +528,11 @@ namespace Launcher.Windows
             _ = Main.ShowModal(new CSettingsDialogBox());
         }
         #endregion
+        #region Background_MouseDown
+        private void Background_MouseDown(object sender, MouseButtonEventArgs e) => DragMove();
         #endregion
+        #endregion
+
+
     }
 }

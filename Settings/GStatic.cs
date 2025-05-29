@@ -111,9 +111,11 @@ namespace Launcher.Settings
                 ERotationClass.DeathKnight => "Рыцарь смерти",
                 ERotationClass.Warlock     => "Чернокнижник",
                 ERotationClass.Shaman      => "Шаман",
+                ERotationClass.Any         => "Любой",
                 _ => throw new Exception($"Необрабатываемый тип ERotationClass: {rotationClass}")
             };
 
+            Dictionary.Translate("Любой");
             return Dictionary.Translate(key);
         }
         #endregion

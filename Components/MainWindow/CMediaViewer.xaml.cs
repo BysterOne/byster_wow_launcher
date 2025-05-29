@@ -230,6 +230,9 @@ namespace Launcher.Components.MainWindow
         #region MGVB_video_PreviewMouseLeftButtonDown
         private void MGVB_video_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) => Status = Status == EStatus.Played ? EStatus.Stopped : EStatus.Played;
         #endregion
+        #region Background_MouseDown
+        private void Background_MouseDown(object sender, MouseButtonEventArgs e) => Application.Current.Windows.OfType<Main>().FirstOrDefault()?.DragMove();
+        #endregion
         #endregion
 
 

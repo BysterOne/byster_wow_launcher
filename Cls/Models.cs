@@ -258,6 +258,29 @@ namespace Launcher.Api.Models
         public bool Console { get; set; } = false;
     }
     #endregion
+    #region CGitDirectory
+    public class CGitDirectory
+    {
+        [JsonProperty("id")]
+        public int Id { get; set; } = -1;
+
+        [JsonProperty("name")]
+        public string Name { get; set; } = string.Empty;
+
+        [JsonProperty("type")]
+        public string Type { get; set; } = string.Empty;
+
+        [JsonProperty("klass")]
+        [JsonConverter(typeof(RotationClassConverter))]
+        public ERotationClass Class { get; set; }
+
+        [JsonProperty("git_ssh_url")]
+        public string SshUrl { get; set; } = string.Empty;
+
+        [JsonProperty("file_path")]
+        public string FilePath { get; set; } = string.Empty;
+    }
+    #endregion
 
     #region Subscription
     public class Subscription
@@ -282,5 +305,12 @@ namespace Launcher.Api.Models
         [JsonProperty("error")]
         public string Error { get; set; } = string.Empty;
     }
-    #endregion    
+    #endregion
+    #region CGitSyncData
+    public class CGitSyncData
+    {
+        public int Id { get; set; }
+        public long LastSyncTime { get; set; } = 0;
+    }
+    #endregion
 }

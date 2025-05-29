@@ -45,7 +45,9 @@
             </Grid.OpacityMask>
 
             <Rectangle
-                Fill="{DynamicResource back_main}" />
+                x:Name="Background"
+                Fill="{DynamicResource back_main}"
+                MouseDown="Background_MouseDown" />
 
             <!--#region Место для модального окна -->
             <Grid
@@ -199,7 +201,7 @@
                     <components:CButton
                         x:Name="TPIS_settings"
                         Width="40"
-                        Height="40"    
+                        Height="40"
                         Text=""
                         BorderRadius="10"
                         BackColor="Transparent"

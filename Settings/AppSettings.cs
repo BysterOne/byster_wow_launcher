@@ -1,4 +1,5 @@
 ﻿using Launcher.Any.GlobalEnums;
+using Launcher.Api.Models;
 using Launcher.Cls.ModelConverters;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Settings.Enums;
@@ -41,7 +42,9 @@ namespace Launcher.Settings
 
         public string Login { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
-        public ObservableCollection<CServer> Servers { get; set; } = [];        
+        public string? WorkDirectory { get; set; } = null;
+        public ObservableCollection<CServer> Servers { get; set; } = [];
+        public List<CGitSyncData>? SyncData { get; set; }
         #endregion
 
         public static AppSettings Instance
@@ -60,8 +63,7 @@ namespace Launcher.Settings
         public static void Save()
         {
             if (!Directory.Exists(RootFolder)) Directory.CreateDirectory(RootFolder);
-
-            var json = JsonConvert.SerializeObject(Instance, Formatting.Indented);
+            var json = JsonConvert.SerializeObject(Instance, GProp.JsonSeriSettings);
             File.WriteAllText(SettingsFilePath, json);
         }
 

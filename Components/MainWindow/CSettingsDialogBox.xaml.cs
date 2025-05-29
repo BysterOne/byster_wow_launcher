@@ -14,6 +14,7 @@ using Launcher.Settings;
 using Launcher.Settings.Enums;
 using Launcher.Windows;
 using System.Diagnostics;
+using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -55,12 +56,21 @@ namespace Launcher.Components.MainWindow
 
             TranslationHub.Register(this);
             GProp.LauncherDataUpdatedEvent += ELauncherUpdatedEvent;
-        }        
+
+            this.Opacity = 0;
+            this.middleGrid.Opacity = 0;
+        }
 
         #region Переменные
+        private bool AvailableAdvanced
+        { 
+            get => 
+                GProp.User.Permissions.HasFlag(EUserPermissions.ExternalDeveloper) ||
+                GProp.User.Permissions.HasFlag(EUserPermissions.Superuser);
+        }
         private bool IsInit { get; set; } = false;
         private static LogBox Pref { get; set; } = new LogBox("SettingsDialogBox");
-        private static TaskCompletionSource<EDialogResponse> TaskCompletion { get; set; }
+        private static TaskCompletionSource<EDialogResponse> TaskCompletion { get; set; } = null!;
         private CPanelChanger<EPC_Panels> PanelChanger { get; set; }
         #endregion
 
@@ -77,9 +87,12 @@ namespace Launcher.Components.MainWindow
                     MGPMCP_value.SelectedIndex = GProp.User.Compilation ? 1 : 0;
                     MGPMTEP_value.SelectedIndex = GProp.User.Encryption ? 1 : 0;
                     MGPMVP_value.SelectedIndex = GProp.User.VMProtect ? 1 : 0;
-                });               
+                });
             }
         }
+        #endregion
+        #region Background_MouseDown
+        private void Background_MouseDown(object sender, MouseButtonEventArgs e) => Application.Current.Windows.OfType<Main>().FirstOrDefault()?.DragMove();
         #endregion
         #region ELocalizationList_NewSelectedItem
         private void ELocalizationList_NewSelectedItem(CList.CListItem item)
@@ -104,7 +117,7 @@ namespace Launcher.Components.MainWindow
                     fadeIn.Begin(main, HandoffBehavior.SnapshotAndReplace, true);
                 };
                 fadeOut.Begin(main, HandoffBehavior.SnapshotAndReplace, true);
-            }            
+            }
             #endregion
         }
         #endregion
@@ -175,6 +188,16 @@ namespace Launcher.Components.MainWindow
         private void MGPM_change_password_MouseDown(object sender, MouseButtonEventArgs e)
         {
             _ = Main.ShowModal(new CChangePasswordDialogBox());
+        }
+        #endregion
+        #region EConsole_SelectedIndexChanged
+        private void EConsole_SelectedIndexChanged(object sender, int newIndex)
+        {
+            var newValue = newIndex is 1;
+
+            if (newValue == AppSettings.Instance.Console) return;
+            AppSettings.Instance.Console = newValue;
+            AppSettings.Save();
         }
         #endregion
         #endregion
@@ -255,6 +278,10 @@ namespace Launcher.Components.MainWindow
                 PanelChanger.HideElement += PanelChangerHide;
                 var tryInitPanelChangerTask = PanelChanger.Init();
                 #endregion
+                #region Консоль
+                MGPMTC_value.SetSelectedIndexFast(AppSettings.Instance.Console ? 1 : 0);
+                MGPMTC_value.SelectedIndexChanged += EConsole_SelectedIndexChanged;
+                #endregion
                 #region Шифрование
                 MGPMTEP_value.SetSelectedIndexFast(GProp.User.Encryption ? 1 : 0);
                 MGPMTEP_value.SelectedIndexChanged += EEncryption_SelectedIndexChanged;
@@ -292,9 +319,9 @@ namespace Launcher.Components.MainWindow
                 {
                     branchesList.Add(new(GProp.User.Branches.IndexOf(branch), branch.ToUpper()));
                 }
-                var selected = 
+                var selected =
                     GProp.User.Branches.Any(x => x.Equals(AppSettings.Instance.Branch, StringComparison.CurrentCultureIgnoreCase)) ?
-                    branchesList.IndexOf(branchesList.First(x => x.Name.Equals(AppSettings.Instance.Branch, StringComparison.CurrentCultureIgnoreCase))) : 
+                    branchesList.IndexOf(branchesList.First(x => x.Name.Equals(AppSettings.Instance.Branch, StringComparison.CurrentCultureIgnoreCase))) :
                     0;
 
                 var tryLoadBranchListTask =
@@ -346,9 +373,15 @@ namespace Launcher.Components.MainWindow
                     MGPM_branch_list.NewSelectedItem += EBranchList_NewSelectedItem;
                 }
                 #endregion
-                #endregion               
-
-                
+                #endregion
+                #region Если доступны расширенные
+                if (AvailableAdvanced)
+                {
+                    MGPA_git.Width = 150;
+                    MGPA_git.Visibility = Visibility.Visible;
+                    _ = MGPA_git.Initialization();
+                }
+                #endregion
 
                 IsInit = false;
 
@@ -369,7 +402,7 @@ namespace Launcher.Components.MainWindow
                 return new(uex);
             }
             #endregion
-        }        
+        }
         #endregion
         #region Hide
         public async Task Hide()
@@ -403,9 +436,9 @@ namespace Launcher.Components.MainWindow
         {
             MGHH_value.Text = Dictionary.Translate($"Настройки");
             MGPMCP_header.Text = Dictionary.Translate($"Компиляция");
+            MGPMTC_header.Text = Dictionary.Translate($"Консоль");
             MGHBP_main.Text = Dictionary.Translate($"ОСНОВНЫЕ");
             MGHBP_advanced.Text = Dictionary.Translate($"РАСШИРЕННЫЕ");
-            MGPA_text.Text = Dictionary.Translate($"Данный раздел находиться в разработке");
             MGPM_redeem.Placeholder = Dictionary.Translate($"Погасить купон");
             MGPM_clear_cache.Text = Dictionary.Translate($"Очистить кэш");
             MGPM_change_password.Text = Dictionary.Translate($"Сменить пароль");
@@ -418,42 +451,49 @@ namespace Launcher.Components.MainWindow
         private void UpdateUserPermissions()
         {
             var perms = GProp.User.Permissions;
-            
+
             #region Выбор сервера
-            var aviableChooseServer = 
-                perms.HasFlag(EUserPermissions.Tester) || 
-                perms.HasFlag(EUserPermissions.ExternalDeveloper) || 
+            var AvailableChooseServer =
+                perms.HasFlag(EUserPermissions.Tester) ||
+                perms.HasFlag(EUserPermissions.ExternalDeveloper) ||
                 perms.HasFlag(EUserPermissions.Superuser);
-            MGPM_server_panel.Visibility = aviableChooseServer ? Visibility.Visible : Visibility.Collapsed;
+            MGPM_server_panel.Visibility = AvailableChooseServer ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Расширенные настройки
-            var aviableAdvanced = 
+            var AvailableAdvanced =
                 GProp.User.Permissions.HasFlag(EUserPermissions.ExternalDeveloper) ||
                 perms.HasFlag(EUserPermissions.Superuser);
-            MGH_buttons_panel.Visibility = aviableAdvanced ? Visibility.Visible : Visibility.Collapsed;
-            MGH_header.Visibility = aviableAdvanced ? Visibility.Collapsed : Visibility.Visible;
+            MGH_buttons_panel.Visibility = AvailableAdvanced ? Visibility.Visible : Visibility.Collapsed;
+            MGH_header.Visibility = AvailableAdvanced ? Visibility.Collapsed : Visibility.Visible;
+            #endregion
+            #region Консоль
+            var AvailableToggleConsole =
+                perms.HasFlag(EUserPermissions.Tester) ||
+                perms.HasFlag(EUserPermissions.ExternalDeveloper) ||
+                perms.HasFlag(EUserPermissions.Superuser);
+            MGPM_toggle_console.Visibility = AvailableToggleConsole ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Шифрование
-            var aviableToggle = 
-                (
-                    GProp.User.Branches.Contains("test") && 
-                    (
-                        perms.HasFlag(EUserPermissions.ToggleEncrypt) ||
-                        perms.HasFlag(EUserPermissions.ExternalDeveloper)
-                    )
-                ) ||
+            var AvailableToggleEncrypt = 
+                perms.HasFlag(EUserPermissions.ToggleEncrypt) ||
                 perms.HasFlag(EUserPermissions.Superuser);
-            MGPM_toggle_encryption_panel.Visibility = aviableToggle ? Visibility.Visible : Visibility.Collapsed;
+            MGPM_toggle_encryption_panel.Visibility = AvailableToggleEncrypt ? Visibility.Visible : Visibility.Collapsed;
+            #endregion
+            #region Компиляция
+            var AvailableToggleCompilation =
+                perms.HasFlag(EUserPermissions.CanToggleCompilation) ||
+                perms.HasFlag(EUserPermissions.Superuser);
+            MGPM_compilation_panel.Visibility = AvailableToggleCompilation ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Ветки
-            var aviableBranches = GProp.User.Branches.Count > 1;
-            MGPM_branch_panel.Visibility = aviableBranches ? Visibility.Visible: Visibility.Collapsed;
+            var AvailableBranches = GProp.User.Branches.Count > 1;
+            MGPM_branch_panel.Visibility = AvailableBranches ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Админ панель
-            var aviableAdminPanel =
+            var AvailableAdminPanel =
                 perms.HasFlag(EUserPermissions.AdminSiteAccess) ||
                 perms.HasFlag(EUserPermissions.Superuser);
-            MGPM_admin_panel_button.Visibility = aviableAdminPanel ? Visibility.Visible : Visibility.Collapsed;
+            MGPM_admin_panel_button.Visibility = AvailableAdminPanel ? Visibility.Visible : Visibility.Collapsed;
             #endregion
         }
         #endregion
@@ -511,11 +551,11 @@ namespace Launcher.Components.MainWindow
                     case EToggle.VMProtect: MGPMVP_value.SelectedIndex = GProp.User.VMProtect ? 1 : 0; break;
                     case EToggle.Encryption: MGPMTEP_value.SelectedIndex = GProp.User.Encryption ? 1 : 0; break;
                 }
-                
+
                 Main.Notify(Dictionary.Translate($"Не удалось переключить"));
                 await Main.Loader(ELoaderState.Hide);
                 return;
-            }            
+            }
 
             _ = GProp.Update(ELauncherUpdate.User, tryExecute.Response);
             _ = Main.Loader(ELoaderState.Hide);
@@ -526,12 +566,16 @@ namespace Launcher.Components.MainWindow
         {
             MGHBP_main.IsActive = panel is EPC_Panels.Main;
             MGHBP_advanced.IsActive = panel is EPC_Panels.Advanced;
+            if (panel is EPC_Panels.Advanced && AvailableAdvanced)
+            {
+                _ = MGPA_git.StartWork();
+                MGPA_git.Width = double.NaN;
+            }
 
             await PanelChanger.ChangePanel(panel);
+
+            if (panel is EPC_Panels.Main) MGPA_git.Width = 150;
         }
-
-
-
 
         #endregion
 

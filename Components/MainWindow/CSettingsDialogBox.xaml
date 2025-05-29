@@ -31,7 +31,9 @@
     <Grid>
         <!--#region Фон -->
         <Rectangle
-            Fill="{StaticResource back_main}" />
+        x:Name="Background"
+            Fill="{StaticResource back_main}"
+            MouseDown="Background_MouseDown"/>
         <!--#endregion-->
 
         <!--#region Центральный блок -->
@@ -274,6 +276,37 @@
                                     <!--#endregion-->
                                 </Grid>
                                 <!--#endregion-->
+                                <!--#region Консоль -->
+                                <Grid
+                                    x:Name="MGPM_toggle_console"
+                                    Panel.ZIndex="2"
+                                    Margin="6 15 6 0">
+                                    <Grid.ColumnDefinitions>
+                                        <ColumnDefinition
+                                            SharedSizeGroup="shared_main"
+                                            Width="Auto" />
+                                        <ColumnDefinition />
+                                    </Grid.ColumnDefinitions>
+
+                                    <!--#region Текст -->
+                                    <TextBlock
+                                        Text="Консоль"
+                                        x:Name="MGPMTC_header"
+                                        Style="{DynamicResource PayTextBlockHeaderStyle}" />
+                                    <!--#endregion-->
+                                    <!--#region Переключатель -->
+                                    <components:CToggleSwitch
+                                        x:Name="MGPMTC_value"
+                                        Grid.Column="1"
+                                        Width="250"
+                                        BorderRadius="12"
+                                        HorizontalAlignment="Right"
+                                        FirstItem="✘"
+                                        SecondItem="✓"
+                                        BackColor="#FF2B2E35" />
+                                    <!--#endregion-->
+                                </Grid>
+                                <!--#endregion-->
                                 <!--#region Шифрование -->
                                 <Grid
                                     x:Name="MGPM_toggle_encryption_panel"
@@ -392,28 +425,10 @@
                 <Grid
                     x:Name="MGP_advanced"
                     Visibility="Hidden">
-                    <StackPanel
-                        VerticalAlignment="Center"
-                        HorizontalAlignment="Center">
-                        <!--#region Иконка -->
-                        <Image
-                            Source="/Launcher;component/Media/in_development_icon.png"
-                            Width="60"
-                            RenderOptions.BitmapScalingMode="HighQuality" />
-                        <!--#endregion-->
-                        <!--#region Текст -->
-                        <TextBlock
-                            Foreground="{DynamicResource textcolor_main}"
-                            FontFamily="{DynamicResource fontfamily_main}"
-                            FontSize="18"
-                            TextWrapping="Wrap"
-                            MaxWidth="250"
-                            Text="Данный раздел находиться в разработке"
-                            TextAlignment="Center"
-                            Margin="0 15 0 0"
-                            x:Name="MGPA_text" />
-                        <!--#endregion-->
-                    </StackPanel>
+                    <local:CGitDirectories 
+                        x:Name="MGPA_git"
+                        Visibility="Collapsed"
+                        Margin="5 0 5 5"/>
                 </Grid>
                 <!--#endregion-->
             </Grid>

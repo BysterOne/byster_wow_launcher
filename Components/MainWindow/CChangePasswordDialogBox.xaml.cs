@@ -67,6 +67,9 @@ namespace Launcher.Components.MainWindow
         #region MG_save_MouseLeftButtonDown
         private void MG_save_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => PrepareToChangePassword();
         #endregion
+        #region Background_MouseDown
+        private void Background_MouseDown(object sender, MouseButtonEventArgs e) => Application.Current.Windows.OfType<Main>().FirstOrDefault()?.DragMove();
+        #endregion
         #endregion
 
         #region Функции
@@ -216,6 +219,7 @@ namespace Launcher.Components.MainWindow
             #endregion
         }
         #endregion
+
         #endregion
 
         

@@ -26,10 +26,16 @@ namespace Launcher.Api
 
 
         #region Функции
+        #region GetGitDirectories
+        public static async Task<UResponse<List<CGitDirectory>>> GetGitDirectories()
+        {
+            return await Request<List<CGitDirectory>>("/launcher/v1/git_pull", Method.Post);
+        }
+        #endregion
         #region ToggleCompilation
         public static async Task<UResponse<object?>> ChangePassword(string newPassword)
         {
-            return await Request<object?> ("/launcher/change_password", Method.Post, body: new { new_password = newPassword });
+            return await Request<object?> ("/launcher/v1/change_password", Method.Post, body: new { new_password = newPassword });
         }
         #endregion
         #region ToggleCompilation
@@ -47,31 +53,31 @@ namespace Launcher.Api
         #region ToggleCompilation
         public static async Task<UResponse<User>> ToggleCompilation(bool enable)
         {
-            return await Request<User>("/launcher/toggle_compilation", Method.Post, body: new { enable });
+            return await Request<User>("/launcher/v1/toggle_compilation", Method.Post, body: new { enable });
         }
         #endregion
         #region ToggleEncryption
         public static async Task<UResponse<User>> ToggleEncryption(bool enable)
         {
-            return await Request<User>("/launcher/toggle_encryption", Method.Post, body: new { enable });
+            return await Request<User>("/launcher/v1/toggle_encryption", Method.Post, body: new { enable });
         }
         #endregion
         #region ClearCache
         public static async Task<UResponse<object?>> ClearCache()
         {
-            return await Request<object?>("/launcher/clear_cache", Method.Post);
+            return await Request<object?>("/launcher/v1/clear_cache", Method.Post);
         }
         #endregion
         #region RedeemCoupon
         public static async Task<UResponse<User>> RedeemCoupon(string coupon)
         {
-            return await Request<User>("/launcher/ping", Method.Post, body: new { coupon_code = coupon });
+            return await Request<User>("/launcher/v1/redeem_coupon", Method.Post, body: new { coupon_code = coupon });
         }
         #endregion
         #region GetLauncher
         public static async Task<UResponse<byte[]>> GetLauncher()
         {
-            return await GetExe("/launcher/download", Method.Get);
+            return await GetExe("/launcher/v1/download", Method.Get);
         }
         #endregion
         #region GetLibVersion
@@ -83,7 +89,7 @@ namespace Launcher.Api
         #region GetLib 
         public static async Task<UResponse<byte[]>> GetLib()
         {
-            return await GetExe("/launcher/get_lib", Method.Post);
+            return await GetExe("/launcher/v1/get_lib", Method.Post);
         }
         #endregion
         #region GetExe
@@ -135,7 +141,7 @@ namespace Launcher.Api
         #region Ping
         public static async Task<UResponse<List<PingUpdate>>> Ping()
         {
-            return await Request<List<PingUpdate>>("/launcher/ping", Method.Get);
+            return await Request<List<PingUpdate>>("/launcher/v1/ping", Method.Get);
         }
         #endregion
         #region Buy
@@ -148,13 +154,13 @@ namespace Launcher.Api
                 bonuses
             };
 
-            return await Request<PaymentDetails>("/shop/buy", Method.Post, body: body);
+            return await Request<PaymentDetails>("/shop/v1/buy", Method.Post, body: body);
         }
         #endregion
         #region GetPaymentSystems
         public static async Task<UResponse<List<PaymentSystem>>> GetPaymentSystems()
         {
-            return await Request<List<PaymentSystem>>("/shop/payment_systems", Method.Get);
+            return await Request<List<PaymentSystem>>("/shop/v1/payment_systems", Method.Get);
         }
         #endregion
         #region Translate
@@ -166,43 +172,43 @@ namespace Launcher.Api
         #region GetUserSubscriptions
         public static async Task<UResponse<List<Subscription>>> GetUserSubscriptions()
         {
-            return await Request<List<Subscription>>("/shop/my_subscriptions", Method.Post, body: new { });
+            return await Request<List<Subscription>>("/shop/v1/my_subscriptions", Method.Post, body: new { });
         }
         #endregion
         #region GetTest
         public static async Task<UResponse<List<Subscription>>> GetTest(int productId)
         {
-            return await Request<List<Subscription>>("/shop/test", Method.Post, body: new { product_id = productId });
+            return await Request<List<Subscription>>("/shop/v1/test", Method.Post, body: new { product_id = productId });
         }
         #endregion
         #region GetProductsList
         public static async Task<UResponse<List<Product>>> GetProductsList()
         {
-            return await Request<List<Product>>("/shop/product_list", Method.Post, body: new { });
+            return await Request<List<Product>>("/shop/v1/product_list", Method.Post, body: new { });
         }
         #endregion
         #region GetUserInfo
         public static async Task<UResponse<User>> GetUserInfo()
         {
-            return await Request<User>("/launcher/info", Method.Get);
+            return await Request<User>("/launcher/v1/info", Method.Get);
         }
         #endregion
         #region GetReferralSource
         public static async Task<UResponse<RReferralSource>> GetReferralSource(string filename)
         {
-            return await Request<RReferralSource>("/launcher/get_referal_source", Method.Post, body: new { filename });
+            return await Request<RReferralSource>("/launcher/v1/get_referal_source", Method.Post, body: new { filename });
         }
         #endregion
         #region Registration
         public static async Task<UResponse<SessionData>> Registration(RegistrationRequestBody data)
         {
-            return await Request<SessionData>("/launcher/registration", Method.Post, body: data);
+            return await Request<SessionData>("/launcher/v1/registration", Method.Post, body: data);
         }
         #endregion
         #region Login
         public static async Task<UResponse<SessionData>> Login(LoginRequestBody data)
         {
-            return await Request<SessionData>("/launcher/login", Method.Post, body: data);
+            return await Request<SessionData>("/launcher/v1/login", Method.Post, body: data);
         }
         #endregion
         #endregion

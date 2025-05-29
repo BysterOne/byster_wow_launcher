@@ -1,7 +1,6 @@
 {
   "Language": "en",
-  "Associations": {
-    "Все": "All",
+  "Associations": {    
     "Воин": "Warrior",
     "Друид": "Druid",
     "Жрец": "Priest",

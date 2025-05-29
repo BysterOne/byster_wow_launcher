@@ -49,8 +49,10 @@
     <Grid>
         <!--#region Фон -->
         <Rectangle
+        x:Name="Background"
             Fill="{DynamicResource back_main}"
-            Opacity="0.99" />
+            Opacity="0.99"
+            MouseDown="Background_MouseDown"/>
         <!--#endregion-->
 
         <!--#region Основной блок -->

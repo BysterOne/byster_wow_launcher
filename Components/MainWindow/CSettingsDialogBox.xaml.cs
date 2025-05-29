@@ -437,6 +437,7 @@ namespace Launcher.Components.MainWindow
             MGHH_value.Text = Dictionary.Translate($"Настройки");
             MGPMCP_header.Text = Dictionary.Translate($"Компиляция");
             MGPMTC_header.Text = Dictionary.Translate($"Консоль");
+            MGPMVP_header.Text = Dictionary.Translate($"Защита");
             MGHBP_main.Text = Dictionary.Translate($"ОСНОВНЫЕ");
             MGHBP_advanced.Text = Dictionary.Translate($"РАСШИРЕННЫЕ");
             MGPM_redeem.Placeholder = Dictionary.Translate($"Активировать купон");
@@ -485,11 +486,11 @@ namespace Launcher.Components.MainWindow
                 perms.HasFlag(EUserPermissions.Superuser);
             MGPM_compilation_panel.Visibility = AvailableToggleCompilation ? Visibility.Visible : Visibility.Collapsed;
             #endregion
-            #region Компиляция
-            var AvailableToggleVMProtect =
-                perms.HasFlag(EUserPermissions.CanToggleVmprotect) ||
+            #region Защита
+            var AvailableToggleProtection =
+                perms.HasFlag(EUserPermissions.CanToggleProtection) ||
                 perms.HasFlag(EUserPermissions.Superuser);
-            MGPM_vmprotect_panel.Visibility = AvailableToggleVMProtect ? Visibility.Visible : Visibility.Collapsed;
+            MGPM_protection_panel.Visibility = AvailableToggleProtection ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Ветки
             var AvailableBranches = GProp.User.Branches.Count > 1;

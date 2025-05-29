@@ -158,7 +158,7 @@ namespace Launcher.Components.MainWindow
             );
         #endregion
         #region ChangePassword
-        private async Task ChangePassword(string? password, string? passowrdConfirmation)
+        private async Task ChangePassword(string? password, string? passwordConfirmation)
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
             var _failinf = $"Не удалось изменить пароль";
@@ -172,18 +172,24 @@ namespace Launcher.Components.MainWindow
                 #region Проверки
                 if (String.IsNullOrWhiteSpace(password)) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Укажите пароль"));
                 if (password.Length < 8) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Минимальная длина пароля 8 символов"));
-                if (String.IsNullOrWhiteSpace(passowrdConfirmation)) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Повторите пароль"));
-                if (password != passowrdConfirmation) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Пароли не совпадают"));
+                if (String.IsNullOrWhiteSpace(passwordConfirmation)) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Повторите пароль"));
+                if (password != passwordConfirmation) throw new UExcept(ERegistration.NonComplianceData, Dictionary.Translate("Пароли не совпадают"));
                 #endregion
                 #region Лоадер
                 await Main.Loader(ELoaderState.Show);
                 #endregion
                 #region Отправка запроса
-                var tryChangePass = await CApi.ChangePassword(Functions.GetMd5Hash(password));
+                var pass = Functions.GetMd5Hash(password);
+                var tryChangePass = await CApi.ChangePassword(pass);
                 if (!tryChangePass.IsSuccess)
                 {                    
                     throw new UExcept(EChangePassword.FailExecuteRequest, $"Ошибка выполнения запроса", tryChangePass.Error);
                 }
+                #endregion
+                #region Сохраняем
+                AppSettings.Instance.Password = pass;
+                AppSettings.Save();
+                Main.Notify(Dictionary.Translate($"Пароль успешно изменен"));
                 #endregion
                 #region Закрываем окно
                 TaskCompletionS.TrySetResult(EDialogResponse.Ok);
@@ -219,7 +225,6 @@ namespace Launcher.Components.MainWindow
             #endregion
         }
         #endregion
-
         #endregion
 
         

@@ -371,7 +371,7 @@
                                 <!--#endregion-->
                                 <!--#region VMProtect -->
                                 <Grid
-                                    x:Name="MGPM_vmprotect_panel"
+                                    x:Name="MGPM_protection_panel"
                                     Panel.ZIndex="2"
                                     Margin="6 15 6 0">
                                     <Grid.ColumnDefinitions>
@@ -383,7 +383,7 @@
 
                                     <!--#region Текст -->
                                     <TextBlock
-                                        Text="VMProtect"
+                                        Text="Защита"
                                         x:Name="MGPMVP_header"
                                         Style="{DynamicResource PayTextBlockHeaderStyle}" />
                                     <!--#endregion-->

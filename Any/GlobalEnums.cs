@@ -34,7 +34,7 @@ namespace Launcher.Any.GlobalEnums
         AdminSiteAccess,
         CanToggleCompilation,
         ClosedServer,
-        CanToggleVmprotect,
+        CanToggleProtection,
         ExternalDeveloper,
         DoNotBan,
         Tester,

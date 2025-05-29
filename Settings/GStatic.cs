@@ -29,7 +29,7 @@ namespace Launcher.Settings
             { EUserPermissions.AdminSiteAccess, "launcher.admin_site_access" },
             { EUserPermissions.CanToggleCompilation, "launcher.can_toggle_compilation" },
             { EUserPermissions.ClosedServer, "shop.closed_server" },
-            { EUserPermissions.CanToggleVmprotect, "launcher.can_toggle_vmprotect" },
+            { EUserPermissions.CanToggleProtection, "launcher.toggle_protection" },
             { EUserPermissions.ExternalDeveloper, "shop.external_developer" },
             { EUserPermissions.DoNotBan, "protection.donotban" },
             { EUserPermissions.Tester, "shop.tester" },

@@ -46,9 +46,9 @@ namespace Launcher.Api
         }
         #endregion
         #region ToggleCompilation
-        public static async Task<UResponse<User>> ToggleVMProtect(bool enable)
+        public static async Task<UResponse<User>> ToggleProtection(bool enable)
         {
-            return await Request<User>("/launcher/toggle_vmprotect", Method.Post, body: new { enable });
+            return await Request<User>("/launcher/toggle_protection", Method.Post, body: new { enable });
         }
         #endregion
         #region ToggleCompilation

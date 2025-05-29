@@ -369,7 +369,7 @@
                                     <!--#endregion-->
                                 </Grid>
                                 <!--#endregion-->
-                                <!--#region VMProtect -->
+                                <!--#region Protection -->
                                 <Grid
                                     x:Name="MGPM_protection_panel"
                                     Panel.ZIndex="2"

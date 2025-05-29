@@ -75,8 +75,8 @@ namespace Launcher.Api.Models
         [JsonProperty("encryption")]
         public bool Encryption { get; set; } = false;
 
-        [JsonProperty("vmprotect")]
-        public bool VMProtect { get; set; } = false;
+        [JsonProperty("protection")]
+        public bool Protection { get; set; } = false;
 
         [JsonProperty("compilation")]
         public bool Compilation { get; set; } = false;

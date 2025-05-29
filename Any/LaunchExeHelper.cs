@@ -88,7 +88,7 @@ namespace Launcher.Any
                 UpdateStatus(server, ELaunchState.Verifying);
 
                 VerifyFolders();
-                var saveDir = GProp.User.VMProtect ? AppSettings.ProtectedFolder : AppSettings.UnprotectedFolder;
+                var saveDir = GProp.User.Protection ? AppSettings.ProtectedFolder : AppSettings.UnprotectedFolder;
                 #endregion
                 #region Получение версии
                 var tryGetLibVersion = await CApi.GetLibVersion();
@@ -199,7 +199,7 @@ namespace Launcher.Any
         #region VerifyFolders
         public static void VerifyFolders()
         {
-            if (GProp.User.VMProtect && Directory.Exists(AppSettings.UnprotectedFolder))
+            if (GProp.User.Protection && Directory.Exists(AppSettings.UnprotectedFolder))
                     try { Directory.Delete(AppSettings.UnprotectedFolder, true); } catch (Exception ex) { Debugger.Break(); }
         }
         #endregion

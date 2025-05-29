@@ -41,7 +41,7 @@ namespace Launcher.Components.MainWindow
         public enum EToggle
         {
             Compilation,
-            VMProtect,
+            Protection,
             Encryption
         }
     }
@@ -86,7 +86,7 @@ namespace Launcher.Components.MainWindow
 
                     MGPMCP_value.SelectedIndex = GProp.User.Compilation ? 1 : 0;
                     MGPMTEP_value.SelectedIndex = GProp.User.Encryption ? 1 : 0;
-                    MGPMVP_value.SelectedIndex = GProp.User.VMProtect ? 1 : 0;
+                    MGPMVP_value.SelectedIndex = GProp.User.Protection ? 1 : 0;
                 });
             }
         }
@@ -172,8 +172,8 @@ namespace Launcher.Components.MainWindow
         #region EEncryption_SelectedIndexChanged
         private void EEncryption_SelectedIndexChanged(object sender, int newIndex) => _ = TryChangeToggle(EToggle.Encryption, newIndex);
         #endregion
-        #region EVMProtect_SelectedIndexChanged
-        private void EVMProtect_SelectedIndexChanged(object sender, int newIndex) => _ = TryChangeToggle(EToggle.VMProtect, newIndex);
+        #region EProtection_SelectedIndexChanged
+        private void EProtection_SelectedIndexChanged(object sender, int newIndex) => _ = TryChangeToggle(EToggle.Protection, newIndex);
         #endregion
         #region ECompilation_SelectedIndexChanged
         private void ECompilation_SelectedIndexChanged(object sender, int newIndex) => _ = TryChangeToggle(EToggle.Compilation, newIndex);
@@ -286,9 +286,9 @@ namespace Launcher.Components.MainWindow
                 MGPMTEP_value.SetSelectedIndexFast(GProp.User.Encryption ? 1 : 0);
                 MGPMTEP_value.SelectedIndexChanged += EEncryption_SelectedIndexChanged;
                 #endregion
-                #region VMProtect
-                MGPMVP_value.SetSelectedIndexFast(GProp.User.VMProtect ? 1 : 0);
-                MGPMVP_value.SelectedIndexChanged += EVMProtect_SelectedIndexChanged;
+                #region Protection
+                MGPMVP_value.SetSelectedIndexFast(GProp.User.Protection ? 1 : 0);
+                MGPMVP_value.SelectedIndexChanged += EProtection_SelectedIndexChanged;
                 #endregion
                 #region Компиляция
                 MGPMCP_value.SetSelectedIndexFast(GProp.User.Compilation ? 1 : 0);
@@ -546,7 +546,7 @@ namespace Launcher.Components.MainWindow
             var tryExecute = toggle switch
             {
                 EToggle.Compilation => await CApi.ToggleEncryption(newValue is 1),
-                EToggle.VMProtect => await CApi.ToggleVMProtect(newValue is 1),
+                EToggle.Protection => await CApi.ToggleProtection(newValue is 1),
                 EToggle.Encryption => await CApi.ToggleEncryption(newValue is 1),
                 _ => throw new NotImplementedException()
             };
@@ -555,7 +555,7 @@ namespace Launcher.Components.MainWindow
                 switch (toggle)
                 {
                     case EToggle.Compilation: MGPMCP_value.SelectedIndex = GProp.User.Compilation ? 1 : 0; break;
-                    case EToggle.VMProtect: MGPMVP_value.SelectedIndex = GProp.User.VMProtect ? 1 : 0; break;
+                    case EToggle.Protection: MGPMVP_value.SelectedIndex = GProp.User.Protection ? 1 : 0; break;
                     case EToggle.Encryption: MGPMTEP_value.SelectedIndex = GProp.User.Encryption ? 1 : 0; break;
                 }
 

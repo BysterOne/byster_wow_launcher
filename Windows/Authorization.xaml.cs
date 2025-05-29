@@ -94,7 +94,7 @@ namespace Launcher.Windows
                         new (EPC_LoginReg.Login, LoginPanel),
                         new (EPC_LoginReg.Registration, RegistrationPanel)
                     ],
-                    EPC_LoginReg.Login,
+                    EPC_LoginReg.Registration,
                     EPanelState.Showen
                 );
                 EPC_MainPanelChanger.ShowElement += PanelChangerShow;

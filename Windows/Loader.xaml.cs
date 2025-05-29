@@ -1,14 +1,10 @@
 ﻿using Cls;
 using Cls.Any;
 using Cls.Enums;
-using Cls.Errors;
 using Cls.Exceptions;
-using Launcher.Any;
-using Launcher.Any.LaunchExeHelperAny;
 using Launcher.Api;
 using Launcher.Api.Models;
 using Launcher.Cls;
-using Launcher.Components.Skeleton;
 using Launcher.Settings;
 using Launcher.Windows.AnyLoader.Errors;
 using Launcher.Windows.LoaderAny;
@@ -16,7 +12,6 @@ using Microsoft.Win32;
 using Newtonsoft.Json;
 using NLog;
 using NLog.Config;
-using Sentry.Protocol;
 using System.Diagnostics;
 using System.IO;
 using System.Reflection;
@@ -86,7 +81,7 @@ namespace Launcher.Windows
             #region try
             try
             {
-                var filename = Path.GetFileName(Process.GetCurrentProcess().MainModule!.FileName);
+                var filename = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule!.FileName);
                 var tryGetRefSource = await CApi.GetReferralSource(filename);
                 if (!tryGetRefSource.IsSuccess)
                 {

@@ -102,13 +102,13 @@
             <!--#region Свернуть -->
             <components:CButton
                 x:Name="WCP_minimize"
-                Icon="../Media/minimize_icon.png"
+                Icon="/Launcher;component/Media/minimize_icon.png"
                 Style="{DynamicResource MinimizeWindowControlButtonStyle}" />
             <!--#endregion-->
             <!--#region Закрыть -->
             <components:CButton
                 x:Name="WCP_close"
-                Icon="../Media/close_icon.png"
+                Icon="/Launcher;component/Media/close_icon.png"
                 Style="{DynamicResource CloseWindowControlButtonStyle}" />
             <!--#endregion-->
         </StackPanel>
@@ -140,7 +140,7 @@
 
         <!--#region Логин -->
         <StackPanel
-            Visibility="Visible"
+            Visibility="Hidden"
             Style="{DynamicResource AuthStackPanelStyle}"
             x:Name="LoginPanel">
             <!--#region Лого -->
@@ -191,7 +191,7 @@
 
         <!--#region Регистрация -->
         <StackPanel
-            Visibility="Hidden"
+            Visibility="Visible"
             Style="{DynamicResource AuthStackPanelStyle}"
             x:Name="RegistrationPanel">
             <!--#region Лого -->

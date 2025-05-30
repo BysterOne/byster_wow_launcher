@@ -181,6 +181,48 @@
                                 PlaceholderColor="#FFCCCCCC"
                                 PreviewKeyDown="MGPM_redeem_PreviewKeyDown" />
                             <!--#endregion-->
+                            <!--#region Реферальный код -->
+                            <Grid
+                                x:Name="MGPM_refcode"
+                                Height="50"
+                                Width="416"
+                                Margin="0 10">
+                                <Grid.ColumnDefinitions>
+                                    <ColumnDefinition />
+                                    <ColumnDefinition Width="Auto"/>
+                                </Grid.ColumnDefinitions>
+                                <!--#region Поле -->
+                                <Rectangle
+                                    Fill="#11FFFFFF" 
+                                    RadiusX="8"
+                                    RadiusY="8"/>
+                                <TextBlock 
+                                    Text="XYNXYN"
+                                    x:Name="MGPNRC_value"
+                                    Foreground="#FFB9B9B9"
+                                    FontFamily="{DynamicResource fontfamily_main}"
+                                    FontSize="26"
+                                    FontWeight="Bold"
+                                    VerticalAlignment="Center"
+                                    HorizontalAlignment="Center"/>
+                                <!--#endregion-->
+                                <!--#region Кнопка -->
+                                <components:CButton 
+                                    Grid.Column="2"
+                                    Style="{DynamicResource SettingsButtonStyle}"
+                                    MinWidth="0"
+                                    x:Name="MGPNRC_button"
+                                    Width="204"
+                                    Height="50"
+                                    Margin="8 0 0 0"
+                                    Cursor="Hand"
+                                    IconHeight="26"
+                                    Text="Копировать"
+                                    Icon="/Launcher;component/Media/copy_icon.png"
+                                    MouseDown="MGPNRC_button_MouseDown"/>
+                                <!--#endregion-->
+                            </Grid>
+                            <!--#endregion-->
                             <!--#region Остальные настройки -->
                             <StackPanel
                                 Panel.ZIndex="1">

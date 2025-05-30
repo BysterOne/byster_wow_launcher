@@ -18,7 +18,10 @@ using System.Drawing;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
+using System.Windows.Media;
 using System.Windows.Media.Animation;
+using System.Windows.Media.Imaging;
+using System.Xml.Linq;
 
 namespace Launcher.Components.MainWindow
 {
@@ -69,6 +72,7 @@ namespace Launcher.Components.MainWindow
                 GProp.User.Permissions.HasFlag(EUserPermissions.ExternalDeveloper) ||
                 GProp.User.Permissions.HasFlag(EUserPermissions.Superuser);
         }
+        private bool CanCopyReferralCode { get; set; } = true;
         private bool IsInit { get; set; } = false;
         private static LogBox Pref { get; set; } = new LogBox("SettingsDialogBox");
         private static TaskCompletionSource<EDialogResponse> TaskCompletion { get; set; } = null!;
@@ -212,6 +216,9 @@ namespace Launcher.Components.MainWindow
             AppSettings.Save();
         }
         #endregion
+        #region MGPNRC_button_MouseDown
+        private void MGPNRC_button_MouseDown(object sender, MouseButtonEventArgs e) => CopyReferralCode();
+        #endregion
         #endregion
 
         #region Анимации
@@ -305,6 +312,9 @@ namespace Launcher.Components.MainWindow
                 #region Компиляция
                 MGPMCP_value.SetSelectedIndexFast(GProp.User.Compilation ? 1 : 0);
                 MGPMCP_value.SelectedIndexChanged += ECompilation_SelectedIndexChanged;
+                #endregion
+                #region Реф код
+                MGPNRC_value.Text = GProp.User.ReferralCode;
                 #endregion
                 #region Обновление разрешения пользователя
                 UpdateUserPermissions();
@@ -450,6 +460,7 @@ namespace Launcher.Components.MainWindow
             MGPMCP_header.Text = Dictionary.Translate($"Компиляция");
             MGPMTC_header.Text = Dictionary.Translate($"Консоль");
             MGPMVP_header.Text = Dictionary.Translate($"Защита");
+            MGPNRC_button.Text = Dictionary.Translate("Копировать");
             MGHBP_main.Text = Dictionary.Translate($"ОСНОВНЫЕ");
             MGHBP_advanced.Text = Dictionary.Translate($"РАСШИРЕННЫЕ");
             MGPM_redeem.Placeholder = Dictionary.Translate($"Активировать купон");
@@ -597,10 +608,36 @@ namespace Launcher.Components.MainWindow
 
             if (panel is EPC_Panels.Main) MGPA_git.Width = 150;
         }
-        #endregion
 
         #endregion
+        #region CopyReferralCode
+        private void CopyReferralCode()
+        {
+            if (CanCopyReferralCode)
+            {
+                CanCopyReferralCode = false;
 
-        
+                MGPNRC_button.Icon = BitmapFrame.Create(Functions.GetSourceFromResource($"Media/success_icon.png"));
+                MGPNRC_button.Text = Dictionary.Translate($"Скопировано");
+                Clipboard.SetText(GProp.User.ReferralCode);
+
+                _ = Task.Run(() =>
+                {
+                    Thread.Sleep(2000);
+
+                    Dispatcher.Invoke(() =>
+                    {                        
+                        MGPNRC_button.Icon = BitmapFrame.Create(Functions.GetSourceFromResource($"Media/copy_icon.png"));
+                        MGPNRC_button.Text = Dictionary.Translate($"Копировать");
+                    });
+
+                    CanCopyReferralCode = true;
+                });
+            }
+        }
+        #endregion
+        #endregion
+
+
     }
 }

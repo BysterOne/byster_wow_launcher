@@ -24,6 +24,7 @@
 		<None Remove="Media\behind_icon.png" />
 		<None Remove="Media\cart_icon.png" />
 		<None Remove="Media\close_icon.png" />
+		<None Remove="Media\copy_icon.png" />
 		<None Remove="Media\edit_icon.png" />
 		<None Remove="Media\forward_icon.png" />
 		<None Remove="Media\full_size_icon.png" />
@@ -87,6 +88,7 @@
 		<None Remove="Media\Shop\TypesIcons\utility_icon.png" />
 		<None Remove="Media\Shop\warlock_icon.png" />
 		<None Remove="Media\Shop\warrior_icon.png" />
+		<None Remove="Media\success_icon.png" />
 		<None Remove="Media\success_payment_icon.png" />
 		<None Remove="Media\test-back.jpg" />
 		<None Remove="Media\view_pass_icon.png" />
@@ -100,6 +102,7 @@
 	<ItemGroup>
 		<Resource Include="Localizations\untranslatable.json" />
 		<Resource Include="Media\behind_icon.png" />
+		<Resource Include="Media\copy_icon.png" />
 		<Resource Include="Media\edit_icon.png" />
 		<Resource Include="Media\forward_icon.png" />
 		<Resource Include="Media\full_size_icon.png" />
@@ -165,6 +168,7 @@
 		<Resource Include="Media\Shop\TypesIcons\pve_icon.png" />
 		<Resource Include="Media\Shop\TypesIcons\pvp_icon.png" />
 		<Resource Include="Media\Shop\TypesIcons\utility_icon.png" />
+		<Resource Include="Media\success_icon.png" />
 		<Resource Include="Media\success_payment_icon.png" />
 		<Resource Include="Media\test-back.jpg" />
 		<Resource Include="Localizations\English.json" />

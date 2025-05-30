@@ -9,6 +9,14 @@ namespace Launcher.Any
 {
     public class SentryExtensions
     {
+        #region Глобальные транзакции
+        public static ITransactionTracer? FirstLoadTransaction { get; set; }
+        public static ITransactionTracer? MainFromAuthTransaction { get; set; }
+        public static ISpan? AuthorizationWindowLoadingTransaction { get; set; }
+        public static ISpan? MainWindowLoadingTransaction { get; set; }
+        public static ITransactionTracer? BuyTransaction { get; set; }
+        public static ITransactionTracer? LaunchExeTransaction { get; set; }
+        #endregion
 
         #region SendException
         public static void SendException(UExcept ex)

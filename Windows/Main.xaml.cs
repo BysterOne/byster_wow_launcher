@@ -95,14 +95,22 @@ namespace Launcher.Windows
             #region try
             try
             {
+                var initSpan =
+                    SentryExtensions.MainWindowLoadingTransaction is not null ? 
+                        SentryExtensions.MainWindowLoadingTransaction : 
+                        SentryExtensions.MainFromAuthTransaction;
+                SentrySdk.ConfigureScope(scope => scope.Span = initSpan);
                 #region Запуск пинг-помощника
                 CPingHelper.Start();
                 #endregion
                 #region Загрузка словаря
+                var loadDictionarySpan = initSpan?.StartChild("load-server-dictionaries");
                 var tryLoadTranslations = await Dictionary.Load();
                 if (!tryLoadTranslations.IsSuccess) throw new UExcept(EInitialization.FailLoadTranslations, $"Ошибка загрузка словарей", tryLoadTranslations.Error);
+                loadDictionarySpan?.Finish();
                 #endregion
                 #region Загружаем информацию о пользователе
+                var loadUserInfoSpan = initSpan?.StartChild("load-user-info");
                 var tryGetUserInfo = await CApi.GetUserInfo();
                 if (!tryGetUserInfo.IsSuccess)
                 {
@@ -110,9 +118,11 @@ namespace Launcher.Windows
                 }
                 GProp.User = tryGetUserInfo.Response;
                 SentrySdk.ConfigureScope(scope => scope.User = new SentryUser() { Username = GProp.User.Username });
+                loadUserInfoSpan?.Finish();
                 UpdateUserDataView();
                 #endregion
                 #region Переключатель страниц магазина и главной
+                var initComponentsSpan = initSpan?.StartChild("initialization-components");
                 EPC_MainPanelChanger = new
                 (
                     MainPanels,
@@ -159,13 +169,18 @@ namespace Launcher.Windows
                 if (!tryInitMainChanger.IsSuccess) throw new UExcept(EInitialization.FailInitPanelChanger, $"Ошибка запуска '{nameof(EPC_MainPanelChanger)}'", tryInitMainChanger.Error);
                 #endregion
                 #endregion
-                #region Обновляем язык у редкатора корзины
+                #region Обновляем язык у редактора корзины
                 _ = CartEditor.UpdateAllValues();
                 #endregion
 
                 #region Открываем главную
                 await ChangeMainPanel(EPC_MainShop.Main);
-                #endregion              
+                #endregion
+                #region Sentry
+                initComponentsSpan?.Finish();
+                initSpan?.Finish();
+                SentryExtensions.MainWindowLoadingTransaction = null;
+                #endregion
 
                 return new() { IsSuccess = true };
             }
@@ -182,6 +197,13 @@ namespace Launcher.Windows
                 var uex = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);
                 Functions.Error(uex, $"{_failinf}: исключение", _proc);
                 return new(uex);
+            }
+            #endregion
+            #region finally
+            finally
+            {
+                if (SentryExtensions.FirstLoadTransaction is not null && !SentryExtensions.FirstLoadTransaction.IsFinished)
+                    SentryExtensions.FirstLoadTransaction.Finish();
             }
             #endregion
         }

@@ -328,6 +328,11 @@ namespace Launcher.Components
             #region try
             try
             {
+                #region Sentry
+                SentryExtensions.BuyTransaction = SentrySdk.StartTransaction("buy", "buying");
+                SentrySdk.ConfigureScope(scope => scope.Transaction = SentryExtensions.BuyTransaction);
+                var buyTrans = SentryExtensions.BuyTransaction;
+                #endregion
                 #region Бонусы
                 var bonuses =
                     UseBonuses ?
@@ -341,8 +346,10 @@ namespace Launcher.Components
                 await PanelChanger.ChangePanel(EPC_PanelChanger.Loader);
                 #endregion
                 #region Покупка
+                var buyRequest = buyTrans?.StartChild("send-buy-request");
                 var tryBuy = await CApi.Buy(GProp.Cart.Items.ToList(), GProp.PaymentSystems.First(x => x.Id == MGCCAM_methods_list.SelectedItem!.Id), bonuses);
                 if (!tryBuy.IsSuccess) throw new UExcept(EBuy.FailExecuteRequest, $"Не удалось выполнить запрос", tryBuy.Error);
+                buyRequest?.Finish();
                 #endregion
                 #region Сразу чистим карзину
                 while (GProp.Cart.Items.Count > 0) GProp.Cart.RemoveItem(GProp.Cart.Items.First().Product);
@@ -361,25 +368,28 @@ namespace Launcher.Components
                     await Task.Run(() => Thread.Sleep(300));
                     await PanelChanger.ChangePanel(EPC_PanelChanger.PaymentDetails);
                     MGCLP_loader.StopAnimation();
+                    buyTrans?.Finish();
                     return;
                 }
                 PaymentUrl = tryBuy.Response.PaymentUrl;
                 #endregion
 
-
                 #region Код и ссылка
+                var genCodeSpan = buyTrans?.StartChild("generating-qr-code");
                 using var qrGenerator = new QRCodeGenerator();
                 using var qrData = qrGenerator.CreateQrCode(PaymentUrl, QRCodeGenerator.ECCLevel.Q);
                 using var qrCode = new QRCode(qrData);
                 using Bitmap qrBitmap = qrCode.GetGraphic(30);
                 MGCPI_qr_code_image.Source = Functions.ConvertBitmapToBitmapImage(qrBitmap);
                 MGCPI_text.Text = Dictionary.Translate("Перейдите на сайт платежной системы и завершите платеж. После оплаты закройте данное окно");
+                genCodeSpan?.Finish();
                 #endregion
                 #region Окно оплаты
                 IsNeedUpdateData = true;
                 await PanelChanger.ChangePanel(EPC_PanelChanger.PaymentDetails);
                 MGCLP_loader.StopAnimation();
                 #endregion
+                buyTrans?.Finish();
             }
             #endregion
             #region UExcept
@@ -397,11 +407,17 @@ namespace Launcher.Components
                 Error(Dictionary.Translate($"Не удалось выполнить покупку. Попробуйте позже или обратитесь в поддержку"));
             }
             #endregion
+            #region finally
+            finally
+            {
+                SentryExtensions.BuyTransaction = null;
+            }
+            #endregion
         }
         #endregion
 
         #endregion
 
-        
+
     }
 }

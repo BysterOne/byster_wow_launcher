@@ -86,6 +86,9 @@ namespace Launcher.Windows
             #region try
             try
             {
+                #region Sentry
+                SentrySdk.ConfigureScope(scope => scope.Span = SentryExtensions.AuthorizationWindowLoadingTransaction);
+                #endregion
                 #region Переключатель
                 EPC_MainPanelChanger = new
                 (
@@ -120,6 +123,12 @@ namespace Launcher.Windows
                     throw new UExcept(EInitialization.FailLoadLangList, $"Не удалось загрузить языки в список", tryLoadLangList.Error);
                 }
                 CLP_list.NewSelectedItem += CLP_list_NewSelectedItem;
+                #endregion
+                #region Sentry
+                SentryExtensions.AuthorizationWindowLoadingTransaction?.Finish();
+                SentryExtensions.AuthorizationWindowLoadingTransaction = null;
+                SentryExtensions.FirstLoadTransaction?.Finish();
+                SentryExtensions.FirstLoadTransaction = null;
                 #endregion
 
                 return new() { IsSuccess = true };
@@ -329,7 +338,11 @@ namespace Launcher.Windows
         }
         #endregion        
         #region OpenMainWindow
-        private void OpenMainWindow() => Application.Current.Dispatcher.Invoke(() => Functions.OpenWindow(this, new Main()));
+        private void OpenMainWindow()
+        {
+            SentryExtensions.MainFromAuthTransaction = SentrySdk.StartTransaction("main-window-from-auth", "launching");
+            Application.Current.Dispatcher.Invoke(() => Functions.OpenWindow(this, new Main()));
+        }
         #endregion
         #region UpdateAllValues
         public async Task UpdateAllValues()

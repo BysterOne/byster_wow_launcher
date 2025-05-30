@@ -2,6 +2,7 @@
 using Cls.Any;
 using Cls.Enums;
 using Cls.Exceptions;
+using Launcher.Any;
 using Launcher.Api;
 using Launcher.Api.Models;
 using Launcher.Cls;
@@ -59,6 +60,7 @@ namespace Launcher.Windows
 
         #region Переменные
         private static LogBox Pref { get; set; } = new LogBox("Loader");
+        private ISpan? InitSpan { get; set; }
         #endregion
 
         #region Обработчики событий
@@ -73,7 +75,7 @@ namespace Launcher.Windows
 
         #region Функции
         #region CheckReferalSource
-        private async Task CheckReferalSource()
+        private async Task CheckReferralSource()
         {
             var _proc = Pref.CloneAs(Functions.GetMethodName());
             var _failinf = $"Не удалось определить источник";
@@ -81,6 +83,8 @@ namespace Launcher.Windows
             #region try
             try
             {
+                var checkRefSource = InitSpan?.StartChild("check-referral");
+
                 var filename = Path.GetFileNameWithoutExtension(Process.GetCurrentProcess().MainModule!.FileName);
                 var tryGetRefSource = await CApi.GetReferralSource(filename);
                 if (!tryGetRefSource.IsSuccess)
@@ -98,6 +102,8 @@ namespace Launcher.Windows
                     GProp.ReferralSource = tryGetRefSource.Response;
                     _proc.Log($"RefCode: {response.ReferralCode}, RefSource: {response.ReferralCode}");
                 }
+
+                checkRefSource?.Finish();
             }
             #endregion
             #region Exception
@@ -118,6 +124,10 @@ namespace Launcher.Windows
             #region try
             try
             {
+                #region Sentry
+                InitSpan = SentryExtensions.FirstLoadTransaction?.StartChild("preloader", "initialization");
+                SentrySdk.ConfigureScope(scope => scope.Span = InitSpan);
+                #endregion
                 #region Настройки логов
                 ConfigureNLog();
                 #endregion
@@ -128,29 +138,37 @@ namespace Launcher.Windows
                 }
                 #endregion
                 #region Проверка версии
+                var checkVersionSpan = InitSpan?.StartChild("check-updates");
                 var tryCheckVersion = await CheckLauncherUpdates();
                 if (!tryCheckVersion.IsSuccess)
                 {
-                    if (tryCheckVersion.Error.Code is ECheckLauncherUpdates.LauncherUpdateRequired) return;
+                    if (tryCheckVersion.Error.Code is ECheckLauncherUpdates.LauncherUpdateRequired) return;                    
                     throw new UExcept(EInit.FailCheckLauncherUpdates, $"Не удалось проверить обновления для лаунчера", tryCheckVersion.Error);
                 }
+                checkVersionSpan?.Finish();
                 #endregion
                 #region Загрузка словаря
+                var loadTranslSpan = InitSpan?.StartChild("load-local-dictionaries");
                 var tryLoadTranslations = await Dictionary.LoadLocal();
                 if (!tryLoadTranslations.IsSuccess)
                 {
                     throw new UExcept(EInit.FailLoadDictionary, $"Не удалось загрузить словари", tryLoadTranslations.Error);
                 }
+                loadTranslSpan?.Finish();
                 #endregion
                 #region Синхронизация настроек
+                var syncConfigSpan = InitSpan?.StartChild("syncing-configs");
                 var trySyncSettings = await SyncConfigs();
                 if (!trySyncSettings.IsSuccess)
                 {
                     var uex = new UExcept(EInit.FailSyncConfigs, $"Не удалось синхронизировать конфиги", trySyncSettings.Error);
-                    Functions.Error(uex, uex.Message, _proc);
+                    Functions.Error(uex, uex.Message, _proc);                    
+                }else
+                {
+                    syncConfigSpan?.Finish();
                 }
                 #endregion
-                #region Задачи
+                #region Задачи                
                 await Task.WhenAll(CopyConfigFolderAndClearAppData());
                 #endregion
                 #region Авторизация, если данные сохранены
@@ -160,6 +178,7 @@ namespace Launcher.Windows
                     !String.IsNullOrWhiteSpace(AppSettings.Instance.Password)
                 )
                 {
+                    var loginLocalDataSpan = InitSpan?.StartChild("login-with-local-data");
                     #region Запрос
                     var tryLogin = await CApi.Login
                     (
@@ -173,8 +192,12 @@ namespace Launcher.Windows
                     {
                         #region Сохраняем данные
                         CApi.Session = tryLogin.Response.Session;
+                        loginLocalDataSpan?.Finish();
                         #endregion
                         #region Главное окно
+                        InitSpan?.Finish();
+                        InitSpan = null;
+                        SentryExtensions.MainWindowLoadingTransaction = SentryExtensions.FirstLoadTransaction?.StartChild("main-window", "launching");
                         OpenMainWindow();
                         #endregion
                         return;
@@ -182,10 +205,14 @@ namespace Launcher.Windows
                     #endregion
                 }
                 #endregion
-                #region В любом другом случае
-                await CheckReferalSource();
+                #region В любом другом случае                
+                await CheckReferralSource();
+                InitSpan?.Finish();
+                InitSpan = null;
+                SentryExtensions.AuthorizationWindowLoadingTransaction = SentrySdk.StartTransaction("authorization-window", "launching");
                 OpenAuthorization();
                 #endregion
+                
             }
             #endregion
             #region UExcept
@@ -365,23 +392,31 @@ namespace Launcher.Windows
             #region try
             try
             {
-                var configPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterConfig", "configs");
+                #region Sentry
+                var copyConfigSpan = InitSpan?.StartChild("copying-configs");
+                #endregion
+
+                var configFolder = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterConfig");
+                var configsPath = Path.Combine(configFolder, "configs");
                 var newConfigPath = Path.Combine(AppSettings.RootFolder, "config", "configs");
                 var mediaPath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.ApplicationData), "BysterImages");
 
                 #region Копируем и удаляем конфиг папку
-                if (Directory.Exists(configPath))
+                if (Directory.Exists(configsPath))
                 {
-                    Functions.CopyDirectory(configPath, newConfigPath);
-                    Directory.Delete(configPath, true);
+                    Functions.CopyDirectory(configsPath, newConfigPath);
+                    var deletingSpan = copyConfigSpan?.StartChild("deleting-config-folder");
+                    Directory.Delete(configFolder, true);
+                    deletingSpan?.Finish();
                 }
+                copyConfigSpan?.Finish();
                 #endregion
-                #region Удаляем папку медиа
+                #region Удаляем папку медиа                
                 if (Directory.Exists(mediaPath))
                 {
                     Directory.Delete(mediaPath, true);
                 }
-                #endregion
+                #endregion                
             }
             #endregion
             #region Exception

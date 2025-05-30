@@ -1,4 +1,5 @@
-﻿using Launcher.Windows;
+﻿using Launcher.Any;
+using Launcher.Windows;
 using System.Configuration;
 using System.Data;
 using System.Windows;
@@ -24,6 +25,9 @@ namespace Launcher
                 o.CaptureFailedRequests = true;
                 o.AddProfilingIntegration();
             });
+
+            SentryExtensions.FirstLoadTransaction = SentrySdk.StartTransaction("first-load", "app-creation");
+            SentrySdk.ConfigureScope(scope => scope.Transaction = SentryExtensions.FirstLoadTransaction);
         }
 
 
@@ -32,6 +36,7 @@ namespace Launcher
             SentrySdk.CaptureException(e.Exception);
             e.Handled = true;
         }
+
         private void Application_Startup(object sender, StartupEventArgs e)
         {
             var loader = new Loader();

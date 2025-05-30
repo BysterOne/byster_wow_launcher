@@ -3,8 +3,8 @@ variables:
   MSBUILD_CONCURRENCY: 4
   VSWHERE_PATH: '%ProgramFiles(x86)%\Microsoft Visual Studio\Installer\vswhere.exe'
   DLL_NAME: bin/Release/net9.0-windows/win-x64/publish/Launcher.exe
-  UPLOAD_URL: 'https://service.byster.one/launcher/push_launcher_ci'
-  UPLOAD_URL_DEV: 'https://service.staging.byster.one/launcher/push_launcher_ci'
+  UPLOAD_URL: 'https://service.byster.one/launcher/v1/push_launcher_ci'
+  UPLOAD_URL_DEV: 'https://service.staging.byster.one/launcher/v1/push_launcher_ci'
   ASSEMBLY_INFO: 'AssemblyInfo.cs'
   DOTNET_CLI_TELEMETRY_OPTOUT: '1'
   SENTRY_RELEASE: $CI_COMMIT_SHORT_SHA

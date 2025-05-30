@@ -6,7 +6,6 @@ using Launcher.Any.GlobalEnums;
 using Launcher.Any.UDialogBox;
 using Launcher.Api;
 using Launcher.Cls;
-using Launcher.Components.DialogBox;
 using Launcher.Components.PanelChanger;
 using Launcher.Components.PayDialogBoxAny;
 using Launcher.PanelChanger.Enums;
@@ -64,7 +63,6 @@ namespace Launcher.Components
         }
 
         #region Переменные
-        private int CountCancelTrying { get; set; } = 0;
         private string? PaymentUrl { get; set; }
         private bool UseBonuses { get; set; } = false;
         private bool IsNeedUpdateData { get; set; } = false;
@@ -430,57 +428,10 @@ namespace Launcher.Components
         }
         #endregion
         #region TryClosing
-        private async void TryClosing()
+        private void TryClosing()
         {
             Application.Current.Windows.OfType<Main>().First().PreviewKeyDown -= EKeyDown;
-
-            var buttons = new List<DialogButton>() { new(EResponse.No) };
-            var phrases = new List<string>() 
-            {
-                Dictionary.Translate("Вы уверены, что хотите прервать оплату?"),
-                Dictionary.Translate("Может все таки не стоит отменять оплату?") + " 😕",
-                Dictionary.Translate("Пожалуйста, одумайтесь! Это не принесет никакой пользы"),
-                Dictionary.Translate("Вы же так близко к цели, зачем все бросать?"),
-                Dictionary.Translate("Ладно, Ваша настойчивость нас поразила. Можете закрыть окно и отменить оплату") + " 😭",
-            };
-            var canHihi = GProp.User.Permissions.HasFlag(EUserPermissions.Tester) || GProp.User.Permissions.HasFlag(EUserPermissions.Superuser);
-
-            var confirmClosing = await Main.ShowModal
-            (
-                new BoxSettings
-                (
-                    Dictionary.Translate("Подтвердите действие"),
-
-                    canHihi ?
-                        CountCancelTrying switch
-                        {
-                            0 or 1 or 2 or 3 => phrases[CountCancelTrying],                            
-                            _ => phrases[4],
-                        } :
-                        Dictionary.Translate("Вы уверены, что хотите прервать оплату?"),
-
-                    canHihi ?
-                        CountCancelTrying switch
-                        {
-                            0 => [ new(EResponse.No) ],
-                            1 => [ new(EResponse.No, Dictionary.Translate("Я подумаю")) ],
-                            2 => [ new(EResponse.No, Dictionary.Translate("Ладно")) ],
-                            3 => [ new(EResponse.No, Dictionary.Translate("Уговорили")) ],
-                            _ => [ new(EResponse.No, Dictionary.Translate("Пощадить")), new(EResponse.Yes, Dictionary.Translate("Отменить оплату"))],
-                        } :
-                        [ 
-                            new(EResponse.No), 
-                            new(EResponse.Yes) 
-                        ]
-                )
-            );
-            if (confirmClosing.IsSuccess && confirmClosing.Response is DialogBox.EResponse.Yes)
-            {
-                TaskCompletionSource?.TrySetResult(EDialogResponse.Closed);
-                return;
-            }
-            CountCancelTrying++;
-            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
+            TaskCompletionSource?.TrySetResult(EDialogResponse.Closed);
         }
         #endregion
 

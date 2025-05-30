@@ -33,6 +33,7 @@ namespace Launcher.Settings
         #endregion
 
         #region Параметры
+        [JsonConverter(typeof(LangAsTextJsonConverter))]
         public ELang Language { get => _lang; set { _lang = value; LanguageChanged?.Invoke(value); } }
         public EServer Server { get; set; } = EServer.Staging;
         public string Branch { get; set; } = "master";

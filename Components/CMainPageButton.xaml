@@ -10,6 +10,10 @@
     MinWidth="50"
     d:DataContext="{Binding RelativeSource={x:Static RelativeSource.Self}}">
     <Grid>
+        <!--#region Фон для активации -->
+        <Border Background="Black" Opacity="0"/>
+        <!--#endregion-->
+
         <StackPanel
             VerticalAlignment="Center"
             Margin="{Binding Padding}">

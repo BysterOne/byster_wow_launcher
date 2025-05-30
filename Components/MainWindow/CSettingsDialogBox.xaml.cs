@@ -56,10 +56,11 @@ namespace Launcher.Components.MainWindow
 
             TranslationHub.Register(this);
             GProp.LauncherDataUpdatedEvent += ELauncherUpdatedEvent;
+            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
 
             this.Opacity = 0;
             this.middleGrid.Opacity = 0;
-        }
+        }       
 
         #region Переменные
         private bool AvailableAdvanced
@@ -75,6 +76,16 @@ namespace Launcher.Components.MainWindow
         #endregion
 
         #region Обработчики событий
+        #region EKeyDown
+        private void EKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key is Key.Escape) 
+            {
+                e.Handled = true;
+                TaskCompletion?.TrySetResult(EDialogResponse.Closed);
+            }
+        }
+        #endregion
         #region ELauncherUpdatedEvent
         private async Task ELauncherUpdatedEvent(ELauncherUpdate updates, object? data)
         {

@@ -128,8 +128,8 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 Dictionary.Translate("Удаление"),
                 Dictionary.Translate($"Вы точно хотите удалить данный клиент игры?"),
                 [
-                    new(EResponse.Cancel, Dictionary.Translate("Отмена")),
                     new(EResponse.Yes, Dictionary.Translate("Да")),
+                    new(EResponse.Cancel, Dictionary.Translate("Отмена")),                    
                 ]
             ));
 

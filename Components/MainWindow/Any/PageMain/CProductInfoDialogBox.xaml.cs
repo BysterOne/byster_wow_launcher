@@ -12,6 +12,7 @@ using Launcher.Components.MainWindow.Any.PageMain.CProductInfoDialogBoxAny;
 using Launcher.Components.PanelChanger;
 using Launcher.PanelChanger.Enums;
 using Launcher.Settings;
+using Launcher.Windows;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -51,6 +52,8 @@ namespace Launcher.Components.MainWindow.Any.PageMain
 
             this.DataContext = this;
             middleGrid.Opacity = 0;
+
+            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
         }
 
         #region Переменнные
@@ -112,6 +115,19 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         #endregion
 
         #region Обработка событий
+        #region Background_MouseDown
+        private void Background_MouseDown(object sender, MouseButtonEventArgs e) => Application.Current.Windows.OfType<Main>().First().DragMove();
+        #endregion
+        #region EKeyDown
+        private void EKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key is Key.Escape)
+            {
+                e.Handled = true;
+                TaskCompletion?.TrySetResult(EDialogResponse.Closed);
+            }
+        }
+        #endregion
         #region MGRP_description_MouseDown
         private void MGRP_description_MouseDown(object sender, MouseButtonEventArgs e) => ChangePanel(EPC_Panels.Description);
         #endregion
@@ -246,6 +262,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             await MG_product.UpdateAllValues();
         }
         #endregion
+
         #endregion
 
         

@@ -38,6 +38,8 @@ namespace Launcher.Components.MainWindow
         public CChangePasswordDialogBox()
         {
             InitializeComponent();
+
+            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
         }
 
         #region Переменные
@@ -46,6 +48,16 @@ namespace Launcher.Components.MainWindow
         #endregion
 
         #region Обработчики событий
+        #region EKeyDown
+        private void EKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key is Key.Escape)
+            {
+                e.Handled = true;
+                TaskCompletionS?.TrySetResult(EDialogResponse.Closed);
+            }
+        }
+        #endregion
         #region MG_close_button_MouseLeftButtonDown
         private void MG_close_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {

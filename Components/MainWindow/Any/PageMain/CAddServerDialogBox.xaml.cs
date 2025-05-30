@@ -46,6 +46,8 @@ namespace Launcher.Components.MainWindow.Any.PageMain
 
             this.middleGrid.Opacity = 0;
             this.Opacity = 0;
+
+            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
         }
 
         #region Переменные
@@ -230,6 +232,16 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         #endregion
 
         #region Обработчики событий
+        #region EKeyDown
+        private void EKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key is Key.Escape)
+            {
+                e.Handled = true;
+                TaskCompletionSource?.TrySetResult(EDialogResponse.Closed);
+            }
+        }
+        #endregion
         #region EIconChangerClicked
         private void EIconChangerClicked(CFilterChanger sender, bool newValue)
         {

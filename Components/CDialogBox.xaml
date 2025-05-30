@@ -48,6 +48,7 @@
                         Height="6"
                         Margin="10 8 10 0"
                         Fill="White"
+                        MaxWidth="100"
                         RadiusX="3"
                         RadiusY="3"
                         MinWidth="50"/>

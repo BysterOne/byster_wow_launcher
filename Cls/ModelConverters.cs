@@ -11,6 +11,29 @@ using System.Threading.Tasks;
 
 namespace Launcher.Cls.ModelConverters
 {
+    #region LangAsTextJsonConverter
+    public class LangAsTextJsonConverter : JsonConverter<ELang>
+    {
+        public override void WriteJson(JsonWriter writer, ELang value, JsonSerializer serializer)
+        {
+            writer.WriteValue(GStatic.GetLangCode(value));
+        }
+
+        public override ELang ReadJson(JsonReader reader, Type objectType, ELang existingValue, bool hasExistingValue, JsonSerializer serializer)
+        {
+            if (reader.TokenType == JsonToken.Integer)
+            {
+                return (ELang)Convert.ToInt32(reader.Value);
+            }
+            if (reader.TokenType == JsonToken.String)
+            {
+                var tryP = GStatic.GetLangFromCode(reader.Value.ToString());
+                return tryP ?? ELang.Ru;
+            }
+            throw new JsonSerializationException($"Unexpected token {reader.TokenType} when parsing boolean.");
+        }
+    }
+    #endregion
     #region BoolAsIntJsonConverter
     public class BoolAsIntJsonConverter : JsonConverter<bool>
     {

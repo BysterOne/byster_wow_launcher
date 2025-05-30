@@ -34,6 +34,8 @@
     <Grid>
         <!--#region Фон -->
         <Rectangle
+        x:Name="Background"
+        MouseDown="Background_MouseDown"
             Fill="{StaticResource back_main}"
             Opacity="0.99" />
         <!--#endregion-->

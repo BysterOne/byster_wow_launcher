@@ -12,6 +12,7 @@ using Launcher.Components.MainWindow.ProductItemAny;
 using Launcher.Components.PanelChanger;
 using Launcher.PanelChanger.Enums;
 using Launcher.Settings;
+using Launcher.Windows;
 using Launcher.Windows.AnyMain.Enums;
 using System.Diagnostics;
 using System.Windows;
@@ -50,6 +51,8 @@ namespace Launcher.Components.MainWindow.Any.PageMain
 
             this.Opacity = 0;
             this.middleGrid.Opacity = 0;
+
+            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
         }
 
         #region Переменные
@@ -74,6 +77,19 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         #endregion
 
         #region Обработчики событий
+        #region Background_MouseDown
+        private void Background_MouseDown(object sender, MouseButtonEventArgs e) => Application.Current.Windows.OfType<Main>().First().DragMove();
+        #endregion
+        #region EKeyDown
+        private void EKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key is Key.Escape)
+            {
+                e.Handled = true;
+                TaskCompletion?.TrySetResult(EDialogResponse.Closed);
+            }
+        }
+        #endregion
         #region MG_close_button_MouseLeftButtonDown
         private void MG_close_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) { TaskCompletion.TrySetResult(EDialogResponse.Closed); }
         #endregion
@@ -301,7 +317,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             #endregion
         }
         #endregion
-        #endregion
 
+        #endregion
     }
 }

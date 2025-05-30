@@ -251,6 +251,7 @@ namespace Launcher.Windows
             mainWindow.NP_message_block.Text = message;
 
             #region Анимация
+            mainWindow.NotifyPanel.Visibility = Visibility.Visible;
             var storyboard = new Storyboard();
             var animation = new DoubleAnimationUsingKeyFrames();
             animation.KeyFrames.Add(new EasingDoubleKeyFrame(1, TimeSpan.FromMilliseconds(150)));
@@ -261,6 +262,7 @@ namespace Launcher.Windows
             Storyboard.SetTargetProperty(animation, new PropertyPath(OpacityProperty));
 
             storyboard.Children.Add(animation);
+            storyboard.Completed += (_, __) => { mainWindow.NotifyPanel.Visibility = Visibility.Hidden; };
 
             storyboard.Begin(mainWindow.NP_message_block, HandoffBehavior.SnapshotAndReplace, true);
             #endregion
@@ -552,6 +554,9 @@ namespace Launcher.Windows
         #endregion
         #region Background_MouseDown
         private void Background_MouseDown(object sender, MouseButtonEventArgs e) => DragMove();
+        #endregion
+        #region LoaderPanel_MouseDown
+        private void LoaderPanel_MouseDown(object sender, MouseButtonEventArgs e) => DragMove();
         #endregion
         #endregion
 

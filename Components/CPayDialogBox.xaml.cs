@@ -1,17 +1,18 @@
 ﻿using Cls;
 using Cls.Any;
-using Cls.Errors;
 using Cls.Exceptions;
 using Launcher.Any;
 using Launcher.Any.GlobalEnums;
 using Launcher.Any.UDialogBox;
 using Launcher.Api;
 using Launcher.Cls;
+using Launcher.Components.DialogBox;
 using Launcher.Components.PanelChanger;
 using Launcher.Components.PayDialogBoxAny;
 using Launcher.PanelChanger.Enums;
 using Launcher.Settings;
 using Launcher.Settings.Enums;
+using Launcher.Windows;
 using QRCoder;
 using System.Diagnostics;
 using System.Drawing;
@@ -19,7 +20,7 @@ using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
 using System.Windows.Media.Animation;
-using static System.Windows.Forms.LinkLabel;
+using EShow = Launcher.Components.PayDialogBoxAny.EShow;
 
 namespace Launcher.Components
 {
@@ -58,23 +59,33 @@ namespace Launcher.Components
         public CPayDialogBox()
         {
             InitializeComponent();
+
+            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
         }
 
         #region Переменные
+        private int CountCancelTrying { get; set; } = 0;
         private string? PaymentUrl { get; set; }
         private bool UseBonuses { get; set; } = false;
         private bool IsNeedUpdateData { get; set; } = false;
         private static LogBox Pref { get; set; } = new LogBox("Pay Dialog Box");
         private TaskCompletionSource<EDialogResponse> TaskCompletionSource { get; set; }
-        private CPanelChanger<EPC_PanelChanger> PanelChanger { get; set; }        
+        private CPanelChanger<EPC_PanelChanger> PanelChanger { get; set; }
         #endregion
 
         #region Обработчики событий
-        #region MG_close_button_MouseLeftButtonDown
-        private void MG_close_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        #region EKeyDown
+        private async void EKeyDown(object sender, KeyEventArgs e)
         {
-            TaskCompletionSource?.TrySetResult(EDialogResponse.Closed);
+            if (e.Key is Key.Escape)
+            {
+                e.Handled = true;
+                TryClosing();
+            }
         }
+        #endregion
+        #region MG_close_button_MouseLeftButtonDown
+        private void MG_close_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => TryClosing();
         #endregion
         #region MGCCAM_use_bonuses_changer_Clicked
         private void MGCCAM_use_bonuses_changer_Clicked(MainWindow.CFilterChanger sender, bool newValue)
@@ -415,7 +426,56 @@ namespace Launcher.Components
             #endregion
         }
         #endregion
+        #region TryClosing
+        private async void TryClosing()
+        {
+            var buttons = new List<DialogButton>() { new(EResponse.No) };
+            var phrases = new List<string>() 
+            {
+                Dictionary.Translate("Вы уверены, что хотите прервать оплату?"),
+                Dictionary.Translate("Может все таки не стоит отменять оплату?") + " 😕",
+                Dictionary.Translate("Пожалуйста, одумайтесь! Это не принесет никакой пользы"),
+                Dictionary.Translate("Вы же так близко к цели, зачем все бросать?"),
+                Dictionary.Translate("Ладно, Ваша настойчивость нас поразила. Можете закрыть окно и отменить оплату") + " 😭",
+            };
+            var canHihi = GProp.User.Permissions.HasFlag(EUserPermissions.Tester) || GProp.User.Permissions.HasFlag(EUserPermissions.Superuser);
 
+            var confirmClosing = await Main.ShowModal
+            (
+                new BoxSettings
+                (
+                    Dictionary.Translate("Подтвердите действие"),
+
+                    canHihi ?
+                        CountCancelTrying switch
+                        {
+                            0 or 1 or 2 or 3 => phrases[CountCancelTrying],                            
+                            _ => phrases[4],
+                        } :
+                        Dictionary.Translate("Вы уверены, что хотите прервать оплату?"),
+
+                    canHihi ?
+                        CountCancelTrying switch
+                        {
+                            0 => [ new(EResponse.No) ],
+                            1 => [ new(EResponse.No, Dictionary.Translate("Я подумаю")) ],
+                            2 => [ new(EResponse.No, Dictionary.Translate("Ладно")) ],
+                            3 => [ new(EResponse.No, Dictionary.Translate("Уговорили")) ],
+                            _ => [ new(EResponse.No, Dictionary.Translate("Пощадить")), new(EResponse.Yes, Dictionary.Translate("Отменить оплату"))],
+                        } :
+                        [ 
+                            new(EResponse.No), 
+                            new(EResponse.Yes) 
+                        ]
+                )
+            );
+            if (confirmClosing.IsSuccess && confirmClosing.Response is DialogBox.EResponse.Yes)
+            {
+                TaskCompletionSource?.TrySetResult(EDialogResponse.Closed);
+            }
+            CountCancelTrying++;
+        }
+        #endregion
         #endregion
 
 

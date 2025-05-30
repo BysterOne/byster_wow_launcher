@@ -74,6 +74,7 @@
                 MaxWidth="300"
                 MinWidth="50"
                 Opacity="0"
+                Visibility="Hidden"
                 Panel.ZIndex="996">
                 <Rectangle
                     Fill="#FF151721"
@@ -97,7 +98,8 @@
                 x:Name="LoaderPanel"
                 Panel.ZIndex="995"
                 Visibility="Hidden"
-                Opacity="0">
+                Opacity="0"
+                MouseDown="LoaderPanel_MouseDown">
                 <Rectangle
                     x:Name="LP_fill"
                     Fill="{DynamicResource popup_back}" />

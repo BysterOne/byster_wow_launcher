@@ -5,6 +5,7 @@ using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Settings.Enums;
 using Newtonsoft.Json;
 using System.Collections.ObjectModel;
+using System.ComponentModel;
 using System.IO;
 using System.Windows.Media;
 
@@ -35,10 +36,12 @@ namespace Launcher.Settings
         #region Параметры
         [JsonConverter(typeof(LangAsTextJsonConverter))]
         public ELang Language { get => _lang; set { _lang = value; LanguageChanged?.Invoke(value); } }
-        public EServer Server { get; set; } = EServer.Staging;
+        public EServer Server { get; set; } = EServer.Prod;
         public string Branch { get; set; } = "master";
 
         [JsonConverter(typeof(BoolAsIntJsonConverter))]
+        [DefaultValue(false)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool Console { get; set; } = false;
 
         public string Login { get; set; } = string.Empty;

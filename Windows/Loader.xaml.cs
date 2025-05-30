@@ -299,6 +299,7 @@ namespace Launcher.Windows
                 {
                     if (key is not null)
                     {
+                        #region Сохраняем
                         foreach (var valueName in key.GetValueNames())
                         {
                             switch (valueName.ToLower())
@@ -307,8 +308,18 @@ namespace Launcher.Windows
                                 case "password": AppSettings.Instance.Password = key.GetValue(valueName)!.ToString()!; break;
                             }
                         }
-                        AppSettings.Instance.Console = true;
                         AppSettings.Save();
+                        #endregion                        
+                        #region Удаляем раздел
+                        using (RegistryKey? parent = Registry.CurrentUser.OpenSubKey("Software", writable: true))
+                        {
+                            if (parent is not null && parent.OpenSubKey("Byster") is not null)
+                            {
+                                parent.DeleteSubKeyTree("Byster");
+                            }
+                        }
+                        #endregion
+
                         return new() { IsSuccess = true };
                     }
                 }
@@ -331,52 +342,6 @@ namespace Launcher.Windows
             {
                 var uerror = new UExcept(GlobalErrors.Exception, $"Исключение: {ex.Message}", ex);               
                 return new(uerror);
-            }
-            #endregion
-        }
-        #endregion
-
-        #region CopyRegToFile
-        private async Task CopyRegToFile()
-        {
-            var _proc = Pref.CloneAs(Functions.GetMethodName());
-            var _failinf = $"Не удалось скопировать данные с реестра";
-
-            #region try
-            try
-            {
-                using (RegistryKey? key = Registry.CurrentUser.OpenSubKey(@"Software\Byster"))
-                {
-                    if (key is not null)
-                    {
-                        #region Собираем данные
-                        var dict = new Dictionary<string, object?>();
-                        foreach (var valueName in key.GetValueNames()) dict[valueName] = key.GetValue(valueName);
-                        var json = JsonConvert.SerializeObject(dict, Newtonsoft.Json.Formatting.Indented);
-                        #endregion
-                        #region Сохраняем
-                        var pathToSave = Path.Combine(AppSettings.RootFolder, "reg_config.json");
-                        Directory.CreateDirectory(AppSettings.RootFolder);
-                        await File.WriteAllTextAsync(pathToSave, json);
-                        #endregion
-                        #region Удаляем раздел
-                        //using (RegistryKey? parent = Registry.CurrentUser.OpenSubKey("Software", writable: true))
-                        //{
-                        //    if (parent is not null && parent.OpenSubKey("Byster") is not null)
-                        //    {
-                        //        parent.DeleteSubKeyTree("Byster");
-                        //    }
-                        //}
-                        #endregion
-                    }
-                }
-            }
-            #endregion            
-            #region Exception
-            catch (Exception ex)
-            {
-                var uex = new UExcept(ELoader.FailCopyRegToFile, _failinf, ex);
-                Functions.Error(uex, uex.Message, _proc);
             }
             #endregion
         }

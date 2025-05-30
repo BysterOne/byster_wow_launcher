@@ -142,7 +142,7 @@ namespace Launcher.Api
         #region Ping
         public static async Task<UResponse<List<PingUpdate>>> Ping()
         {
-            return await Request<List<PingUpdate>>("/launcher/v1/ping", Method.Get);
+            return await Request<List<PingUpdate>>("/launcher/v1/ping", Method.Post);
         }
         #endregion
         #region Buy
@@ -248,7 +248,7 @@ namespace Launcher.Api
                 #endregion              
                 #endregion
                 #region Отправка
-                var response = await client.ExecuteAsync(request);
+                var response = await client.ExecuteAsync(request);                
                 if (!response.IsSuccessStatusCode)
                 {
                     _proc.Log($"Response: {response.ErrorException?.Message}");

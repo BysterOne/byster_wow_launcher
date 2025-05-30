@@ -463,7 +463,7 @@ namespace Launcher.Components.MainWindow
         #region UpdateUserPermissions
         private void UpdateUserPermissions()
         {
-            GProp.User.Permissions = EUserPermissions.None;
+            ///GProp.User.Permissions = EUserPermissions.None;
             var perms = GProp.User.Permissions;
             
 

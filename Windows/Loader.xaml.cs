@@ -7,6 +7,7 @@ using Launcher.Api;
 using Launcher.Api.Models;
 using Launcher.Cls;
 using Launcher.Settings;
+using Launcher.Settings.Enums;
 using Launcher.Windows.AnyLoader.Errors;
 using Launcher.Windows.LoaderAny;
 using Microsoft.Win32;
@@ -127,6 +128,11 @@ namespace Launcher.Windows
                 #region Sentry
                 InitSpan = SentryExtensions.FirstLoadTransaction?.StartChild("preloader", "initialization");
                 SentrySdk.ConfigureScope(scope => scope.Span = InitSpan);
+                #endregion
+                #region Для дебага ставим staging
+                #if DEBUG
+                AppSettings.Instance.Server = EServer.Staging;
+                #endif
                 #endregion
                 #region Настройки логов
                 ConfigureNLog();

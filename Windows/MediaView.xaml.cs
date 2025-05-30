@@ -1,14 +1,12 @@
 ﻿using Cls;
 using Cls.Any;
-using Cls.Errors;
 using Cls.Exceptions;
 using Launcher.Any;
 using Launcher.Any.UDialogBox;
 using Launcher.Api.Models;
 using Launcher.Cls;
-using Launcher.Components.MainWindow.MediaViewerAny;
-using Launcher.Windows;
 using Launcher.Windows.AnyMain.Enums;
+using Launcher.Windows.MediaViewerAny;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -16,12 +14,12 @@ using System.Windows.Media.Animation;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
-namespace Launcher.Components.MainWindow
+namespace Launcher.Windows
 {
     namespace MediaViewerAny
     {
-        public enum EStatus 
-        { 
+        public enum EStatus
+        {
             Played,
             Stopped
         }
@@ -30,19 +28,26 @@ namespace Launcher.Components.MainWindow
             NoObjectOfTheRequiredType,
             EmptyMediaList
         }
+        public enum EChangeMedia
+        {
+            Next,
+            Behind,
+        }
     }
+    
     /// <summary>
-    /// Логика взаимодействия для CMediaViewer.xaml
+    /// Логика взаимодействия для MediaView.xaml
     /// </summary>
-    public partial class CMediaViewer : UserControl, IUDialogBox
+    public partial class MediaView : Window
     {
-        public CMediaViewer()
+        public MediaView()
         {
             InitializeComponent();
 
+
             this.Opacity = 0;
 
-            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
+            this.KeyDown += EKeyDown;
 
             this.MG_back_button.MouseEnter += MG_back_button_MouseEnter;
             this.MG_back_button.MouseLeave += MG_back_button_MouseLeave;
@@ -54,12 +59,12 @@ namespace Launcher.Components.MainWindow
         }
 
         #region Переменные
-        private bool CanFullScreen { get; set; }
+        private bool CanFullScreen { get; set; } = false;
         private bool IsFullScreenImage { get; set; } = false;
-        private bool IsPresedTimeControl { get; set; } = false;
+        private bool IsPressedTimeControl { get; set; } = false;
         private bool CanChangeMedia { get; set; } = true;
         private DispatcherTimer? Timer { get; set; }
-        public static LogBox Pref { get; set; } = new("Media Viewer");
+        public static LogBox Pref { get; set; } = new("Media Viewer Window");
         private TaskCompletionSource<EDialogResponse> TaskCompletionSource { get; set; } = new();
 
         public List<Media> Medias { get; set; } = [];
@@ -80,12 +85,12 @@ namespace Launcher.Components.MainWindow
         }
 
         private static readonly DependencyProperty StatusProperty =
-            DependencyProperty.Register("Status", typeof(EStatus), typeof(CMediaViewer),
+            DependencyProperty.Register("Status", typeof(EStatus), typeof(MediaView),
                 new PropertyMetadata(EStatus.Stopped, OnStatusChanged));
 
         private static void OnStatusChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
         {
-            if (d is CMediaViewer sender) sender.UpdateVideoPlayerView();
+            if (d is MediaView sender) sender.UpdateVideoPlayerView();
         }
         #endregion
         #endregion
@@ -104,14 +109,20 @@ namespace Launcher.Components.MainWindow
         {
             switch (e.Key)
             {
-                case Key.Escape: TaskCompletionSource.TrySetResult(EDialogResponse.Closed); break;
+                case Key.Escape: CloseView(); break;
                 case Key.Left:
-                    if (CurrentMedia is not null && CurrentMedia.Type is EMediaType.Video)
-                        Rewind(TimeSpan.FromSeconds(-10)); 
+                    if (CurrentMedia is not null)
+                    {
+                        if (CurrentMedia.Type is EMediaType.Video) Rewind(TimeSpan.FromSeconds(-10));
+                        else ChangeMedia(EChangeMedia.Behind);
+                    }
                     break;
                 case Key.Right:
-                    if (CurrentMedia is not null && CurrentMedia.Type is EMediaType.Video)
-                        Rewind(TimeSpan.FromSeconds(10));
+                    if (CurrentMedia is not null)
+                    {
+                        if (CurrentMedia.Type is EMediaType.Video) Rewind(TimeSpan.FromSeconds(10));
+                        else ChangeMedia(EChangeMedia.Next);
+                    }
                     break;
                 case Key.Space: Status = Status == EStatus.Played ? EStatus.Stopped : EStatus.Played; break;
                 default: base.OnKeyDown(e); break;
@@ -119,7 +130,7 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #region MG_close_button_MouseLeftButtonDown
-        private void MG_close_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => TaskCompletionSource.TrySetResult(EDialogResponse.Closed);
+        private void MG_close_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => CloseView();
         #endregion
         #region MG_image_block_PreviewMouseLeftButtonUp
         private void MG_image_block_PreviewMouseLeftButtonUp(object sender, MouseButtonEventArgs e)
@@ -142,46 +153,26 @@ namespace Launcher.Components.MainWindow
         private void MG_next_button_MouseLeave(object sender, MouseEventArgs e) => ChangeButtonsBackground(MGNB_background, 0);
         #endregion
         #region MG_back_button_MouseLeftButtonDown
-        private void MG_back_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (!CanChangeMedia) return;
-
-            if (CurrentMediaIndex > 0) { CurrentMediaIndex--; }
-            else { CurrentMediaIndex = Medias.Count - 1; }
-
-            CurrentMedia = Medias[CurrentMediaIndex];
-
-            SetMedia();
-        }
+        private void MG_back_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => ChangeMedia(EChangeMedia.Behind);
         #endregion
         #region MG_next_button_MouseLeftButtonDown
-        private void MG_next_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            if (!CanChangeMedia) return;
-
-            if (CurrentMediaIndex < Medias.Count - 1) { CurrentMediaIndex++; }
-            else { CurrentMediaIndex = 0; }
-
-            CurrentMedia = Medias[CurrentMediaIndex];
-
-            SetMedia();
-        }
+        private void MG_next_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => ChangeMedia(EChangeMedia.Next);
         #endregion
         #region MGBVCP_timeline_MouseLeave
         private void MGBVCP_timeline_MouseLeave(object sender, MouseEventArgs e)
         {
-            if (IsPresedTimeControl)
+            if (IsPressedTimeControl)
             {
                 Point mousePosition = e.GetPosition(sender as UIElement);
                 SetNewTimeLinePosition(mousePosition.X);
-                IsPresedTimeControl = false;
+                IsPressedTimeControl = false;
             }
         }
         #endregion
         #region MGBVCP_timeline_PreviewMouseMove
         private void MGBVCP_timeline_PreviewMouseMove(object sender, MouseEventArgs e)
         {
-            if (IsPresedTimeControl)
+            if (IsPressedTimeControl)
             {
                 Point mousePosition = e.GetPosition(sender as UIElement);
                 SetPreviewTimeLinePosition(mousePosition.X);
@@ -191,18 +182,18 @@ namespace Launcher.Components.MainWindow
         #region MGBVCP_timeline_MouseLeftButtonUp
         private void MGBVCP_timeline_MouseLeftButtonUp(object sender, MouseButtonEventArgs e)
         {
-            if (IsPresedTimeControl)
+            if (IsPressedTimeControl)
             {
                 Point mousePosition = e.GetPosition(sender as UIElement);
                 SetNewTimeLinePosition(mousePosition.X);
-                IsPresedTimeControl = false;
+                IsPressedTimeControl = false;
             }
         }
         #endregion
         #region MGBVCP_timeline_PreviewMouseLeftButtonDown
         private void MGBVCP_timeline_PreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
-            IsPresedTimeControl = true;
+            IsPressedTimeControl = true;
             Point mousePosition = e.GetPosition(sender as UIElement);
             SetPreviewTimeLinePosition(mousePosition.X);
         }
@@ -235,7 +226,6 @@ namespace Launcher.Components.MainWindow
         #endregion
         #endregion
 
-
         #region Функции
         #region Show
         public async Task<UResponse<EDialogResponse>> Show(params object[] pars)
@@ -254,18 +244,27 @@ namespace Launcher.Components.MainWindow
                 #endregion
                 #region Появление окна                
                 var fadeIn = AnimationHelper.OpacityAnimationStoryBoard(this, 1);
+                fadeIn.Completed += (_, __) =>
+                {
+                    Dispatcher.BeginInvoke
+                    (
+                        new Action(() => Activate()), 
+                        DispatcherPriority.ApplicationIdle
+                    );
+                };
                 fadeIn.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
+                await Task.Run(() => { return; });
                 #endregion
                 #region Загрузка медиа
                 if (medias.Count is 0) throw new UExcept(EShow.EmptyMediaList, $"Список медиа пуст");
                 Medias = medias;
                 CanChangeMedia = true;
                 CurrentMediaIndex = selectedIndex is not null ? (int)selectedIndex : 0;
-                CurrentMedia = Medias[CurrentMediaIndex];                
+                CurrentMedia = Medias[CurrentMediaIndex];
                 SetMedia(true);
                 #endregion
 
-                return new(await TaskCompletionSource.Task);
+                return new(EDialogResponse.Ok);
             }
             #endregion
             #region UExcept
@@ -289,7 +288,7 @@ namespace Launcher.Components.MainWindow
 
             var anim = AnimationHelper.OpacityAnimationStoryBoard(this, 0);
             anim.Completed += (_, __) => tcs.SetResult(null);
-            anim.Begin(this, HandoffBehavior.SnapshotAndReplace, true);           
+            anim.Begin(this, HandoffBehavior.SnapshotAndReplace, true);
 
             await tcs.Task;
 
@@ -297,6 +296,34 @@ namespace Launcher.Components.MainWindow
             MGIB_image.Source = null;
 
             Application.Current.Windows.OfType<Main>().First().KeyDown -= EKeyDown;
+        }
+        #endregion
+        #region CloseView
+        public async void CloseView()
+        {
+            TaskCompletionSource.TrySetResult(EDialogResponse.Closed);
+            await Hide();
+            this.Close();
+        }
+        #endregion
+        #region ChangeMedia
+        private void ChangeMedia(EChangeMedia media)
+        {
+            if (!CanChangeMedia) return;
+
+            if (media is EChangeMedia.Next)
+            {
+                if (CurrentMediaIndex > 0) { CurrentMediaIndex--; }
+                else { CurrentMediaIndex = Medias.Count - 1; }
+            }
+            else
+            {
+                if (CurrentMediaIndex < Medias.Count - 1) { CurrentMediaIndex++; }
+                else { CurrentMediaIndex = 0; }
+            }
+
+            CurrentMedia = Medias[CurrentMediaIndex];
+            SetMedia();
         }
         #endregion
         #region SetMedia
@@ -351,7 +378,7 @@ namespace Launcher.Components.MainWindow
 
                 Grid.SetZIndex(MG_video_block, -1);
                 MG_video_block.BeginAnimation(OpacityProperty, null);
-                MG_video_block.BeginAnimation(MarginProperty, null);                
+                MG_video_block.BeginAnimation(MarginProperty, null);
                 MG_video_block.Opacity = 0;
                 MG_video_block.Margin = DefaultMargin;
             }
@@ -360,9 +387,9 @@ namespace Launcher.Components.MainWindow
             {
                 await ImageControlHelper.LoadImageAsync
                 (
-                    CurrentMedia.Url, 
+                    CurrentMedia.Url,
                     -1,
-                    -1, 
+                    -1,
                     CancellationToken.None, (imgSource) =>
                     {
                         Dispatcher.Invoke(() =>
@@ -433,7 +460,7 @@ namespace Launcher.Components.MainWindow
         {
             if (MGVB_video.Source == null) return;
 
-            if (!IsPresedTimeControl)
+            if (!IsPressedTimeControl)
             {
                 if (!MGVB_video.NaturalDuration.HasTimeSpan) return;
                 TimeSpan duration = MGVB_video.NaturalDuration.TimeSpan;
@@ -494,7 +521,7 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #region ChangeButtonsBackground
-        private void ChangeButtonsBackground(FrameworkElement element, double opacity) 
+        private void ChangeButtonsBackground(FrameworkElement element, double opacity)
             => AnimationHelper.OpacityAnimationStoryBoard(element, opacity).
                 Begin(element, HandoffBehavior.SnapshotAndReplace, true);
         #endregion
@@ -515,6 +542,5 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #endregion
-
     }
 }

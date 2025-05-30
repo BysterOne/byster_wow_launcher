@@ -112,10 +112,10 @@ def main():
 
     headers = {'X-Gitlab-Token': gitlab_token}
     logger.info(headers)
-    logger(url)
+    logger.info(url)
     response = requests.post(url=url, headers=headers, data=data)
-    logger(response.status_code)
-    logger(response.text)
+    logger.info(response.status_code)
+    logger.info(response.text)
 
     if response.status_code > 400:
         raise Exception(response.text)

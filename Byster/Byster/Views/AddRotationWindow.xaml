@@ -1,0 +1,45 @@
+﻿<Window x:Class="Byster.Views.AddRotationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Byster.Views" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
+        mc:Ignorable="d" Height="505" Width="330"
+        Title="{Binding LocalizationData.RotationCreateWindowTitle}"
+        WindowStyle="None" WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize" Background="Transparent"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        AllowsTransparency="True"
+        Icon="/byster.ico">
+    <Window.Resources>
+        <ResourceDictionary Source="/Views/Styles.xaml"/>
+    </Window.Resources>
+    <Grid>
+        <Border Background="{StaticResource BackgroundWindowColor}"
+            BorderBrush="{StaticResource BorderProductItemColor}"
+            BorderThickness="1">
+            <Grid Margin="12">
+                <Grid.RowDefinitions>
+                    <RowDefinition Height="15"/>
+                    <RowDefinition/>
+                    <RowDefinition Height="37"/>
+                </Grid.RowDefinitions>
+                <TextBlock Grid.Row="0" x:Name="titleTextBlock" Text="{Binding LocalizationData.RotationCreate.Value}" Style="{DynamicResource titleTextBlockStyle}" FontSize="15"/>
+                <Grid Grid.Row="1">
+                    <StackPanel>
+                        <TextBox Tag="{Binding LocalizationData.NameOfRotation.Value}" Style="{StaticResource tbStyle}" Margin="0, 10" x:Name="RotationName" Text="{Binding DeveloperRotations.EnteredName, Mode=TwoWay}"/>
+                        <TextBox Tag="{Binding LocalizationData.Description.Value}"  Style="{StaticResource tbStyle}" Height="120" TextWrapping="Wrap" x:Name="RotationDescription" Text="{Binding DeveloperRotations.EnteredDescription, Mode=TwoWay}"/>
+                        <ComboBox Style="{StaticResource combobStyle}" ItemsSource="{Binding DeveloperRotations.Types}" DisplayMemberPath="Name" Margin="0, 10" x:Name="RotationType" SelectedItem="{Binding DeveloperRotations.SelectedType, Mode=TwoWay}"/>
+                        <ComboBox Style="{StaticResource combobStyle}" ItemsSource="{Binding DeveloperRotations.Classes}" DisplayMemberPath="Name"  x:Name="RotationClass" SelectedItem="{Binding DeveloperRotations.SelectedClass, Mode=TwoWay}"/>
+                        <ComboBox Style="{StaticResource combobStyle}" ItemsSource="{Binding DeveloperRotations.Specializations}" IsEnabled="{Binding DeveloperRotations.IsSpecChoiceEnabled, Mode=TwoWay}" DisplayMemberPath="Name" Margin="0, 10" x:Name="RotationSpecialization" SelectedItem="{Binding DeveloperRotations.SelectedSpecialization, Mode=TwoWay}"/>
+                        <ComboBox Style="{StaticResource combobStyle}" ItemsSource="{Binding DeveloperRotations.Roletypes}" DisplayMemberPath="Name" x:Name="RotationRoleType" SelectedItem="{Binding DeveloperRotations.SelectedRoletype, Mode=TwoWay}"/>
+                    </StackPanel>
+                </Grid>
+                <Grid Grid.Row="2">
+                    <Button Style="{StaticResource transparentButtonStyle}" Content="{Binding LocalizationData.Cancel.Value}" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Left" IsCancel="True" x:Name="cancelBtn" Click="cancelBtn_Click"/>
+                    <Button Style="{StaticResource bStyle}" Content="{Binding LocalizationData.OK.Value}" Width="100" Margin="0, 0, 0, 0" HorizontalAlignment="Right" IsDefault="True" x:Name="okBtn" Click="okBtn_Click" IsEnabled="{Binding DeveloperRotations.IsReadyToAddRotation}"/>
+                </Grid>
+            </Grid>
+        </Border>
+    </Grid>
+</Window>

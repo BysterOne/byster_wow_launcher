@@ -1,0 +1,132 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Runtime.CompilerServices;
+using Byster.Models.Utilities;
+using Byster.Models.BysterModels;
+using Byster.Models.ViewModels;
+using System.Windows;
+using System.Windows.Threading;
+using RestSharp;
+using Byster.Views;
+using Byster.Localizations.Tools;
+using static Byster.Models.Utilities.BysterLogger;
+
+namespace Byster.Models.Services
+{
+    public class SessionService : INotifyPropertyChanged
+    {
+        public bool IsInitialized { get; private set; } = false;
+
+        public Action<SessionWOW> WowFoundAction { get; set; }
+        public Action<SessionWOW> WowUpdatedAction { get; set; }
+        public Action<SessionWOW> WowDeletedAction { get; set; }
+        public Action<SessionWOW> FirstWowFoundAction { get; set; }
+
+
+        public Dispatcher Dispatcher { get; set; }
+        private WoWSearcher searcher;
+
+        public ObservableCollection<SessionViewModel> Sessions { get; set; }
+
+        public SessionService(RestClient client)
+        {
+            Injector.Rest = client;
+            Sessions = new ObservableCollection<SessionViewModel>();
+        }
+
+        public void Initialize(Dispatcher dispatcher)
+        {
+            Dispatcher = dispatcher;
+            IsInitialized = true;
+            Injector.Init();
+            searcher = new WoWSearcher("World of Warcraft");
+            searcher.OnWowChanged += searcherWowChanged;
+            searcher.OnWowFounded += searcherWowFound;
+            searcher.OnWowClosed += searcherWowClosed;
+            searcher.OnFirstWowFound += searcherFirstWowFound;
+            searcher.OnDirectXNotFound += () =>
+            {
+
+            };
+        }
+
+        private bool searcherFirstWowFound(WoW p)
+        {
+            var firstSession = Sessions.First((session) => session.WowApp.Process.Id == p.Process.Id);
+            FirstWowFoundAction?.Invoke(firstSession);
+            return true;
+        }
+
+        private bool searcherWowClosed(WoW p)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var sessionToRemove = Sessions.First((session) => session.WowApp.Process.Id == p.Process.Id);
+                if (sessionToRemove == null) return;
+                WowDeletedAction?.Invoke(sessionToRemove);
+                Sessions.Remove(sessionToRemove);
+            });
+
+            return true;
+        }
+
+        private bool searcherWowFound(WoW p)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (Sessions.FirstOrDefault((session) => session.WowApp.Process.Id == p.Process.Id && session.WowApp.Process.Id != 0) != null) return;
+                var sessionToAdd = new SessionViewModel()
+                {
+                    UserName = p.Name,
+                    ServerName = p.RealmName,
+                    SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class)),
+                };
+                sessionToAdd.WowApp = p;
+                Sessions.Add(sessionToAdd);
+                WowFoundAction?.Invoke(sessionToAdd);
+            });
+            return true;
+        }
+
+        private bool searcherWowChanged(WoW p)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                var sessionToChange = Sessions.First((session) => session.WowApp.Process.Id == p.Process.Id);
+                if (sessionToChange == null) return;
+                sessionToChange.WowApp = p;
+                sessionToChange.SessionClass = new ClassWOW(SessionWOW.ConverterOfClasses(p.Class));
+                sessionToChange.ServerName = p.RealmName;
+                sessionToChange.UserName = p.Name;
+                WowUpdatedAction?.Invoke(sessionToChange);
+            });
+            return true;
+        }
+
+        public void StartInjecting(int pid)
+        {
+            var injectingSession = Sessions.First((session) => session.WowApp.Process.Id == pid);
+            if (injectingSession.InjectInfo.ProcessId != injectingSession.WowApp.Process.Id && injectingSession.InjectInfo.InjectInfoStatusCode == InjectInfoStatusCode.INACTIVE)
+                injectingSession.InjectInfo.ProcessId = (uint)injectingSession.WowApp.Process.Id;
+            Injector.AddProcessToInject(injectingSession);
+        }
+
+        public void Dispose()
+        {
+            LogInfo("Session Service", "Завершение работы сервиса...");
+            searcher.Dispose();
+            Injector.Close();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string property = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+        }
+    }
+}

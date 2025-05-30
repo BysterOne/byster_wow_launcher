@@ -1,0 +1,124 @@
+﻿<Window x:Class="Byster.Views.RotationSettingsWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Byster.Views" d:DataContext="{d:DesignInstance Type=local:MainWindowViewModel}"
+        xmlns:lb="clr-namespace:Byster.Models.Utilities"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        mc:Ignorable="d"
+        Title="{Binding LocalizationData.MenuOfSelectingRotations}" Height="560" Width="730"
+        WindowStyle="None" WindowStartupLocation="CenterScreen"
+        ResizeMode="CanMinimize" Background="Transparent"
+        MouseLeftButtonDown="Window_MouseLeftButtonDown"
+        AllowsTransparency="True"
+        Icon="/byster.ico">
+    <Window.Resources>
+        <ResourceDictionary Source="/Views/Styles.xaml"/>
+    </Window.Resources>
+    <Grid Margin="15">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="Auto"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+        <Border Grid.RowSpan="2" Background="{DynamicResource BackgroundWindowColor}">
+            <Border.Effect>
+                <DropShadowEffect BlurRadius="15" ShadowDepth="0" Color="{DynamicResource EffectProductItemColor}"/>
+            </Border.Effect>
+        </Border>
+        
+        <Grid Grid.Row="0">
+            <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding LocalizationData.RotationSelect}" FontSize="20" Margin="20, 0" HorizontalAlignment="Left" VerticalAlignment="Bottom"/>
+        </Grid>
+        <Grid Grid.Row="1">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition/>
+                <RowDefinition Height="Auto"/>
+                <RowDefinition Height="Auto"/>
+            </Grid.RowDefinitions>
+            <Grid Grid.Row="0">
+                <StackPanel Margin="10, 0">
+                    <TextBlock Style="{DynamicResource infoTextBlockStyle}" Text="{Binding LocalizationData.LocalRotationSearch}" Margin="0, 10"/>
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition/>
+                            <ColumnDefinition Width="160"/>
+                        </Grid.ColumnDefinitions>
+                        <TextBox x:Name="searchRequest" Style="{DynamicResource tbStyle}" Margin="0, 0, 20, 0" Grid.Column="0" Text="{Binding Path=DeveloperRotations.SearchRequest, Mode=TwoWay, UpdateSourceTrigger=PropertyChanged}">
+                        </TextBox>
+                        <Button IsDefault="True" Command="{Binding DeveloperRotations.SyncCommand}" x:Name="searchBtn" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Style="{DynamicResource transparentButtonStyle}" Content="{Binding LocalizationData.Sync.Value}" Grid.Column="1"/>
+                    </Grid>
+                </StackPanel>
+            </Grid>
+            <Grid Grid.Row="1">
+                <ListView Margin="5, 10" x:Name="rotationList" ItemsSource="{Binding DeveloperRotations.DeveloperRotations, NotifyOnSourceUpdated=True, NotifyOnTargetUpdated=True, Mode=OneWay, UpdateSourceTrigger=PropertyChanged}">
+                    <ListView.Style>
+                        <Style TargetType="ListView">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListView">
+                                        <Border Background="Transparent" BorderBrush="Transparent">
+                                            <ScrollViewer Style="{StaticResource scrollViewerSmallStyle}">
+                                                <ItemsPresenter/>
+                                            </ScrollViewer>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.Style>
+                    <ListView.ItemsPanel>
+                        <ItemsPanelTemplate>
+                            <StackPanel Orientation="Vertical"/>
+                        </ItemsPanelTemplate>
+                    </ListView.ItemsPanel>
+                    <ListView.ItemContainerStyle>
+                        <Style TargetType="ListViewItem">
+                            <Setter Property="Template">
+                                <Setter.Value>
+                                    <ControlTemplate TargetType="ListBoxItem">
+                                        <Border BorderBrush="{StaticResource FontInfoColor}" BorderThickness="1" CornerRadius="1.5" Margin="3" Visibility="{Binding IsShowInCollection}">
+                                            <Grid Margin="5" MaxWidth="700">
+                                                <Grid.ColumnDefinitions>
+                                                    <ColumnDefinition Width="30"/>
+                                                    <ColumnDefinition Width="100"/>
+                                                    <ColumnDefinition Width="110"/>
+                                                    <ColumnDefinition Width="*"/>
+                                                    <ColumnDefinition Width="Auto"/>
+                                                </Grid.ColumnDefinitions>
+                                                <CheckBox HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource checkboxStyle}" IsChecked="{Binding IsEnabled}" IsEnabled="{Binding IsEnabledChangingOfIsEnabled}" Grid.Column="0"/>
+                                                <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Text="{Binding RotationTypeOfRotation.Name}" Grid.Column="1"/>
+                                                <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Text="{Binding ClassOfRotation.Name}" Grid.Column="2"/>
+                                                <TextBlock TextAlignment="Center" HorizontalAlignment="Center" VerticalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Text="{Binding Name}" Grid.Column="3"/>
+                                                <Grid Grid.Column="4">
+                                                    <TextBlock Text="{Binding StatusText}" VerticalAlignment="Center" HorizontalAlignment="Center" Style="{StaticResource infoTextBlockStyle}" Visibility="{Binding ActiveVisibility}"/>
+                                                    <StackPanel Orientation="Horizontal">
+                                                        <Button Style="{StaticResource transparentButtonStyle}" Content="{Binding RelativeSource={RelativeSource AncestorType=ListView}, Path=DataContext.LocalizationData.Sync}" Command="{Binding SyncCommand}" Visibility="{Binding IdleVisibility}"/>
+                                                        <Button Style="{StaticResource transparentButtonStyle}" Command="{Binding OpenRepoCommand}" Visibility="{Binding IdleVisibility}" Margin="2,0,0,0">
+                                                            <Image Source="/Resources/Images/folder.png" Stretch="Uniform" Width="20" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                                                        </Button>
+                                                    </StackPanel>
+                                                </Grid>
+                                            </Grid>
+                                        </Border>
+                                    </ControlTemplate>
+                                </Setter.Value>
+                            </Setter>
+                        </Style>
+                    </ListView.ItemContainerStyle>
+                </ListView>
+            </Grid>
+            <Grid Grid.Row="2">
+                <Button Style="{DynamicResource transparentButtonStyle}" Content="{Binding LocalizationData.Add.Value}" VerticalAlignment="Center" HorizontalAlignment="Left" Margin="10" Width="320" Command="{Binding DeveloperRotations.AddCommand}"/>
+                <Button Style="{DynamicResource transparentButtonStyle}" Content="{Binding LocalizationData.Save.Value}" VerticalAlignment="Center" HorizontalAlignment="Right" Margin="10" Width="320" Command="{Binding DeveloperRotations.SaveCommand}"/>
+            </Grid>
+        </Grid>
+        <Grid x:Name="backgroundGrid" Visibility="{Binding DeveloperRotations.IsReadyForUsing}" Background="#A0000000" Grid.RowSpan="3">
+            <TextBlock Text="{Binding DeveloperRotations.StatusCodeText}" Style="{DynamicResource infoTextBlockStyle}" VerticalAlignment="Center" HorizontalAlignment="Center"/>
+        </Grid>
+        <Button Style="{DynamicResource uibStyle}" x:Name="closeBtn" Height="30" Click="closeBtn_Click" VerticalAlignment="Top" HorizontalAlignment="Right">
+            <Image Source="/Resources/Images/close-button-image.png" Stretch="Uniform" Margin="5"/>
+        </Button>
+    </Grid>
+</Window>

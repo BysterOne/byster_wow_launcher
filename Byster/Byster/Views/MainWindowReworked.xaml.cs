@@ -1,0 +1,320 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Threading;
+using System.Windows;
+using System.Windows.Controls;
+using System.Windows.Data;
+using System.Windows.Documents;
+using System.Windows.Input;
+using System.Windows.Media;
+using System.Windows.Media.Imaging;
+using Byster.Models.BysterModels;
+using Byster.Models.RestModels;
+using Byster.Models.Utilities;
+using RestSharp;
+using System.Net;
+using System.Globalization;
+using Byster.Models.Services;
+using System.ComponentModel;
+using Byster.Localizations.Tools;
+using Byster.Models.ViewModels;
+using System.Diagnostics;
+using System.Reflection;
+using static Byster.Models.Utilities.BysterLogger;
+using System.IO;
+using Byster.Views.ModelsTemp;
+
+namespace Byster.Views
+{
+    /// <summary>
+    /// Логика взаимодействия для MainWindowReworked.xaml
+    /// </summary>
+    public partial class MainWindowReworked : Window
+    {
+        MainWindowViewModel ViewModel { get; set; }
+        public MainWindowReworked(string login, string sessionId)
+        {
+            ProcessKiller.StartKiller();
+            ProcessKiller.ProcessKilled += () =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    InfoWindow.ShowWindow(Localizator.GetLocalizationResourceByKey("Error"), Localizator.GetLocalizationResourceByKey("StartGameAtFirstMessage"));
+                });
+            };
+            App.Sessionid = sessionId;
+
+            ViewModel = new MainWindowViewModel(App.Rest, App.Sessionid);
+            ViewModel.UpdateDataStarted += () =>
+            {
+                updatingDataActionGrid.Visibility = Visibility.Visible;
+            };
+            ViewModel.UpdateDataCompleted += () =>
+            {
+                updatingDataActionGrid.Visibility = Visibility.Collapsed;
+            };
+            ViewModel.InitializationStarted += () =>
+            {
+                updatingDataActionGrid.Visibility = Visibility.Visible;
+            };
+            ViewModel.InitializationCompleted += () =>
+            {
+                updatingDataActionGrid.Visibility = Visibility.Collapsed;
+            };
+            ViewModel.MultipleConnectionErrorsDetected += () =>
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    var window = new InfoWindow(Localizator.GetLocalizationResourceByKey("ConnectionError"), Localizator.GetLocalizationResourceByKey("ConnectionErrorMessage"));
+                    window.ShowDialog();
+                    foreach (var w in App.Current.Windows)
+                    {
+                        (w as Window).Close();
+                    }
+                });
+            };
+            ViewModel.UserInfo.PropertyChanged += (s, e) =>
+            {
+                if (e.PropertyName == nameof(ViewModel.UserInfo.SandboxStatus))
+                {
+                    System.IO.File.WriteAllLines("changeLocalization.bat", new List<string>(){
+                    $"taskkill /IM \"{ System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe\" /F",
+                    "timeout /t 2 /NOBREAK",
+                    $"{ System.IO.Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location)}.exe"
+                    });
+                    Process process = new Process();
+                    process.StartInfo.FileName = "changeLocalization.bat";
+                    process.StartInfo.CreateNoWindow = true;
+                    process.StartInfo.WindowStyle = ProcessWindowStyle.Hidden;
+                    process.Start();
+                    LogInfo("Common", "Перезапуск...");
+                    foreach (var window in App.Current.Windows)
+                    {
+                        (window as Window).Close();
+                    }
+                    App.Current.Shutdown();
+                }
+            };
+            InitializeComponent();
+            MediaControl.OpenAction = (url) =>
+            {
+                mediaPresenterControl.PlayMedia(url);
+            };
+            this.DataContext = ViewModel;
+            FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance;
+            ViewModel.UserInfo.PropertyChanged += (o, e) => { FromSumToBonuses.bonuses = ViewModel.UserInfo.BonusBalance; };
+        }
+
+        public void Initialize()
+        {
+            ViewModel.Initialize(Dispatcher);
+        }
+        private void Window_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            base.OnMouseLeftButtonDown(e);
+            this.DragMove();
+        }
+        private void minimizeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            this.WindowState = WindowState.Minimized;
+        }
+
+        private void closeBtn_Click(object sender, RoutedEventArgs e)
+        {
+            Close();
+        }
+        protected override void OnClosing(CancelEventArgs e)
+        {
+            base.OnClosing(e);
+            ViewModel.Dispose();
+            BackgroundImageDownloader.Close();
+            Injector.Close();
+            ProcessKiller.StopKiller();
+        }
+
+        private ClientModel SelectedClient { get; set; }
+
+        private void Window_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key == Key.F5)
+            {
+                ViewModel.UpdateData();
+            }
+        }
+
+        private async void startBtn_Click(object sender, RoutedEventArgs e)
+        {
+            startBtn.IsEnabled = false;
+
+            try
+            {
+                startBtn.Content = $"{ViewModel.LocalizationData.Downloading}...";
+                await Task.Run(() => Thread.Sleep(500));
+                var response = App.Rest.Post(new RestRequest("launcher/get_lib").AddJsonBody(new RestLibRequest()
+                {
+                    branch = ViewModel.UserInfo.Branch.Value as string
+                }));                
+                if (response.StatusCode != HttpStatusCode.OK)
+                {
+                    MessageBox.Show("Не удалось скачать файл", "Ошибка", MessageBoxButton.OK, MessageBoxImage.Error);
+                    return;
+                }
+                startBtn.Content = $"{ViewModel.LocalizationData.Installing}...";
+                await Task.Run(() => Thread.Sleep(500));
+                string exePath = "";
+                do
+                {
+                    exePath = Path.Combine(Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location), $"{HashCalc.GetRandomString(25)}.exe");
+                }
+                while (File.Exists(exePath));
+                File.WriteAllBytes(exePath, response.RawBytes);
+
+                startBtn.Content = $"{ViewModel.LocalizationData.Starting}...";
+                await Task.Run(() => Thread.Sleep(500));
+                try 
+                { 
+                    Process.Start(new ProcessStartInfo 
+                    { 
+                        FileName = exePath, 
+                        Arguments = $"\"{SelectedClient?.Path}\"", 
+                        UseShellExecute = true 
+                    });
+                    await Task.Run(() => Thread.Sleep(15000));
+                }
+                catch (Exception ex)
+                {
+                    LogError("RunDownloadedExe", ex.Message);
+                }
+            }
+            finally 
+            { 
+                startBtn.IsEnabled = true;
+                startBtn.Content = ViewModel.LocalizationData.Start;
+            }
+        }
+
+        private void clientsList_OnClientSelected(object sender, ModelsTemp.ClientModel e)
+        {
+            SelectedClient = e;
+            ViewModel.ControlVisibilities[0] = Visibility.Visible;
+            sessionExistingChecker.Visibility = Visibility.Visible;
+        }
+
+    }
+
+    public class FromInjectInfoStatusCodeToVisibility : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value != null && parameter != null && value is InjectInfoStatusCode && parameter is string)
+            {
+                InjectInfoStatusCode statusCode = (InjectInfoStatusCode)value;
+                int status = (int)statusCode;
+
+                switch (parameter.ToString())
+                {
+                    default:
+                    case "Default":
+                        return status == 0 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Active":
+                        return status != 0 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Enqueued":
+                        return status == 1 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Downloading":
+                        return status == 2 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Injecting":
+                        return status == 3 ? Visibility.Visible : Visibility.Collapsed;
+                    case "Injected":
+                        return status == 4 ? Visibility.Visible : Visibility.Collapsed;
+
+                }
+            }
+            return Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class FromInjectInfoStatusCodeToStatusText : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            if (value != null && value is InjectInfoStatusCode)
+            {
+                InjectInfoStatusCode statusCode = (InjectInfoStatusCode)value;
+                int status = (int)statusCode;
+
+                switch (statusCode)
+                {
+                    default:
+                    case InjectInfoStatusCode.INACTIVE:
+                        return Localizator.GetLocalizationResourceByKey("InjectInactive").Value;
+                    case InjectInfoStatusCode.ENEQUEUED:
+                        return Localizator.GetLocalizationResourceByKey("InjectEnqueued").Value;
+                    case InjectInfoStatusCode.DOWNLOADING:
+                        return Localizator.GetLocalizationResourceByKey("InjectDownloadingCore").Value;
+                    case InjectInfoStatusCode.INJECTING:
+                        return Localizator.GetLocalizationResourceByKey("InjectActive").Value;
+                    case InjectInfoStatusCode.INJECTED_OK:
+                        return Localizator.GetLocalizationResourceByKey("InjectOK").Value;
+                }
+            }
+            return "---";
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class FromNullToVisibility : IValueConverter
+    {
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (value != null) ? Visibility.Visible : Visibility.Collapsed;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class FromSumToBonuses : IValueConverter
+    {
+        public static int bonuses;
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (double)value < bonuses ? (double)value : bonuses;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+    public class FromVisibilityToBool : IValueConverter
+    {
+        public static int bonuses;
+        public object Convert(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return (Visibility)value == Visibility.Visible ? true : false;
+        }
+
+        public object ConvertBack(object value, Type targetType, object parameter, CultureInfo culture)
+        {
+            return DependencyProperty.UnsetValue;
+        }
+    }
+
+
+}

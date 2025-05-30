@@ -1,0 +1,543 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props" Condition="Exists('..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" />
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{7470C035-B7AD-416C-9258-EC238188B328}</ProjectGuid>
+    <OutputType>WinExe</OutputType>
+    <RootNamespace>Byster</RootNamespace>
+    <AssemblyName>Byster</AssemblyName>
+    <TargetFrameworkVersion>v4.6.1</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
+    <WarningLevel>4</WarningLevel>
+    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <Deterministic>true</Deterministic>
+    <TargetFrameworkProfile />
+    <IsWebBootstrapper>false</IsWebBootstrapper>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
+    <PublishUrl>C:\Users\zagul\Downloads\</PublishUrl>
+    <Install>true</Install>
+    <InstallFrom>Disk</InstallFrom>
+    <UpdateEnabled>false</UpdateEnabled>
+    <UpdateMode>Foreground</UpdateMode>
+    <UpdateInterval>7</UpdateInterval>
+    <UpdateIntervalUnits>Days</UpdateIntervalUnits>
+    <UpdatePeriodically>false</UpdatePeriodically>
+    <UpdateRequired>false</UpdateRequired>
+    <MapFileExtensions>true</MapFileExtensions>
+    <AutorunEnabled>true</AutorunEnabled>
+    <ApplicationRevision>0</ApplicationRevision>
+    <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
+    <UseApplicationTrust>false</UseApplicationTrust>
+    <BootstrapperEnabled>true</BootstrapperEnabled>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <Prefer32Bit>true</Prefer32Bit>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationManifest>app.manifest</ApplicationManifest>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '123|AnyCPU'">
+    <OutputPath>bin\123\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Debug|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Debug\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'Release|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\Release\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)' == '123|x64'">
+    <PlatformTarget>x64</PlatformTarget>
+    <OutputPath>bin\x64\123\</OutputPath>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject>Byster.App</StartupObject>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignManifests>false</SignManifests>
+  </PropertyGroup>
+  <PropertyGroup>
+    <SignAssembly>false</SignAssembly>
+  </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>byster.ico</ApplicationIcon>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Costura, Version=4.1.0.0, Culture=neutral, PublicKeyToken=9919ef960d84173d, processorArchitecture=MSIL">
+      <HintPath>..\packages\Costura.Fody.4.1.0\lib\net40\Costura.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Jupiter, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\Jupiter.1.6.0\lib\netstandard2.0\Jupiter.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Expression.Interactions, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\Microsoft.Expression.Interactions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Logging, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Logging.6.15.0\lib\net461\Microsoft.IdentityModel.Logging.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.IdentityModel.Tokens, Version=6.15.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.IdentityModel.Tokens.6.15.0\lib\net461\Microsoft.IdentityModel.Tokens.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions, Version=1.0.12.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.dll</HintPath>
+    </Reference>
+    <Reference Include="Microsoft.Threading.Tasks.Extensions.Desktop, Version=1.0.168.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <HintPath>..\packages\Microsoft.Bcl.Async.1.0.168\lib\net40\Microsoft.Threading.Tasks.Extensions.Desktop.dll</HintPath>
+    </Reference>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="NLog, Version=4.0.0.0, Culture=neutral, PublicKeyToken=5120e14c03d0593c, processorArchitecture=MSIL">
+      <HintPath>..\packages\NLog.4.7.13\lib\net45\NLog.dll</HintPath>
+    </Reference>
+    <Reference Include="RestSharp, Version=106.13.0.0, Culture=neutral, PublicKeyToken=598062e77f915f75, processorArchitecture=MSIL">
+      <HintPath>..\packages\RestSharp.106.13.0\lib\net452\RestSharp.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Configuration" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.IO.Compression, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL" />
+    <Reference Include="System.Net" />
+    <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
+    <Reference Include="System.Transactions" />
+    <Reference Include="System.ValueTuple, Version=4.0.3.0, Culture=neutral, PublicKeyToken=cc7b13ffcd2ddd51, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.ValueTuple.4.5.0\lib\net461\System.ValueTuple.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Web" />
+    <Reference Include="System.Web.Extensions" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Windows.Interactivity, Version=4.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <HintPath>..\packages\System.Windows.Interactivity.WPF.2.0.20525\lib\net40\System.Windows.Interactivity.dll</HintPath>
+    </Reference>
+    <Reference Include="System.Xml" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Xaml">
+      <RequiredTargetFramework>4.0</RequiredTargetFramework>
+    </Reference>
+    <Reference Include="WindowsBase" />
+    <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
+    <Reference Include="zxing, Version=0.16.6.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.6\lib\net461\zxing.dll</HintPath>
+    </Reference>
+    <Reference Include="zxing.presentation, Version=0.16.6.0, Culture=neutral, PublicKeyToken=4e88037ac681fe60, processorArchitecture=MSIL">
+      <HintPath>..\packages\ZXing.Net.0.16.6\lib\net461\zxing.presentation.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+  <ItemGroup>
+    <ApplicationDefinition Include="App.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </ApplicationDefinition>
+    <Compile Include="Localizations\JsonLocalization.cs" />
+    <Compile Include="Localizations\Tools\LocalizationDataForViewModels.cs" />
+    <Compile Include="Localizations\Tools\LocalizationResource.cs" />
+    <Compile Include="Localizations\Tools\Localizator.cs" />
+    <Compile Include="Models\BysterModels\Settings\Branch.cs" />
+    <Compile Include="Models\BysterModels\Primitives\SettingAssociator.cs" />
+    <Compile Include="Models\BysterModels\Primitives\Setting.cs" />
+    <Compile Include="Models\BysterModels\RegistrySettings\RegistrySettings.cs" />
+    <Compile Include="Models\BysterModels\ProductsAndRotations\Cart.cs" />
+    <Compile Include="Models\BysterModels\DeveloperRotation.cs" />
+    <Compile Include="Models\BysterModels\Settings\Global.cs" />
+    <Compile Include="Models\BysterModels\Settings\LoadType.cs" />
+    <Compile Include="Models\BysterModels\PaymentSystem.cs" />
+    <Compile Include="Models\BysterModels\ProductsAndRotations\Rotation.cs" />
+    <Compile Include="Models\BysterModels\Settings\SandboxStatus.cs" />
+    <Compile Include="Models\BysterModels\Settings\WOWClass.cs" />
+    <Compile Include="Models\BysterModels\Sessions\WOWSession.cs" />
+    <Compile Include="Models\BysterModels\ProductsAndRotations\ShopProductInfo.cs" />
+    <Compile Include="Models\RestModels\Auth.cs" />
+    <Compile Include="Models\RestModels\BaseResponse.cs" />
+    <Compile Include="Models\RestModels\BysterAuthenticator.cs" />
+    <Compile Include="Models\RestModels\FilenameCheck.cs" />
+    <Compile Include="Models\RestModels\LinkEmailRequest.cs" />
+    <Compile Include="Models\RestModels\Register.cs" />
+    <Compile Include="Models\RestModels\RestAction.cs" />
+    <Compile Include="Models\RestModels\RestAddRotation.cs" />
+    <Compile Include="Models\RestModels\RestBranch.cs" />
+    <Compile Include="Models\RestModels\RestBuy.cs" />
+    <Compile Include="Models\RestModels\RestChangePassword.cs" />
+    <Compile Include="Models\RestModels\RestCoupon.cs" />
+    <Compile Include="Models\RestModels\RestDeveloperRotation.cs" />
+    <Compile Include="Models\RestModels\RestEncryption.cs" />
+    <Compile Include="Models\RestModels\RestCheckServerStatus.cs" />
+    <Compile Include="Models\RestModels\RestLibRequest.cs" />
+    <Compile Include="Models\RestModels\RestPaymentSystem.cs" />
+    <Compile Include="Models\RestModels\RestProduct.cs" />
+    <Compile Include="Models\RestModels\RestRotation.cs" />
+    <Compile Include="Models\RestModels\RestParts.cs" />
+    <Compile Include="Models\BysterModels\Settings\Media.cs" />
+    <Compile Include="Models\BysterModels\ProductsAndRotations\ShopProduct.cs" />
+    <Compile Include="Models\RestModels\RestTest.cs" />
+    <Compile Include="Models\RestModels\RestUserInfo.cs" />
+    <Compile Include="Models\Services\ActionService.cs" />
+    <Compile Include="Models\Services\ActiveRotationsService.cs" />
+    <Compile Include="Models\Services\DeveloperRotationService.cs" />
+    <Compile Include="Models\Services\IService.cs" />
+    <Compile Include="Models\Utilities\ProcessKiller.cs" />
+    <Compile Include="Models\Services\RestService.cs" />
+    <Compile Include="Models\Services\SessionService.cs" />
+    <Compile Include="Models\Services\ShopService.cs" />
+    <Compile Include="Models\Services\UserInfoService.cs" />
+    <Compile Include="Models\Utilities\BackgroundImageDownloader.cs" />
+    <Compile Include="Models\Utilities\Converters.cs" />
+    <Compile Include="Models\Utilities\DLLSearcher.cs" />
+    <Compile Include="Models\Utilities\IEnumerableExtensions.cs" />
+    <Compile Include="Models\Utilities\Injector.cs" />
+    <Compile Include="Models\Utilities\HashCalc.cs" />
+    <Compile Include="Models\Utilities\BysterLogger.cs" />
+    <Compile Include="Models\Utilities\Behaviors.cs" />
+    <Compile Include="Models\Utilities\WOW.cs" />
+    <Compile Include="Controls\MediaControl.cs" />
+    <Compile Include="Models\ViewModels\ClientImageSourceConverter.cs" />
+    <Compile Include="Models\ViewModels\ShopProductInfoViewModel.cs" />
+    <Compile Include="Models\ViewModels\RelayCommand.cs" />
+    <Compile Include="Models\ViewModels\RotationViewModel.cs" />
+    <Compile Include="Models\ViewModels\SessionViewModel.cs" />
+    <Compile Include="Views\ActivateCouponWindow.xaml.cs">
+      <DependentUpon>ActivateCouponWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AddNewClient.xaml.cs">
+      <DependentUpon>AddNewClient.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\AddRotationWindow.xaml.cs">
+      <DependentUpon>AddRotationWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ChangePasswordWindow.xaml.cs">
+      <DependentUpon>ChangePasswordWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ClientsList.xaml.cs">
+      <DependentUpon>ClientsList.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\ClientsListItem.xaml.cs">
+      <DependentUpon>ClientsListItem.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\DialogWindow.xaml.cs">
+      <DependentUpon>DialogWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RedirectToBrowserWindow.xaml.cs">
+      <DependentUpon>RedirectToBrowserWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\InfoWindow.xaml.cs">
+      <DependentUpon>InfoWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LinkEmailWindow.xaml.cs">
+      <DependentUpon>LinkEmailWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LinkPresenterWindow.xaml.cs">
+      <DependentUpon>LinkPresenterWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoadingWindow.xaml.cs">
+      <DependentUpon>LoadingWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\LoginOrRegistrationWindow.xaml.cs">
+      <DependentUpon>LoginOrRegistrationWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainWindowReworked.xaml.cs">
+      <DependentUpon>MainWindowReworked.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\MainWindowViewModel.cs" />
+    <Compile Include="Views\PaymentSystemSelectorWindow.xaml.cs">
+      <DependentUpon>PaymentSystemSelectorWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\RotationSettingsWindow.xaml.cs">
+      <DependentUpon>RotationSettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Views\SettingsWindow.xaml.cs">
+      <DependentUpon>SettingsWindow.xaml</DependentUpon>
+    </Compile>
+    <Page Include="Views\ActivateCouponWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AddNewClient.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\AddRotationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ChangePasswordWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ClientsList.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\ClientsListItem.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\DialogWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RedirectToBrowserWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\InfoWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LinkEmailWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\LinkPresenterWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="Views\LoadingWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Compile Include="App.xaml.cs">
+      <DependentUpon>App.xaml</DependentUpon>
+      <SubType>Code</SubType>
+    </Compile>
+    <Page Include="Views\LoginOrRegistrationWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\MainWindowReworked.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\PaymentSystemSelectorWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\RotationSettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\SettingsWindow.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Views\Styles.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Properties\AssemblyInfo.cs">
+      <SubType>Code</SubType>
+    </Compile>
+    <Compile Include="Properties\Resources.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>Resources.resx</DependentUpon>
+    </Compile>
+    <Compile Include="Properties\Settings.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+    </Compile>
+    <EmbeddedResource Include="Properties\Resources.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </EmbeddedResource>
+    <None Include="..\.editorconfig">
+      <Link>.editorconfig</Link>
+    </None>
+    <None Include="app.manifest" />
+    <Resource Include="Localizations\LocalizationData\Russian.json" />
+    <Resource Include="Localizations\LocalizationData\English.json" />
+    <None Include="packages.config" />
+    <None Include="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <Resource Include="Resources\Fonts\Roboto-Regular.ttf" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\logo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\close-button-image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\minimize-button-image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <BootstrapperPackage Include=".NETFramework,Version=v4.6.1">
+      <Visible>False</Visible>
+      <ProductName>Microsoft .NET Framework 4.6.1 %28x86 и x64%29</ProductName>
+      <Install>true</Install>
+    </BootstrapperPackage>
+    <BootstrapperPackage Include="Microsoft.Net.Framework.3.5.SP1">
+      <Visible>False</Visible>
+      <ProductName>.NET Framework 3.5 SP1</ProductName>
+      <Install>false</Install>
+    </BootstrapperPackage>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\UserLogos\master.png" />
+    <Resource Include="Resources\Images\UserLogos\test.png" />
+    <Resource Include="Resources\Images\UserLogos\dev.png" />
+    <Resource Include="Resources\Images\utility-icon-default.png" />
+    <Resource Include="Resources\Images\Specializations\DEMONOLOGY.png" />
+    <Resource Include="Resources\Images\settings-image.png" />
+    <Resource Include="Resources\Images\top-decoration-figure.png" />
+    <Resource Include="Resources\Images\Specializations\ANY.png" />
+    <Resource Include="Resources\Images\Specializations\ARMS.png" />
+    <Resource Include="Resources\Images\Specializations\FURY.png" />
+    <Resource Include="Resources\Images\Specializations\PROTOWAR.png" />
+    <Resource Include="Resources\Images\Specializations\UNHOLY.png" />
+    <Resource Include="Resources\Images\minus-button.png" />
+    <Resource Include="Resources\Images\plus-button.png" />
+    <Resource Include="Resources\Images\bot-icon-default.png" />
+    <Resource Include="Resources\Images\Specializations\FROST.png" />
+    <Resource Include="Resources\Images\Specializations\BLOOD.png" />
+    <Resource Include="Resources\Images\Specializations\ARCANE.png" />
+    <Resource Include="Resources\Images\Specializations\FIRE.png" />
+    <Resource Include="Resources\Images\Specializations\FROSTMAGE.png" />
+    <Resource Include="Resources\Images\Specializations\MUTILATION.png" />
+    <Resource Include="Resources\Images\Specializations\COMBAT.png" />
+    <Resource Include="Resources\Images\Specializations\SUBTLETY.png" />
+    <Resource Include="Resources\Images\Specializations\MOONKIN.png" />
+    <Resource Include="Resources\Images\Specializations\FERAL.png" />
+    <Resource Include="Resources\Images\Specializations\RESTORDRUID.png" />
+    <Resource Include="Resources\Images\Specializations\BM.png" />
+    <Resource Include="Resources\Images\Specializations\MM.png" />
+    <Resource Include="Resources\Images\Specializations\SURVIVABILITY.png" />
+    <Resource Include="Resources\Images\Specializations\ELEMENTAL.png" />
+    <Resource Include="Resources\Images\Specializations\ENHANCEMENT.png" />
+    <Resource Include="Resources\Images\Specializations\RESTORSHAMAN.png" />
+    <Resource Include="Resources\Images\Specializations\DISCIPLINE.png" />
+    <Resource Include="Resources\Images\Specializations\HOLYPRIEST.png" />
+    <Resource Include="Resources\Images\Specializations\SHADOW.png" />
+    <Resource Include="Resources\Images\Specializations\AFFLICTION.png" />
+    <Resource Include="Resources\Images\Specializations\DESTRUCTION.png" />
+    <Resource Include="Resources\Images\Specializations\HOLYPAL.png" />
+    <Resource Include="Resources\Images\Specializations\PROTOPAL.png" />
+    <Resource Include="Resources\Images\Specializations\RETRIBUTION.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\image-placeholder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Roles\ANY.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="byster.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="FodyWeavers.xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\loading-background.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\loading-progress.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Roles\DPS.png" />
+    <Resource Include="Resources\Images\Roles\Heal.png" />
+    <Resource Include="Resources\Images\Roles\Tank.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\ClassesWOW\DeathKnight.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Droid.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Hunter.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Paladin.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Priest.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Robber.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Shaman.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Warlock.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Warrior.png" />
+    <Resource Include="Resources\Images\ClassesWOW\Wizard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\ClassesWOW\Wow.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Types\bot.png" />
+    <Resource Include="Resources\Images\Types\pvp.png" />
+    <Resource Include="Resources\Images\Types\utility.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\video-placeholder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\Types\pve.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\video-error.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\volume-down.png" />
+    <Resource Include="Resources\Images\volume-up.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\eye-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\remove-icon.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\ClassesWOW\no-client-image.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Resources\Images\add-icon.png" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <Import Project="..\packages\Fody.6.6.0\build\Fody.targets" Condition="Exists('..\packages\Fody.6.6.0\build\Fody.targets')" />
+  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
+    <PropertyGroup>
+      <ErrorText>Данный проект ссылается на пакеты NuGet, отсутствующие на этом компьютере. Используйте восстановление пакетов NuGet, чтобы скачать их.  Дополнительную информацию см. по адресу: http://go.microsoft.com/fwlink/?LinkID=322105. Отсутствует следующий файл: {0}.</ErrorText>
+    </PropertyGroup>
+    <Error Condition="!Exists('..\packages\Fody.6.6.0\build\Fody.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Fody.6.6.0\build\Fody.targets'))" />
+    <Error Condition="!Exists('..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Costura.Fody.4.1.0\build\Costura.Fody.props'))" />
+  </Target>
+  <Import Project="..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets" Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" />
+  <Target Name="EnsureBclBuildImported" BeforeTargets="BeforeBuild" Condition="'$(BclBuildImported)' == ''">
+    <Error Condition="!Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="This project references NuGet package(s) that are missing on this computer. Enable NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=317567." HelpKeyword="BCLBUILD2001" />
+    <Error Condition="Exists('..\packages\Microsoft.Bcl.Build.1.0.14\tools\Microsoft.Bcl.Build.targets')" Text="The build restored NuGet packages. Build the project again to include these packages in the build. For more information, see http://go.microsoft.com/fwlink/?LinkID=317568." HelpKeyword="BCLBUILD2002" />
+  </Target>
+</Project>

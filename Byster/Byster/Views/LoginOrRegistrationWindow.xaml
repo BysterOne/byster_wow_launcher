@@ -1,0 +1,98 @@
+﻿<Window x:Class="Byster.Views.LoginOrRegistrationWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:Byster.Views"
+        xmlns:sys="clr-namespace:System;assembly=mscorlib"
+        xmlns:i="clr-namespace:System.Windows.Interactivity;assembly=System.Windows.Interactivity"
+        xmlns:lb="clr-namespace:Byster.Models.Utilities"
+        mc:Ignorable="d"
+        Title="Byster - Регистрация"
+        Height="543"
+        Width="370"
+        ResizeMode="NoResize"
+        WindowStartupLocation="CenterScreen"
+        Background="Transparent"
+        WindowStyle="None" MouseLeftButtonDown="Window_MouseLeftButtonDown" Loaded="Window_Loaded"
+        AllowsTransparency="True"
+        x:Name="window"
+        Icon="/byster.ico">
+    <Window.Resources>
+        <ResourceDictionary Source="./Styles.xaml"/>
+    </Window.Resources>
+    <Grid Margin="15">
+        <Grid.Resources>
+            <Thickness x:Key="marginUI">0, 7</Thickness>
+        </Grid.Resources>
+        <Border Background="{DynamicResource BackgroundWindowColor}">
+            <Border.Effect>
+                <DropShadowEffect Color="{DynamicResource EffectProductItemColor}" BlurRadius="15" ShadowDepth="0"/>
+            </Border.Effect>
+        </Border>
+        <StackPanel x:Name="windowStackpanel">
+            <StackPanel x:Name="topElementsPanel">
+                <Button x:Name="closeButton" HorizontalAlignment="Right" Style="{StaticResource uibStyle}" Height="45" Width="45" Click="closeButton_Click">
+                    <Image Source="../Resources/Images/close-button-image.png" Stretch="Uniform" Margin="12"/>
+                </Button>
+                <Image Source="../Resources/Images/logo.png" Stretch="None" Margin="0 0 0 5"/>
+            </StackPanel>
+            <StackPanel x:Name="authBlock" Margin="20, 0">
+                <TextBox Style="{StaticResource tbStyle}" x:Name="loginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
+                <PasswordBox Style="{StaticResource pbStyle}" x:Name="passwordBox" Tag="Пароль" PasswordChanged="passwordBox_PasswordChanged" Margin="{StaticResource marginUI}">
+                    <i:Interaction.Behaviors>
+                        <lb:PressToSeePassword/>
+                    </i:Interaction.Behaviors>
+                </PasswordBox>
+                <Button Style="{StaticResource bStyle}" Content="Авторизоваться" x:Name="loginBtn" Click="loginBtn_Click" Margin="{StaticResource marginUI}"/>
+                <Grid>
+                    <TextBlock Margin="{StaticResource marginUI}">
+                            <Hyperlink x:Name="navigateToRegister" Style="{StaticResource hlStyle}" Click="navigateToRegister_Click"><TextBlock x:Name="navigateToRegisterTextBlock"/></Hyperlink>
+                        </TextBlock>
+                    <TextBlock Margin="{StaticResource marginUI}" HorizontalAlignment="Right">
+                            <Hyperlink x:Name="swapLanguageReg" Style="{StaticResource hlStyle}" Click="swapLanguage_Click"><TextBlock x:Name="swapLanguageTextBlockReg"/></Hyperlink>
+                        </TextBlock>
+                </Grid>
+            </StackPanel>
+            <StackPanel x:Name="registerBlock" Margin="20, 0">
+                <TextBox Style="{StaticResource tbStyle}" x:Name="newLoginBox" Tag="Логин" Margin="{StaticResource marginUI}"/>
+                <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordBox" Tag="Пароль" PasswordChanged="newPasswordBox_PasswordChanged" Margin="{StaticResource marginUI}">
+                    <i:Interaction.Behaviors>
+                        <lb:PressToSeePassword/>
+                    </i:Interaction.Behaviors>
+                </PasswordBox>
+                <PasswordBox Style="{StaticResource pbStyle}" x:Name="newPasswordConfirmBox" Tag="Подтвердите пароль" PasswordChanged="newPasswordConfirmBox_PasswordChanged" Margin="{StaticResource marginUI}">
+                    <i:Interaction.Behaviors>
+                        <lb:PressToSeePassword/>
+                    </i:Interaction.Behaviors>
+                </PasswordBox>
+                <Grid>
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition/>
+                        <ColumnDefinition Width="25"/>
+                    </Grid.ColumnDefinitions>
+                    <TextBox x:Name="referalBox" Grid.Column="0" Tag="Реферал код" Margin="{StaticResource marginUI}" IsVisibleChanged="referalBox_IsVisibleChanged">
+                        <TextBox.Style>
+                            <Style TargetType="TextBox" BasedOn="{StaticResource tbStyle}"></Style>
+                        </TextBox.Style>
+                    </TextBox>
+                    <TextBlock Style="{StaticResource infoTextBlockStyle}" Grid.Column="1" VerticalAlignment="Center" HorizontalAlignment="Center" FontSize="25" x:Name="tooltipReferal">
+                        ?
+                    </TextBlock>
+                </Grid>
+                <Button Style="{StaticResource bStyle}" x:Name="registerBtn" Content="Зарегистрироваться" Click="registerBtn_Click" Margin="{StaticResource marginUI}" IsDefault="True"/>
+                <Grid>
+                    <TextBlock Margin="{StaticResource marginUI}" HorizontalAlignment="Left">
+                        <Hyperlink x:Name="navigateToAuth" Style="{StaticResource hlStyle}" Click="navigateToAuth_Click"><TextBlock x:Name="navigateToAuthTextBlock"/></Hyperlink>
+                        </TextBlock>
+                    <TextBlock Margin="{StaticResource marginUI}" HorizontalAlignment="Right">
+                        <Hyperlink x:Name="swapLanguage" Style="{StaticResource hlStyle}" Click="swapLanguage_Click"><TextBlock x:Name="swapLanguageTextBlock"/></Hyperlink>
+                        </TextBlock>
+                </Grid>
+            </StackPanel>
+        </StackPanel>
+        <Grid Background="#A0000000" x:Name="autoAuthPresenterGrid">
+            <TextBlock Style="{DynamicResource orangeTextBlockStyle}" Text="Авторизация..." VerticalAlignment="Center" HorizontalAlignment="Center" FontWeight="Bold"/>
+        </Grid>
+    </Grid>
+</Window>

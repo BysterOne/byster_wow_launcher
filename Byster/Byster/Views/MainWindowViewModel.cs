@@ -1,0 +1,504 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.ComponentModel;
+using System.Collections.ObjectModel;
+using System.Windows.Controls;
+using System.Windows.Input;
+using RestSharp;
+using System.Runtime.CompilerServices;
+using Byster.Models.BysterModels;
+using Byster.Models.Services;
+using Byster.Models.Utilities;
+using Byster.Models.ViewModels;
+using Byster.Localizations.Tools;
+using System.Windows;
+using System.Windows.Threading;
+using static Byster.Models.Utilities.BysterLogger;
+
+namespace Byster.Views
+{
+
+    public static class BysterWindowExtensions
+    {
+        public static MainWindowViewModel Model { get; set; }
+        public static bool ShowModalDialog(this Window window)
+        {
+            Model.IsModalWindowOpened = Visibility.Visible;
+            bool result = window.ShowDialog() ?? false;
+            Model.IsModalWindowOpened = Visibility.Collapsed;
+            return result;
+        }
+    }
+    public class MainWindowViewModel : INotifyPropertyChanged, IDisposable
+    {
+        public LocalizationDataForViewModels LocalizationData { get; set; } = new LocalizationDataForViewModels();
+        public ObservableCollection<Visibility> PageVisibilities { get; set; } = new ObservableCollection<Visibility>()
+        {
+            Visibility.Visible,
+            Visibility.Collapsed,
+        };
+        public ObservableCollection<Visibility> ControlVisibilities { get; set; } = new ObservableCollection<Visibility>()
+        {
+            Visibility.Visible,
+            Visibility.Collapsed,
+            Visibility.Collapsed,
+        };
+
+
+        internal RestService restService;
+
+        private string statusText;
+        public string StatusText
+        {
+            get { return statusText; }
+            set
+            {
+                statusText = value;
+                OnPropertyChanged("StatusText");
+            }
+        }
+
+        public event Action UpdateDataStarted;
+        public event Action UpdateDataCompleted;
+
+        public event Action InitializationStarted;
+        public event Action InitializationCompleted;
+
+        public event Action MultipleConnectionErrorsDetected;
+        public ActiveRotationsService ActiveRotations { get; set; }
+        public ShopService Shop { get; private set; }
+        public UserInfoService UserInfo { get; private set; }
+        public ActionService ActionService { get; private set; }
+        public SessionService SessionService { get; private set; }
+
+        private SessionViewModel selectedSession;
+
+
+        public DeveloperRotationService DeveloperRotations { get; set; }
+        public SessionViewModel SelectedSession
+        {
+            get { return selectedSession; }
+            set
+            {
+                if (selectedSession != null)
+                {
+                    selectedSession.PropertyChanged -= (o, e) =>
+                    {
+                        OnPropertyChanged("SelectedSession");
+                        OnPropertyChanged("IsSessionDefined");
+                        OnPropertyChanged("IsSessionUndefined");
+                        OnPropertyChanged("IsWorldUnloaded");
+                    };
+                }
+                selectedSession = value;
+                if (selectedSession != null)
+                    selectedSession.PropertyChanged += (o, e) =>
+                    {
+                        OnPropertyChanged("SelectedSession");
+                        OnPropertyChanged("IsSessionDefined");
+                        OnPropertyChanged("IsSessionUndefined");
+                        OnPropertyChanged("IsWorldUnloaded");
+                    };
+                OnPropertyChanged("SelectedSession");
+                OnPropertyChanged("IsSessionDefined");
+                OnPropertyChanged("IsSessionUndefined");
+                OnPropertyChanged("IsWorldUnloaded");
+            }
+        }
+
+        public Visibility IsSessionDefined
+        {
+            get
+            {
+                if (SelectedSession == null || !SelectedSession.WowApp.WorldLoaded)
+                {
+                    return Visibility.Collapsed;
+                }
+                else
+                {
+                    return Visibility.Visible;
+                }
+            }
+        }
+        public Visibility IsSessionUndefined
+        {
+            get
+            {
+                if (SelectedSession == null)
+                {
+                    return Visibility.Visible;
+                }
+                else
+                {
+                    return Visibility.Collapsed;
+                }
+            }
+        }
+        public Visibility IsWorldUnloaded
+        {
+            get
+            {
+                if (SelectedSession?.WowApp?.WorldLoaded ?? true)
+                {
+                    return Visibility.Collapsed;
+                }
+                else
+                {
+                    return Visibility.Visible;
+                }
+            }
+        }
+
+        private ShopProductInfoViewModel selectedShopProductInfo;
+        public ShopProductInfoViewModel SelectedProduct
+        {
+            get { return selectedShopProductInfo; }
+            set
+            {
+                selectedShopProductInfo = value;
+                OnPropertyChanged("SelectedProduct");
+            }
+        }
+
+        private Visibility isModalWindowOpened = Visibility.Collapsed;
+        public Visibility IsModalWindowOpened
+        {
+            get { return isModalWindowOpened; }
+            set
+            {
+                isModalWindowOpened = value;
+                OnPropertyChanged("IsModalWindowOpened");
+            }
+        }
+
+        private Visibility isMediaOpened = Visibility.Collapsed;
+        public Visibility IsMediaOpened
+        {
+            get { return isMediaOpened; }
+            set
+            {
+                isMediaOpened = value;
+                OnPropertyChanged("IsMediaOpened");
+            }
+        }
+
+
+        private string sourceOfMediaToOpen = "";
+        public string SourceOfMediaToOpen
+        {
+            get { return sourceOfMediaToOpen; }
+            set
+            {
+                sourceOfMediaToOpen = value;
+                OnPropertyChanged("SourceOfMediaToOpen");
+            }
+        }
+
+        public string LastError
+        {
+            get
+            {
+                return restService.LastError;
+            }
+        }
+
+        public MainWindowViewModel(RestClient client, string sessionId)
+        {
+            BysterWindowExtensions.Model = this;
+            restService = new RestService(client);
+            restService.MultipleConnectionErrorsDetected += () =>
+            {
+                MultipleConnectionErrorsDetected?.Invoke();
+            };
+            UserInfo = new UserInfoService(restService);
+            ActiveRotations = new ActiveRotationsService(restService);
+            Shop = new ShopService(restService)
+            {
+                PreTestElementAction = (testDuration) =>
+                {
+                    DialogWindow dialogWindow = new DialogWindow(Localizator.GetLocalizationResourceByKey("Confirmation"), Localizator.GetLocalizationResourceByKey("TestDialogInfo").Value.Replace("{testDuration}", testDuration.ToString()));
+                    bool result = false;
+                    result = dialogWindow.ShowModalDialog();
+                    return result;
+                },
+                TestElementSuccessAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success"), Localizator.GetLocalizationResourceByKey("TestSuccessMessage"));
+                    infoWindow.ShowModalDialog();
+                },
+                TestElementFailAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), $"{Localizator.GetLocalizationResourceByKey("TestErrorMessage")}\n{restService.LastError}");
+                    infoWindow.ShowModalDialog();
+                },
+                CloseElementAction = () =>
+                {
+                    SelectedProduct = null;
+                },
+                PreBuyCartAction = (cart) =>
+                {
+                    PaymentSystemSelectorWindow selectorWindow = new PaymentSystemSelectorWindow(Shop.GetAllPaymentSystemsList(), this, cart);
+                    bool res = false;
+                    res = selectorWindow.ShowModalDialog();
+                    if (selectorWindow.SystemId == -1 && Shop.ResultSum > 0) return false;
+                    if (res) Shop.SelectedPaymentSystemId = selectorWindow.SystemId;
+                    return res;
+                },
+                BuyCartSuccessAction = (string str) =>
+                {
+                    LinkPresenterWindow infoWindow = new LinkPresenterWindow(this, Shop.GetAllPaymentSystemsList().Where(_system => _system.Id == Shop.SelectedPaymentSystemId).FirstOrDefault(), str);
+                    infoWindow.ShowModalDialog();
+                    Shop.ClearCart();
+                },
+                BuyCartFailAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), $"{Localizator.GetLocalizationResourceByKey("BuyErrorMessage")}\n{restService.LastError}");
+                    infoWindow.ShowModalDialog();
+                },
+                BuyCartByBonusesSuccessAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Success"), Localizator.GetLocalizationResourceByKey("BuySuccessMessage"));
+                    infoWindow.ShowModalDialog();
+                    Shop.ClearCart();
+                },
+                BuyCartByBonusesFailAction = () =>
+                {
+                    InfoWindow infoWindow = new InfoWindow(Localizator.GetLocalizationResourceByKey("Error"), $"{Localizator.GetLocalizationResourceByKey("BuyBonusesErrorMessage")}\n{restService.LastError}");
+                    infoWindow.ShowModalDialog();
+                },
+            };
+            ActionService = new ActionService(restService, UpdateData)
+            {
+                SessionId = sessionId,
+            };
+            SessionService = new SessionService(App.Rest)
+            {
+                FirstWowFoundAction = (session) =>
+                {
+                    SelectedSession = session as SessionViewModel;
+                },
+            };
+            ActiveRotations.AllActiveRotations.CollectionChanged += (o, e) =>
+            {
+                checkRotations();
+            };
+            UserInfo.PropertyChanged += (obj, args) =>
+            {
+                if (args.PropertyName == "Branch")
+                {
+                    Injector.Branch = UserInfo.Branch.Value as string;
+                };
+            };
+            DeveloperRotations = new DeveloperRotationService()
+            {
+                RestService = restService,
+            };
+        }
+        public void Initialize(Dispatcher dispatcher)
+        {
+            StatusText = Localizator.GetLocalizationResourceByKey("Initialization");
+            InitializationStarted?.Invoke();
+            ActiveRotations.Initialize(dispatcher);
+            Shop.Initialize(dispatcher);
+            UserInfo.Initialize(dispatcher);
+            ActionService.Initialize(dispatcher);
+            SessionService.Initialize(dispatcher);
+            if (UserInfo.UserType == BranchType.DEVELOPER)
+            {
+                DeveloperRotations.Initialize(dispatcher);
+            }
+            else
+            {
+                UserInfo.PropertyChanged += (sender, args) =>
+                {
+                    if (args.PropertyName == "UserType")
+                    {
+                        if (UserInfo.UserType == BranchType.DEVELOPER && !DeveloperRotations.IsInitialized)
+                            DeveloperRotations.Initialize(dispatcher);
+                    }
+                };
+            }
+            UpdateData();
+            checkRotations();
+            InitializationCompleted?.Invoke();
+        }
+        private RelayCommand closeMediaCommand;
+        public RelayCommand CloseMediaCommand
+        {
+            get
+            {
+                return closeMediaCommand ?? (closeMediaCommand = new RelayCommand(() =>
+                {
+                    SourceOfMediaToOpen = "";
+                    IsMediaOpened = Visibility.Collapsed;
+                }));
+            }
+        }
+
+        private RelayCommand settingsCommand;
+
+        private RelayCommand startCommand;
+        public RelayCommand StartCommand
+        {
+            get
+            {
+                return startCommand ?? (startCommand = new RelayCommand((obj) =>
+                     {
+                         Injector.Branch = UserInfo.Branch.Value as string;
+                         //SessionService.StartInjecting(SelectedSession.WowApp.Process.Id);
+                     }));
+            }
+        }
+        private RelayCommand unselectSessionCommand;
+        public RelayCommand UnselectSessionCommand
+        {
+            get
+            {
+                return unselectSessionCommand ?? (unselectSessionCommand = new RelayCommand((obj) =>
+                    {
+                        SelectedSession = null;
+                    }));
+            }
+        }
+
+        private RelayCommand selectPageCommand;
+        public RelayCommand SelectPageCommand
+        {
+            get
+            {
+                return selectPageCommand ?? (selectPageCommand = new RelayCommand((obj) =>
+                  {
+                      int selectedIndex = Convert.ToInt32(obj as string);
+                      selectPage(selectedIndex);
+                  }));
+            }
+        }
+        public RelayCommand SettingsCommand
+        {
+            get
+            {
+                return settingsCommand ??
+                (settingsCommand = new RelayCommand(() =>
+                    {
+                        SettingsWindow settingsWindow = new SettingsWindow(this);
+                        settingsWindow.ShowModalDialog();
+                    }));
+            }
+        }
+
+        private RelayCommand shopCommand;
+        public RelayCommand ShopCommand
+        {
+            get
+            {
+                return shopCommand ?? (shopCommand = new RelayCommand(() =>
+                {
+                    foreach (var item in Shop.FilterOptions.FilterClasses)
+                    {
+                        item.IsSelected = false;
+                    }
+                    var selectedClass = Shop.FilterOptions.FilterClasses.Where(_ifi => _ifi.FilterValue.EnumClass == (SelectedSession?.SessionClass.EnumWOWClass ?? WOWClasses.ANY)).FirstOrDefault();
+                    if (selectedClass != null) selectedClass.IsSelected = true;
+                    foreach (var item in Shop.FilterOptions.FilterTypes)
+                    {
+                        item.IsSelected = false;
+                    }
+                    selectPage(1);
+                }));
+            }
+        }
+
+        private void selectPage(int index)
+        {
+            for (int i = 0; i < PageVisibilities.Count; i++)
+            {
+                PageVisibilities[i] = Visibility.Collapsed;
+            }
+            PageVisibilities[index] = Visibility.Visible;
+        }
+
+        private void selectControls(int index)
+        {
+            for (int i = 0; i < ControlVisibilities.Count; i++)
+            {
+                ControlVisibilities[i] = Visibility.Collapsed;
+            }
+            if (index >= 0 && index < 3)
+                ControlVisibilities[index] = Visibility.Visible;
+        }
+
+        private void syncData()
+        {
+        }
+        bool isUpdating = false;
+        public void UpdateData()
+        {
+            if(isUpdating) return;
+            isUpdating = true;
+            Task.Run(() =>
+            {
+                StatusText = Localizator.GetLocalizationResourceByKey("UpdatingData");
+                LogInfo("Common", "������������ ������ Background Image Downloader...");
+                BackgroundImageDownloader.Suspend();
+                LogInfo("Common", "���������� ������...");
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    UpdateDataStarted?.Invoke();
+                });
+                UserInfo.UpdateRemoteData();
+                ActiveRotations.UpdateData();
+                Shop.UpdateData();
+                syncData();
+                App.Current.Dispatcher.Invoke(() =>
+                {
+                    UpdateDataCompleted?.Invoke();
+                });
+                LogInfo("Common", "���������� ������ ���������");
+                BackgroundImageDownloader.Resume();
+                LogInfo("Common", "������������� ������ Background Image Downloader");
+                isUpdating = false;
+            });
+
+        }
+
+        public void Dispose()
+        {
+            ActionService.Dispose();
+            SessionService.Dispose();
+            DeveloperRotations.Dispose();
+            Shop.Dispose();
+            UserInfo.Dispose();
+            ActiveRotations.Dispose();
+        }
+
+        public event PropertyChangedEventHandler PropertyChanged;
+        public void OnPropertyChanged([CallerMemberName] string property = "")
+        {
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(property));
+            if (property == "SelectedSession")
+            {
+                checkRotations();
+            }
+        }
+        private void checkRotations()
+        {
+            ActiveRotations.FilterClass = SelectedSession?.SessionClass?.EnumWOWClass ?? WOWClasses.ANY;
+            if (ActiveRotations.AllActiveRotations.FirstOrDefault((rotation) => rotation.IsVisibleInList) != null)
+            {
+                if (SelectedSession == null)
+                {
+                    selectControls(3);
+                    return;
+                }
+                selectControls(0);
+            }
+            else
+            {
+                selectControls(2);
+            }
+        }
+    }
+}

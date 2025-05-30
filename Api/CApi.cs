@@ -33,19 +33,19 @@ namespace Launcher.Api
             return await Request<List<CGitDirectory>>("/launcher/v1/git_pull", Method.Post);
         }
         #endregion
-        #region ToggleCompilation
+        #region ChangePassword
         public static async Task<UResponse<object?>> ChangePassword(string newPassword)
         {
             return await Request<object?> ("/launcher/v1/change_password", Method.Post, body: new { new_password = newPassword });
         }
         #endregion
-        #region ToggleCompilation
+        #region GetServerVersion
         public static async Task<UResponse<CVersion>> GetServerVersion()
         {
             return await Request<CVersion>("/launcher/v2/check_updates", Method.Get);
         }
         #endregion
-        #region ToggleCompilation
+        #region ToggleProtection
         public static async Task<UResponse<User>> ToggleProtection(bool enable)
         {
             return await Request<User>("/launcher/toggle_protection", Method.Post, body: new { enable });

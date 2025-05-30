@@ -44,7 +44,6 @@ namespace Launcher.Any.GlobalEnums
     {
         Master,
         Dev,
-        Test,
-        NewThread
+        Test
     }
 }

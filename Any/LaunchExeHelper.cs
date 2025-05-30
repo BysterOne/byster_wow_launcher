@@ -78,20 +78,19 @@ namespace Launcher.Any
             if (!CanLaunch(server)) return;
             #region Sentry
             var trans = SentrySdk.StartTransaction("launching-exe", "launch");
-            SentrySdk.ConfigureScope(scope => { scope.Transaction = trans; scope.Span = null; });
+            var lnchSpan = trans.StartChild("lnch");
+            SentrySdk.ConfigureScope(scope => { scope.Transaction = trans; scope.Span = lnchSpan; });
             #endregion
 
             #region try
             try
-            {
-                
-
+            {                
                 #region Создаем в очередь                
                 Items.Add(new LaunchItem() { Server = server, State = ELaunchState.None });
                 UpdateStatus(server, ELaunchState.Downloading);
                 #endregion
                 #region Наличие папки
-                var checkFoldersSpan = trans.StartChild("check-folders");
+                var checkFoldersSpan = lnchSpan.StartChild("check-folders");
                 await Task.Run(() => Thread.Sleep(300));
                 UpdateStatus(server, ELaunchState.Verifying);
 
@@ -100,7 +99,7 @@ namespace Launcher.Any
                 checkFoldersSpan.Finish();
                 #endregion
                 #region Получение версии
-                var getVersionReqSpan = trans.StartChild("request-get-lib-version");                
+                var getVersionReqSpan = lnchSpan.StartChild("request-get-lib-version");
                 var tryGetLibVersion = await CApi.GetLibVersion();
                 if (!tryGetLibVersion.IsSuccess)
                 {
@@ -110,12 +109,12 @@ namespace Launcher.Any
                 getVersionReqSpan.Finish();
                 #endregion
                 #region Очистка других версий
-                var clearVersionsFoldersSpan = trans.StartChild("clear-versions-folders");
+                var clearVersionsFoldersSpan = lnchSpan.StartChild("clear-versions-folders");
                 ClearFolders(saveDir, currentVersion);
                 clearVersionsFoldersSpan.Finish();
                 #endregion
                 #region Проверка наличия файла
-                var checkExistsVersionSpan = trans.StartChild("check-exists-current-version");
+                var checkExistsVersionSpan = lnchSpan.StartChild("check-exists-current-version");
                 var fileDir = Path.Combine(saveDir, currentVersion);
                 if (Directory.Exists(fileDir))
                 {
@@ -123,7 +122,7 @@ namespace Launcher.Any
                     if (exeFile is not null)
                     {
                         checkExistsVersionSpan.Finish();
-                        var runSpan = trans.StartChild("launch-exe");
+                        var runSpan = lnchSpan.StartChild("run-exe");
                         var tryRun = await Run(server, exeFile);
                         if (!tryRun.IsSuccess) throw new UExcept(ELaunch.FailRunExe, $"Не удалось запустить исполняемый файл", tryRun.Error);
                         runSpan.Finish();
@@ -134,7 +133,7 @@ namespace Launcher.Any
                 #endregion
                 #region Установка
                 #region Скачиваем
-                var loadLibSpan = trans.StartChild("load-lib");
+                var loadLibSpan = lnchSpan.StartChild("load-lib");
                 var exeBytes = await CApi.GetLib();
                 if (!exeBytes.IsSuccess)
                 {
@@ -143,7 +142,7 @@ namespace Launcher.Any
                 loadLibSpan.Finish();
                 #endregion
                 #region Сохраняем
-                var saveLibSpan = trans.StartChild("save-lib");
+                var saveLibSpan = lnchSpan.StartChild("save-lib");
                 Directory.CreateDirectory(fileDir);
                 var pathName = $"{Functions.GetMd5Hash(GProp.User.Username + Guid.NewGuid().ToString())[..12]}.exe";
                 var pathExe = Path.Combine(fileDir, pathName);
@@ -155,14 +154,14 @@ namespace Launcher.Any
                 saveLibSpan.Finish();
                 #endregion
                 #region Запускаем
-                var launchSpan = trans.StartChild("launch-exe");
+                var launchSpan = lnchSpan.StartChild("run-exe");
                 var tryRunExe = await Run(server, pathExe);
                 if (!tryRunExe.IsSuccess) throw new UExcept(ELaunch.FailRunExe, $"Не удалось запустить исполняемый файл", tryRunExe.Error);
                 launchSpan.Finish();
                 #endregion
                 #endregion
                 #region Sentry
-                trans.Finish();
+                lnchSpan.Finish();
                 #endregion
             }
             #endregion

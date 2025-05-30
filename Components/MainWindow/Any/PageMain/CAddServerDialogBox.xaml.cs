@@ -232,12 +232,16 @@ namespace Launcher.Components.MainWindow.Any.PageMain
         #endregion
 
         #region Обработчики событий
+        #region Background_MouseDown
+        private void Background_MouseDown(object sender, MouseButtonEventArgs e) => Application.Current.Windows.OfType<Main>().First().DragMove();
+        #endregion
         #region EKeyDown
         private void EKeyDown(object sender, KeyEventArgs e)
         {
             if (e.Key is Key.Escape)
             {
                 e.Handled = true;
+                Application.Current.Windows.OfType<Main>().First().PreviewKeyDown -= EKeyDown;
                 TaskCompletionSource?.TrySetResult(EDialogResponse.Closed);
             }
         }
@@ -282,8 +286,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
                 (EServerIcon)SelectedIcon.Value
             );
         #endregion
+
         #endregion
-
-
     }
 }

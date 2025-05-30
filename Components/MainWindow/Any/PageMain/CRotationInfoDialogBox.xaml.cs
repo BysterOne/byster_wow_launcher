@@ -86,6 +86,7 @@ namespace Launcher.Components.MainWindow.Any.PageMain
             if (e.Key is Key.Escape)
             {
                 e.Handled = true;
+                Application.Current.Windows.OfType<Main>().First().PreviewKeyDown -= EKeyDown;
                 TaskCompletion?.TrySetResult(EDialogResponse.Closed);
             }
         }

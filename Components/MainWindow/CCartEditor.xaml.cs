@@ -1,5 +1,6 @@
 ﻿using Cls.Any;
 using Launcher.Any;
+using Launcher.Any.UDialogBox;
 using Launcher.Components.MainWindow.Any.CartEditor;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Components.PanelChanger;
@@ -32,7 +33,7 @@ namespace Launcher.Components.MainWindow
             TranslationHub.Register(this);
 
             GProp.Cart.CartUpdated += ECartUpdated;
-            GProp.Cart.CartSumUpdated += ECartSumUpdated;
+            GProp.Cart.CartSumUpdated += ECartSumUpdated;            
 
             PanelChanger = new CPanelChanger<EPC_CartEditor>
             (
@@ -92,6 +93,20 @@ namespace Launcher.Components.MainWindow
         #endregion
 
         #region Обработчики событий
+        #region Background_MouseDown
+        private void Background_MouseDown(object sender, MouseButtonEventArgs e) => Application.Current.Windows.OfType<Main>().First().DragMove();
+        #endregion
+        #region EKeyDown
+        public void EKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key is Key.Escape)
+            {
+                e.Handled = true;
+                Application.Current.Windows.OfType<Main>().First().PreviewKeyDown -= EKeyDown;
+                Main.ChangeCartEditorState(false);
+            }
+        }
+        #endregion
         #region ECartSumUpdated
         private void ECartSumUpdated(double sum)
         {
@@ -123,6 +138,8 @@ namespace Launcher.Components.MainWindow
             CIP_value.Text = Dictionary.Translate($"В данный момент корзина пустая");
         }
         #endregion
+
         #endregion
+
     }
 }

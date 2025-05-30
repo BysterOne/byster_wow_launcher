@@ -74,6 +74,9 @@ namespace Launcher.Components
         #endregion
 
         #region Обработчики событий
+        #region Background_MouseDown
+        private void Background_MouseDown(object sender, MouseButtonEventArgs e) => Application.Current.Windows.OfType<Main>().First().DragMove();
+        #endregion
         #region EKeyDown
         private async void EKeyDown(object sender, KeyEventArgs e)
         {
@@ -429,6 +432,8 @@ namespace Launcher.Components
         #region TryClosing
         private async void TryClosing()
         {
+            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown -= EKeyDown;
+
             var buttons = new List<DialogButton>() { new(EResponse.No) };
             var phrases = new List<string>() 
             {
@@ -472,12 +477,15 @@ namespace Launcher.Components
             if (confirmClosing.IsSuccess && confirmClosing.Response is DialogBox.EResponse.Yes)
             {
                 TaskCompletionSource?.TrySetResult(EDialogResponse.Closed);
+                return;
             }
             CountCancelTrying++;
+            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
         }
         #endregion
+
         #endregion
 
-
+        
     }
 }

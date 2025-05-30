@@ -82,6 +82,7 @@ namespace Launcher.Components.MainWindow
             if (e.Key is Key.Escape) 
             {
                 e.Handled = true;
+                Application.Current.Windows.OfType<Main>().First().PreviewKeyDown -= EKeyDown;
                 TaskCompletion?.TrySetResult(EDialogResponse.Closed);
             }
         }
@@ -462,7 +463,7 @@ namespace Launcher.Components.MainWindow
         #region UpdateUserPermissions
         private void UpdateUserPermissions()
         {
-            //GProp.User.Permissions = EUserPermissions.None;
+            GProp.User.Permissions = EUserPermissions.None;
             var perms = GProp.User.Permissions;
             
 

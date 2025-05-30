@@ -421,6 +421,7 @@ namespace Launcher.Windows
             #region Показать
             if (show)
             {
+                Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += mainWindow.CartEditor.EKeyDown;
                 mainWindow.CartEditor.Visibility = Visibility.Visible;
                 AnimationHelper.OpacityAnimationStoryBoard(mainWindow.CartEditor, 1).
                     Begin(mainWindow.CartEditor, HandoffBehavior.SnapshotAndReplace, true);

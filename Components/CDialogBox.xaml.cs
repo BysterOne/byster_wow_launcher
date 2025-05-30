@@ -3,8 +3,10 @@ using Cls.Any;
 using Cls.Errors;
 using Cls.Exceptions;
 using Launcher.Any;
+using Launcher.Any.UDialogBox;
 using Launcher.Cls;
 using Launcher.Components.DialogBox;
+using Launcher.Windows;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -33,6 +35,8 @@ namespace Launcher.Components
             InitializeComponent();
             Opacity = 0;
             middleGrid.Opacity = 0;
+
+            Application.Current.Windows.OfType<Main>().First().PreviewKeyDown += EKeyDown;
         }
 
         #region Переменные
@@ -154,6 +158,17 @@ namespace Launcher.Components
         #endregion
 
         #region Обработчики событий
+        #region EKeyDown
+        private void EKeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.Key is Key.Escape)
+            {
+                e.Handled = true;
+                Application.Current.Windows.OfType<Main>().First().PreviewKeyDown -= EKeyDown;
+                TaskCompletion?.TrySetResult(EResponse.Cancel);
+            }
+        }
+        #endregion
         #region ButtonClicked
         private void FResponseButtonClicked(object sender, MouseButtonEventArgs e)
         {

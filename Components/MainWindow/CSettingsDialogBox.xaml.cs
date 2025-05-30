@@ -559,9 +559,9 @@ namespace Launcher.Components.MainWindow
 
             var tryExecute = toggle switch
             {
-                EToggle.Compilation => await CApi.ToggleEncryption(newValue is 1),
-                EToggle.Protection => await CApi.ToggleProtection(newValue is 1),
-                EToggle.Encryption => await CApi.ToggleEncryption(newValue is 1),
+                EToggle.Compilation => await CApi.ToggleCompilation(newValue is 1),
+                EToggle.Protection  => await CApi.ToggleProtection(newValue is 1),
+                EToggle.Encryption  => await CApi.ToggleEncryption(newValue is 1),
                 _ => throw new NotImplementedException()
             };
             if (!tryExecute.IsSuccess)

@@ -134,14 +134,20 @@
             <!--#region Панели -->
             <Grid
                 x:Name="MG_panels"
-                Grid.Row="1">
+                Grid.Row="1" Margin="0 0 0 10"
+                Panel.ZIndex="1">
                 <!--#region Основные -->
                 <Grid
-                    x:Name="MGP_main" MaxHeight="550">
-                    <components:CScrollPanel Margin="5">
+                    x:Name="MGP_main" MaxHeight="550"
+                    Panel.ZIndex="1">
+                    <components:CScrollPanel
+                        ClipToBounds="False"
+                        Margin="5" Panel.ZIndex="1">
                         <StackPanel
                             Margin="15 0"
-                            HorizontalAlignment="Center">
+                            HorizontalAlignment="Center"
+                            Panel.ZIndex="1"
+                            ClipToBounds="False">
                             <!--#region Кэш и пароль -->
                             <StackPanel
                                 Orientation="Horizontal">
@@ -176,7 +182,8 @@
                                 PreviewKeyDown="MGPM_redeem_PreviewKeyDown" />
                             <!--#endregion-->
                             <!--#region Остальные настройки -->
-                            <StackPanel>
+                            <StackPanel
+                                Panel.ZIndex="1">
                                 <!--#region Сервер -->
                                 <Grid
                                     x:Name="MGPM_server_panel"
@@ -197,16 +204,9 @@
                                         Style="{DynamicResource PayTextBlockHeaderStyle}" />
                                     <!--#endregion-->
                                     <!--#region Список -->
-                                    <Canvas
-                                        Grid.Column="1"
-                                        Panel.ZIndex="12"
-                                        Margin="0 0 0 0"
-                                        Width="250"
-                                        HorizontalAlignment="Right">
-                                        <components:CList
-                                            Style="{DynamicResource CSettingsListStyle}"
-                                            x:Name="MGPM_server_list" />
-                                    </Canvas>
+                                    <components:CList
+                                        Style="{DynamicResource CSettingsListStyle}"
+                                        x:Name="MGPM_server_list" />
                                     <!--#endregion-->
                                 </Grid>
                                 <!--#endregion-->
@@ -214,6 +214,7 @@
                                 <Grid
                                     x:Name="MGPM_localization_panel"
                                     Panel.ZIndex="4"
+                                    ClipToBounds="False"
                                     Margin="6 15 6 0">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition
@@ -229,17 +230,10 @@
                                         Style="{DynamicResource PayTextBlockHeaderStyle}" />
                                     <!--#endregion-->
                                     <!--#region Список -->
-                                    <Canvas
-                                        Grid.Column="1"
-                                        Panel.ZIndex="14"
-                                        Margin="0 0 0 0"
-                                        Width="250"
-                                        HorizontalAlignment="Right">
-                                        <components:CList
-                                            x:Name="MGPM_localization_list"
-                                            Style="{DynamicResource CSettingsListStyle}">
-                                        </components:CList>
-                                    </Canvas>
+                                    <components:CList
+                                        x:Name="MGPM_localization_list"
+                                        Style="{DynamicResource CSettingsListStyle}">
+                                    </components:CList>
                                     <!--#endregion-->
                                 </Grid>
                                 <!--#endregion-->
@@ -263,16 +257,9 @@
                                         Style="{DynamicResource PayTextBlockHeaderStyle}" />
                                     <!--#endregion-->
                                     <!--#region Список -->
-                                    <Canvas
-                                        Grid.Column="1"
-                                        Panel.ZIndex="12"
-                                        Margin="0 0 0 0"
-                                        Width="250"
-                                        HorizontalAlignment="Right">
-                                        <components:CList
-                                            x:Name="MGPM_branch_list"
-                                            Style="{DynamicResource CSettingsListStyle}" />
-                                    </Canvas>
+                                    <components:CList
+                                        x:Name="MGPM_branch_list"
+                                        Style="{DynamicResource CSettingsListStyle}" />
                                     <!--#endregion-->
                                 </Grid>
                                 <!--#endregion-->
@@ -403,7 +390,7 @@
                                 <!--#region Кнопка для открытия админ панели -->
                                 <components:CButton
                                     x:Name="MGPM_admin_panel_button"
-                                    Margin="15 20 15 15"
+                                    Margin="15 20 15 0"
                                     BorderRadius="8"
                                     MinWidth="200"
                                     Text="Админ панель"

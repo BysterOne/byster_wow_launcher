@@ -13,11 +13,13 @@
                     <ScrollViewer
                         Style="{DynamicResource ScrollViewerStyle}"
                         x:Name="scroll_viewer"
+                        ClipToBounds="{TemplateBinding ClipToBounds}"
                         VerticalScrollBarVisibility="Auto"
                         HorizontalScrollBarVisibility="Auto"
                         CanContentScroll="True">
                         <ContentPresenter
-                            Content="{TemplateBinding Content}" />
+                            Content="{TemplateBinding Content}"
+                            ClipToBounds="{TemplateBinding ClipToBounds}" />
                     </ScrollViewer>
                 </ControlTemplate>
             </Setter.Value>
@@ -634,7 +636,8 @@
                     TargetType="{x:Type ScrollViewer}">
                     <Grid
                         x:Name="Grid"
-                        Background="{TemplateBinding Background}">
+                        Background="{TemplateBinding Background}"
+                        ClipToBounds="{TemplateBinding ClipToBounds}">
                         <Grid.ColumnDefinitions>
                             <ColumnDefinition
                                 Width="*" />
@@ -654,6 +657,7 @@
                             Grid.Row="1" />
                         <ScrollContentPresenter
                             x:Name="PART_ScrollContentPresenter"
+                            ClipToBounds="{TemplateBinding ClipToBounds}"
                             CanHorizontallyScroll="False"
                             ContentTemplate="{TemplateBinding ContentTemplate}"
                             CanVerticallyScroll="False"

@@ -141,6 +141,12 @@
             Property="VerticalAlignment"
             Value="Center" />
         <Setter
+            Property="Grid.Column"
+            Value="1" />
+        <Setter
+            Property="Margin"
+            Value="0" />
+        <Setter
             Property="HorizontalAlignment"
             Value="Right" />
         <Setter

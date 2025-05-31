@@ -4,6 +4,7 @@ using Launcher.Cls.ModelConverters;
 using Launcher.Components.MainWindow.Any.PageShop.Models;
 using Launcher.Settings.Enums;
 using Newtonsoft.Json;
+using System.Collections.Concurrent;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.IO;
@@ -44,11 +45,15 @@ namespace Launcher.Settings
         [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
         public bool Console { get; set; } = false;
 
+        [DefaultValue(ELoadType.Mixed)]
+        [JsonProperty(DefaultValueHandling = DefaultValueHandling.Ignore)]
+        public ELoadType LoadType { get; set; } = ELoadType.Mixed;
+
         public string Login { get; set; } = string.Empty;
         public string Password { get; set; } = string.Empty;
         public string? WorkDirectory { get; set; } = null;
         public ObservableCollection<CServer> Servers { get; set; } = [];
-        public List<CGitSyncData>? SyncData { get; set; }
+        public ConcurrentDictionary<int, CGitSyncData> SyncData { get; } = [];
         #endregion
 
         public static AppSettings Instance

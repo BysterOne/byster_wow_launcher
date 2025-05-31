@@ -129,7 +129,7 @@
                 Width="250"
                 FontFamily="{DynamicResource fontfamily_main}"
                 FontSize="18"
-                Background="#FF131313"
+                BackColor="#FF131313"
                 SelectorColor="#0CFFFFFF"
                 BorderRadius="10"
                 IsEnabledLeaveHide="False"

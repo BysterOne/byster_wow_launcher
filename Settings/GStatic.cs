@@ -34,13 +34,6 @@ namespace Launcher.Settings
             { EUserPermissions.DoNotBan, "protection.donotban" },
             { EUserPermissions.Tester, "shop.tester" },
         };
-
-        public static Dictionary<EBranch, string> BranchStrings = new Dictionary<EBranch, string>
-        {
-            { EBranch.Test, "test" },
-            { EBranch.Dev, "dev" },
-            { EBranch.Master, "master" }
-        };
         #endregion
 
 

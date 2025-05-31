@@ -98,8 +98,12 @@ namespace Launcher.Components.MainWindow
             Dispatcher.Invoke(() =>
             {
                 if (GitLib is not null && task.Repository.Id != GitLib.Id) return;
-                                
-                if (task.State is EGitTaskState.Finished || task.State is EGitTaskState.ErrorOccurred) SyncTask = null;
+
+                if (task.State is EGitTaskState.Finished || task.State is EGitTaskState.ErrorOccurred)
+                {
+                    SyncTask = null;
+                    UpdateSwitcher();
+                }
                 else SyncTask ??= task;
 
                 UpdateSyncState();
@@ -118,9 +122,28 @@ namespace Launcher.Components.MainWindow
         #endregion
 
         #region CPSP_switch_SelectedIndexChanged
-        private void CPSP_switch_SelectedIndexChanged(object sender, int newIndex)
+        private async void CPSP_switch_SelectedIndexChanged(object sender, int newIndex)
         {
+            await Dispatcher.BeginInvoke(() =>
+            {
+                if (GitLib is null) return;
 
+                var newValue = newIndex is 1;
+
+                var syncData = AppSettings.Instance.SyncData;
+                var has = syncData.TryGetValue(GitLib.Id, out CGitSyncData? data);
+                if (has && data is not null && data.IsIncluded != newValue)
+                {
+                    data = syncData.AddOrUpdate
+                    (
+                        GitLib.Id,
+                        new CGitSyncData() { IsIncluded = newValue },
+                        (_, x) => x with { IsIncluded = newValue }
+                    );
+                    AppSettings.Save();
+                    _ = CGitHelper.UpdateGitConfig();
+                }
+            });
         }
         #endregion
         #endregion
@@ -150,6 +173,9 @@ namespace Launcher.Components.MainWindow
                 #endregion
                 #region Обновление статуса синхронизации
                 UpdateSyncState();
+                #endregion
+                #region Обновление переключателя
+                UpdateSwitcher();
                 #endregion
                 #region Async
                 await Task.Run(() => { return; });
@@ -234,6 +260,85 @@ namespace Launcher.Components.MainWindow
             #endregion
         }
         #endregion
+        #region UpdateSwitcher
+        private void UpdateSwitcher()
+        {
+            if (String.IsNullOrWhiteSpace(AppSettings.Instance.WorkDirectory) || GitLib is null) return;
+
+            var folderPath = Path.Combine(AppSettings.Instance.WorkDirectory!, GitLib.FilePath);
+            Directory.CreateDirectory(folderPath);
+
+            string[] patterns = { "*.toc", "*.tocb" };
+
+            var files = patterns.SelectMany(p => Directory.EnumerateFiles(folderPath, p, SearchOption.TopDirectoryOnly)).ToList();
+            var file = string.Empty;
+            #region Если один файл
+            if (files.Count is 1) 
+            {
+                file = Path.GetFileNameWithoutExtension(files[0]); 
+            }
+            else if (files.Count > 1)
+            {
+                #region Сравниваем все файлы
+                var isEq = true;
+                var fName = Path.GetFileNameWithoutExtension(files[0]);
+                for (int i = 1; i < files.Count; i++)
+                {
+                    var cmFileName = Path.GetFileNameWithoutExtension(files[i]);
+                    if (fName.Equals(cmFileName)) isEq = false;
+                }
+                #endregion
+                #region Если хотя бы один отличается, то выдаем предупреждение
+                if (isEq)
+                {
+                    _ = Main.ShowModal(
+                        new
+                        (
+                            Dictionary.Translate($"Предупреждение"),
+                            Dictionary.Translate("В репозитории <repository> существует более одного требуемого файла с разными именами")
+                                .Replace("<repository>", $"{GitLib.Name} ({GitLib.SshUrl})"),
+                            [
+                                new (DialogBox.EResponse.Ok, Dictionary.Translate("Ок"))
+                            ]
+                        )
+                    );
+
+                    CPSP_switch.Visibility = Visibility.Collapsed;
+                    return;
+                }
+                #endregion
+                #region Если все ок, то сохраняем
+                file = fName;
+                #endregion
+            }
+            else
+            {
+                CPSP_switch.Visibility = Visibility.Collapsed;
+                return;
+            }
+            #endregion
+
+            #region Обновляем или добавляем
+            var syncData = AppSettings.Instance.SyncData;
+            var has = syncData.TryGetValue(GitLib.Id, out CGitSyncData? data);
+            if (!has || data is null || String.IsNullOrWhiteSpace(data.FileName) || !data.FileName.Equals(file))
+            {
+                data = syncData.AddOrUpdate
+                (
+                    GitLib.Id,
+                    new CGitSyncData() { FileName = file },
+                    (_, x) => x with { FileName = file }
+                );
+                AppSettings.Save();
+                _ = CGitHelper.UpdateGitConfig();
+            }
+            #endregion
+            #region Показываем переключатель и устанавливаем ему значение
+            CPSP_switch.Visibility = Visibility.Visible;
+            CPSP_switch.SelectedIndex = data.IsIncluded ? 1 : 0;
+            #endregion
+        }
+        #endregion
         #region Sync
         private async void Sync()
         {
@@ -263,7 +368,6 @@ namespace Launcher.Components.MainWindow
         }
 
         #endregion
-
         #endregion
 
         

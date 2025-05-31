@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -38,10 +39,11 @@ namespace Launcher.Any.GlobalEnums
         Tester,
     }
 
-    public enum EBranch
+    [DefaultValue(Mixed)]
+    public enum ELoadType
     {
-        Master,
-        Dev,
-        Test
+        Local = 1, 
+        Mixed = 2,
+        Server = 3
     }
 }

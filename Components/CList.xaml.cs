@@ -108,15 +108,20 @@ namespace Launcher.Components
             DependencyProperty.Register(nameof(SelectorColor), typeof(Brush), ElementType,
                 new PropertyMetadata(new SolidColorBrush(Color.FromArgb((byte)(255 * 0.1), 255, 255, 255))));
         #endregion
-        #region Background
-        public new Brush Background
+        #region BackColor
+        public Brush BackColor
         {
-            get { return (Brush)GetValue(BackgroundProperty); }
-            set { SetValue(BackgroundProperty, value); }
+            get { return (Brush)GetValue(BackColorProperty); }
+            set { SetValue(BackColorProperty, value); }
         }
-        public static new readonly DependencyProperty BackgroundProperty =
-            DependencyProperty.Register(nameof(Background), typeof(Brush), ElementType,
-                new PropertyMetadata(new SolidColorBrush(Color.FromArgb((byte)(255 * 0.1), 255, 255, 255))));
+        public static readonly DependencyProperty BackColorProperty =
+            DependencyProperty.Register(nameof(BackColor), typeof(Brush), ElementType,
+                new (new SolidColorBrush(Color.FromArgb(255, 255, 255, 255)), OnBackChanged));
+
+        private static void OnBackChanged(DependencyObject d, DependencyPropertyChangedEventArgs e)
+        {
+            if (d is CList sender) sender.BackRectangle.Fill = (Brush)e.NewValue;
+        }
         #endregion
         #region Foreground
         public new Brush Foreground

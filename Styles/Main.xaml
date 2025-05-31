@@ -161,7 +161,7 @@
         <Setter
             Property="FontSize" Value="18" />
         <Setter
-            Property="Background"
+            Property="BackColor"
             Value="#FF2B2E35" />
         <Setter
             Property="SelectorColor"

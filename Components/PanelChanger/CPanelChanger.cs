@@ -24,14 +24,14 @@ namespace Launcher.Components.PanelChanger
         public T SelectedPanel { get; set; }
         public List<CChangerItem<T>> Panels { get; set; } = new();
 
-        public CPanelChanger(UIElement parent, List<CChangerItem<T>> panels, T? defaultPanel = null, EPanelState defaultState = EPanelState.Showen, bool IsHitTestMonitor = true)
+        public CPanelChanger(UIElement parent, List<CChangerItem<T>> panels, T? defaultPanel = null, EPanelState defaultState = EPanelState.Showen, bool IsHitTestMonitor = true, Visibility hiddenVisibility = Visibility.Hidden)
         {
             Parent = parent;
             Panels = panels;
             DefaultPanel = defaultPanel;
             State = defaultState;
             OpacityMonitor.Monitor(parent);
-            foreach (var panel in panels) OpacityMonitor.Monitor(panel.Element, IsHitTestMonitor);
+            foreach (var panel in panels) OpacityMonitor.Monitor(panel.Element, IsHitTestMonitor, hiddenVisibility);
         }
 
         #region Init

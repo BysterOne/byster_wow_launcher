@@ -16,9 +16,9 @@
     <Grid
         ClipToBounds="True" Cursor="Hand">
         <Rectangle
+            x:Name="BackRectangle"
             RadiusX="{Binding BorderRadius, ElementName=root}"
-            RadiusY="{Binding BorderRadius, ElementName=root}"
-            Fill="{Binding Background, ElementName=root}" />
+            RadiusY="{Binding BorderRadius, ElementName=root}"/>
 
         <Rectangle
             x:Name="selector"

@@ -59,35 +59,7 @@ namespace Launcher.Cls.ModelConverters
             throw new JsonSerializationException($"Unexpected token {reader.TokenType} when parsing boolean.");
         }
     }
-    #endregion
-    #region BranchesConverter
-    public class BranchesConverter : JsonConverter
-    {
-        public override bool CanConvert(Type objectType) => objectType == typeof(EBranch);
-
-        public override object? ReadJson(JsonReader reader, Type objectType, object? existingValue, JsonSerializer serializer)
-        {
-            if (reader.TokenType == JsonToken.StartArray)
-            {
-                JArray arr = JArray.Load(reader);
-                var branches = new List<EBranch>();
-                var list = arr.Select(x => x.ToString()).ToList();
-
-                foreach (var branch in list)
-                {
-                    EBranch? has = GStatic.BranchStrings.FirstOrDefault
-                        (x => x.Value.Equals(branch, StringComparison.CurrentCultureIgnoreCase)).Key;
-                    if (GStatic.BranchStrings.ContainsValue(branch))
-                        branches.Add((EBranch)has);
-                }
-                return branches;
-            }
-            throw new JsonSerializationException("Данный параметр принимает только Array<string>");
-        }
-
-        public override void WriteJson(JsonWriter writer, object? value, JsonSerializer serializer) { }
-    }
-    #endregion
+    #endregion    
     #region UserPermissionsConverter
     public class UserPermissionsConverter : JsonConverter
     {

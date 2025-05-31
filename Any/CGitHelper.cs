@@ -6,6 +6,7 @@ using Launcher.Api.Models;
 using Launcher.Cls;
 using Launcher.Settings;
 using Microsoft.VisualBasic.ApplicationServices;
+using Newtonsoft.Json;
 using System.Collections.Concurrent;
 using System.Diagnostics;
 using System.IO;
@@ -19,7 +20,8 @@ namespace Launcher.Any
         #region EGitHelper
         public enum EGitHelper
         {
-            FailProcessTaskAsync
+            FailProcessTaskAsync,
+            FailUpdateGitConfig
         }
         #endregion
         #region EGitTaskState
@@ -54,6 +56,12 @@ namespace Launcher.Any
         {
             Exception,
             FailExecuteGitCommand
+        }
+        #endregion
+        #region EUpdateGitConfig
+        public enum EUpdateGitConfig
+        {
+            WorkDirectoryEmpty
         }
         #endregion
 
@@ -374,6 +382,51 @@ namespace Launcher.Any
         }
         #endregion
         #endregion
+        #region UpdateGitConfig
+        public static async Task UpdateGitConfig()
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось обновить конфиг";
 
+            #region try
+            try
+            {
+                #region Проверяем наличие рабочей папки
+                if (String.IsNullOrWhiteSpace(AppSettings.Instance.WorkDirectory))
+                {
+                    throw new UExcept(EUpdateGitConfig.WorkDirectoryEmpty, $"Рабочая директория не установлена");
+                }
+                #endregion
+                #region Собираем данные о всех доступных ротациях
+                var path = Path.Combine(AppSettings.RootFolder, "config", "rotations.json");
+                var g = Directory.GetParent(path)!.FullName;
+                Directory.CreateDirectory(g);
+                var data = new Dictionary<string, bool>();
+
+                foreach (var item in AppSettings.Instance.SyncData)
+                {                    
+                    var repositoryInfo = GProp.GitRepositories.FirstOrDefault(x => x.Id == item.Key);
+                    if (repositoryInfo is not null && !String.IsNullOrWhiteSpace(item.Value.FileName))
+                    {
+                        var rotationPath = Path.Combine(AppSettings.RootFolder, repositoryInfo.FilePath.Replace('/', Path.DirectorySeparatorChar), item.Value.FileName);
+                        data.Add(rotationPath, item.Value.IsIncluded);
+                    }
+                }
+                #endregion
+                #region Сохраняем данные
+                var sorted = data.OrderBy(kvp => kvp.Key).ToDictionary();
+                await File.WriteAllTextAsync(path, JsonConvert.SerializeObject(sorted, Formatting.Indented));
+                #endregion
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uex = new UExcept(EGitHelper.FailUpdateGitConfig, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
+            }
+            #endregion
+        }
+        #endregion
     }
 }

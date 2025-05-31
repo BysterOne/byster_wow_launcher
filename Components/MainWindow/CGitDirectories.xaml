@@ -8,9 +8,10 @@
     xmlns:component="clr-namespace:Launcher.Components"
     xmlns:components="clr-namespace:Launcher.Components"
     mc:Ignorable="d"
+    MinHeight="460"
     Height="Auto"
-    d:DesignHeight="450"
-    d:DesignWidth="800">
+    d:DesignHeight="460"
+    d:DesignWidth="1000">
     <UserControl.Resources>
         <ResourceDictionary>
             <ResourceDictionary.MergedDictionaries>
@@ -39,7 +40,7 @@
         <!--#region Панель -->
         <Grid
             x:Name="ContentPanel"
-            Width="1000">
+            Width="1180">
             <!--#region Выбор директории -->
             <Grid
                 x:Name="SelectDirectory"
@@ -132,7 +133,8 @@
                 <Grid
                     x:Name="MGPA_control_panel"
                     Margin="10 0 16 10"
-                    Grid.Row="0">
+                    Grid.Row="0"
+                    Panel.ZIndex="1">
                     <!--#region Разметка -->
                     <Grid.ColumnDefinitions>
                         <ColumnDefinition
@@ -176,6 +178,25 @@
                         Icon="/Launcher;component/Media/Main/update_icon.png"
                         MouseLeftButtonDown="MGPACP_sync_all_MouseLeftButtonDown" />
                     <!--#endregion-->
+                    <!--#region Тип загрузки -->
+                    <Canvas
+                        Width="150"
+                        Grid.Column="2"
+                        Panel.ZIndex="10">
+                        <components:CList
+                            x:Name="MGPACP_load_type"
+                            BackColor="#FF1E1F23"
+                            Width="150"
+                            BorderRadius="8"
+                            Panel.ZIndex="99"
+                            SelectorColor="#FF2B2E35"
+                            FontFamily="{DynamicResource fontfamily_main}"
+                            FontSize="20"
+                            Foreground="{DynamicResource textcolor_main}"
+                            NewSelectedItem="MGPACP_load_type_NewSelectedItem"/>
+                    </Canvas>
+                    <!--#endregion-->
+
                     <!--#region Статус синхронизации -->
                     <components:CGitSyncProgress 
                         Grid.Column="6"/>
@@ -184,8 +205,9 @@
                 <!--#endregion-->
                 <!--#region Список -->
                 <component:CScrollPanel
-                    MaxHeight="480"
-                    Grid.Row="1">
+                    MaxHeight="500"
+                    Grid.Row="1"
+                    Panel.ZIndex="-1">
                     <ItemsControl
                         x:Name="test_itemsControl"
                         ItemsSource="{Binding Repositories}">

@@ -326,7 +326,9 @@ namespace Launcher.Components.MainWindow
                         new(EPC_Panels.Advanced, MGP_advanced)
                     ],
                     defaultPanel: EPC_Panels.Main,
-                    defaultState: EPanelState.Showen
+                    defaultState: EPanelState.Showen,
+                    IsHitTestMonitor: false,
+                    hiddenVisibility: Visibility.Collapsed
                 );
                 PanelChanger.ShowElement += PanelChangerShow;
                 PanelChanger.HideElement += PanelChangerHide;

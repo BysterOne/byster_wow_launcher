@@ -178,7 +178,7 @@
                         <!--#endregion-->
                         <!--#region Список методов оплаты -->
                         <components:CList
-                            Background="#FF211F27"
+                            BackColor="#FF211F27"
                             SelectorColor="#0CFFFFFF"
                             BorderRadius="10"
                             x:Name="MGCCAM_methods_list"

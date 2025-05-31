@@ -5,7 +5,7 @@ namespace Launcher.Any
 {
     public class OpacityMonitor
     {
-        public static void Monitor(UIElement element, bool isHitTest = true)
+        public static void Monitor(UIElement element, bool isHitTest = true, Visibility hiddenVisibility = Visibility.Hidden)
         {
             if (element is null) return;
 
@@ -20,7 +20,7 @@ namespace Launcher.Any
                 }                
                 else
                 {
-                    if (element.Opacity == 0) element.Visibility = Visibility.Hidden;
+                    if (element.Opacity == 0) element.Visibility = hiddenVisibility;
                     //else element.Visibility = Visibility.Visible;
                 }
             });

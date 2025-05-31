@@ -307,10 +307,10 @@ namespace Launcher.Api.Models
     }
     #endregion
     #region CGitSyncData
-    public class CGitSyncData
+    public record class CGitSyncData
     {
-        public int Id { get; set; }
-        public long LastSyncTime { get; set; } = 0;
+        public string? FileName { get; set; }
+        public bool IsIncluded { get; set; } = false;
     }
     #endregion
 }

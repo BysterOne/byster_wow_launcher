@@ -16,6 +16,7 @@ using Microsoft.Win32;
 using System.Collections.ObjectModel;
 using System.Diagnostics;
 using System.IO;
+using System.Linq;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -185,6 +186,18 @@ namespace Launcher.Components.MainWindow
         #region MGPACP_search_OnTextChanged
         private async Task MGPACP_search_OnTextChanged(CTextInput sender, string text) => _ = ApplySearchFilter(text);
         #endregion
+        #region MGPACP_load_type_NewSelectedItem
+        private void MGPACP_load_type_NewSelectedItem(CList.CListItem item)
+        {
+            var newValue = (ELoadType)item.Id;
+
+            if (AppSettings.Instance.LoadType != newValue)
+            {
+                AppSettings.Instance.LoadType = newValue;
+                AppSettings.Save();
+            }
+        }
+        #endregion
         #endregion
 
         #region Функции
@@ -215,6 +228,11 @@ namespace Launcher.Components.MainWindow
                 {
                     throw new UExcept(EInitialization.FailInitPanelChanger, $"Не удалось инициализировать переключатель панелей", tryInitPanel.Error);
                 }
+                #endregion
+                #region Загрузка типов загрузки
+                var listItem = new List<CList.CListItem>();
+                foreach (var loadType in Enum.GetValues<ELoadType>()) listItem.Add(new ((int)loadType, loadType.ToString().ToUpper()));
+                _ = MGPACP_load_type.LoadItems(listItem, listItem.IndexOf(listItem.First(x => x.Id == (int)AppSettings.Instance.LoadType)));
                 #endregion
                 #region Обновление шаблона
                 UpdateView();
@@ -485,6 +503,6 @@ namespace Launcher.Components.MainWindow
         #endregion
         #endregion
 
-
+        
     }
 }

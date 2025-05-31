@@ -266,9 +266,14 @@ namespace Launcher.Components
             AnimationHelper.OpacityAnimationStoryBoard(back_rect, 0.2).Begin(back_rect, HandoffBehavior.SnapshotAndReplace, true);
         }
         private void EPreviewMouseLeftButtonDown(object sender, MouseButtonEventArgs e) => ChangeState(true);
-        private void Textbox_GotFocus(object sender, RoutedEventArgs e) => ChangeState(true);
+        private void Textbox_GotFocus(object sender, RoutedEventArgs e)
+        {
+            if (!textbox.IsFocused) { ChangeState(true); }
+        }
         private void Textbox_LostFocus(object sender, RoutedEventArgs e)
-            => ChangeState(false);
+        {
+            ChangeState(false);
+        }
         private void Textbox_PreviewTextInput(object sender, TextCompositionEventArgs e)
         {
             if (InputRegex == null)
@@ -327,7 +332,7 @@ namespace Launcher.Components
         private void ChangeState(bool toActive)
         {
             //if (IsActive == toActive) return;
-            //IsActive = toActive;
+            var isFocused = InputType switch { EInputType.Text => textbox.IsFocused, _ => passwordbox.IsFocused };
 
             var duration = AnimationHelper.AnimationDuration;
             var function = new PowerEase() { EasingMode = EasingMode.EaseInOut };
@@ -341,13 +346,11 @@ namespace Launcher.Components
                 switch (InputType)
                 {
                     case EInputType.Text:
-                        textbox.Visibility = Visibility.Visible;
-                        textbox.Focus();
+                        textbox.Visibility = Visibility.Visible;                        
                         textbox.CaretIndex = textbox.Text.Length;
                         break;
                     case EInputType.Password:
-                        passwordbox.Visibility = Visibility.Visible;
-                        passwordbox.Focus();
+                        passwordbox.Visibility = Visibility.Visible;                        
                         break;
                 }               
 
@@ -375,7 +378,13 @@ namespace Launcher.Components
                 Storyboard.SetTargetProperty(animationVisible, new PropertyPath(Label.OpacityProperty));
                 storyboard.Children.Add(animationVisible);
 
-                storyboard.Completed += (s, e) => Dispatcher.Invoke(() => placeholder.Visibility = Visibility.Collapsed);                
+                storyboard.Completed += (s, e) => 
+                    Dispatcher.Invoke(() =>
+                    {
+                        placeholder.Visibility = Visibility.Collapsed;
+                        if (InputType is EInputType.Text) { if (!isFocused) textbox.Focus(); }
+                        else { if (!isFocused) passwordbox.Focus(); }
+                    });
             }
             #endregion
             #region Переключение на заставку

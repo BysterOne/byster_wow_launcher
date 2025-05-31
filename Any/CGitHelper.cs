@@ -4,11 +4,12 @@ using Cls.Exceptions;
 using Launcher.Any.CGitHelperAny;
 using Launcher.Api.Models;
 using Launcher.Cls;
+using Launcher.Settings;
 using Microsoft.VisualBasic.ApplicationServices;
 using System.Collections.Concurrent;
+using System.Diagnostics;
+using System.IO;
 using System.Threading.Tasks;
-using static System.Runtime.InteropServices.JavaScript.JSType;
-using static System.Windows.Forms.AxHost;
 
 namespace Launcher.Any
 {
@@ -42,7 +43,17 @@ namespace Launcher.Any
         #region EProcessTaskAsync
         public enum EProcessTaskAsync
         {
-            TestError
+            TestError,
+            WorkDirectoryIsNull,
+            FailCloneRepository,
+            FailPullRepository
+        }
+        #endregion
+        #region ERunGitCommand
+        public enum ERunGitCommand
+        {
+            Exception,
+            FailExecuteGitCommand
         }
         #endregion
 
@@ -238,15 +249,45 @@ namespace Launcher.Any
                 GitTaskStatusChanged?.Invoke(completion, task);
                 #endregion
 
-                #region Иммитация
-                await Task.Run(() => Thread.Sleep(1000));
-                #endregion
-
-                var rand = new Random();
-                if (rand.NextDouble() > 0.7)
+                #region Клонирование или синхрон
+                #region Проверка на пустую директорию
+                if (String.IsNullOrWhiteSpace(AppSettings.Instance.WorkDirectory))
                 {
-                    throw new UExcept(EProcessTaskAsync.TestError, $"Тестовая ошибка");
+                    throw new UExcept(EProcessTaskAsync.WorkDirectoryIsNull, $"Рабочая директория не указана");
                 }
+                #endregion
+                var path = Path.Combine(AppSettings.Instance.WorkDirectory, task.Repository.FilePath);
+                string gitFolder = Path.Combine(path, ".git");
+                if (!Directory.Exists(gitFolder))
+                {
+                    var tryClone = await RunGitCommand(
+                        $"clone --remote-submodules --recursive --branch=dev \"{task.Repository.SshUrl}\" \"{path}\"",
+                        Directory.GetParent(path)?.FullName ?? ".");
+
+                    if (!tryClone.IsSuccess)
+                    {
+                        var ex = new UExcept(EProcessTaskAsync.FailCloneRepository, $"Не удалось клонировать репозиторий", tryClone.Error);
+                        ex.Data["name"] = task.Repository.Name;
+                        ex.Data["ssh_url"] = task.Repository.SshUrl;
+                        throw ex;
+                    }
+                }
+                else
+                {
+                    var tryPull = await RunGitCommand(
+                        "pull origin dev",
+                        path
+                    );
+
+                    if (!tryPull.IsSuccess)
+                    {
+                        var ex = new UExcept(EProcessTaskAsync.FailPullRepository, $"Не удалось синхронизировать репозиторий", tryPull.Error);
+                        ex.Data["name"] = task.Repository.Name;
+                        ex.Data["ssh_url"] = task.Repository.SshUrl;
+                        throw ex;
+                    }                     
+                }
+                #endregion
 
                 #region Успешное выполнение
                 task.State = EGitTaskState.Finished;
@@ -288,6 +329,48 @@ namespace Launcher.Any
         private static bool Remove(int id)
         { 
             return cache.TryRemove(id, out _);
+        }
+        #endregion
+        #region RunGitCommand
+        private static async Task<UResponse> RunGitCommand(string arguments, string workingDirectory)
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось выполнить git команду";
+
+            #region try
+            try
+            {
+                var psi = new ProcessStartInfo("git")
+                {
+                    Arguments = arguments,
+                    WorkingDirectory = workingDirectory,
+                    RedirectStandardOutput = true,
+                    RedirectStandardError = true,
+                    UseShellExecute = false,
+                    CreateNoWindow = true
+                };
+
+                using var process = Process.Start(psi);
+                string output = process.StandardOutput.ReadToEnd();
+                string error = process.StandardError.ReadToEnd();
+                await process.WaitForExitAsync();
+
+                if (process.ExitCode == 0) return new() { IsSuccess = true };
+                else throw new UExcept(ERunGitCommand.FailExecuteGitCommand, $"Ошибка процесса: {error}");
+            }
+            #endregion
+            #region UExcept
+            catch (UExcept ex)
+            {
+                return new(ex);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                return new(new UExcept(ERunGitCommand.Exception, $"Исключение: {ex.Message}", ex));
+            }
+            #endregion
         }
         #endregion
         #endregion

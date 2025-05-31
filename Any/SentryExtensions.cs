@@ -1,4 +1,5 @@
 ﻿using Cls.Exceptions;
+using Launcher.Any.CGitHelperAny;
 using Launcher.Any.PingHelperAny;
 using Launcher.Windows.LoaderAny;
 using System;
@@ -24,13 +25,14 @@ namespace Launcher.Any
         public static void SendException(UExcept ex)
         {
             #if DEBUG
-            //return;
+            return;
             #endif
 
             var ignoreList = new List<Enum>()
             {
                 EPing.FailExecuteRequest,
-                ELoader.FailCheckReferalSource
+                ELoader.FailCheckReferalSource,
+                EGitHelper.FailProcessTaskAsync
             };
 
             if (!ignoreList.Contains(ex.Code))
@@ -43,7 +45,7 @@ namespace Launcher.Any
         public static void SendException(Exception ex)
         {
             #if DEBUG
-            //return;
+            return;
             #endif
 
             if (ex is UExcept uex) SendException(uex);

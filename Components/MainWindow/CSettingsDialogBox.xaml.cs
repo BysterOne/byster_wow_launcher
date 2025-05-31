@@ -47,6 +47,16 @@ namespace Launcher.Components.MainWindow
             Protection,
             Encryption
         }
+
+        public enum ETryRedeemCoupon
+        {
+            FailExecuteRequest
+        }
+
+        public enum ESettings
+        {
+            FaiiRedeemCoupon,
+        }
     }
     /// <summary>
     /// Логика взаимодействия для CSettingsDialogBox.xaml
@@ -74,6 +84,7 @@ namespace Launcher.Components.MainWindow
         }
         private bool CanCopyReferralCode { get; set; } = true;
         private bool IsInit { get; set; } = false;
+        private bool IsShowedCouponButton { get; set; }
         private static LogBox Pref { get; set; } = new LogBox("SettingsDialogBox");
         private static TaskCompletionSource<EDialogResponse> TaskCompletion { get; set; } = null!;
         private CPanelChanger<EPC_Panels> PanelChanger { get; set; }
@@ -146,6 +157,22 @@ namespace Launcher.Components.MainWindow
             if (e.Key is Key.Enter) _ = TryRedeemCoupon();
         }
         #endregion
+        #region MGPM_redeem_OnTextChanged
+        private async Task MGPM_redeem_OnTextChanged(CTextInput sender, string text)
+        {
+            var newValue = !String.IsNullOrWhiteSpace(text);
+            if (newValue != IsShowedCouponButton)
+            {
+                IsShowedCouponButton = newValue;
+
+                await Dispatcher.BeginInvoke(() =>
+                {
+                    var anim = AnimationHelper.DoubleAnimationStoryBoard(MGPM_panel, IsShowedCouponButton ? 110 : 50, new PropertyPath(HeightProperty));
+                    anim.Begin(MGPM_panel, HandoffBehavior.SnapshotAndReplace, true);
+                });
+            }
+        }
+        #endregion
         #region MG_close_button_MouseLeftButtonDown
         private void MG_close_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
         {
@@ -153,7 +180,7 @@ namespace Launcher.Components.MainWindow
         }
         #endregion
         #region EServerList_NewSelectedItem
-        private void EServerList_NewSelectedItem(CList.CListItem item)
+        private async void EServerList_NewSelectedItem(CList.CListItem item)
         {
             var server = (EServer)item.Id;
             if (server == AppSettings.Instance.Server) return;
@@ -161,10 +188,15 @@ namespace Launcher.Components.MainWindow
             AppSettings.Instance.Server = server;
             AppSettings.Save();
 
+            Application.Current.Windows.OfType<Main>().First().Hide();
+
             #region Перезапуск
-            var exePath = Process.GetCurrentProcess().MainModule!.FileName;
-            Process.Start(exePath);
-            Application.Current.Shutdown();
+            await Dispatcher.BeginInvoke(() =>
+            {
+                var exePath = Process.GetCurrentProcess().MainModule!.FileName;
+                Process.Start(exePath);
+                Application.Current.Shutdown();
+            });
             #endregion
         }
         #endregion
@@ -218,7 +250,10 @@ namespace Launcher.Components.MainWindow
         #endregion
         #region MGPNRC_button_MouseDown
         private void MGPNRC_button_MouseDown(object sender, MouseButtonEventArgs e) => CopyReferralCode();
-        #endregion        
+        #endregion
+        #region MGPM_button_MouseLeftButtonDown
+        private void MGPM_button_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => _ = TryRedeemCoupon();
+        #endregion
         #endregion
 
         #region Анимации
@@ -463,7 +498,8 @@ namespace Launcher.Components.MainWindow
             MGPNRC_button.Text = Dictionary.Translate("Копировать");
             MGHBP_main.Text = Dictionary.Translate($"ОСНОВНЫЕ");
             MGHBP_advanced.Text = Dictionary.Translate($"РАСШИРЕННЫЕ");
-            MGPM_redeem.Placeholder = Dictionary.Translate($"Активировать купон");
+            MGPM_redeem.Placeholder = Dictionary.Translate($"Введите купон");
+            MGPM_button.Text = Dictionary.Translate($"Активировать");
             MGPM_clear_cache.Text = Dictionary.Translate($"Очистить кэш");
             MGPM_change_password.Text = Dictionary.Translate($"Сменить пароль");
             MGPM_server_header.Text = Dictionary.Translate($"Сервер");
@@ -475,7 +511,6 @@ namespace Launcher.Components.MainWindow
         private void UpdateUserPermissions()
         {
             var perms = GProp.User.Permissions;
-            
 
             #region Выбор сервера
             var AvailableChooseServer =
@@ -531,18 +566,42 @@ namespace Launcher.Components.MainWindow
         #region TryRedeemCupon
         private async Task TryRedeemCoupon()
         {
-            var coupon = MGPM_redeem.Text.Trim();
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось активировать купон";
 
-            var tryRedeem = await CApi.RedeemCoupon(coupon);
-            if (!tryRedeem.IsSuccess)
+            #region try
+            try
             {
-                Main.Notify(Dictionary.Translate($"Купон не найден или уже был активирован"));
-                return;
-            }
+                var coupon = MGPM_redeem.Text.Trim();
+                if (String.IsNullOrWhiteSpace(coupon)) return;
 
-            MGPM_redeem.Text = "";
-            Main.Notify(Dictionary.Translate($"Купон успешно активирован"));
-            await GProp.Update(ELauncherUpdate.User);
+                await Main.Loader(ELoaderState.Show);
+
+                var tryRedeem = await CApi.RedeemCoupon(coupon);
+                if (!tryRedeem.IsSuccess)
+                {
+                    throw new UExcept(ETryRedeemCoupon.FailExecuteRequest, Dictionary.Translate($"Купон не найден или уже был активирован"), tryRedeem.Error);
+                }
+
+                MGPM_redeem.Text = "";
+                Main.Notify(Dictionary.Translate($"Купон успешно активирован"));
+                await GProp.Update(ELauncherUpdate.User);
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uex = new UExcept(ESettings.FaiiRedeemCoupon, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
+                Main.Notify(ex.Message);
+            }
+            #endregion
+            #region finally
+            finally
+            {
+                await Main.Loader(ELoaderState.Hide);
+            }
+            #endregion
         }
         #endregion
         #region TryClearCache
@@ -634,9 +693,11 @@ namespace Launcher.Components.MainWindow
                 });
             }
         }
-        #endregion
+
         #endregion
 
+        #endregion
 
+        
     }
 }

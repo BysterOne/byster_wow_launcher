@@ -40,6 +40,7 @@
 		<None Remove="Media\minus_icon.png" />
 		<None Remove="Media\no_items_icon.png" />
 		<None Remove="Media\pause_icon.png" />
+		<None Remove="Media\play_cupon_icon.png" />
 		<None Remove="Media\play_video_icon.png" />
 		<None Remove="Media\plus_icon.png" />
 		<None Remove="Media\redeemcode_icon.png" />
@@ -140,6 +141,7 @@
 		<Resource Include="Media\minus_icon.png" />
 		<Resource Include="Media\no_items_icon.png" />
 		<Resource Include="Media\pause_icon.png" />
+		<Resource Include="Media\play_cupon_icon.png" />
 		<Resource Include="Media\play_video_icon.png" />
 		<Resource Include="Media\plus_icon.png" />
 		<Resource Include="Media\redeemcode_icon.png" />

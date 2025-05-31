@@ -131,7 +131,7 @@ namespace Launcher.Windows
                 #endregion
                 #region Для дебага ставим staging
                 #if DEBUG
-                AppSettings.Instance.Server = EServer.Staging;
+                //AppSettings.Instance.Server = EServer.Staging;
                 #endif
                 #endregion
                 #region Настройки логов

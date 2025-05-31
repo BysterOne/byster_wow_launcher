@@ -38,7 +38,8 @@
         <!--#endregion-->
         <!--#region Панель -->
         <Grid
-            x:Name="ContentPanel">
+            x:Name="ContentPanel"
+            Width="1000">
             <!--#region Выбор директории -->
             <Grid
                 x:Name="SelectDirectory"
@@ -199,8 +200,7 @@
                                 <local:CGitItem
                                     Height="60"
                                     GitLib="{Binding}"
-                                    Margin="0 0 0 10"
-                                    Width="1000"/>
+                                    Margin="0 0 0 10"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>

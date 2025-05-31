@@ -131,7 +131,10 @@
             Value="204" />
         <Setter
             Property="Margin"
-            Value="4 10" />
+            Value="5 0 5 0" />
+        <Setter
+            Property="Height"
+            Value="50" />
 
     </Style>
     <Style

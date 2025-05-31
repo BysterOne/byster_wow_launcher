@@ -7,6 +7,7 @@ using Launcher.Any.GlobalEnums;
 using Launcher.Api;
 using Launcher.Api.Models;
 using Launcher.Cls;
+using Launcher.Components.DialogBox;
 using Launcher.Components.MainWindow.GitControlAny;
 using Launcher.Components.PanelChanger;
 using Launcher.Settings;
@@ -158,6 +159,26 @@ namespace Launcher.Components.MainWindow
                     MGPACP_sync_all.IsEnabled = true;
                     MGPACP_sync_all.Text = Dictionary.Translate($"Синхронизировать все");
                 });
+
+                var countFail = completion.Tasks.Where(x => x.State == EGitTaskState.ErrorOccurred).ToList();
+                if (countFail.Count > 0)
+                {
+                    var text =
+                        totalCount is 1 ?
+                        Dictionary.Translate($"При синхронизации репозитория произошла ошибка. Детали в логах. Репозиторий:") + $" {countFail[0].Repository.Name}" :
+                        Dictionary.Translate($"При синхронизации репозиториев произошло несколько ошибок. Детали в логах. Количество ошибок:") + $" {countFail.Count}";
+
+                    Application.Current.Dispatcher.Invoke
+                    (
+                        () =>
+                            Main.ShowModal(new BoxSettings
+                            (
+                                Dictionary.Translate("Ошибка синхронизации"),
+                                text,
+                                [new(EResponse.Ok, Dictionary.Translate("Ок"))]
+                            ))
+                    );
+                }
             }
         }
         #endregion

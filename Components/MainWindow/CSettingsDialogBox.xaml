@@ -31,9 +31,9 @@
     <Grid>
         <!--#region Фон -->
         <Rectangle
-        x:Name="Background"
+            x:Name="Background"
             Fill="{StaticResource back_main}"
-            MouseDown="Background_MouseDown"/>
+            MouseDown="Background_MouseDown" />
         <!--#endregion-->
 
         <!--#region Центральный блок -->
@@ -71,13 +71,14 @@
             <!--#endregion-->
 
             <!--#region Заголовок -->
-            <Grid x:Name="MG_header"
+            <Grid
+                x:Name="MG_header"
                 VerticalAlignment="Center"
                 HorizontalAlignment="Center">
                 <!--#region Переключатели -->
                 <StackPanel
                     x:Name="MGH_buttons_panel"
-                    Orientation="Horizontal" 
+                    Orientation="Horizontal"
                     Visibility="Collapsed">
                     <!--#region Основные -->
                     <components:CMainPageButton
@@ -108,15 +109,17 @@
                 </StackPanel>
                 <!--#endregion-->
                 <!--#region Текст -->
-                <StackPanel x:Name="MGH_header" Margin="0 5 0 0">
+                <StackPanel
+                    x:Name="MGH_header"
+                    Margin="0 5 0 0">
                     <!--#region Текст -->
                     <TextBlock
-                        Text="Настройки" 
+                        Text="Настройки"
                         FontSize="22"
                         x:Name="MGHH_value"
                         FontWeight="DemiBold"
                         Foreground="{DynamicResource textcolor_main}"
-                        FontFamily="{DynamicResource fontfamily_main}"/>
+                        FontFamily="{DynamicResource fontfamily_main}" />
                     <!--#endregion-->
                     <!--#region Полоска -->
                     <Rectangle
@@ -124,7 +127,7 @@
                         Height="5"
                         RadiusX="2"
                         RadiusY="2"
-                        Margin="15 3 15 0"/>
+                        Margin="15 3 15 0" />
                     <!--#endregion-->
                 </StackPanel>
                 <!--#endregion-->
@@ -134,15 +137,18 @@
             <!--#region Панели -->
             <Grid
                 x:Name="MG_panels"
-                Grid.Row="1" Margin="0 0 0 10"
+                Grid.Row="1"
+                Margin="0 0 0 10"
                 Panel.ZIndex="1">
                 <!--#region Основные -->
                 <Grid
-                    x:Name="MGP_main" MaxHeight="550"
+                    x:Name="MGP_main"
+                    MaxHeight="550"
                     Panel.ZIndex="1"
-                    Visibility="Hidden">
+                    Visibility="Visible">
                     <components:CScrollPanel
-                        Margin="5" Panel.ZIndex="1">
+                        Margin="5"
+                        Panel.ZIndex="1">
                         <StackPanel
                             Margin="15 0"
                             HorizontalAlignment="Center"
@@ -150,7 +156,9 @@
                             ClipToBounds="False">
                             <!--#region Кэш и пароль -->
                             <StackPanel
-                                Orientation="Horizontal">
+                                Orientation="Horizontal"
+                                Margin="0 0 0 10"
+                                HorizontalAlignment="Center">
                                 <!--#region Смена пароля -->
                                 <components:CButton
                                     x:Name="MGPM_change_password"
@@ -168,35 +176,23 @@
                                 <!--#endregion-->
                             </StackPanel>
                             <!--#endregion-->
-                            <!--#region Погасить купон -->
-                            <components:CTextInput
-                                x:Name="MGPM_redeem"
-                                Icon="/Launcher;component/Media/redeemcode_icon.png"
-                                BackColor="#11FFFFFF"
-                                Width="416"
-                                Height="50"
-                                Margin="0"
-                                BorderRadius="8"
-                                Placeholder="Погасить купон"
-                                PlaceholderColor="#FFCCCCCC"
-                                PreviewKeyDown="MGPM_redeem_PreviewKeyDown" />
-                            <!--#endregion-->
                             <!--#region Реферальный код -->
                             <Grid
                                 x:Name="MGPM_refcode"
                                 Height="50"
                                 Width="416"
-                                Margin="0 10">
+                                Margin="0 0 0 10">
                                 <Grid.ColumnDefinitions>
                                     <ColumnDefinition />
-                                    <ColumnDefinition Width="Auto"/>
+                                    <ColumnDefinition
+                                        Width="Auto" />
                                 </Grid.ColumnDefinitions>
                                 <!--#region Поле -->
                                 <Rectangle
-                                    Fill="#11FFFFFF" 
+                                    Fill="#11FFFFFF"
                                     RadiusX="8"
-                                    RadiusY="8"/>
-                                <TextBlock 
+                                    RadiusY="8" />
+                                <TextBlock
                                     Text="XYNXYN"
                                     x:Name="MGPNRC_value"
                                     Foreground="#FFB9B9B9"
@@ -204,22 +200,66 @@
                                     FontSize="26"
                                     FontWeight="Bold"
                                     VerticalAlignment="Center"
-                                    HorizontalAlignment="Center"/>
+                                    HorizontalAlignment="Center" />
                                 <!--#endregion-->
                                 <!--#region Кнопка -->
-                                <components:CButton 
+                                <components:CButton
                                     Grid.Column="2"
                                     Style="{DynamicResource SettingsButtonStyle}"
                                     MinWidth="0"
                                     x:Name="MGPNRC_button"
                                     Width="204"
                                     Height="50"
-                                    Margin="8 0 0 0"
+                                    Margin="10 0 0 0"
                                     Cursor="Hand"
                                     IconHeight="26"
                                     Text="Копировать"
                                     Icon="/Launcher;component/Media/copy_icon.png"
-                                    MouseDown="MGPNRC_button_MouseDown"/>
+                                    MouseDown="MGPNRC_button_MouseDown" />
+                                <!--#endregion-->
+                            </Grid>
+                            <!--#endregion-->
+                            <!--#region Погасить купон -->
+                            <Grid
+                                Height="50"
+                                Margin="5 0 5 0"
+                                x:Name="MGPM_panel">
+                                <Grid.RowDefinitions>
+                                    <RowDefinition Height="Auto"/>
+                                    <RowDefinition />
+                                </Grid.RowDefinitions>
+
+                                <!--#region Поле -->
+                                <components:CTextInput
+                                    x:Name="MGPM_redeem"
+                                    BackColor="#11FFFFFF"
+                                    Margin="0"
+                                    Height="50"
+                                    BorderRadius="8"
+                                    Placeholder="Введите купон"
+                                    FontSize="20"
+                                    PlaceholderColor="#FFCCCCCC"
+                                    PreviewKeyDown="MGPM_redeem_PreviewKeyDown" 
+                                    OnTextChanged="MGPM_redeem_OnTextChanged"
+                                    IconWidth="0"
+                                    IconHeight="0"
+                                    MaxWidth="416"/>
+                                <!--#endregion-->
+                                <!--#region Кнопка -->
+                                <components:CButton
+                                    x:Name="MGPM_button"
+                                    Grid.Row="1"
+                                    BorderRadius="8"
+                                    Text="Активировать"
+                                    FontFamily="{DynamicResource fontfamily_main}"
+                                    FontSize="20"
+                                    Height="50"
+                                    Margin="0 10 0 0"
+                                    BackColor="{DynamicResource green_main}"
+                                    Gap="5"
+                                    Foreground="{DynamicResource textcolor_main}"
+                                    Icon="/Launcher;component/Media/play_cupon_icon.png"
+                                    MouseLeftButtonDown="MGPM_button_MouseLeftButtonDown"/>
                                 <!--#endregion-->
                             </Grid>
                             <!--#endregion-->

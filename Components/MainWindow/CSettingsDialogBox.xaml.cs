@@ -474,7 +474,6 @@ namespace Launcher.Components.MainWindow
         #region UpdateUserPermissions
         private void UpdateUserPermissions()
         {
-            GProp.User.Permissions = [EUserPermissions.Tester];
             var perms = GProp.User.Permissions;
             
 

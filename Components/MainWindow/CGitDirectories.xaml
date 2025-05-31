@@ -6,6 +6,7 @@
     xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
     xmlns:local="clr-namespace:Launcher.Components.MainWindow"
     xmlns:component="clr-namespace:Launcher.Components"
+    xmlns:components="clr-namespace:Launcher.Components"
     mc:Ignorable="d"
     Height="Auto"
     d:DesignHeight="450"
@@ -36,14 +37,14 @@
             HorizontalAlignment="Center" />
         <!--#endregion-->
         <!--#region Панель -->
-        <StackPanel
-            VerticalAlignment="Center"
-            x:Name="ContentPanel"
-            MinWidth="500">
+        <Grid
+            x:Name="ContentPanel">
             <!--#region Выбор директории -->
             <Grid
                 x:Name="SelectDirectory"
-                Visibility="Collapsed">
+                Visibility="Collapsed"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center">
                 <!--#region Выбор папки -->
                 <Grid
                     x:Name="TP_select_folder_panel"
@@ -126,19 +127,71 @@
                     <RowDefinition />
                 </Grid.RowDefinitions>
                 <!--#endregion-->
-                <!--#region Верхняя панель -->
+                <!--#region Панель управления -->
+                <Grid
+                    x:Name="MGPA_control_panel"
+                    Margin="10 0 16 10"
+                    Grid.Row="0">
+                    <!--#region Разметка -->
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition
+                            Width="300" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition
+                            Width="Auto" />
+                        <ColumnDefinition />
+                        <ColumnDefinition
+                            Width="Auto" />
+                    </Grid.ColumnDefinitions>
+                    <!--#endregion-->
 
+                    <!--#region Поиск -->
+                    <components:CTextInput
+                        BackColor="#11FFFFFF"
+                        Height="50"
+                        BorderRadius="8"
+                        Placeholder="Поиск"
+                        x:Name="MGPACP_search"
+                        PlaceholderColor="#FFBBBBBB"
+                        OnTextChanged="MGPACP_search_OnTextChanged"
+                        Icon="/Launcher;component/Media/search_icon.png" />
+                    <!--#endregion-->
+                    <!--#region Синхронизировать все -->
+                    <components:CButton
+                        Grid.Column="1"
+                        x:Name="MGPACP_sync_all"
+                        Margin="10 0 10 0"
+                        BorderRadius="8"
+                        Text="Синхронизировать все"
+                        BackColor="#11FFFFFF"
+                        FontFamily="{DynamicResource fontfamily_main}"
+                        FontSize="20"
+                        Foreground="{DynamicResource textcolor_main}"
+                        Icon="/Launcher;component/Media/Main/update_icon.png"
+                        MouseLeftButtonDown="MGPACP_sync_all_MouseLeftButtonDown" />
+                    <!--#endregion-->
+                    <!--#region Статус синхронизации -->
+                    <components:CGitSyncProgress 
+                        Grid.Column="6"/>
+                    <!--#endregion-->
+                </Grid>
                 <!--#endregion-->
                 <!--#region Список -->
                 <component:CScrollPanel
-                    MaxHeight="500">
+                    MaxHeight="480"
+                    Grid.Row="1">
                     <ItemsControl
                         x:Name="test_itemsControl"
                         ItemsSource="{Binding Repositories}">
                         <ItemsControl.ItemsPanel>
                             <ItemsPanelTemplate>
                                 <VirtualizingStackPanel
-                                    Margin="10 0 18 0" />
+                                    Margin="10 0 16 0" />
                             </ItemsPanelTemplate>
                         </ItemsControl.ItemsPanel>
                         <ItemsControl.ItemTemplate>
@@ -146,8 +199,8 @@
                                 <local:CGitItem
                                     Height="60"
                                     GitLib="{Binding}"
-                                    Margin="0 0 0 8"
-                                    Width="900"/>
+                                    Margin="0 0 0 10"
+                                    Width="1000"/>
                             </DataTemplate>
                         </ItemsControl.ItemTemplate>
                     </ItemsControl>
@@ -155,7 +208,7 @@
                 <!--#endregion-->
             </Grid>
             <!--#endregion-->
-        </StackPanel>
+        </Grid>
         <!--#endregion-->
     </Grid>
 </UserControl>

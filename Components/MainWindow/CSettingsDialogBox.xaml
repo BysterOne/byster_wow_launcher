@@ -139,9 +139,9 @@
                 <!--#region Основные -->
                 <Grid
                     x:Name="MGP_main" MaxHeight="550"
-                    Panel.ZIndex="1">
+                    Panel.ZIndex="1"
+                    Visibility="Hidden">
                     <components:CScrollPanel
-                        ClipToBounds="False"
                         Margin="5" Panel.ZIndex="1">
                         <StackPanel
                             Margin="15 0"
@@ -230,7 +230,8 @@
                                 <Grid
                                     x:Name="MGPM_server_panel"
                                     Panel.ZIndex="5"
-                                    Margin="6 15 6 0">
+                                    Margin="6 15 6 0"
+                                    Visibility="Collapsed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition
                                             SharedSizeGroup="shared_main"
@@ -283,7 +284,8 @@
                                 <Grid
                                     x:Name="MGPM_branch_panel"
                                     Panel.ZIndex="3"
-                                    Margin="6 15 6 0">
+                                    Margin="6 15 6 0"
+                                    Visibility="Collapsed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition
                                             SharedSizeGroup="shared_main"
@@ -309,7 +311,8 @@
                                 <Grid
                                     x:Name="MGPM_toggle_console"
                                     Panel.ZIndex="2"
-                                    Margin="6 15 6 0">
+                                    Margin="6 15 6 0"
+                                    Visibility="Collapsed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition
                                             SharedSizeGroup="shared_main"
@@ -340,7 +343,8 @@
                                 <Grid
                                     x:Name="MGPM_toggle_encryption_panel"
                                     Panel.ZIndex="2"
-                                    Margin="6 15 6 0">
+                                    Margin="6 15 6 0"
+                                    Visibility="Collapsed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition
                                             SharedSizeGroup="shared_main"
@@ -371,7 +375,8 @@
                                 <Grid
                                     x:Name="MGPM_compilation_panel"
                                     Panel.ZIndex="2"
-                                    Margin="6 15 6 0">
+                                    Margin="6 15 6 0"
+                                    Visibility="Collapsed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition
                                             SharedSizeGroup="shared_main"
@@ -402,7 +407,8 @@
                                 <Grid
                                     x:Name="MGPM_protection_panel"
                                     Panel.ZIndex="2"
-                                    Margin="6 15 6 0">
+                                    Margin="6 15 6 0"
+                                    Visibility="Collapsed">
                                     <Grid.ColumnDefinitions>
                                         <ColumnDefinition
                                             SharedSizeGroup="shared_main"
@@ -436,6 +442,7 @@
                                     BorderRadius="8"
                                     MinWidth="200"
                                     Text="Админ панель"
+                                    Visibility="Collapsed"
                                     BackColor="#11FFFFFF"
                                     FontFamily="{DynamicResource fontfamily_main}"
                                     Foreground="{DynamicResource textcolor_main}"
@@ -453,11 +460,12 @@
                 <!--#region Расширенные -->
                 <Grid
                     x:Name="MGP_advanced"
-                    Visibility="Hidden">
-                    <local:CGitDirectories 
+                    Visibility="Visible">
+                    <local:CGitDirectories
+                        Grid.Row="1"
                         x:Name="MGPA_git"
                         Visibility="Collapsed"
-                        Margin="5 0 5 5"/>
+                        Margin="5 5 0 5" />
                 </Grid>
                 <!--#endregion-->
             </Grid>

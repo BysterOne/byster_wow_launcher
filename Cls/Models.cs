@@ -86,7 +86,7 @@ namespace Launcher.Api.Models
 
         [JsonProperty("permissions")]
         [JsonConverter(typeof(UserPermissionsConverter))]
-        public EUserPermissions Permissions { get; set; }
+        public HashSet<EUserPermissions> Permissions { get; set; } = [];
 
         [JsonProperty("branches")]
         public List<string> Branches { get; set; } = [];

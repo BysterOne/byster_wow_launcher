@@ -52,6 +52,10 @@
                 <ColumnDefinition
                     Width="Auto"
                     SharedSizeGroup="Git_ProductSync"/>
+                <ColumnDefinition
+                    Width="50" />
+                <ColumnDefinition
+                    Width="120" />
             </Grid.ColumnDefinitions>
 
             <!--#region Название и путь -->
@@ -109,34 +113,57 @@
             <Grid
                 x:Name="CP_sync_panel"
                 Grid.Column="3"
-                Margin="10 0"
+                Margin="5 0"
+                MinWidth="130"
                 HorizontalAlignment="Center">
                 <!--#region Кпопка обновления/скачивания -->
                 <component:CButton
                     x:Name="CPSP_sync_button"
                     Text="Обновить"
                     Padding="10 5"
+                    BackColor="#11FFFFFF"
                     BorderRadius="10"
                     VerticalAlignment="Center"
                     Icon="/Launcher;component/Media/Main/update_icon.png"
                     IconHeight="24"
                     IconWidth="24"
-                    Opacity="0" />
+                    MouseDown="CPSP_sync_button_MouseDown"/>
                 <!--#endregion-->
-                <!--#region Обновление -->
-                <Grid
-                    x:Name="CPSP_updating_panel">
-                    <Image
-                        Width="24"
-                        Height="24"
-                        Source="/Launcher;component/Media/Main/update_icon.png">
-                        <Image.LayoutTransform>
-                            <RotateTransform Angle="50"/>
-                        </Image.LayoutTransform>
-                    </Image>
-                </Grid>
+                <!--#region Статус -->
+                <Image
+                    Visibility="Hidden"
+                    Width="24"
+                    Height="24"
+                    x:Name="CPSP_status_icon"
+                    RenderOptions.BitmapScalingMode="HighQuality"
+                    Source="/Launcher;component/Media/Main/update_icon.png" />
                 <!--#endregion-->
             </Grid>
+            <!--#endregion-->
+            <!--#region Открытие папки -->
+            <component:CButton 
+                x:Name="CPSP_open_folder"
+                Grid.Column="4"
+                Width="40"
+                Height="40"
+                Padding="0"
+                Text=""
+                BackColor="#11FFFFFF"
+                BorderRadius="12"
+                Icon="/Launcher;component/Media/Main/folder_icon.png"
+                MouseLeftButtonDown="CPSP_open_folder_MouseLeftButtonDown"/>
+            <!--#endregion-->
+            <!--#region Переключатель -->
+            <component:CToggleSwitch 
+                x:Name="CPSP_switch"
+                Grid.Column="5"
+                Height="40"
+                Width="100"
+                BorderRadius="12"
+                FirstItem="✘"
+                SecondItem="✓"
+                BackColor="#11FFFFFF" 
+                SelectedIndexChanged="CPSP_switch_SelectedIndexChanged"/>
             <!--#endregion-->
         </Grid>
         <!--#endregion-->

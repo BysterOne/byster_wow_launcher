@@ -1,0 +1,93 @@
+﻿<UserControl
+    x:Class="Launcher.Components.CGitSyncProgress"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:local="clr-namespace:Launcher.Components"
+    mc:Ignorable="d"
+    d:DesignHeight="40"
+    d:DesignWidth="280">
+    <UserControl.Resources>
+        <ResourceDictionary>
+            <ResourceDictionary.MergedDictionaries>
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Main.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Global.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Components/Skeleton/CSkeletonStyle.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Components/ScrollPanel/CScrollPanelStyle.xaml" />
+                <ResourceDictionary
+                    Source="/Launcher;component/Styles/Pages/ShopPage.xaml" />
+            </ResourceDictionary.MergedDictionaries>
+        </ResourceDictionary>
+    </UserControl.Resources>
+    <Grid>
+        <!--#region Фон -->
+        <Border
+            Background="#19FFFFFF"
+            CornerRadius="15" />
+        <!--#endregion-->
+        <!--#region Контент -->
+        <Grid>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition
+                    Width="50" />
+                <ColumnDefinition
+                    Width="150" />
+                <ColumnDefinition
+                    Width="80" />
+            </Grid.ColumnDefinitions>
+
+            <!--#region Иконка -->
+            <Image
+                x:Name="IconComponent"
+                Source="/Launcher;component/Media/Main/update_icon.png"
+                Width="26"
+                Height="26"
+                RenderOptions.BitmapScalingMode="HighQuality">
+                <Image.RenderTransform>
+                    <RotateTransform
+                        CenterX="13"
+                        CenterY="13"
+                        Angle="0" />
+                </Image.RenderTransform>
+            </Image>
+            <!--#endregion-->
+            <!--#region Прогресс синхрона -->
+            <Grid
+                Grid.Column="1"
+                Margin="5 0">
+                <Rectangle
+                    x:Name="ProgressBack"
+                    Fill="Gray"
+                    Height="8"
+                    RadiusX="4"
+                    RadiusY="4" />
+                <Rectangle
+                    x:Name="ProgressFore"
+                    Fill="{DynamicResource marker_fill}"
+                    Width="50"
+                    Height="8"
+                    RadiusX="4"
+                    RadiusY="4"
+                    HorizontalAlignment="Left" />
+            </Grid>
+            <!--#endregion-->
+            <!--#region Прогресс в цифрах -->
+            <TextBlock 
+                Grid.Column="2"
+                x:Name="ProgressValue"
+                Text="146/146"
+                Foreground="{DynamicResource textcolor_main}"
+                FontFamily="{DynamicResource fontfamily_main}"
+                FontSize="16"
+                VerticalAlignment="Center"
+                HorizontalAlignment="Center"/>
+            <!--#endregion-->
+        </Grid>
+        <!--#endregion-->
+    </Grid>
+</UserControl>

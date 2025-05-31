@@ -25,10 +25,8 @@ namespace Launcher.Any.GlobalEnums
         Usd
     }
 
-    [Flags]
     public enum EUserPermissions
     {        
-        None,
         Superuser,
         ToggleEncrypt,
         AdminSiteAccess,

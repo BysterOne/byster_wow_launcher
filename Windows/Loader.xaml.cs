@@ -217,8 +217,7 @@ namespace Launcher.Windows
                 InitSpan = null;
                 SentryExtensions.AuthorizationWindowLoadingTransaction = SentrySdk.StartTransaction("authorization-window", "launching");
                 OpenAuthorization();
-                #endregion
-                
+                #endregion                
             }
             #endregion
             #region UExcept

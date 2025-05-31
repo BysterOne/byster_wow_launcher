@@ -69,8 +69,8 @@ namespace Launcher.Components.MainWindow
         private bool AvailableAdvanced
         { 
             get => 
-                GProp.User.Permissions.HasFlag(EUserPermissions.ExternalDeveloper) ||
-                GProp.User.Permissions.HasFlag(EUserPermissions.Superuser);
+                GProp.User.Permissions.Contains(EUserPermissions.ExternalDeveloper) ||
+                GProp.User.Permissions.Contains(EUserPermissions.Superuser);
         }
         private bool CanCopyReferralCode { get; set; } = true;
         private bool IsInit { get; set; } = false;
@@ -218,7 +218,7 @@ namespace Launcher.Components.MainWindow
         #endregion
         #region MGPNRC_button_MouseDown
         private void MGPNRC_button_MouseDown(object sender, MouseButtonEventArgs e) => CopyReferralCode();
-        #endregion
+        #endregion        
         #endregion
 
         #region Анимации
@@ -468,53 +468,53 @@ namespace Launcher.Components.MainWindow
             MGPM_change_password.Text = Dictionary.Translate($"Сменить пароль");
             MGPM_server_header.Text = Dictionary.Translate($"Сервер");
             MGPM_branch_header.Text = Dictionary.Translate($"Ветка");
-            MGPM_localization_header.Text = Dictionary.Translate($"Локализация");
+            MGPM_localization_header.Text = Dictionary.Translate($"Локализация");            
         }
         #endregion
         #region UpdateUserPermissions
         private void UpdateUserPermissions()
         {
-            ///GProp.User.Permissions = EUserPermissions.None;
+            GProp.User.Permissions = [EUserPermissions.Tester];
             var perms = GProp.User.Permissions;
             
 
             #region Выбор сервера
             var AvailableChooseServer =
-                perms.HasFlag(EUserPermissions.Tester) ||
-                perms.HasFlag(EUserPermissions.ExternalDeveloper) ||
-                perms.HasFlag(EUserPermissions.Superuser);
+                perms.Contains(EUserPermissions.Tester) ||
+                perms.Contains(EUserPermissions.ExternalDeveloper) ||
+                perms.Contains(EUserPermissions.Superuser);
             MGPM_server_panel.Visibility = AvailableChooseServer ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Расширенные настройки
             var AvailableAdvanced =
-                GProp.User.Permissions.HasFlag(EUserPermissions.ExternalDeveloper) ||
-                perms.HasFlag(EUserPermissions.Superuser);
+                GProp.User.Permissions.Contains(EUserPermissions.ExternalDeveloper) ||
+                perms.Contains(EUserPermissions.Superuser);
             MGH_buttons_panel.Visibility = AvailableAdvanced ? Visibility.Visible : Visibility.Collapsed;
             MGH_header.Visibility = AvailableAdvanced ? Visibility.Collapsed : Visibility.Visible;
             #endregion
             #region Консоль
             var AvailableToggleConsole =
-                perms.HasFlag(EUserPermissions.Tester) ||
-                perms.HasFlag(EUserPermissions.ExternalDeveloper) ||
-                perms.HasFlag(EUserPermissions.Superuser);
+                perms.Contains(EUserPermissions.Tester) ||
+                perms.Contains(EUserPermissions.ExternalDeveloper) ||
+                perms.Contains(EUserPermissions.Superuser);
             MGPM_toggle_console.Visibility = AvailableToggleConsole ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Шифрование
             var AvailableToggleEncrypt = 
-                perms.HasFlag(EUserPermissions.ToggleEncrypt) ||
-                perms.HasFlag(EUserPermissions.Superuser);
+                perms.Contains(EUserPermissions.ToggleEncrypt) ||
+                perms.Contains(EUserPermissions.Superuser);
             MGPM_toggle_encryption_panel.Visibility = AvailableToggleEncrypt ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Компиляция
             var AvailableToggleCompilation =
-                perms.HasFlag(EUserPermissions.CanToggleCompilation) ||
-                perms.HasFlag(EUserPermissions.Superuser);
+                perms.Contains(EUserPermissions.CanToggleCompilation) ||
+                perms.Contains(EUserPermissions.Superuser);
             MGPM_compilation_panel.Visibility = AvailableToggleCompilation ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Защита
             var AvailableToggleProtection =
-                perms.HasFlag(EUserPermissions.CanToggleProtection) ||
-                perms.HasFlag(EUserPermissions.Superuser);
+                perms.Contains(EUserPermissions.CanToggleProtection) ||
+                perms.Contains(EUserPermissions.Superuser);
             MGPM_protection_panel.Visibility = AvailableToggleProtection ? Visibility.Visible : Visibility.Collapsed;
             #endregion
             #region Ветки
@@ -523,8 +523,8 @@ namespace Launcher.Components.MainWindow
             #endregion
             #region Админ панель
             var AvailableAdminPanel =
-                perms.HasFlag(EUserPermissions.AdminSiteAccess) ||
-                perms.HasFlag(EUserPermissions.Superuser);
+                perms.Contains(EUserPermissions.AdminSiteAccess) ||
+                perms.Contains(EUserPermissions.Superuser);
             MGPM_admin_panel_button.Visibility = AvailableAdminPanel ? Visibility.Visible : Visibility.Collapsed;
             #endregion
         }

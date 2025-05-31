@@ -26,6 +26,7 @@
 		<None Remove="Media\close_icon.png" />
 		<None Remove="Media\copy_icon.png" />
 		<None Remove="Media\edit_icon.png" />
+		<None Remove="Media\error_icon.png" />
 		<None Remove="Media\forward_icon.png" />
 		<None Remove="Media\full_size_icon.png" />
 		<None Remove="Media\href-icon.png" />
@@ -45,6 +46,7 @@
 		<None Remove="Media\remove_icon.png" />
 		<None Remove="Media\right_icon.png" />
 		<None Remove="Media\save_icon.png" />
+		<None Remove="Media\search_icon.png" />
 		<None Remove="Media\ServersIcons\null_image_icon.png" />
 		<None Remove="Media\ServersIcons\server_circle.png" />
 		<None Remove="Media\ServersIcons\server_icon.png" />
@@ -92,6 +94,7 @@
 		<None Remove="Media\success_payment_icon.png" />
 		<None Remove="Media\test-back.jpg" />
 		<None Remove="Media\view_pass_icon.png" />
+		<None Remove="Media\waiting_icon.png" />
 		<None Remove="NLog.config" />
 	</ItemGroup>
 
@@ -104,6 +107,7 @@
 		<Resource Include="Media\behind_icon.png" />
 		<Resource Include="Media\copy_icon.png" />
 		<Resource Include="Media\edit_icon.png" />
+		<Resource Include="Media\error_icon.png" />
 		<Resource Include="Media\forward_icon.png" />
 		<Resource Include="Media\full_size_icon.png" />
 		<Resource Include="Media\href-icon.png" />
@@ -142,6 +146,7 @@
 		<Resource Include="Media\remove_icon.png" />
 		<Resource Include="Media\right_icon.png" />
 		<Resource Include="Media\save_icon.png" />
+		<Resource Include="Media\search_icon.png" />
 		<Resource Include="Media\ServersIcons\null_image_icon.png" />
 		<Resource Include="Media\ServersIcons\server_circle.png" />
 		<Resource Include="Media\ServersIcons\server_sirus.png" />
@@ -175,6 +180,7 @@
 		<Resource Include="Localizations\keys.json" />
 		<Resource Include="Localizations\Chinese.json" />
 		<Resource Include="Media\view_pass_icon.png" />
+		<Resource Include="Media\waiting_icon.png" />
 		<EmbeddedResource Include="NLog.config" />
 	</ItemGroup>
 

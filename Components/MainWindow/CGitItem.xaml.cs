@@ -1,21 +1,36 @@
 ﻿using Cls;
 using Cls.Any;
 using Cls.Exceptions;
+using Launcher.Any;
+using Launcher.Any.CGitHelperAny;
 using Launcher.Api.Models;
 using Launcher.Components.MainWindow.GitItemAny;
 using Launcher.Settings;
+using Launcher.Windows;
+using System.Diagnostics;
+using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 
 namespace Launcher.Components.MainWindow
 {
     namespace GitItemAny
     {
+        #region EGitItem
         public enum EGitItem
         {
             FailUpdateView,
+            FailSync,
         }
+        #endregion
+        #region ESync
+        public enum ESync
+        {
+            FailSendRequest
+        }
+        #endregion
     }
     /// <summary>
     /// Логика взаимодействия для CGitItem.xaml
@@ -26,11 +41,17 @@ namespace Launcher.Components.MainWindow
         {
             InitializeComponent();
 
-            this.Loaded += ELoaded;
+            Unloaded += EUnloaded;
+
+            CGitHelper.GitTaskStatusChanged += EGitTaskStatusChanged;
+            CGitHelper.GitTaskCompletionStageChanged += EGitTaskCompletionStageChanged;
         }
+
+       
 
         #region Переменные
         private static LogBox Pref { get; set; } = new("Git Item");
+        private CGitTask? SyncTask { get; set; }
         #endregion
 
         #region Свойства
@@ -53,10 +74,53 @@ namespace Launcher.Components.MainWindow
         #endregion
 
         #region Обработчики событий
-        #region ELoaded
-        private void ELoaded(object sender, RoutedEventArgs e)
+        #region CPSP_sync_button_MouseDown
+        private void CPSP_sync_button_MouseDown(object sender, System.Windows.Input.MouseButtonEventArgs e) => Sync();
+        #endregion
+        #region EGitTaskCompletionStageChanged
+        private void EGitTaskCompletionStageChanged(CGitTaskCompletion completion, int completedCount, int totalCount, EGitTaskCompletionStage stage, int queueCount)
         {
-            //_ = UpdateView();
+            Dispatcher.Invoke(() =>
+            {
+                if (SyncTask is not null || GitLib is null) return;
+
+                if (stage is EGitTaskCompletionStage.Added)
+                {
+                    SyncTask = completion.Tasks.FirstOrDefault(x => x.Repository.Id == GitLib.Id);
+                    if (SyncTask is not null) UpdateSyncState();
+                }
+            });
+        }
+        #endregion
+        #region EGitTaskStatusChanged
+        private void EGitTaskStatusChanged(CGitTaskCompletion completion, CGitTask task)
+        {
+            Dispatcher.Invoke(() =>
+            {
+                if (GitLib is not null && task.Repository.Id != GitLib.Id) return;
+                                
+                if (task.State is EGitTaskState.Finished || task.State is EGitTaskState.ErrorOccurred) SyncTask = null;
+                else SyncTask ??= task;
+
+                UpdateSyncState();
+            });
+        }
+        #endregion
+        #region EUnloaded
+        private void EUnloaded(object sender, RoutedEventArgs e)
+        {
+            CGitHelper.GitTaskStatusChanged -= EGitTaskStatusChanged;
+            CGitHelper.GitTaskCompletionStageChanged -= EGitTaskCompletionStageChanged;
+        }
+        #endregion       
+        #region CPSP_open_folder_MouseLeftButtonDown
+        private void CPSP_open_folder_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) => _ = OpenFolder();
+        #endregion
+
+        #region CPSP_switch_SelectedIndexChanged
+        private void CPSP_switch_SelectedIndexChanged(object sender, int newIndex)
+        {
+
         }
         #endregion
         #endregion
@@ -73,6 +137,10 @@ namespace Launcher.Components.MainWindow
             {
                 #region Если пустой
                 if (GitLib is null) return;
+                #endregion
+                #region Проверка наличия директории
+                var path = Path.Combine(AppSettings.Instance.WorkDirectory, GitLib.FilePath);
+                Directory.CreateDirectory(path);
                 #endregion
                 #region Установка данных
                 CP_name.Text = GitLib.Name;
@@ -97,12 +165,107 @@ namespace Launcher.Components.MainWindow
             #endregion
         }
         #endregion
+        #region OpenFolder
+        private async Task OpenFolder()
+        {
+            if (String.IsNullOrWhiteSpace(AppSettings.Instance.WorkDirectory) || GitLib is null) return;
+
+            var folder = Path.Combine(AppSettings.Instance.WorkDirectory, GitLib.FilePath.Replace("/", "\\"));
+            try { Directory.CreateDirectory(folder); } catch { }
+
+            var psi = new ProcessStartInfo
+            {
+                FileName = "explorer.exe",
+                Arguments = $"\"{folder}\"",
+                UseShellExecute = true
+            };
+
+            Process.Start(psi);
+
+            await Task.Run(() => { return; });
+        }
+        #endregion
         #region UpdateSyncState
         private void UpdateSyncState()
         {
+            if (GitLib is null) return;
 
+            EGitTaskState? state = SyncTask is not null ? SyncTask.State : null;
+            if (state is null) 
+            {
+                var lastState = CGitHelper.GetTaskLastState(GitLib);
+                if (lastState is not null) state = lastState;
+            }
+
+            #region Если нет статуса
+            if (state is null || state is EGitTaskState.Finished)
+            {
+                CPSP_sync_button.Visibility = Visibility.Visible;
+                CPSP_status_icon.Visibility = Visibility.Collapsed;
+            }
+            #endregion
+            #region Обработка для иконки
+            else
+            {
+                var stateIcon = state switch
+                {
+                    EGitTaskState.WaitQueue => "Media/waiting_icon.png",
+                    EGitTaskState.Processing => "Media/Main/update_icon.png",
+                    EGitTaskState.ErrorOccurred => "Media/error_icon.png"
+                };
+
+                CPSP_sync_button.Visibility = Visibility.Collapsed;
+                CPSP_status_icon.Visibility = Visibility.Visible;
+                CPSP_status_icon.Source = BitmapFrame.Create(Functions.GetSourceFromResource(stateIcon));
+
+                if (state is EGitTaskState.ErrorOccurred)
+                {
+                    _ = Task.Run(() =>
+                    {
+                        Thread.Sleep(2000);
+                        Dispatcher.Invoke(() =>
+                        {
+                            CPSP_sync_button.Visibility = Visibility.Visible;
+                            CPSP_status_icon.Visibility = Visibility.Collapsed;
+                        });
+                    });
+                }
+            }
+            #endregion
         }
         #endregion
+        #region Sync
+        private async void Sync()
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось запустить синхронизацию";
+
+            #region try
+            try
+            {
+                if (GitLib is null) return;
+
+                var tryAddSync = await CGitHelper.Sync([GitLib]);
+                if (!tryAddSync.IsSuccess)
+                {
+                    throw new UExcept(ESync.FailSendRequest, Dictionary.Translate($"Не удалось добавить запрос в очередь. Детали в логах"), tryAddSync.Error);
+                }
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {
+                var uex = new UExcept(EGitItem.FailSync, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
+                Main.Notify(ex.Message);
+            }
+            #endregion
+        }
+
         #endregion
+
+        #endregion
+
+        
     }
 }

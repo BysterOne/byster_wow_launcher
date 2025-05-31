@@ -57,7 +57,7 @@
                     d:Foreground="{Binding Foreground}"
                     CaretBrush="{Binding Foreground, RelativeSource={RelativeSource AncestorType={x:Type controlComponents:CTextInput}}}"
                     d:CaretBrush="{Binding Foreground}"
-                    TextChanged="passwordbox_PasswordChanged"
+                    TextChanged="textbox_TextChanged"
                     RenderOptions.BitmapScalingMode="{Binding Source={x:Static settings:AppSettings.GlobalBitmapScalingMode}}"
                     Background="Transparent"
                     BorderThickness="0"

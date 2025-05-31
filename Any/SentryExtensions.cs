@@ -1,4 +1,6 @@
 ﻿using Cls.Exceptions;
+using Launcher.Any.PingHelperAny;
+using Launcher.Windows.LoaderAny;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -22,18 +24,29 @@ namespace Launcher.Any
         public static void SendException(UExcept ex)
         {
             #if DEBUG
-            return;
+            //return;
             #endif
 
-            var sentryEvent = new SentryEvent(ex);
-            sentryEvent.SetExtra("Advanced Data", ex.GetFullInfo(""));
-            SentrySdk.CaptureEvent(sentryEvent);
+            var ignoreList = new List<Enum>()
+            {
+                EPing.FailExecuteRequest,
+                ELoader.FailCheckReferalSource
+            };
+
+            if (!ignoreList.Contains(ex.Code))
+            {
+                var sentryEvent = new SentryEvent(ex);
+                sentryEvent.SetExtra("Advanced Data", ex.GetFullInfo(""));
+                SentrySdk.CaptureEvent(sentryEvent);
+            }
         }
         public static void SendException(Exception ex)
         {
             #if DEBUG
-            return;
+            //return;
             #endif
+
+            if (ex is UExcept uex) SendException(uex);
             SentrySdk.CaptureException(ex);
         }
         #endregion

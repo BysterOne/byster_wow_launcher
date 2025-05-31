@@ -1,6 +1,5 @@
 ﻿using Cls;
 using Cls.Any;
-using Cls.Errors;
 using Cls.Exceptions;
 using Launcher.Any;
 using Launcher.Any.GlobalEnums;
@@ -16,7 +15,6 @@ using Launcher.Settings;
 using Launcher.Settings.Enums;
 using Launcher.Windows.AnyMain.Enums;
 using Launcher.Windows.AnyMain.Errors;
-using System.Diagnostics;
 using System.Windows;
 using System.Windows.Controls;
 using System.Windows.Input;
@@ -452,6 +450,29 @@ namespace Launcher.Windows
 
             await Task.Run(() => Thread.Sleep(300));
             Main.ChangeCartEditorState(false);
+        }
+        #endregion
+        #region ShowMediaView
+        public static async Task ShowMediaView(List<Media> medias, int index)
+        {
+            var main = Application.Current.Windows.OfType<Main>().FirstOrDefault();
+            if (main is null) return;
+
+            var handle = new System.Windows.Interop.WindowInteropHelper(main).Handle;
+            var screen = System.Windows.Forms.Screen.FromHandle(handle);
+
+            var MediaView = Application.Current.Windows.OfType<MediaView>().FirstOrDefault();
+            if (MediaView is null) MediaView = new MediaView();
+
+            MediaView.Opacity = 0;
+            MediaView.Width = screen.Bounds.Width;
+            MediaView.Height = screen.Bounds.Height;
+            MediaView.Left = screen.Bounds.Left;
+            MediaView.Top = screen.Bounds.Top;
+            MediaView.Visibility = Visibility.Visible;
+
+            _ = MediaView.Show(medias);
+            
         }
         #endregion
         #endregion

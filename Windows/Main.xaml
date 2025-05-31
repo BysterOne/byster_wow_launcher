@@ -179,6 +179,11 @@
                     VerticalAlignment="Bottom"
                     Margin="0 0 10 5"
                     Orientation="Horizontal">
+                    <!--#region Индикатор синхронизации -->
+                    <components:CGitSyncProgress 
+                        Margin="0 0 15 0"
+                        Height="40"/>
+                    <!--#endregion-->
                     <!--#region Имя пользователя -->
                     <TextBlock
                         d:Text="Suriomi"

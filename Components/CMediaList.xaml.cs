@@ -41,7 +41,7 @@ namespace Launcher.Components
         {
             var item = (CMediaItem)sender;
             var index = Medias.IndexOf(item.Item);
-            _ = Main.ShowModal(new CMediaViewer(), Medias.ToList(), index);
+            _ = Main.ShowMediaView(Medias.ToList(), index);
         }
         #endregion
         #endregion

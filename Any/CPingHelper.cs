@@ -22,7 +22,8 @@ namespace Launcher.Any
         public enum EPing
         {
             FailExecuteRequest,
-            SessionWasNull
+            SessionWasNull,
+            MaxCountErrors
         }
     }
 
@@ -75,14 +76,14 @@ namespace Launcher.Any
                 var tryPing = await CApi.Ping();
                 if (!tryPing.IsSuccess)
                 {
-                    HttpStatusCode? errorCode = tryPing.Error.Data.Contains("StatusCode") ? (HttpStatusCode)tryPing.Error.Data["StatusCode"] : null;
+                    HttpStatusCode? errorCode = tryPing.Error.Data.Contains("StatusCode") ? (HttpStatusCode?)tryPing.Error.Data["StatusCode"] : null;
                     if (errorCode is HttpStatusCode code)
                     {
                         var errs500 = new HttpStatusCodeRange(500, 599);
                         if (errs500.Contains(code)) 
                         {
                             Counter500Errors++;
-                            PingTimer.Interval = TimeSpan.FromSeconds
+                            PingTimer!.Interval = TimeSpan.FromSeconds
                             (
                                 Counter500Errors switch
                                 {
@@ -93,8 +94,10 @@ namespace Launcher.Any
                             );                           
                         }
                         
-                        if (Counter500Errors > 3 || code is HttpStatusCode.Forbidden || code is HttpStatusCode.Unauthorized) 
-                            Application.Current.Dispatcher.Invoke(() => { Application.Current.Shutdown(); });
+                        if (Counter500Errors > 3 || code is HttpStatusCode.Forbidden || code is HttpStatusCode.Unauthorized)
+                        {
+                            throw new UExcept(EPing.MaxCountErrors, $"Лимит количества ошибок превышен или код ошибки критический");
+                        }                           
                     }
 
                     throw new UExcept(EPing.FailExecuteRequest, $"Не удалось выполнить запрос", tryPing.Error);
@@ -103,7 +106,7 @@ namespace Launcher.Any
                 #region Очищаем если были ошибки
                 if (Counter500Errors > 0)
                 {
-                    PingTimer.Interval = TimeSpan.FromSeconds(10);
+                    PingTimer!.Interval = TimeSpan.FromSeconds(10);
                     Counter500Errors = 0;
                 }
                 #endregion
@@ -116,6 +119,8 @@ namespace Launcher.Any
             catch (UExcept ex)
             {
                 Functions.Error(ex, _failinf, _proc);
+
+                if (ex.Code is  EPing.MaxCountErrors) Application.Current.Dispatcher.Invoke(() => { Application.Current.Shutdown(); });                
             }
             #endregion
             #region Exception

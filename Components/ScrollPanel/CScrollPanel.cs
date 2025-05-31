@@ -366,12 +366,15 @@ namespace Launcher.Components
         private void OnThumbDragCompleted(object? sender, DragCompletedEventArgs e)
         {
             if (_scrollViewer == null) return;
-            if (ScrollStep.IsAuto) return;
 
             double currentOffset =
-                Orientation == ScrollOrientation.Vertical ?
-                _scrollViewer.VerticalOffset :
-                _scrollViewer.HorizontalOffset;
+                 Orientation == ScrollOrientation.Vertical ?
+                 _scrollViewer.VerticalOffset :
+                 _scrollViewer.HorizontalOffset;
+
+            _targetOffset = currentOffset;
+
+            if (ScrollStep.IsAuto) return;
 
             double toLastStep = ToLastStep(ScrollStep.Value, currentOffset);
             double toNextStep = ToNextStep(ScrollStep.Value, currentOffset);

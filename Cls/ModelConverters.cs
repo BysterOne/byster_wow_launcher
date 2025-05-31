@@ -103,15 +103,15 @@ namespace Launcher.Cls.ModelConverters
             {
                 int combined = 0;
                 JArray arr = JArray.Load(reader);
-                var permissions = EUserPermissions.None;
+                var permissions = new HashSet<EUserPermissions>();
                 var list = arr.Select(x => x.ToString()).ToList();
 
                 foreach (var permission in list)
                 {
                     EUserPermissions? has = GStatic.PermissionsStrings.FirstOrDefault
                         (x => x.Value.Equals(permission, StringComparison.CurrentCultureIgnoreCase)).Key;
-                    if (GStatic.PermissionsStrings.ContainsValue(permission)) 
-                        permissions |= (EUserPermissions)has;
+                    if (GStatic.PermissionsStrings.ContainsValue(permission))
+                        permissions.Add((EUserPermissions)has);
                 }
                 return permissions;
             }

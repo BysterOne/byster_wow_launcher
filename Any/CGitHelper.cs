@@ -4,8 +4,11 @@ using Cls.Exceptions;
 using Launcher.Any.CGitHelperAny;
 using Launcher.Api.Models;
 using Launcher.Cls;
+using Microsoft.VisualBasic.ApplicationServices;
 using System.Collections.Concurrent;
+using System.Threading.Tasks;
 using static System.Runtime.InteropServices.JavaScript.JSType;
+using static System.Windows.Forms.AxHost;
 
 namespace Launcher.Any
 {
@@ -27,29 +30,23 @@ namespace Launcher.Any
             ErrorOccurred,
         }
         #endregion
-
-        /// <summary>
-        /// Стадия выполнения пачки <see cref="CGitTaskCompletion"/>.
-        /// </summary>
+        #region EGitTaskCompletionStage
         public enum EGitTaskCompletionStage
         {
+            Added,
             Started,
             Progress,
             Completed
         }
+        #endregion
+        #region EProcessTaskAsync
+        public enum EProcessTaskAsync
+        {
+            TestError
+        }
+        #endregion
 
-        /// <summary>
-        /// Делегат события изменения статуса пачки.
-        /// </summary>
-        /// <param name="completion">Пачка задач.</param>
-        /// <param name="completedCount">Сколько под‑задач уже завершено.</param>
-        /// <param name="totalCount">Общее количество под‑задач.</param>
-        /// <param name="stage">Стадия.</param>
-        public delegate void GitTaskCompletionHandler(CGitTaskCompletion completion, int completedCount, int totalCount, EGitTaskCompletionStage stage);
-
-        /// <summary>
-        /// Делегат события изменения статуса отдельной Git‑задачи.
-        /// </summary>
+        public delegate void GitTaskCompletionHandler(CGitTaskCompletion completion, int completedCount, int totalCount, EGitTaskCompletionStage stage, int queueCount);
         public delegate void GitTaskStatusChangedHandler(CGitTaskCompletion completion, CGitTask task);
     }
     #endregion
@@ -73,6 +70,7 @@ namespace Launcher.Any
     {
         public string Id { get; init; }
         public IReadOnlyList<CGitTask> Tasks { get; }
+        public bool IsFullSync { get; set; } = false;
 
         public CGitTaskCompletion(IEnumerable<CGitTask> tasks)
         {
@@ -91,7 +89,9 @@ namespace Launcher.Any
 
         private static readonly ConcurrentQueue<CGitTaskCompletion> _queue = new();
         private static readonly SemaphoreSlim _taskSlim = new(initialCount: 2, maxCount: 2);
-        private static readonly object _runLock = new();        
+        private static readonly object _runLock = new();
+
+        private static readonly ConcurrentDictionary<int, EGitTaskState> cache = new();
         #endregion
 
         #region События        
@@ -100,8 +100,14 @@ namespace Launcher.Any
         #endregion
 
         #region Функции
+        #region GetGitTask
+        public static EGitTaskState? GetTaskLastState(CGitDirectory directory)
+        {
+            return cache.TryGetValue(directory.Id, out var state) ? state : null;
+        }
+        #endregion
         #region Sync
-        public static async Task<UResponse> Sync(IReadOnlyCollection<CGitDirectory> directories)
+        public static async Task<UResponse> Sync(IReadOnlyCollection<CGitDirectory> directories, bool IsFullSync = false)
         {
             var proc = Pref.CloneAs(Functions.GetMethodName());
             var _failinf = "Не удалось запустить синхронизацию";
@@ -110,17 +116,39 @@ namespace Launcher.Any
             try
             {
                 #region Удаляем репозитории, которые уже находятся в очереди/работе
-                var toAdd = directories
-                    .Where(dir => !_queue.SelectMany(c => c.Tasks).Any(t => t.Repository.Id == dir.Id)
-                                     && (CurrentTask == null || CurrentTask.Tasks.All(t => t.Repository.Id != dir.Id)))
+                var toAdd = 
+                    directories.Where
+                    (
+                        dir => 
+                            !_queue.SelectMany(c => c.Tasks).Any(t => t.Repository.Id == dir.Id) &&
+                            (
+                                CurrentTask == null || 
+                                CurrentTask.Tasks.All(t => t.Repository.Id != dir.Id || t.State is EGitTaskState.Finished || t.State is EGitTaskState.ErrorOccurred)
+                            )
+                    )
                     .ToList();
                 #endregion
                 #region Если нечего добавлять
                 if (toAdd.Count == 0) return new() { IsSuccess = true };
                 #endregion
                 #region Создаём пачку и кладём в очередь
-                var newCompletion = new CGitTaskCompletion(toAdd.Select(r => new CGitTask(r)));
+                var newCompletion = new CGitTaskCompletion
+                (
+                    toAdd.Select
+                    (
+                        r =>
+                        {
+                            var t = new CGitTask(r);
+                            cache.TryAdd(t.Repository.Id, EGitTaskState.WaitQueue);
+                            return t;
+                        }
+                    )
+                )
+                {
+                    IsFullSync = IsFullSync
+                };
                 _queue.Enqueue(newCompletion);
+                GitTaskCompletionStageChanged?.Invoke(newCompletion, 0, newCompletion.Tasks.Count, EGitTaskCompletionStage.Added, _queue.Count);
                 #endregion
                 #region Пробуем запустить обработчик
                 _ = RunNextAsync();
@@ -168,19 +196,19 @@ namespace Launcher.Any
             var completed = 0;
 
             #region Оповещаем о старте пачки
-            GitTaskCompletionStageChanged?.Invoke(completion, completed, total, EGitTaskCompletionStage.Started);
+            GitTaskCompletionStageChanged?.Invoke(completion, completed, total, EGitTaskCompletionStage.Started, _queue.Count);
             #endregion
             #region Создаем и ожидаем задачи
             var tasks = completion.Tasks.Select(t => ProcessTaskAsync(completion, t, () =>
             {
                 var done = Interlocked.Increment(ref completed);
-                GitTaskCompletionStageChanged?.Invoke(completion, done, total, EGitTaskCompletionStage.Progress);
+                GitTaskCompletionStageChanged?.Invoke(completion, done, total, EGitTaskCompletionStage.Progress, _queue.Count);
             }));
 
             await Task.WhenAll(tasks);
             #endregion
             #region Оповещаем о завершении пачки
-            GitTaskCompletionStageChanged?.Invoke(completion, total, total, EGitTaskCompletionStage.Completed);
+            GitTaskCompletionStageChanged?.Invoke(completion, total, total, EGitTaskCompletionStage.Completed, _queue.Count);
             #endregion
             #region Освобождаем текущую пачку и запускаем следующую
             lock (_runLock)
@@ -197,7 +225,7 @@ namespace Launcher.Any
             var _proc = Pref.CloneAs(Functions.GetMethodName());
             var _failinf = $"Не удалось выполнить задачу на синхронизацию";
 
-            #region Ждем
+            #region Ждем            
             await _taskSlim.WaitAsync();
             #endregion
 
@@ -206,6 +234,7 @@ namespace Launcher.Any
             {
                 #region Меняем статус
                 task.State = EGitTaskState.Processing;
+                Upsert(task.Repository.Id, task.State);
                 GitTaskStatusChanged?.Invoke(completion, task);
                 #endregion
 
@@ -213,9 +242,16 @@ namespace Launcher.Any
                 await Task.Run(() => Thread.Sleep(1000));
                 #endregion
 
+                var rand = new Random();
+                if (rand.NextDouble() > 0.7)
+                {
+                    throw new UExcept(EProcessTaskAsync.TestError, $"Тестовая ошибка");
+                }
+
                 #region Успешное выполнение
                 task.State = EGitTaskState.Finished;
-                GitTaskStatusChanged?.Invoke(completion, task);
+                Upsert(task.Repository.Id, task.State);
+                GitTaskStatusChanged?.Invoke(completion, task);                
                 #endregion
             }
             #endregion
@@ -226,16 +262,32 @@ namespace Launcher.Any
                 Functions.Error(uex, uex.Message, _proc);
 
                 task.State = EGitTaskState.ErrorOccurred;
+                Upsert(task.Repository.Id, task.State);
                 GitTaskStatusChanged?.Invoke(completion, task);
             }
             #endregion
             #region finally
             finally
             {
+                Remove(task.Repository.Id);
                 _taskSlim.Release();
                 onCompleted();
             }
             #endregion
+        }
+        #endregion
+        #region Upsert
+        private static EGitTaskState Upsert(int id, EGitTaskState newState)
+        {
+            return cache.AddOrUpdate(id,
+                addValueFactory: _ => newState,
+                updateValueFactory: (_, _) => newState);
+        }
+        #endregion
+        #region Remove
+        private static bool Remove(int id)
+        { 
+            return cache.TryRemove(id, out _);
         }
         #endregion
         #endregion

@@ -2,6 +2,7 @@
 using Cls.Any;
 using Cls.Exceptions;
 using Launcher.Any;
+using Launcher.Any.CGitHelperAny;
 using Launcher.Any.GlobalEnums;
 using Launcher.Api;
 using Launcher.Api.Models;
@@ -12,9 +13,11 @@ using Launcher.Settings;
 using Launcher.Windows;
 using Microsoft.Win32;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
 using System.IO;
 using System.Windows;
 using System.Windows.Controls;
+using System.Windows.Input;
 using System.Windows.Media.Animation;
 
 namespace Launcher.Components.MainWindow
@@ -27,7 +30,8 @@ namespace Launcher.Components.MainWindow
         {
             FailInitialization,
             FailStartWork,
-            FailSelectFolder
+            FailSelectFolder,
+            FailSyncAll,
         }
         #endregion
         #region EInitialization
@@ -70,6 +74,12 @@ namespace Launcher.Components.MainWindow
             FailLoadList
         }
         #endregion
+        #region ESyncAll
+        public enum ESyncAll
+        {
+            FailSendRequest
+        }
+        #endregion
         #endregion
     }
     /// <summary>
@@ -82,7 +92,9 @@ namespace Launcher.Components.MainWindow
             InitializeComponent();
 
             this.DataContext = this;
-        }
+            this.MGPACP_search.TextChangedDelay = TimeSpan.FromMilliseconds(300);
+            CGitHelper.GitTaskCompletionStageChanged += EGitTaskCompletionStageChanged;
+        }        
 
         #region Переменные
         private EStartStatus StartStatus { get; set; } = EStartStatus.NotStarted;        
@@ -132,6 +144,25 @@ namespace Launcher.Components.MainWindow
         #region Обработчики событий
         #region TPSFP_button_MouseLeftButtonDown
         private void TPSFP_button_MouseLeftButtonDown(object sender, System.Windows.Input.MouseButtonEventArgs e) => _ = SelectFolder();
+        #endregion
+        #region MGPACP_sync_all_MouseLeftButtonDown
+        private void MGPACP_sync_all_MouseLeftButtonDown(object sender, MouseButtonEventArgs e) => _ = SyncAll();
+        #endregion
+        #region EGitTaskCompletionStageChanged
+        private void EGitTaskCompletionStageChanged(CGitTaskCompletion completion, int completedCount, int totalCount, EGitTaskCompletionStage stage, int queueCount)
+        {
+            if (stage is EGitTaskCompletionStage.Completed)
+            {
+                Dispatcher.Invoke(() =>
+                {
+                    MGPACP_sync_all.IsEnabled = true;
+                    MGPACP_sync_all.Text = Dictionary.Translate($"Синхронизировать все");
+                });
+            }
+        }
+        #endregion
+        #region MGPACP_search_OnTextChanged
+        private async Task MGPACP_search_OnTextChanged(CTextInput sender, string text) => _ = ApplySearchFilter(text);
         #endregion
         #endregion
 
@@ -250,6 +281,40 @@ namespace Launcher.Components.MainWindow
         {
             TPSFP_text.Text = Dictionary.Translate("Для начала работы выберите папку, где будут храниться директории");
             if (String.IsNullOrWhiteSpace(AppSettings.Instance.WorkDirectory)) TPSFP_path.Text = Dictionary.Translate("Выберите папку");
+
+            MGPACP_sync_all.Text = Dictionary.Translate($"Синхронизировать все");
+            MGPACP_search.Placeholder = Dictionary.Translate($"Поиск");
+        }
+        #endregion
+        #region SyncAll
+        private async Task SyncAll()
+        {
+            var _proc = Pref.CloneAs(Functions.GetMethodName());
+            var _failinf = $"Не удалось запустить синхронизацию всех репозиториев";
+
+            #region try
+            try
+            {
+                #region Меняем кнопку
+                await Dispatcher.BeginInvoke(() => { MGPACP_sync_all.Text = Dictionary.Translate($"Синхронизация..."); MGPACP_sync_all.IsEnabled = false; });
+                #endregion
+                #region Отправка запроса
+                var tryRunSync = await CGitHelper.Sync(Repositories);
+                if (!tryRunSync.IsSuccess)
+                {
+                    throw new UExcept(ESyncAll.FailSendRequest, Dictionary.Translate($"Не удалось добавить запрос в очередь. Детали в логах"), tryRunSync.Error);
+                }
+                #endregion
+            }
+            #endregion
+            #region Exception
+            catch (Exception ex)
+            {                
+                var uex = new UExcept(EGitControl.FailSyncAll, _failinf, ex);
+                Functions.Error(uex, uex.Message, _proc);
+                Main.Notify(ex.Message);
+            }
+            #endregion
         }
         #endregion
         #region Loader
@@ -371,7 +436,34 @@ namespace Launcher.Components.MainWindow
                 ));
         }
         #endregion
+        #region ApplySearchFilter
+        private async Task ApplySearchFilter(string searchText)
+        {
+            var results = GProp.GitRepositories.Where
+            (
+                x =>
+                    x.Name.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
+                    x.Type.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
+                    x.FilePath.Contains(searchText, StringComparison.CurrentCultureIgnoreCase) ||
+                    GStatic.GetRotationClassName(x.Class).Contains(searchText, StringComparison.CurrentCultureIgnoreCase)
+            ).ToList();
 
+            if (results.Count > 0)
+            {
+                await Dispatcher.BeginInvoke(() =>
+                {
+                    Functions.SyncCollections(Repositories, results, (x) => x.Id);
+                });
+            }
+            else
+            {
+                Repositories.Clear();
+                Main.Notify(Dictionary.Translate($"Нет результатов"));
+            }            
+        }
         #endregion
+        #endregion
+
+
     }
 }

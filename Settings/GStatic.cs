@@ -39,7 +39,6 @@ namespace Launcher.Settings
         {
             { EBranch.Test, "test" },
             { EBranch.Dev, "dev" },
-            { EBranch.NewThread, "new-thread" },
             { EBranch.Master, "master" }
         };
         #endregion
